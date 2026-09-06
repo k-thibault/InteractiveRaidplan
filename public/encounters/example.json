@@ -1,0 +1,1238 @@
+{
+  "version": 2,
+  "name": "Alter Weakness",
+  "duration": 19000,
+  "randomGroups": {
+    "strikeCast": {
+      "mode": "choice",
+      "values": [
+        "flamestrike",
+        "froststrike"
+      ]
+    },
+    "strikeElement": {
+      "mode": "choice",
+      "values": [
+        "fire",
+        "ice"
+      ]
+    },
+    "soakPosition": {
+      "mode": "choice",
+      "values": [
+        {
+          "x": -8,
+          "y": 0
+        },
+        {
+          "x": 8,
+          "y": 0
+        }
+      ]
+    },
+    "finalCast": {
+      "mode": "choice",
+      "values": [
+        "frostflame",
+        "flamefrost"
+      ]
+    }
+  },
+  "statuses": [
+    {
+      "id": "fire-vulnerability",
+      "name": "Fire Vulnerability",
+      "tags": [
+        "vulnerability"
+      ],
+      "damageTaken": [
+        {
+          "damageType": "fire",
+          "fatal": true
+        }
+      ]
+    },
+    {
+      "id": "frost-vulnerability",
+      "name": "Frost Vulnerability",
+      "tags": [
+        "vulnerability"
+      ],
+      "damageTaken": [
+        {
+          "damageType": "ice",
+          "fatal": true
+        }
+      ]
+    },
+    {
+      "id": "overloaded-with-fire",
+      "name": "Overloaded With Fire",
+      "onRemove": [
+        {
+          "type": "spawn_area",
+          "shape": "circle",
+          "radius": 2.2,
+          "mechanic": "overload-explosion",
+          "element": "fire",
+          "telegraphDuration": 0,
+          "duration": 100,
+          "resolution": [
+            {
+              "condition": {
+                "type": "player_count",
+                "min": 2
+              },
+              "effects": [
+                {
+                  "type": "damage",
+                  "target": "inside",
+                  "damage": {
+                    "amount": 35,
+                    "type": "fire"
+                  }
+                }
+              ]
+            },
+            {
+              "condition": {
+                "type": "player_count",
+                "max": 1
+              },
+              "effects": [
+                {
+                  "type": "damage",
+                  "target": "inside",
+                  "damage": {
+                    "amount": 1,
+                    "type": "fire",
+                    "fatal": true
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overloaded-with-frost",
+      "name": "Overloaded With Frost",
+      "onRemove": [
+        {
+          "type": "spawn_area",
+          "shape": "circle",
+          "radius": 2.2,
+          "mechanic": "overload-explosion",
+          "element": "ice",
+          "telegraphDuration": 0,
+          "duration": 100,
+          "resolution": [
+            {
+              "condition": {
+                "type": "player_count",
+                "min": 2
+              },
+              "effects": [
+                {
+                  "type": "damage",
+                  "target": "inside",
+                  "damage": {
+                    "amount": 35,
+                    "type": "ice"
+                  }
+                }
+              ]
+            },
+            {
+              "condition": {
+                "type": "player_count",
+                "max": 1
+              },
+              "effects": [
+                {
+                  "type": "damage",
+                  "target": "inside",
+                  "damage": {
+                    "amount": 1,
+                    "type": "ice",
+                    "fatal": true
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "casts": {
+    "alter-weakness": {
+      "id": "alter-weakness",
+      "name": "Alter Weakness",
+      "castTime": 1500,
+      "visible": true,
+      "effects": [
+        {
+          "type": "apply_status",
+          "target": {
+            "type": "random",
+            "count": 1,
+            "role": "damage"
+          },
+          "status": "fire-vulnerability"
+        },
+        {
+          "type": "apply_status",
+          "target": {
+            "type": "and",
+            "selectors": [
+              {
+                "type": "role",
+                "role": "damage"
+              },
+              {
+                "type": "without_status",
+                "status": "fire-vulnerability"
+              }
+            ]
+          },
+          "status": "frost-vulnerability"
+        },
+        {
+          "type": "apply_status",
+          "target": {
+            "type": "random",
+            "count": 1,
+            "roles": [
+              "tank",
+              "healer"
+            ]
+          },
+          "status": "fire-vulnerability"
+        },
+        {
+          "type": "apply_status",
+          "target": {
+            "type": "and",
+            "selectors": [
+              {
+                "type": "role_any",
+                "roles": [
+                  "tank",
+                  "healer"
+                ]
+              },
+              {
+                "type": "without_status",
+                "status": "fire-vulnerability"
+              }
+            ]
+          },
+          "status": "frost-vulnerability"
+        },
+        {
+          "type": "recalculate_roles"
+        },
+        {
+          "type": "recalculate_positions"
+        }
+      ]
+    },
+    "flamestrike": {
+      "id": "flamestrike",
+      "name": "Flamestrike",
+      "castTime": 1500,
+      "visible": true,
+      "effects": [
+        {
+          "type": "spawn_area",
+          "position": "$soakPosition",
+          "shape": "circle",
+          "radius": 2.6,
+          "mechanic": "flamestrike-soak",
+          "element": "fire",
+          "telegraphDuration": 2500,
+          "duration": 100,
+          "resolution": [
+            {
+              "condition": {
+                "type": "player_count",
+                "min": 1
+              },
+              "effects": [
+                {
+                  "type": "damage",
+                  "target": "inside",
+                  "damage": {
+                    "amount": 30,
+                    "type": "fire"
+                  }
+                },
+                {
+                  "type": "apply_status",
+                  "target": "inside",
+                  "status": "overloaded-with-fire",
+                  "duration": 3000
+                },
+                {
+                  "type": "set_mechanic",
+                  "mechanic": "overloaded"
+                },
+                {
+                  "type": "recalculate_roles"
+                },
+                {
+                  "type": "recalculate_positions"
+                }
+              ]
+            },
+            {
+              "condition": {
+                "type": "player_count",
+                "max": 0
+              },
+              "effects": [
+                {
+                  "type": "start_cast",
+                  "cast": "volatile-explosion",
+                  "source": "boss"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "froststrike": {
+      "id": "froststrike",
+      "name": "Froststrike",
+      "castTime": 1500,
+      "visible": true,
+      "effects": [
+        {
+          "type": "spawn_area",
+          "position": "$soakPosition",
+          "shape": "circle",
+          "radius": 2.6,
+          "mechanic": "froststrike-soak",
+          "element": "ice",
+          "telegraphDuration": 2500,
+          "duration": 100,
+          "resolution": [
+            {
+              "condition": {
+                "type": "player_count",
+                "min": 1
+              },
+              "effects": [
+                {
+                  "type": "damage",
+                  "target": "inside",
+                  "damage": {
+                    "amount": 30,
+                    "type": "ice"
+                  }
+                },
+                {
+                  "type": "apply_status",
+                  "target": "inside",
+                  "status": "overloaded-with-frost",
+                  "duration": 3000
+                },
+                {
+                  "type": "set_mechanic",
+                  "mechanic": "overloaded"
+                },
+                {
+                  "type": "recalculate_roles"
+                },
+                {
+                  "type": "recalculate_positions"
+                }
+              ]
+            },
+            {
+              "condition": {
+                "type": "player_count",
+                "max": 0
+              },
+              "effects": [
+                {
+                  "type": "start_cast",
+                  "cast": "volatile-explosion",
+                  "source": "boss"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "volatile-explosion": {
+      "id": "volatile-explosion",
+      "name": "Volatile Explosion",
+      "castTime": 0,
+      "visible": false,
+      "effects": [
+        {
+          "type": "damage",
+          "target": "all",
+          "damage": {
+            "amount": 1,
+            "type": "magical",
+            "fatal": true
+          }
+        }
+      ]
+    },
+    "frostflame": {
+      "id": "frostflame",
+      "name": "Frostflame",
+      "castTime": 2000,
+      "visible": true,
+      "effects": [
+        {
+          "type": "spawn_area",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "shape": "half_room",
+          "side": "north",
+          "radius": 15,
+          "element": "ice",
+          "mechanic": "frostflame-north",
+          "telegraphDuration": 0,
+          "duration": 100,
+          "resolution": [
+            {
+              "condition": {
+                "min": 0
+              },
+              "effects": [
+                {
+                  "type": "damage",
+                  "target": "inside",
+                  "damage": {
+                    "amount": 30,
+                    "type": "ice"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "spawn_area",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "shape": "half_room",
+          "side": "south",
+          "radius": 15,
+          "element": "fire",
+          "mechanic": "frostflame-south",
+          "telegraphDuration": 0,
+          "duration": 100,
+          "resolution": [
+            {
+              "condition": {
+                "min": 0
+              },
+              "effects": [
+                {
+                  "type": "damage",
+                  "target": "inside",
+                  "damage": {
+                    "amount": 30,
+                    "type": "fire"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "flamefrost": {
+      "id": "flamefrost",
+      "name": "Flamefrost",
+      "castTime": 2000,
+      "visible": true,
+      "effects": [
+        {
+          "type": "spawn_area",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "shape": "half_room",
+          "side": "north",
+          "radius": 15,
+          "element": "fire",
+          "mechanic": "flamefrost-north",
+          "telegraphDuration": 0,
+          "duration": 100,
+          "resolution": [
+            {
+              "condition": {
+                "min": 0
+              },
+              "effects": [
+                {
+                  "type": "damage",
+                  "target": "inside",
+                  "damage": {
+                    "amount": 30,
+                    "type": "fire"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "spawn_area",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "shape": "half_room",
+          "side": "south",
+          "radius": 15,
+          "element": "ice",
+          "mechanic": "flamefrost-south",
+          "telegraphDuration": 0,
+          "duration": 100,
+          "resolution": [
+            {
+              "condition": {
+                "min": 0
+              },
+              "effects": [
+                {
+                  "type": "damage",
+                  "target": "inside",
+                  "damage": {
+                    "amount": 30,
+                    "type": "ice"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "players": [
+    {
+      "id": "player",
+      "name": "You",
+      "type": "player",
+      "role": "damage",
+      "mechanicalRoles": [],
+      "moveSpeed": 5,
+      "health": 100,
+      "alive": true,
+      "position": {
+        "x": 0,
+        "y": 4
+      },
+      "statuses": []
+    },
+    {
+      "id": "healer",
+      "name": "Healer",
+      "type": "player",
+      "role": "healer",
+      "mechanicalRoles": [],
+      "moveSpeed": 5,
+      "health": 100,
+      "alive": true,
+      "position": {
+        "x": -3,
+        "y": 4
+      },
+      "statuses": []
+    },
+    {
+      "id": "melee",
+      "name": "Melee",
+      "type": "player",
+      "role": "damage",
+      "mechanicalRoles": [],
+      "moveSpeed": 5,
+      "health": 100,
+      "alive": true,
+      "position": {
+        "x": 3,
+        "y": 4
+      },
+      "statuses": []
+    },
+    {
+      "id": "tank",
+      "name": "Tank",
+      "type": "player",
+      "role": "tank",
+      "mechanicalRoles": [],
+      "moveSpeed": 5,
+      "health": 100,
+      "alive": true,
+      "position": {
+        "x": 0,
+        "y": -5
+      },
+      "statuses": []
+    }
+  ],
+  "enemies": [
+    {
+      "id": "boss",
+      "name": "Boss",
+      "type": "enemy",
+      "alive": true,
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "statuses": []
+    }
+  ],
+  "mechanicalRoles": {
+    "soaker": {
+      "rules": [
+        {
+          "when": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "mechanic",
+                "mechanic": "flamestrike"
+              },
+              {
+                "type": "gameplay_role",
+                "role": "damage"
+              },
+              {
+                "type": "not_has_status",
+                "status": "fire-vulnerability"
+              }
+            ]
+          }
+        },
+        {
+          "when": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "mechanic",
+                "mechanic": "froststrike"
+              },
+              {
+                "type": "gameplay_role",
+                "role": "damage"
+              },
+              {
+                "type": "not_has_status",
+                "status": "frost-vulnerability"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "stack_partner": {
+      "rules": [
+        {
+          "when": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "mechanic",
+                "mechanic": "flamestrike"
+              },
+              {
+                "type": "or",
+                "conditions": [
+                  {
+                    "type": "gameplay_role",
+                    "role": "tank"
+                  },
+                  {
+                    "type": "gameplay_role",
+                    "role": "healer"
+                  }
+                ]
+              },
+              {
+                "type": "not_has_status",
+                "status": "fire-vulnerability"
+              }
+            ]
+          }
+        },
+        {
+          "when": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "mechanic",
+                "mechanic": "froststrike"
+              },
+              {
+                "type": "or",
+                "conditions": [
+                  {
+                    "type": "gameplay_role",
+                    "role": "tank"
+                  },
+                  {
+                    "type": "gameplay_role",
+                    "role": "healer"
+                  }
+                ]
+              },
+              {
+                "type": "not_has_status",
+                "status": "frost-vulnerability"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "need_frost": {
+      "rules": [
+        {
+          "when": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "mechanic",
+                "mechanic": "frostflame"
+              },
+              {
+                "type": "has_status",
+                "status": "fire-vulnerability"
+              }
+            ]
+          }
+        },
+        {
+          "when": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "mechanic",
+                "mechanic": "flamefrost"
+              },
+              {
+                "type": "has_status",
+                "status": "fire-vulnerability"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "need_flame": {
+      "rules": [
+        {
+          "when": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "mechanic",
+                "mechanic": "frostflame"
+              },
+              {
+                "type": "has_status",
+                "status": "frost-vulnerability"
+              }
+            ]
+          }
+        },
+        {
+          "when": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "mechanic",
+                "mechanic": "flamefrost"
+              },
+              {
+                "type": "has_status",
+                "status": "frost-vulnerability"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "positions": {
+    "default-dps": {
+      "rules": [
+        {
+          "when": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "mechanic",
+                "mechanic": "default"
+              },
+              {
+                "type": "gameplay_role",
+                "role": "damage"
+              }
+            ]
+          },
+          "target": {
+            "type": "fixed",
+            "position": {
+              "x": 3,
+              "y": 4
+            }
+          }
+        }
+      ]
+    },
+    "default-healer": {
+      "rules": [
+        {
+          "when": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "mechanic",
+                "mechanic": "default"
+              },
+              {
+                "type": "gameplay_role",
+                "role": "healer"
+              }
+            ]
+          },
+          "target": {
+            "type": "fixed",
+            "position": {
+              "x": -3,
+              "y": 4
+            }
+          }
+        }
+      ]
+    },
+    "default-tank": {
+      "rules": [
+        {
+          "when": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "mechanic",
+                "mechanic": "default"
+              },
+              {
+                "type": "gameplay_role",
+                "role": "tank"
+              }
+            ]
+          },
+          "target": {
+            "type": "fixed",
+            "position": {
+              "x": 0,
+              "y": -5
+            }
+          }
+        }
+      ]
+    },
+    "strike-soaker": {
+      "rules": [
+        {
+          "when": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "mechanic",
+                "mechanic": "flamestrike"
+              },
+              {
+                "type": "mechanical_role",
+                "role": "soaker"
+              }
+            ]
+          },
+          "target": {
+            "type": "area",
+            "mechanic": "flamestrike-soak"
+          }
+        },
+        {
+          "when": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "mechanic",
+                "mechanic": "froststrike"
+              },
+              {
+                "type": "mechanical_role",
+                "role": "soaker"
+              }
+            ]
+          },
+          "target": {
+            "type": "area",
+            "mechanic": "froststrike-soak"
+          }
+        }
+      ]
+    },
+    "strike-stack": {
+      "rules": [
+        {
+          "when": {
+            "type": "mechanical_role",
+            "role": "stack_partner"
+          },
+          "target": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "boss"
+            }
+          }
+        },
+        {
+          "when": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "mechanic",
+                "mechanic": "overloaded"
+              },
+              {
+                "type": "mechanical_role",
+                "role": "soaker"
+              }
+            ]
+          },
+          "target": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "boss"
+            }
+          }
+        }
+      ]
+    },
+    "strike-other-tank": {
+      "rules": [
+        {
+          "when": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "mechanic",
+                "mechanic": "overloaded"
+              },
+              {
+                "type": "gameplay_role",
+                "role": "tank"
+              },
+              {
+                "type": "not_has_status",
+                "status": "overloaded-with-fire"
+              },
+              {
+                "type": "not_has_status",
+                "status": "overloaded-with-frost"
+              }
+            ]
+          },
+          "target": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "boss"
+            },
+            "offset": {
+              "x": 0,
+              "y": -4
+            }
+          }
+        }
+      ]
+    },
+    "strike-other": {
+      "rules": [
+        {
+          "when": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "mechanic",
+                "mechanic": "overloaded"
+              },
+              {
+                "type": "gameplay_role",
+                "role": "healer"
+              }
+            ]
+          },
+          "target": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "boss"
+            },
+            "offset": {
+              "x": 0,
+              "y": 4
+            }
+          }
+        },
+        {
+          "when": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "mechanic",
+                "mechanic": "overloaded"
+              },
+              {
+                "type": "gameplay_role",
+                "role": "damage"
+              },
+              {
+                "type": "not_has_status",
+                "status": "overloaded-with-fire"
+              },
+              {
+                "type": "not_has_status",
+                "status": "overloaded-with-frost"
+              }
+            ]
+          },
+          "target": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "boss"
+            },
+            "offset": {
+              "x": 0,
+              "y": 4
+            }
+          }
+        }
+      ]
+    },
+    "final-frost": {
+      "rules": [
+        {
+          "when": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "mechanic",
+                "mechanic": "frostflame"
+              },
+              {
+                "type": "mechanical_role",
+                "role": "need_frost"
+              }
+            ]
+          },
+          "target": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "boss"
+            },
+            "offset": {
+              "x": 0,
+              "y": -4
+            }
+          }
+        },
+        {
+          "when": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "mechanic",
+                "mechanic": "flamefrost"
+              },
+              {
+                "type": "mechanical_role",
+                "role": "need_frost"
+              }
+            ]
+          },
+          "target": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "boss"
+            },
+            "offset": {
+              "x": 0,
+              "y": 4
+            }
+          }
+        }
+      ]
+    },
+    "final-flame": {
+      "rules": [
+        {
+          "when": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "mechanic",
+                "mechanic": "frostflame"
+              },
+              {
+                "type": "mechanical_role",
+                "role": "need_flame"
+              }
+            ]
+          },
+          "target": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "boss"
+            },
+            "offset": {
+              "x": 0,
+              "y": 4
+            }
+          }
+        },
+        {
+          "when": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "mechanic",
+                "mechanic": "flamefrost"
+              },
+              {
+                "type": "mechanical_role",
+                "role": "need_flame"
+              }
+            ]
+          },
+          "target": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "boss"
+            },
+            "offset": {
+              "x": 0,
+              "y": -4
+            }
+          }
+        }
+      ]
+    }
+  },
+  "events": [
+    {
+      "id": "default-mechanic",
+      "at": 0,
+      "type": "set_mechanic",
+      "mechanic": "default"
+    },
+    {
+      "id": "initial-positions",
+      "at": 0,
+      "type": "recalculate_positions"
+    },
+    {
+      "id": "alter-weakness",
+      "at": 1000,
+      "type": "start_cast",
+      "source": "boss",
+      "cast": "alter-weakness",
+      "mechanic": "alter-weakness"
+    },
+    {
+      "id": "strike-start",
+      "at": 5000,
+      "type": "start_cast",
+      "source": "boss",
+      "cast": "$strikeCast",
+      "mechanic": "$strikeCast"
+    },
+    {
+      "id": "strike-roles",
+      "at": 6500,
+      "type": "recalculate_roles"
+    },
+    {
+      "id": "strike-positions",
+      "at": 6500,
+      "type": "recalculate_positions"
+    },
+    {
+      "id": "heal-before-final",
+      "at": 9050,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "final-cast",
+      "at": 13500,
+      "type": "start_cast",
+      "source": "boss",
+      "cast": "$finalCast",
+      "mechanic": "$finalCast"
+    },
+    {
+      "id": "final-roles",
+      "at": 13500,
+      "type": "recalculate_roles"
+    },
+    {
+      "id": "final-positions",
+      "at": 13500,
+      "type": "recalculate_positions"
+    },
+    {
+      "id": "return-default-mechanic",
+      "at": 16000,
+      "type": "set_mechanic",
+      "mechanic": "default"
+    },
+    {
+      "id": "heal-after-final",
+      "at": 16000,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "return-default-positions",
+      "at": 16000,
+      "type": "recalculate_positions"
+    }
+  ]
+}
