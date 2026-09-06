@@ -899,8 +899,17 @@
       "rules": [
         {
           "when": {
-            "type": "mechanical_role",
-            "role": "stack_partner"
+            "type": "and",
+            "conditions": [
+              {
+                "type": "mechanic",
+                "mechanic": "overloaded"
+              },
+              {
+                "type": "mechanical_role",
+                "role": "stack_partner"
+              }
+            ]
           },
           "target": {
             "type": "entity",

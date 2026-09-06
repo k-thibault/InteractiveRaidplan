@@ -6,7 +6,7 @@ import { Simulation } from './simulation/Simulation';
 import { formatClock } from './util/format';
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
-app.innerHTML = `<main class="workbench"><header class="topbar"><div><p class="eyebrow">ENCOUNTER LAB / 001</p><h1 id="encounter-name">Loading encounter&hellip;</h1></div><div class="readout"><span id="phase">READY</span><strong id="clock">00:00.0</strong></div></header><section class="arena-row"><div class="arena-panel"><canvas id="arena" width="900" height="600" aria-label="Encounter arena"></canvas><div class="legend"><span><i class="dot player"></i>players</span><span><i class="dot enemy"></i>boss</span><span><i class="dot warning"></i>telegraph</span></div><div id="cast-bar" class="cast-bar" aria-live="polite"><span id="cast-name" class="cast-bar__name"></span><div class="cast-bar__track"><div id="cast-fill" class="cast-bar__fill"></div></div></div><div id="hp-bar" class="hp-bar" role="meter" aria-label="Player health" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><span id="hp-name" class="hp-bar__name"></span><div class="hp-bar__track"><div id="hp-fill" class="hp-bar__fill"></div></div><span id="hp-value" class="hp-bar__value"></span></div></div><aside class="event-log-panel"><h2>Event Log</h2><ul id="event-log"><li class="event-log__empty">No events yet.</li></ul></aside></section><footer class="controls"><div class="control-group"><button id="toggle" type="button">Start</button><button id="restart" type="button">Restart</button><label for="controlled-player">Control</label><select id="controlled-player"></select></div><div class="speed-group" role="group" aria-label="Simulation speed"><span>Speed</span><button data-speed="0.5" type="button">0.5x</button><button class="selected" data-speed="1" type="button">1x</button><button data-speed="2" type="button">2x</button><button data-speed="4" type="button">4x</button></div><p class="hint">Move with WASD or the arrow keys.</p></footer></main>`;
+app.innerHTML = `<main class="workbench"><header class="topbar"><div><p class="eyebrow">ENCOUNTER LAB / 001</p><h1 id="encounter-name">Loading encounter&hellip;</h1></div><div class="readout"><span id="phase">READY</span><strong id="clock">00:00.0</strong></div></header><section class="arena-row"><div class="arena-panel"><canvas id="arena" width="900" height="600" aria-label="Encounter arena"></canvas><div class="legend"><span><i class="dot player"></i>players</span><span><i class="dot enemy"></i>boss</span><span><i class="dot warning"></i>telegraph</span></div><div id="cast-bar" class="cast-bar" aria-live="polite"><span id="cast-name" class="cast-bar__name"></span><div class="cast-bar__track"><div id="cast-fill" class="cast-bar__fill"></div></div></div><div id="hp-bar" class="hp-bar" role="meter" aria-label="Player health" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><span id="hp-name" class="hp-bar__name"></span><div class="hp-bar__track"><div id="hp-fill" class="hp-bar__fill"></div></div><span id="hp-value" class="hp-bar__value"></span></div></div><aside class="event-log-panel"><h2>Event Log</h2><ul id="event-log"><li class="event-log__empty">No events yet.</li></ul></aside></section><footer class="controls"><div class="control-group"><button id="toggle" type="button">Start</button><button id="restart" type="button">Restart</button><label><input id="keep-rng" type="checkbox"> Keep previous RNG</label><label for="controlled-player">Control</label><select id="controlled-player"></select></div><div class="speed-group" role="group" aria-label="Simulation speed"><span>Speed</span><button data-speed="0.5" type="button">0.5x</button><button class="selected" data-speed="1" type="button">1x</button><button data-speed="2" type="button">2x</button><button data-speed="4" type="button">4x</button></div><p class="hint">Move with WASD or the arrow keys.</p></footer></main>`;
 
 const canvas = document.querySelector<HTMLCanvasElement>('#arena')!;
 const renderer = new ArenaRenderer(canvas);
@@ -28,15 +28,27 @@ heading.textContent = encounter.name;
 for (const player of encounter.players) { const option = document.createElement('option'); option.value = player.id; option.textContent = player.name; controlledPlayer.append(option); }
 const botsOption = document.createElement('option'); botsOption.value = ''; botsOption.textContent = 'All bots'; controlledPlayer.append(botsOption);
 controlledPlayer.value = 'player';
-let simulation = new Simulation(encounter, { seed: 12345, controlledPlayerId: controlledPlayer.value });
+let currentSeed = createAttemptSeed();
+let simulation = new Simulation(encounter, { seed: currentSeed, controlledPlayerId: controlledPlayer.value });
 let controller = new PlayerController(simulation.state.players.find((player) => player.controlled)!);
 let speed = 1;
 let previous = performance.now();
 let accumulator = 0;
 let loggedCount = 0;
 
+function createAttemptSeed(): number {
+  if (globalThis.crypto?.getRandomValues) {
+    const value = new Uint32Array(1);
+    globalThis.crypto.getRandomValues(value);
+    return value[0] | 0;
+  }
+  return (Date.now() ^ Math.floor(Math.random() * 0x100000000)) | 0;
+}
+
 function rebuild(): void {
-  simulation = new Simulation(encounter, { seed: 12345, controlledPlayerId: controlledPlayer.value || undefined });
+  const keepRng = document.querySelector<HTMLInputElement>('#keep-rng')!.checked;
+  if (!keepRng) currentSeed = createAttemptSeed();
+  simulation = new Simulation(encounter, { seed: currentSeed, controlledPlayerId: controlledPlayer.value || undefined });
   controller = new PlayerController(simulation.state.players.find((player) => player.controlled)!);
   accumulator = 0;
   previous = performance.now();

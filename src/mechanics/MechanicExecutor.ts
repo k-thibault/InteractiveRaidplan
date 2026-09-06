@@ -83,6 +83,9 @@ export class MechanicExecutor {
         ? { ...base, shape: 'half_room', side: event.side ?? 'north' }
         : { ...base, shape: 'circle' };
     this.state.effects.push(effect);
+    // Position rules that target an active area need to be recalculated after
+    // the area exists, not merely when the cast starts/completes.
+    this.recalculatePositions();
   }
 
   private startCast(castId: string, sourceId: string, mechanic?: string): void {
