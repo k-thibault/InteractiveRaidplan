@@ -55,17 +55,21 @@ src/
 
 The interface includes the loaded encounter name, start/pause/resume, restart, speed controls, and a control selector. The selector can choose any encounter player or `All bots`. Players can move with WASD or arrow keys when controlled. The controlled player's health is shown with a max-health-scaled bar and critical-state colors. Events affecting the controlled player, including damage and status application, appear in a timestamped event log. Active statuses appear as small badges beside entities; hovering a badge displays the status name. The arena and event log stack vertically on narrow screens.
 
+Each new attempt receives a random seed. Restarting or changing the controlled player creates a new randomized attempt by default; enabling `Keep previous RNG` reuses the current seed so the same randomized encounter can be replayed. The renderer receives status definitions from the encounter, including optional badge characters and colors.
+
 Encounter players have one gameplay `role` (`tank`, `healer`, or `damage`) and an independent `mechanicalRoles` array. `controlled` is runtime state derived from `SimulationOptions.controlledPlayerId`, so encounter JSON can be reused for human-controlled and all-bot runs. Omit the option to run every player as a bot.
 
 Mechanical roles are declared under `mechanicalRoles`. A role contains rules using status, gameplay-role, mechanical-role, boolean, and cross-player conditions. `recalculate_roles` evaluates every player from the same prior state and commits the complete assignment together, avoiding order-dependent results.
 
-Bot positioning is also event-driven. A player may declare a fixed or player-relative `positionTarget`; `recalculate_positions` resolves targets for uncontrolled players and skips the controlled player. `BotManager` then moves each bot toward its desired position at its configured move speed. This keeps role assignment, positioning intent, and movement as separate systems.
+Bot positioning is also event-driven. A player may declare a fixed or player-relative `positionTarget`; `recalculate_positions` resolves targets for uncontrolled players and skips the controlled player. Position rules are recalculated after an area is spawned so bots can react to newly active telegraphs immediately. `BotManager` then moves each bot toward its desired position at its configured move speed. This keeps role assignment, positioning intent, and movement as separate systems.
 
 Casts are declared under `casts` and contain an immutable name, cast time, visibility flag, and completion effects. A `start_cast` event or effect creates an `ActiveCast` in `GameState`; the simulation resolves it when its completion time is reached. Visible active casts appear in the arena cast bar. Cast effects use the same effect pipeline as timeline mechanics, including area spawning, damage, status application, status removal, and nested casts.
 
 Statuses now have an optional `onRemove` effect list. `remove_status` events, explicit removal effects, and natural expiration all use the same removal path, so removal-triggered effects behave consistently. The example encounter demonstrates a timed `volatile` status that starts a cast when it expires, as well as a boss `Flamefrost` cast.
 
 Status definitions, area success/failure effects, named random groups, named sequences, and distributions are part of the encounter data. Shuffle groups are randomized once per encounter and can be referenced from multiple events with `$group.0` or `$group[0]`. Sequences define `values`, a `start` index or random start, and a numeric `step`; a direct reference such as `$sequence` returns the current value, advances the sequence, and wraps at either end. Random sequence choices are made once when the simulation starts, so later requests remain deterministic. Distributions preserve a multiset of `values` by shuffling it when an `assign_distribution` effect resolves. The effect assigns one value to each resolved participant, so duplicate values and `null` outcomes are preserved; assigned values can be referenced as `$assignedValue` or `$assignedValue.property`. The simulation also stores timestamped log entries for controlled-player damage and status changes. The example encounter is located at `public/encounters/example.json`.
+
+Effect targets may be either an area target (`inside`, `outside`, `all`) or a `PlayerSelector`. This lets effects such as `apply_status` select a specific random player without treating the selector as an area target. In the example encounter, mechanical-role rules are additionally gated by the active mechanic and relevant statuses, so roles such as `soaker` and `stack_partner` are assigned only for the mechanics that need them.
 
 ## Development
 
@@ -82,6 +86,3 @@ npm run build
 - Expand position targets with room edges, areas, and geometric constraints; add obstacle-aware movement.
 - Add deterministic replay and failure analysis.
 - Build a visual encounter editor once the engine vocabulary is stable.
-### Selector targets in cast effects
-
-Effect targets may now be either an area target (`inside`, `outside`, `all`) or a `PlayerSelector`. This lets cast effects such as `apply_status` select a specific random player instead of accidentally treating selector objects as an area target.
