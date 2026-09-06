@@ -6,6 +6,8 @@ export interface StatusDefinition {
   name: string;
   damageTaken?: DamageModifier[];
   tags?: string[];
+  character?: string;
+  color?: string;
   onRemove?: EffectDefinition[];
 }
 

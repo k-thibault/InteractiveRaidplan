@@ -1,6 +1,6 @@
 import type { GameState } from '../simulation/GameState';
 import type { Entity } from '../entities/Entity';
-import type { StatusInstance } from '../entities/Status';
+import type { StatusDefinition, StatusInstance } from '../entities/Status';
 import { formatStatusName } from '../util/format';
 
 interface StatusHitArea {
@@ -14,6 +14,7 @@ export class ArenaRenderer {
   private readonly canvas: HTMLCanvasElement;
   private readonly tooltip: HTMLDivElement;
   private statusHitAreas: StatusHitArea[] = [];
+  private readonly statusDefinitions = new Map<string, StatusDefinition>();
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -23,6 +24,11 @@ export class ArenaRenderer {
     document.body.append(this.tooltip);
     canvas.addEventListener('mousemove', (event) => this.updateTooltip(event));
     canvas.addEventListener('mouseleave', () => this.hideTooltip());
+  }
+
+  setStatusDefinitions(statuses: StatusDefinition[]): void {
+    this.statusDefinitions.clear();
+    for (const status of statuses) this.statusDefinitions.set(status.id, status);
   }
 
   render(state: GameState): void {
@@ -62,8 +68,9 @@ export class ArenaRenderer {
 
   private drawStatusIcon(status: StatusInstance, x: number, y: number, scale: number): void {
     const radius = Math.max(7, scale * .2);
-    this.context.fillStyle = '#ffbe49'; this.context.beginPath(); this.context.arc(x, y, radius, 0, Math.PI * 2); this.context.fill();
-    this.context.fillStyle = '#18232e'; this.context.font = `500 ${Math.max(9, scale * .25)}px 'DM Mono', monospace`; this.context.textAlign = 'center'; this.context.textBaseline = 'middle'; this.context.fillText('!', x, y + 1); this.context.textBaseline = 'alphabetic';
+    const definition = this.statusDefinitions.get(status.definitionId);
+    this.context.fillStyle = definition?.color ?? '#ffbe49'; this.context.beginPath(); this.context.arc(x, y, radius, 0, Math.PI * 2); this.context.fill();
+    this.context.fillStyle = '#18232e'; this.context.font = `500 ${Math.max(9, scale * .25)}px 'DM Mono', monospace`; this.context.textAlign = 'center'; this.context.textBaseline = 'middle'; this.context.fillText(definition?.character ?? '!', x, y + 1); this.context.textBaseline = 'alphabetic';
     this.statusHitAreas.push({ x, y, status });
   }
 

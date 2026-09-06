@@ -42,6 +42,8 @@
     {
       "id": "fire-vulnerability",
       "name": "Fire Vulnerability",
+      "character": "V",
+      "color": "#d95757",
       "tags": [
         "vulnerability"
       ],
@@ -55,6 +57,8 @@
     {
       "id": "frost-vulnerability",
       "name": "Frost Vulnerability",
+      "character": "V",
+      "color": "#4d8fd6",
       "tags": [
         "vulnerability"
       ],
@@ -530,7 +534,7 @@
   "players": [
     {
       "id": "player",
-      "name": "You",
+      "name": "Ranged",
       "type": "player",
       "role": "damage",
       "mechanicalRoles": [],
@@ -611,6 +615,34 @@
             "conditions": [
               {
                 "type": "mechanic",
+                "mechanic": "overloaded"
+              },
+              {
+                "type": "gameplay_role",
+                "role": "damage"
+              },
+              {
+                "type": "or",
+                "conditions": [
+                  {
+                    "type": "has_status",
+                    "status": "overloaded-with-fire"
+                  },
+                  {
+                    "type": "has_status",
+                    "status": "overloaded-with-frost"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "when": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "mechanic",
                 "mechanic": "flamestrike"
               },
               {
@@ -639,6 +671,51 @@
               {
                 "type": "not_has_status",
                 "status": "frost-vulnerability"
+              }
+            ]
+          }
+        },
+        {
+          "when": {
+            "type": "and",
+            "conditions": [
+              {
+                "type": "mechanic",
+                "mechanic": "overloaded"
+              },
+              {
+                "type": "or",
+                "conditions": [
+                  {
+                    "type": "gameplay_role",
+                    "role": "tank"
+                  },
+                  {
+                    "type": "gameplay_role",
+                    "role": "healer"
+                  }
+                ]
+              },
+              {
+                "type": "not_has_status",
+                "status": "overloaded-with-fire"
+              },
+              {
+                "type": "not_has_status",
+                "status": "overloaded-with-frost"
+              },
+              {
+                "type": "or",
+                "conditions": [
+                  {
+                    "type": "has_status",
+                    "status": "fire-vulnerability"
+                  },
+                  {
+                    "type": "has_status",
+                    "status": "frost-vulnerability"
+                  }
+                ]
               }
             ]
           }
@@ -928,8 +1005,17 @@
                 "mechanic": "overloaded"
               },
               {
-                "type": "mechanical_role",
-                "role": "soaker"
+                "type": "or",
+                "conditions": [
+                  {
+                    "type": "has_status",
+                    "status": "overloaded-with-fire"
+                  },
+                  {
+                    "type": "has_status",
+                    "status": "overloaded-with-frost"
+                  }
+                ]
               }
             ]
           },

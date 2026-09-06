@@ -25,6 +25,7 @@ const logList = document.querySelector<HTMLUListElement>('#event-log')!;
 const controlledPlayer = document.querySelector<HTMLSelectElement>('#controlled-player')!;
 const encounter = await loadEncounter('/encounters/example.json');
 heading.textContent = encounter.name;
+renderer.setStatusDefinitions(encounter.statuses);
 for (const player of encounter.players) { const option = document.createElement('option'); option.value = player.id; option.textContent = player.name; controlledPlayer.append(option); }
 const botsOption = document.createElement('option'); botsOption.value = ''; botsOption.textContent = 'All bots'; controlledPlayer.append(botsOption);
 controlledPlayer.value = 'player';
