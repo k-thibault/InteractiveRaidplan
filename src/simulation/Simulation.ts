@@ -28,7 +28,7 @@ export class Simulation {
     this.random = new Random(options.seed);
     const randomContext = new RandomContext(encounter.randomGroups, encounter.sequences, encounter.distributions, this.random);
     const players = structuredClone(encounter.players).map((player) => ({ ...player, maxHealth: player.maxHealth ?? player.health, controlled: player.id === options.controlledPlayerId, mechanicalRoles: player.mechanicalRoles ?? [] }));
-    this.state = { time: 0, deltaTime: 0, currentMechanic: undefined, players, enemies: structuredClone(encounter.enemies), effects: [], casts: [], running: false, completed: false, log: [] };
+    this.state = { time: 0, deltaTime: 0, currentMechanic: undefined, players, enemies: structuredClone(encounter.enemies), effects: [], worldGraphics: [], background: encounter.background, casts: [], running: false, completed: false, log: [] };
     this.roleEvaluator = new MechanicalRoleEvaluator(encounter.mechanicalRoles);
     this.positionEvaluator = new PositionEvaluator(encounter.positions);
     this.executor = new MechanicExecutor(this.state, this.random, encounter.statuses, encounter.casts, randomContext, () => this.roleEvaluator.recalculate(this.state), () => this.positionEvaluator.recalculate(this.state));
@@ -73,6 +73,7 @@ export class Simulation {
       for (const resolution of this.areaResolver.resolve(effect, this.state.players.filter((player) => inside.has(player.id)))) this.executor.executeEffect(resolution, inside);
     }
     this.state.effects = this.state.effects.filter((effect) => effect.resolvedAt === undefined || this.state.time < effect.resolvedAt + effect.duration);
+    this.state.worldGraphics = this.state.worldGraphics.filter((graphic) => this.state.time < graphic.createdAt + graphic.duration);
     this.botManager.update(this.state);
     if (this.state.time >= this.encounterDuration) { this.state.completed = true; this.state.running = false; }
   }

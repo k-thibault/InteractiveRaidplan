@@ -1,12 +1,13 @@
 import type { GameState } from '../simulation/GameState';
 import type { Random } from '../simulation/Random';
 import { findEntity, selectPlayers } from './Selector';
-import type { EncounterEvent, SpawnAreaEvent } from './Event';
+import type { EncounterEvent, SpawnAreaEvent, ShowGraphicEvent } from './Event';
 import type { AreaEffect, EffectDefinition, DamageDefinition, SpawnAreaEffect } from './Effect';
 import { DamageResolver } from './DamageResolver';
 import type { StatusDefinition } from '../entities/Status';
 import type { RandomContext } from '../simulation/RandomContext';
 import type { ApplyStatusAssignment } from './Effect';
+import type { GraphicAnchor } from './Graphic';
 import { formatStatusName } from '../util/format';
 import type { CastDefinition } from './Cast';
 
@@ -47,6 +48,8 @@ export class MechanicExecutor {
     else if (event.type === 'start_cast') this.startCast(event.cast, event.source, event.mechanic);
     else if (event.type === 'remove_status') for (const player of selectPlayers(event.target, this.state, this.random)) this.removeStatus(player, event.status);
     else if (event.type === 'spawn_area') this.spawnArea(this.randomContext.resolve(event));
+    else if (event.type === 'set_background') this.state.background = event.image;
+    else if (event.type === 'show_graphic') this.showGraphicEvent(event);
   }
 
   update(): void {
@@ -89,6 +92,15 @@ export class MechanicExecutor {
     this.recalculatePositions();
   }
 
+  private showGraphicEvent(event: ShowGraphicEvent): void {
+    const anchor: GraphicAnchor = event.position ? { type: 'position', position: event.position } : { type: 'entity', entity: event.source ?? 'boss' };
+    this.spawnGraphic(event.image, anchor, event.radius, event.duration);
+  }
+
+  private spawnGraphic(image: string, anchor: GraphicAnchor, radius = 1.5, duration: number): void {
+    this.state.worldGraphics.push({ id: `graphic-${this.state.worldGraphics.length + 1}-${this.state.time}`, image, anchor, radius, createdAt: this.state.time, duration });
+  }
+
   private startCast(castId: string, sourceId: string, mechanic?: string): void {
     const definition = this.castDefinitions[castId];
     if (!definition || this.state.casts.some((cast) => cast.sourceId === sourceId && cast.definitionId === castId)) return;
@@ -110,6 +122,7 @@ export class MechanicExecutor {
     if (resolvedEffect.type === 'recalculate_positions') { this.recalculatePositions(); return; }
     if (resolvedEffect.type === 'spawn_area') { this.spawnArea({ ...resolvedEffect, source: resolvedEffect.source ?? sourceId }); return; }
     if (resolvedEffect.type === 'remove_status') { for (const player of selectPlayers(resolvedEffect.target, this.state, this.random)) this.removeStatus(player, resolvedEffect.status); return; }
+    if (resolvedEffect.type === 'show_graphic') { this.spawnGraphic(resolvedEffect.image, resolvedEffect.anchor ?? { type: 'entity', entity: sourceId }, resolvedEffect.radius, resolvedEffect.duration); return; }
     const targets = typeof resolvedEffect.target === 'string'
       ? (resolvedEffect.target === 'all'
         ? this.state.players.filter((player) => player.alive)
@@ -142,6 +155,8 @@ export class MechanicExecutor {
   private applyStatus(player: typeof this.state.players[number], statusId: string, duration: number | undefined): void {
     player.statuses.push({ definitionId: statusId, appliedAt: this.state.time, expiresAt: duration === undefined ? undefined : this.state.time + duration, stacks: 1 });
     if (player.controlled) this.logEvent(`You were affected by ${formatStatusName(statusId)}.`);
+    const definition = this.statusDefinitions.get(statusId);
+    for (const effect of definition?.onApply ?? []) this.executeEffect(effect, new Set(), player.id);
   }
 
   private removeStatus(player: typeof this.state.players[number], statusId: string): void {

@@ -8,7 +8,15 @@ export interface StatusDefinition {
   tags?: string[];
   character?: string;
   color?: string;
+  /** Resource key of an image to draw in place of the default colored badge. */
+  icon?: string;
   onRemove?: EffectDefinition[];
+  /**
+   * Effects run the moment this status is applied. Commonly used to spawn a
+   * short-lived world graphic on the target (e.g. a flash that fades after a
+   * couple seconds) independent of how long the status itself lasts.
+   */
+  onApply?: EffectDefinition[];
 }
 
 export interface DamageModifier {

@@ -10,6 +10,7 @@ Encounters are described in JSON rather than hardcoded in the UI. The example en
 - seeded random target selection
 - role and status selectors
 - circle and cone area telegraphs
+- configurable telegraph and execution colors for area effects
 - one-shot area resolution with player-count conditions
 - typed damage and status-based vulnerability
 - status expiration and player health
@@ -17,10 +18,12 @@ Encounters are described in JSON rather than hardcoded in the UI. The example en
 - stateful cyclic sequences with randomized starts and deterministic progression
 - resolution-scoped distributions assigned across mechanic participants
 - declarative mechanical roles evaluated at explicit timeline events
+- player-aware mechanical-role conditions that inspect another matching player
 - bot position targets and movement for uncontrolled players
 - timed casts with visible cast bars and completion effects
 - unified status removal and expiration with removal-triggered effects
 - controlled-player health display and encounter event logging
+- resource-based arena backgrounds, status icons, and timed world graphics
 
 ## Architecture
 
@@ -53,7 +56,7 @@ src/
   rendering/    Canvas arena renderer
 ```
 
-The interface includes the loaded encounter name, start/pause/resume, restart, speed controls, and a control selector. The selector can choose any encounter player or `All bots`. Players can move with WASD or arrow keys when controlled. The controlled player's health is shown with a max-health-scaled bar and critical-state colors. Events affecting the controlled player, including damage and status application, appear in a timestamped event log. Active statuses appear as small badges beside entities; hovering a badge displays the status name. The arena and event log stack vertically on narrow screens.
+The interface includes the loaded encounter name, start/pause/resume, restart, speed controls, and a control selector. The selector can choose any encounter player or `All bots`. Players can move with WASD or arrow keys when controlled. In the arena, the controlled player renders blue and other players green. A roster panel to the left of the arena shows every player's health, max-health-scaled bars, and critical-state colors, with the controlled player's row pinned to the top; each row has a fixed-size status column so active statuses (and a countdown for non-permanent ones) never change the row's height. Enemies still show status badges beside them on the field; the controlled player's own statuses instead render enlarged at the bottom-center of the arena. Hovering a status badge, in the roster or the arena, displays the status name. Events affecting the controlled player, including damage and status application, appear in a timestamped event log. The arena, roster, and event log stack vertically on narrow screens.
 
 Each new attempt receives a random seed. Restarting or changing the controlled player creates a new randomized attempt by default; enabling `Keep previous RNG` reuses the current seed so the same randomized encounter can be replayed. The renderer receives status definitions from the encounter, including optional badge characters and colors.
 
@@ -63,13 +66,15 @@ Mechanical roles are declared under `mechanicalRoles`. A role contains rules usi
 
 Bot positioning is also event-driven. A player may declare a fixed or player-relative `positionTarget`; `recalculate_positions` resolves targets for uncontrolled players and skips the controlled player. Position rules are recalculated after an area is spawned so bots can react to newly active telegraphs immediately. `BotManager` then moves each bot toward its desired position at its configured move speed. This keeps role assignment, positioning intent, and movement as separate systems.
 
-Casts are declared under `casts` and contain an immutable name, cast time, visibility flag, and completion effects. A `start_cast` event or effect creates an `ActiveCast` in `GameState`; the simulation resolves it when its completion time is reached. Visible active casts appear in the arena cast bar. Cast effects use the same effect pipeline as timeline mechanics, including area spawning, damage, status application, status removal, and nested casts.
+Casts are declared under `casts` and contain an immutable name, cast time, visibility flag, and completion effects. A `start_cast` event or effect creates an `ActiveCast` in `GameState`; the simulation resolves it when its completion time is reached. Visible active casts appear in the arena cast bar. Cast effects use the same effect pipeline as timeline mechanics, including area spawning, damage, status application, status removal, and nested casts. Area definitions can provide separate `telegraphColor` and `executionColor` values; the renderer uses the telegraph color before resolution and the execution color after resolution, with defaults when neither is supplied.
 
 Statuses now have an optional `onRemove` effect list. `remove_status` events, explicit removal effects, and natural expiration all use the same removal path, so removal-triggered effects behave consistently. The example encounter demonstrates a timed `volatile` status that starts a cast when it expires, as well as a boss `Flamefrost` cast.
 
+Encounters can declare `resources.images`, a map of names to image URLs (including data URIs). An encounter's `background` names the initial arena image, changeable mid-timeline with a `set_background` event. A status's `icon` swaps its default colored badge for an image, in both the arena and the roster. A `show_graphic` event or effect displays a timed image at a fixed position or tracked to an entity; this is separate from the cast bar and is used for things like a brief flash on a status's target via `onApply`, or a ground marker that telegraphs an upcoming mechanic.
+
 Status definitions, area success/failure effects, named random groups, named sequences, and distributions are part of the encounter data. Shuffle groups are randomized once per encounter and can be referenced from multiple events with `$group.0` or `$group[0]`. Sequences define `values`, a `start` index or random start, and a numeric `step`; a direct reference such as `$sequence` returns the current value, advances the sequence, and wraps at either end. Random sequence choices are made once when the simulation starts, so later requests remain deterministic. Distributions preserve a multiset of `values` by shuffling it when an `assign_distribution` effect resolves. The effect assigns one value to each resolved participant, so duplicate values and `null` outcomes are preserved; assigned values can be referenced as `$assignedValue` or `$assignedValue.property`. The simulation also stores timestamped log entries for controlled-player damage and status changes. The example encounter is located at `public/encounters/example.json`.
 
-Effect targets may be either an area target (`inside`, `outside`, `all`) or a `PlayerSelector`. This lets effects such as `apply_status` select a specific random player without treating the selector as an area target. In the example encounter, mechanical-role rules are additionally gated by the active mechanic and relevant statuses, so roles such as `soaker` and `stack_partner` are assigned only for the mechanics that need them.
+Effect targets may be either an area target (`inside`, `outside`, `all`) or a `PlayerSelector`. This lets effects such as `apply_status` select a specific random player without treating the selector as an area target. Mechanical-role conditions also support `player_condition`, which checks whether a player reference (`self`, an id, a gameplay role, or a mechanical role) satisfies another condition. In the example encounter, overload handling uses this to assign fire- and frost-specific roles only when the matching damage player has the corresponding overload status; other roles remain gated by the active mechanic and relevant statuses.
 
 ## Development
 

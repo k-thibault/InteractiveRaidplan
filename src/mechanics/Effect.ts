@@ -1,5 +1,6 @@
 import type { Vector2 } from '../geometry/Vector2';
 import type { PlayerSelector } from './Selector';
+import type { GraphicAnchor } from './Graphic';
 
 export type DamageType = 'physical' | 'magical' | 'dark' | 'fire' | 'ice' | 'poison';
 export interface DamageDefinition { amount: number; type: DamageType; fatal?: boolean; }
@@ -20,7 +21,15 @@ export interface SpawnAreaEffect {
 }
 export interface AssignDistributionEffect { type: 'assign_distribution'; distribution: string; target: 'participants'; effect: ApplyStatusAssignment; }
 export interface ApplyStatusAssignment { type: 'apply_status'; status: string; duration?: number; }
-export type EffectDefinition = HealEffect | DamageEffect | ApplyStatusEffect | RemoveStatusEffect | StartCastEffect | RecalculateRolesEffect | RecalculatePositionsEffect | SetMechanicEffect | SpawnAreaEffect | AssignDistributionEffect;
+/**
+ * Shows a resource-backed graphic in the arena for `duration` ms. When
+ * `anchor` is omitted it defaults to the entity this effect is being
+ * executed on behalf of (the status's target for onApply/onRemove, or the
+ * cast's source for cast effects), which is the common "show something on
+ * its target" case.
+ */
+export interface ShowGraphicEffect { type: 'show_graphic'; image: string; anchor?: GraphicAnchor; radius?: number; duration: number; }
+export type EffectDefinition = HealEffect | DamageEffect | ApplyStatusEffect | RemoveStatusEffect | StartCastEffect | RecalculateRolesEffect | RecalculatePositionsEffect | SetMechanicEffect | SpawnAreaEffect | AssignDistributionEffect | ShowGraphicEffect;
 export interface AreaCondition { type: 'player_count'; min?: number; max?: number; }
 export interface AreaResolutionRule { condition: AreaCondition; effects: EffectDefinition[]; }
 export interface BaseAreaEffect {

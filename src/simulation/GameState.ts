@@ -1,6 +1,7 @@
 import type { Enemy } from '../entities/Enemy';
 import type { Player } from '../entities/Player';
 import type { AreaEffect } from '../mechanics/Effect';
+import type { WorldGraphicInstance } from '../mechanics/Graphic';
 import type { LogEntry } from './Log';
 import type { ActiveCast } from '../mechanics/Cast';
 
@@ -11,6 +12,8 @@ export interface GameState {
   players: Player[];
   enemies: Enemy[];
   effects: AreaEffect[];
+  worldGraphics: WorldGraphicInstance[];
+  background?: string;
   casts: ActiveCast[];
   running: boolean;
   completed: boolean;
