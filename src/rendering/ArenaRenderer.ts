@@ -9,6 +9,17 @@ interface StatusHitArea {
   status: StatusInstance;
 }
 
+const DEFAULT_TELEGRAPH_COLOR = '#ffbe49';
+const DEFAULT_EXECUTION_COLOR = '#d95757';
+
+function hexToRgba(hex: string, alpha: number): string {
+  const value = hex.replace('#', '');
+  const r = parseInt(value.substring(0, 2), 16);
+  const g = parseInt(value.substring(2, 4), 16);
+  const b = parseInt(value.substring(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 export class ArenaRenderer {
   private readonly context: CanvasRenderingContext2D;
   private readonly canvas: HTMLCanvasElement;
@@ -42,7 +53,9 @@ export class ArenaRenderer {
     for (let x = -14; x <= 14; x += 1) { const point = toCanvas(x, -9); context.beginPath(); context.moveTo(point.x, 0); context.lineTo(point.x, canvas.height); context.stroke(); }
     for (let y = -9; y <= 9; y += 1) { const point = toCanvas(-14, y); context.beginPath(); context.moveTo(0, point.y); context.lineTo(canvas.width, point.y); context.stroke(); }
     for (const effect of state.effects) {
-      const point = toCanvas(effect.position.x, effect.position.y); context.fillStyle = effect.shape === 'cone' ? 'rgba(255, 119, 87, .28)' : 'rgba(255, 190, 73, .28)';
+      const point = toCanvas(effect.position.x, effect.position.y);
+      const color = effect.resolvedAt === undefined ? (effect.telegraphColor ?? DEFAULT_TELEGRAPH_COLOR) : (effect.executionColor ?? DEFAULT_EXECUTION_COLOR);
+      context.fillStyle = hexToRgba(color, .28);
       context.beginPath();
       if (effect.shape === 'circle') context.arc(point.x, point.y, effect.radius * scale, 0, Math.PI * 2);
       else if (effect.shape === 'half_room') {

@@ -74,7 +74,8 @@ export class MechanicExecutor {
       id: `effect-${this.state.effects.length + 1}`,
       position: { ...source }, rotation: 0, createdAt: this.state.time,
       telegraphDuration: event.telegraphDuration, duration: event.duration,
-      radius: event.radius, element: event.element, mechanic: event.mechanic, resolution: event.resolution
+      radius: event.radius, element: event.element, mechanic: event.mechanic, resolution: event.resolution,
+      telegraphColor: event.telegraphColor, executionColor: event.executionColor
     };
     if (event.direction === 'back') base.rotation = Math.PI;
     const effect: AreaEffect = event.shape === 'cone'

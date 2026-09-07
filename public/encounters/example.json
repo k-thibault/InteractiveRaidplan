@@ -80,6 +80,7 @@
           "mechanic": "overload-explosion",
           "element": "fire",
           "telegraphDuration": 0,
+          "executionColor": "#d95757",
           "duration": 100,
           "resolution": [
             {
@@ -130,6 +131,7 @@
           "mechanic": "overload-explosion",
           "element": "ice",
           "telegraphDuration": 0,
+          "executionColor": "#4d8fd6",
           "duration": 100,
           "resolution": [
             {
@@ -257,6 +259,7 @@
           "mechanic": "flamestrike-soak",
           "element": "fire",
           "telegraphDuration": 2500,
+          "executionColor": "#d95757",
           "duration": 100,
           "resolution": [
             {
@@ -322,6 +325,7 @@
           "mechanic": "froststrike-soak",
           "element": "ice",
           "telegraphDuration": 2500,
+          "executionColor": "#4d8fd6",
           "duration": 100,
           "resolution": [
             {
@@ -408,6 +412,7 @@
           "element": "ice",
           "mechanic": "frostflame-north",
           "telegraphDuration": 0,
+          "executionColor": "#4d8fd6",
           "duration": 100,
           "resolution": [
             {
@@ -439,6 +444,7 @@
           "element": "fire",
           "mechanic": "frostflame-south",
           "telegraphDuration": 0,
+          "executionColor": "#d95757",
           "duration": 100,
           "resolution": [
             {
@@ -478,6 +484,7 @@
           "element": "fire",
           "mechanic": "flamefrost-north",
           "telegraphDuration": 0,
+          "executionColor": "#d95757",
           "duration": 100,
           "resolution": [
             {
@@ -509,6 +516,7 @@
           "element": "ice",
           "mechanic": "flamefrost-south",
           "telegraphDuration": 0,
+          "executionColor": "#4d8fd6",
           "duration": 100,
           "resolution": [
             {
@@ -730,7 +738,7 @@
             "conditions": [
               {
                 "type": "mechanic",
-                "mechanic": "flamestrike"
+                "mechanic": "overloaded"
               },
               {
                 "type": "or",
@@ -748,6 +756,17 @@
               {
                 "type": "not_has_status",
                 "status": "fire-vulnerability"
+              },
+              {
+                "type": "player_condition",
+                "player": {
+                  "type": "gameplay_role",
+                  "role": "damage"
+                },
+                "condition": {
+                  "type": "has_status",
+                  "status": "overloaded-with-fire"
+                }
               }
             ]
           }
@@ -758,7 +777,7 @@
             "conditions": [
               {
                 "type": "mechanic",
-                "mechanic": "froststrike"
+                "mechanic": "overloaded"
               },
               {
                 "type": "or",
@@ -776,6 +795,17 @@
               {
                 "type": "not_has_status",
                 "status": "frost-vulnerability"
+              },
+              {
+                "type": "player_condition",
+                "player": {
+                  "type": "gameplay_role",
+                  "role": "damage"
+                },
+                "condition": {
+                  "type": "has_status",
+                  "status": "overloaded-with-frost"
+                }
               }
             ]
           }

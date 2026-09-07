@@ -16,6 +16,7 @@ export interface SpawnAreaEffect {
   type: 'spawn_area'; source?: string; position?: Vector2; shape: 'circle' | 'cone' | 'half_room';
   radius: number; angle?: number; direction?: 'front' | 'back'; side?: 'north' | 'south'; element?: DamageType; mechanic?: string;
   telegraphDuration: number; duration: number; resolution: AreaResolutionRule[];
+  telegraphColor?: string; executionColor?: string;
 }
 export interface AssignDistributionEffect { type: 'assign_distribution'; distribution: string; target: 'participants'; effect: ApplyStatusAssignment; }
 export interface ApplyStatusAssignment { type: 'apply_status'; status: string; duration?: number; }
@@ -25,6 +26,7 @@ export interface AreaResolutionRule { condition: AreaCondition; effects: EffectD
 export interface BaseAreaEffect {
   id: string; position: Vector2; rotation: number; createdAt: number; telegraphDuration: number; duration: number;
   radius: number; element?: DamageType; mechanic?: string; resolution?: AreaResolutionRule[]; resolvedAt?: number;
+  telegraphColor?: string; executionColor?: string;
 }
 export interface CircleArea extends BaseAreaEffect { shape: 'circle'; }
 export interface ConeArea extends BaseAreaEffect { shape: 'cone'; angle: number; }
