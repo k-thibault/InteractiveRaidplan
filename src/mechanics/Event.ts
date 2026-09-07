@@ -5,8 +5,8 @@ import type { PlayerSelector } from './Selector';
 interface BaseEvent { id: string; at?: number; after?: string; delay?: number; }
 export interface StartCastEvent extends BaseEvent { type: 'start_cast'; source: string; cast: string; mechanic?: string; }
 export interface RemoveStatusEvent extends BaseEvent { type: 'remove_status'; target: PlayerSelector; status: string; }
-export interface RecalculateRolesEvent extends BaseEvent { type: 'recalculate_roles'; }
-export interface RecalculatePositionsEvent extends BaseEvent { type: 'recalculate_positions'; }
+export interface RecalculateRolesEvent extends BaseEvent { type: 'recalculate_roles'; group?: string; }
+export interface RecalculatePositionsEvent extends BaseEvent { type: 'recalculate_positions'; group?: string; }
 export interface SetMechanicEvent extends BaseEvent { type: 'set_mechanic'; mechanic: string; }
 export interface ApplyStatusEvent extends BaseEvent { type: 'apply_status'; target: PlayerSelector; status: string; duration?: number; }
 export interface HealEvent extends BaseEvent { type: 'heal'; target: PlayerSelector; amount?: number; full?: boolean; }

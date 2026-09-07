@@ -10,8 +10,8 @@ export interface DamageEffect { type: 'damage'; target: EffectTarget; damage: Da
 export interface ApplyStatusEffect { type: 'apply_status'; target: EffectTarget; status: string; duration?: number; }
 export interface RemoveStatusEffect { type: 'remove_status'; target: PlayerSelector; status: string; }
 export interface StartCastEffect { type: 'start_cast'; cast: string; source?: string; mechanic?: string; }
-export interface RecalculateRolesEffect { type: 'recalculate_roles'; }
-export interface RecalculatePositionsEffect { type: 'recalculate_positions'; }
+export interface RecalculateRolesEffect { type: 'recalculate_roles'; group?: string; }
+export interface RecalculatePositionsEffect { type: 'recalculate_positions'; group?: string; }
 export interface SetMechanicEffect { type: 'set_mechanic'; mechanic: string; }
 export interface SpawnAreaEffect {
   type: 'spawn_area'; source?: string; position?: Vector2; shape: 'circle' | 'cone' | 'half_room';
@@ -21,6 +21,13 @@ export interface SpawnAreaEffect {
 }
 export interface AssignDistributionEffect { type: 'assign_distribution'; distribution: string; target: 'participants'; effect: ApplyStatusAssignment; }
 export interface ApplyStatusAssignment { type: 'apply_status'; status: string; duration?: number; }
+/** Randomly pairs a status list with the selected players, one status per player. */
+export interface DistributeStatusesEffect {
+  type: 'distribute_statuses';
+  target: PlayerSelector;
+  statuses: string[];
+  duration?: number;
+}
 /**
  * Shows a resource-backed graphic in the arena for `duration` ms. When
  * `anchor` is omitted it defaults to the entity this effect is being
@@ -29,7 +36,7 @@ export interface ApplyStatusAssignment { type: 'apply_status'; status: string; d
  * its target" case.
  */
 export interface ShowGraphicEffect { type: 'show_graphic'; image: string; anchor?: GraphicAnchor; radius?: number; duration: number; }
-export type EffectDefinition = HealEffect | DamageEffect | ApplyStatusEffect | RemoveStatusEffect | StartCastEffect | RecalculateRolesEffect | RecalculatePositionsEffect | SetMechanicEffect | SpawnAreaEffect | AssignDistributionEffect | ShowGraphicEffect;
+export type EffectDefinition = HealEffect | DamageEffect | ApplyStatusEffect | RemoveStatusEffect | StartCastEffect | RecalculateRolesEffect | RecalculatePositionsEffect | SetMechanicEffect | SpawnAreaEffect | AssignDistributionEffect | DistributeStatusesEffect | ShowGraphicEffect;
 export interface AreaCondition { type: 'player_count'; min?: number; max?: number; }
 export interface AreaResolutionRule { condition: AreaCondition; effects: EffectDefinition[]; }
 export interface BaseAreaEffect {

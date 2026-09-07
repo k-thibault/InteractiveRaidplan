@@ -162,12 +162,9 @@ export class ArenaRenderer {
     const definition = this.statusDefinitions.get(status.definitionId);
     const icon = this.resolvedImage(definition?.icon);
     if (icon) {
-      this.context.save();
-      this.context.beginPath();
-      this.context.arc(x, y, radius, 0, Math.PI * 2);
-      this.context.clip();
+      // Status SVGs own their silhouette and transparent padding. Do not crop
+      // them to a circle; the diamond/crest framing is part of the icon design.
       this.context.drawImage(icon, x - radius, y - radius, radius * 2, radius * 2);
-      this.context.restore();
     } else {
       this.context.fillStyle = definition?.color ?? '#ffbe49'; this.context.beginPath(); this.context.arc(x, y, radius, 0, Math.PI * 2); this.context.fill();
       this.context.fillStyle = '#18232e'; this.context.font = `500 ${Math.max(9, scale * .25)}px 'DM Mono', monospace`; this.context.textAlign = 'center'; this.context.textBaseline = 'middle'; this.context.fillText(definition?.character ?? '!', x, y + 1); this.context.textBaseline = 'alphabetic';

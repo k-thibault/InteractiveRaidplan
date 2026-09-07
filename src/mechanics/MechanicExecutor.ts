@@ -6,7 +6,7 @@ import type { AreaEffect, EffectDefinition, DamageDefinition, SpawnAreaEffect } 
 import { DamageResolver } from './DamageResolver';
 import type { StatusDefinition } from '../entities/Status';
 import type { RandomContext } from '../simulation/RandomContext';
-import type { ApplyStatusAssignment } from './Effect';
+import type { ApplyStatusAssignment, DistributeStatusesEffect } from './Effect';
 import type { GraphicAnchor } from './Graphic';
 import { formatStatusName } from '../util/format';
 import type { CastDefinition } from './Cast';
@@ -18,8 +18,8 @@ export class MechanicExecutor {
   private readonly randomContext: RandomContext;
   private readonly statusDefinitions: Map<string, StatusDefinition>;
   private readonly castDefinitions: Record<string, CastDefinition>;
-  private readonly recalculateRoles: () => void;
-  private readonly recalculatePositions: () => void;
+  private readonly recalculateRoles: (group?: string) => void;
+  private readonly recalculatePositions: (group?: string) => void;
 
   constructor(
     state: GameState,
@@ -27,8 +27,8 @@ export class MechanicExecutor {
     statuses: StatusDefinition[],
     casts: Record<string, CastDefinition> = {},
     randomContext: RandomContext,
-    recalculateRoles: () => void = () => undefined,
-    recalculatePositions: () => void = () => undefined
+    recalculateRoles: (group?: string) => void = () => undefined,
+    recalculatePositions: (group?: string) => void = () => undefined
   ) {
     this.state = state;
     this.random = random;
@@ -87,9 +87,6 @@ export class MechanicExecutor {
         ? { ...base, shape: 'half_room', side: event.side ?? 'north' }
         : { ...base, shape: 'circle' };
     this.state.effects.push(effect);
-    // Position rules that target an active area need to be recalculated after
-    // the area exists, not merely when the cast starts/completes.
-    this.recalculatePositions();
   }
 
   private showGraphicEvent(event: ShowGraphicEvent): void {
@@ -116,10 +113,14 @@ export class MechanicExecutor {
       participants.forEach((player, index) => this.applyAssignment(player, this.randomContext.resolveAssigned(resolvedEffect.effect, values[index])));
       return;
     }
+    if (resolvedEffect.type === 'distribute_statuses') {
+      this.distributeStatuses(resolvedEffect);
+      return;
+    }
     if (resolvedEffect.type === 'start_cast') { this.startCast(resolvedEffect.cast, resolvedEffect.source ?? sourceId, resolvedEffect.mechanic); return; }
     if (resolvedEffect.type === 'set_mechanic') { this.state.currentMechanic = resolvedEffect.mechanic; return; }
-    if (resolvedEffect.type === 'recalculate_roles') { this.recalculateRoles(); return; }
-    if (resolvedEffect.type === 'recalculate_positions') { this.recalculatePositions(); return; }
+    if (resolvedEffect.type === 'recalculate_roles') { this.recalculateRoles(resolvedEffect.group); return; }
+    if (resolvedEffect.type === 'recalculate_positions') { this.recalculatePositions(resolvedEffect.group); return; }
     if (resolvedEffect.type === 'spawn_area') { this.spawnArea({ ...resolvedEffect, source: resolvedEffect.source ?? sourceId }); return; }
     if (resolvedEffect.type === 'remove_status') { for (const player of selectPlayers(resolvedEffect.target, this.state, this.random)) this.removeStatus(player, resolvedEffect.status); return; }
     if (resolvedEffect.type === 'show_graphic') { this.spawnGraphic(resolvedEffect.image, resolvedEffect.anchor ?? { type: 'entity', entity: sourceId }, resolvedEffect.radius, resolvedEffect.duration); return; }
@@ -145,6 +146,15 @@ export class MechanicExecutor {
     for (const player of players) {
       const result = this.damageResolver.resolve(player, damage);
       if (player.controlled) this.logEvent(`${sourceName ? `You were hit by ${sourceName} for` : 'You were hit for'} ${Math.round(result.amount)} ${damage.type} damage${result.killed ? ' (fatal)' : ''}.`);
+    }
+  }
+
+  private distributeStatuses(effect: DistributeStatusesEffect): void {
+    const players = this.random.shuffle(selectPlayers(effect.target, this.state, this.random));
+    const statuses = this.random.shuffle(effect.statuses.map((status) => this.randomContext.resolve(status)));
+
+    for (let index = 0; index < Math.min(players.length, statuses.length); index += 1) {
+      this.applyStatus(players[index], statuses[index], effect.duration);
     }
   }
 

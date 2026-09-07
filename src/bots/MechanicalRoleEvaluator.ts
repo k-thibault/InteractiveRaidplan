@@ -9,9 +9,19 @@ export type Condition =
   | { type: 'mechanic'; mechanic: string }
   | { type: 'active_cast'; cast: string; source?: string }
   | { type: 'active_area'; mechanic?: string; element?: string }
-  | { type: 'and'; conditions: Condition[] }
-  | { type: 'or'; conditions: Condition[] }
-  | { type: 'player_condition'; player: PlayerReference; condition: Condition };
+  | { type: 'and'; conditions: ConditionExpression[] }
+  | { type: 'or'; conditions: ConditionExpression[] }
+  | { type: 'player_condition'; player: PlayerReference; condition: ConditionExpression };
+
+export type ConditionExpression = Condition | ConditionExpression[];
+
+/**
+ * A role group is evaluated only when the timeline explicitly asks for it.
+ * The array form of `when` is an implicit AND, avoiding the repetitive
+ * { type: 'and', conditions: [...] } wrapper.
+ */
+export type MechanicalRoleGroup = Record<string, ConditionExpression>;
+export type MechanicalRoleDefinitions = Record<string, MechanicalRoleGroup>;
 
 export type PlayerReference =
   | { type: 'self' }
@@ -19,28 +29,34 @@ export type PlayerReference =
   | { type: 'gameplay_role'; role: Player['role'] }
   | { type: 'id'; id: string };
 
-export interface MechanicalRoleRule { when: Condition; }
-export interface MechanicalRoleDefinition { rules: MechanicalRoleRule[]; }
-
 export class MechanicalRoleEvaluator {
-  private readonly definitions: Record<string, MechanicalRoleDefinition>;
+  private readonly definitions: MechanicalRoleDefinitions;
 
-  constructor(definitions: Record<string, MechanicalRoleDefinition> = {}) { this.definitions = definitions; }
+  constructor(definitions: MechanicalRoleDefinitions = {}) { this.definitions = definitions; }
 
-  recalculate(state: GameState): void {
+  recalculate(state: GameState, group?: string): void {
+    const definition = group ? this.definitions[group] : undefined;
+    const groups = definition ? [definition] : Object.values(this.definitions);
     const assignments = new Map<string, string[]>();
+
     for (const player of state.players) {
-      const roles = Object.entries(this.definitions)
-        .filter(([, definition]) => definition.rules.some((rule) => this.matches(rule.when, player, state)))
+      const roles = groups
+        .flatMap((current) => Object.entries(current))
+        .filter(([, condition]) => this.matches(condition, player, state))
         .map(([role]) => role);
       assignments.set(player.id, roles);
     }
+
     for (const player of state.players) player.mechanicalRoles = assignments.get(player.id) ?? [];
   }
 
-  evaluate(condition: Condition, player: Player, state: GameState): boolean { return this.matches(condition, player, state); }
+  evaluate(condition: ConditionExpression, player: Player, state: GameState): boolean {
+    return this.matches(condition, player, state);
+  }
 
-  private matches(condition: Condition, player: Player, state: GameState): boolean {
+  private matches(condition: ConditionExpression, player: Player, state: GameState): boolean {
+    if (Array.isArray(condition)) return condition.every((child) => this.matches(child, player, state));
+
     switch (condition.type) {
       case 'has_status': return player.statuses.some((status) => status.definitionId === condition.status);
       case 'not_has_status': return !player.statuses.some((status) => status.definitionId === condition.status);
@@ -54,7 +70,10 @@ export class MechanicalRoleEvaluator {
         (condition.element === undefined || effect.element === condition.element));
       case 'and': return condition.conditions.every((child) => this.matches(child, player, state));
       case 'or': return condition.conditions.some((child) => this.matches(child, player, state));
-      case 'player_condition': return state.players.some((candidate) => this.matchesReference(candidate, condition.player) && this.matches(condition.condition, candidate, state));
+      case 'player_condition':
+        return state.players.some((candidate) =>
+          this.matchesReference(candidate, condition.player) &&
+          this.matches(condition.condition, candidate, state));
     }
   }
 

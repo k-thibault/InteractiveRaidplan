@@ -1,24 +1,30 @@
 import type { GameState } from '../simulation/GameState';
-import type { PositionRule, PositionTarget, EntityReference } from './PositionTarget';
+import type { PositionTarget, EntityReference } from './PositionTarget';
 import { findEntity } from '../mechanics/Selector';
-import { MechanicalRoleEvaluator } from './MechanicalRoleEvaluator';
+import { MechanicalRoleEvaluator, type ConditionExpression } from './MechanicalRoleEvaluator';
 
-export interface PositionDefinition { rules: PositionRule[]; }
+export interface PositionRule { when: ConditionExpression; target: PositionTarget; }
+/** Position rules are grouped and only the requested group is evaluated. */
+export type PositionDefinition = PositionRule[];
+export type PositionDefinitions = Record<string, PositionDefinition>;
 
 export class PositionEvaluator {
-  private readonly definitions: Record<string, PositionDefinition>;
+  private readonly definitions: PositionDefinitions;
   private readonly conditionEvaluator: MechanicalRoleEvaluator;
 
-  constructor(definitions: Record<string, PositionDefinition> = {}) {
+  constructor(definitions: PositionDefinitions = {}) {
     this.definitions = definitions;
     this.conditionEvaluator = new MechanicalRoleEvaluator();
   }
 
-  recalculate(state: GameState): void {
+  recalculate(state: GameState, group?: string): void {
+    const rules = group
+      ? (this.definitions[group] ?? [])
+      : Object.values(this.definitions).flat();
+
     for (const player of state.players) {
       if (player.controlled) continue;
-      const rule = Object.values(this.definitions).flatMap((definition) => definition.rules)
-        .find((candidate) => this.conditionEvaluator.evaluate(candidate.when, player, state));
+      const rule = rules.find((candidate) => this.conditionEvaluator.evaluate(candidate.when, player, state));
       player.desiredPosition = rule ? this.resolve(rule.target, state) : undefined;
     }
   }
@@ -26,11 +32,20 @@ export class PositionEvaluator {
   private resolve(target: PositionTarget, state: GameState): { x: number; y: number } | undefined {
     if (target.type === 'fixed') return { ...target.position };
     if (target.type === 'area') {
-      const effect = state.effects.find((candidate) => candidate.resolvedAt === undefined && (!target.mechanic || candidate.mechanic === target.mechanic));
-      return effect ? { x: effect.position.x + (target.offset?.x ?? 0), y: effect.position.y + (target.offset?.y ?? 0) } : undefined;
+      const effect = state.effects.find((candidate) =>
+        candidate.resolvedAt === undefined &&
+        (!target.mechanic || candidate.mechanic === target.mechanic));
+      return effect ? {
+        x: effect.position.x + (target.offset?.x ?? 0),
+        y: effect.position.y + (target.offset?.y ?? 0)
+      } : undefined;
     }
+
     const entity = this.resolveReference(target.player, state);
-    return entity ? { x: entity.position.x + (target.offset?.x ?? 0), y: entity.position.y + (target.offset?.y ?? 0) } : undefined;
+    return entity ? {
+      x: entity.position.x + (target.offset?.x ?? 0),
+      y: entity.position.y + (target.offset?.y ?? 0)
+    } : undefined;
   }
 
   private resolveReference(reference: EntityReference, state: GameState) {
