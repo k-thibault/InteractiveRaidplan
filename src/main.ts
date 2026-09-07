@@ -8,7 +8,7 @@ import type { StatusDefinition } from './entities/Status';
 import type { Player } from './entities/Player';
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
-app.innerHTML = `<main class="workbench"><header class="topbar"><div><p class="eyebrow">ENCOUNTER LAB / 001</p><h1 id="encounter-name">Loading encounter&hellip;</h1></div><div class="readout"><span id="phase">READY</span><strong id="clock">00:00.0</strong></div></header><section class="arena-row"><aside id="roster" class="roster-panel" aria-label="Party health"></aside><div class="arena-panel"><canvas id="arena" width="900" height="600" aria-label="Encounter arena"></canvas><div id="cast-bar" class="cast-bar" aria-live="polite"><span id="cast-name" class="cast-bar__name"></span><div class="cast-bar__track"><div id="cast-fill" class="cast-bar__fill"></div></div></div></div><aside class="event-log-panel"><h2>Event Log</h2><ul id="event-log"><li class="event-log__empty">No events yet.</li></ul></aside></section><footer class="controls"><div class="control-group"><button id="toggle" type="button">Start</button><button id="restart" type="button">Restart</button><label><input id="keep-rng" type="checkbox"> Keep previous RNG</label><label for="controlled-player">Control</label><select id="controlled-player"></select></div><div class="speed-group" role="group" aria-label="Simulation speed"><span>Speed</span><button data-speed="0.5" type="button">0.5x</button><button class="selected" data-speed="1" type="button">1x</button><button data-speed="2" type="button">2x</button><button data-speed="4" type="button">4x</button></div><p class="hint">Move with WASD or the arrow keys.</p></footer></main>`;
+app.innerHTML = `<main class="workbench"><header class="topbar"><div><p class="eyebrow">ENCOUNTER LAB / 001</p><h1 id="encounter-name">Loading encounter&hellip;</h1></div><div class="readout"><span id="phase">READY</span><strong id="clock">00:00.0</strong></div></header><section class="arena-row"><aside id="roster" class="roster-panel" aria-label="Party health"></aside><div class="arena-panel"><canvas id="arena" width="1200" height="800" aria-label="Encounter arena"></canvas><div id="cast-bar" class="cast-bar" aria-live="polite"><span id="cast-name" class="cast-bar__name"></span><div class="cast-bar__track"><div id="cast-fill" class="cast-bar__fill"></div></div></div></div><aside class="event-log-panel"><h2>Event Log</h2><ul id="event-log"><li class="event-log__empty">No events yet.</li></ul></aside></section><footer class="controls"><div class="control-group"><button id="toggle" type="button">Start</button><button id="restart" type="button">Restart</button><label><input id="keep-rng" type="checkbox"> Keep previous RNG</label><label for="controlled-player">Control</label><select id="controlled-player"></select></div><div class="speed-group" role="group" aria-label="Simulation speed"><span>Speed</span><button data-speed="0.5" type="button">0.5x</button><button class="selected" data-speed="1" type="button">1x</button><button data-speed="2" type="button">2x</button><button data-speed="4" type="button">4x</button></div><p class="hint">Move with WASD or the arrow keys.</p></footer></main>`;
 
 const canvas = document.querySelector<HTMLCanvasElement>('#arena')!;
 const renderer = new ArenaRenderer(canvas);
@@ -116,12 +116,10 @@ function updateRoster(players: Player[], now: number): void {
         icon.textContent = definition?.character ?? '!';
       }
       badge.append(icon);
-      if (status.expiresAt !== undefined) {
-        const timer = document.createElement('span');
-        timer.className = 'roster-status__timer';
-        timer.textContent = String(Math.max(0, Math.ceil((status.expiresAt - now) / 1000)));
-        badge.append(timer);
-      }
+      const timer = document.createElement('span');
+      timer.className = 'roster-status__timer';
+      timer.textContent = status.expiresAt === undefined ? '-' : String(Math.max(0, Math.ceil((status.expiresAt - now) / 1000)));
+      badge.append(timer);
       row.statuses.append(badge);
     }
   }

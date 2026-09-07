@@ -134,15 +134,28 @@ export class ArenaRenderer {
     if (showInlineStatuses) entity.statuses.forEach((status, index) => this.drawStatusIcon(status, point.x + scale * (.62 + index * .48), point.y - scale * .38, scale));
   }
 
-  /** The controlled player's statuses get a dedicated, larger display bottom-center instead of crowding their on-field icon. */
+  /** The controlled player's statuses get a dedicated, larger display bottom-center instead of crowding their on-field icon. Every icon reserves the same space for a duration label (a "-" for permanent statuses) so icons stay aligned regardless of which statuses have a timer. */
   private drawControlledStatuses(state: GameState, scale: number): void {
     const controlled = state.players.find((player) => player.controlled);
     if (!controlled || controlled.statuses.length === 0) return;
-    const radius = Math.max(11, scale * .32);
+    const radius = Math.max(22, scale * .64);
     const gap = radius * 2.4;
+    const fontSize = Math.max(14, radius * .7);
+    const textGap = 4;
+    const margin = 14;
+    const y = this.canvas.height - margin - fontSize - textGap - radius;
     const baseX = this.canvas.width / 2 - ((controlled.statuses.length - 1) * gap) / 2;
-    const y = this.canvas.height - radius - 14;
-    controlled.statuses.forEach((status, index) => this.drawStatusIcon(status, baseX + index * gap, y, scale, radius));
+    controlled.statuses.forEach((status, index) => {
+      const x = baseX + index * gap;
+      this.drawStatusIcon(status, x, y, scale, radius);
+      const remaining = status.expiresAt === undefined ? '-' : String(Math.max(0, Math.ceil((status.expiresAt - state.time) / 1000)));
+      this.context.fillStyle = '#dbe7f2';
+      this.context.font = `500 ${fontSize}px 'DM Mono', monospace`;
+      this.context.textAlign = 'center';
+      this.context.textBaseline = 'middle';
+      this.context.fillText(remaining, x, y + radius + textGap + fontSize / 2);
+      this.context.textBaseline = 'alphabetic';
+    });
   }
 
   private drawStatusIcon(status: StatusInstance, x: number, y: number, scale: number, radius = Math.max(7, scale * .2)): void {
