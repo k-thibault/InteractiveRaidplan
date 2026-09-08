@@ -145,7 +145,10 @@ export class MechanicExecutor {
   private applyDamage(players: typeof this.state.players, damage: DamageDefinition, sourceName?: string): void {
     for (const player of players) {
       const result = this.damageResolver.resolve(player, damage);
-      if (player.controlled) this.logEvent(`${sourceName ? `You were hit by ${sourceName} for` : 'You were hit for'} ${Math.round(result.amount)} ${damage.type} damage${result.killed ? ' (fatal)' : ''}.`);
+      if (player.controlled) {
+        if (result.fatal) this.logEvent(`You took fatal ${damage.type} damage${sourceName ? ` from ${sourceName}` : ''}.`);
+        else this.logEvent(`${sourceName ? `You were hit by ${sourceName} for` : 'You were hit for'} ${Math.round(result.amount)} ${damage.type} damage.`);
+      }
     }
   }
 

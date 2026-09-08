@@ -1,0 +1,46 @@
+diff --git a/src/mechanics/DamageResolver.ts b/src/mechanics/DamageResolver.ts
+index ab97a68..7adf369 100644
+--- a/src/mechanics/DamageResolver.ts
++++ b/src/mechanics/DamageResolver.ts
+@@ -21,7 +21,11 @@ export class DamageResolver {
+       }
+     }
+     const killed = fatal || amount >= target.health;
+-    target.health = Math.max(0, target.health - amount);
++    if (fatal) {
++      target.health = 0;
++    } else {
++      target.health = Math.max(0, target.health - amount);
++    }
+     if (killed) target.alive = false;
+     return { amount, fatal, killed };
+   }
+diff --git a/src/mechanics/MechanicExecutor.ts b/src/mechanics/MechanicExecutor.ts
+index 30832bb..b8441b6 100644
+--- a/src/mechanics/MechanicExecutor.ts
++++ b/src/mechanics/MechanicExecutor.ts
+@@ -145,7 +145,10 @@ export class MechanicExecutor {
+   private applyDamage(players: typeof this.state.players, damage: DamageDefinition, sourceName?: string): void {
+     for (const player of players) {
+       const result = this.damageResolver.resolve(player, damage);
+-      if (player.controlled) this.logEvent(`${sourceName ? `You were hit by ${sourceName} for` : 'You were hit for'} ${Math.round(result.amount)} ${damage.type} damage${result.killed ? ' (fatal)' : ''}.`);
++      if (player.controlled) {
++        if (result.fatal) this.logEvent(`You took fatal ${damage.type} damage${sourceName ? ` from ${sourceName}` : ''}.`);
++        else this.logEvent(`${sourceName ? `You were hit by ${sourceName} for` : 'You were hit for'} ${Math.round(result.amount)} ${damage.type} damage.`);
++      }
+     }
+   }
+ 
+diff --git a/src/style.css b/src/style.css
+index 7104c86..404aa5f 100644
+--- a/src/style.css
++++ b/src/style.css
+@@ -20,7 +20,7 @@ button { border: 1px solid #3b4e61; border-radius: 3px; background: #18232e; col
+ .roster-entry__statuses { flex: 0 0 132px; width: 132px; height: 34px; display: flex; align-items: center; justify-content: flex-end; gap: 4px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
+ .roster-entry__statuses::-webkit-scrollbar { display: none; }
+ .roster-status { display: flex; flex-direction: column; align-items: center; flex: 0 0 22px; width: 22px; }
+-.roster-status__icon { width: 18px; height: 18px; border-radius: 3px; display: flex; align-items: center; justify-content: center; font: 500 10px 'DM Mono', monospace; color: #18232e; background-size: cover; background-position: center; flex-shrink: 0; }
++.roster-status__icon { width: 18px; height: 18px; border-radius: 0; display: flex; align-items: center; justify-content: center; font: 500 10px 'DM Mono', monospace; color: #18232e; background-size: contain; background-repeat: no-repeat; background-position: center; flex-shrink: 0; }
+ .roster-status__timer { font-size: 9px; color: #8394a4; margin-top: 2px; line-height: 1; }
+ .cast-bar { position: absolute; left: 50%; top: 18px; display: flex; align-items: center; gap: 8px; width: min(360px, 60%); color: #ffbe49; opacity: 0; transform: translate(-50%, -5px); transition: opacity .15s ease, transform .15s ease; }.cast-bar--visible { opacity: 1; transform: translate(-50%, 0); }.cast-bar__name { flex-shrink: 0; }.cast-bar__track { flex: 1; height: 8px; border: 1px solid #63502d; border-radius: 3px; background: #0b1016; overflow: hidden; }.cast-bar__fill { height: 100%; width: 0; background: #ffbe49; transition: width .05s linear; }
+ .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 18px; color: #8394a4; }.control-group, .speed-group { display: flex; align-items: center; gap: 6px; }.speed-group span { margin-right: 5px; } .hint { margin: 0 0 0 auto; color: #637585; }

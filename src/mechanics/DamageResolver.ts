@@ -21,7 +21,11 @@ export class DamageResolver {
       }
     }
     const killed = fatal || amount >= target.health;
-    target.health = Math.max(0, target.health - amount);
+    if (fatal) {
+     target.health = 0;
+    } else {
+     target.health = Math.max(0, target.health - amount);
+    }
     if (killed) target.alive = false;
     return { amount, fatal, killed };
   }
