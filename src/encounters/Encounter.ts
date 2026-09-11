@@ -6,6 +6,7 @@ import type { DistributionDefinition, RandomGroup, SequenceDefinition } from '..
 import type { MechanicalRoleDefinitions } from '../bots/MechanicalRoleEvaluator';
 import type { PositionDefinition } from '../bots/PositionEvaluator';
 import type { CastDefinition } from '../mechanics/Cast';
+import type { AreaDefinition, EffectDefinition } from '../mechanics/Effect';
 
 /** Named image resources an encounter can reference for backgrounds, status icons, and world graphics. Values are any URL an <img>/Image can load, including data: URIs. */
 export interface EncounterResources {
@@ -31,5 +32,9 @@ export interface Encounter {
   mechanicalRoles?: MechanicalRoleDefinitions;
   positions?: Record<string, PositionDefinition>;
   casts?: Record<string, CastDefinition>;
+  /** Reusable area definitions referenced by spawn-area effects. */
+  areas?: Record<string, AreaDefinition>;
+  /** Collects the unique players hit by a set of area instances and runs effects once all instances resolve. */
+  areaGroups?: Record<string, { count: number; effects: EffectDefinition[] }>;
   events: EncounterEvent[];
 }

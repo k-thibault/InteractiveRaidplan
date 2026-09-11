@@ -28,6 +28,9 @@ Encounters are described in JSON rather than hardcoded in the UI. The example en
 - team- and damage-position-aware role assignments
 - delayed effects and rotation-based random groups
 - styled entity markers and custom soak telegraphs
+- reusable named area definitions and area tags for bot positioning
+- grouped area resolution that combines unique participants across multiple telegraphs
+- stacked statuses with capped application, partial removal, and visible stack counts
 
 ## Architecture
 
@@ -70,11 +73,11 @@ Mechanical roles are declared as named groups under `mechanicalRoles`. Each grou
 
 Bot positioning is also event-driven and grouped under `positions`. A player may declare a fixed, player-relative, active-area, or polar `positionTarget`; `recalculate_positions` can select the group needed by the current mechanic and skips the controlled player. Position targets can resolve named random values, area labels, role references, and polar coordinates. `BotManager` moves each bot toward its desired position at its configured move speed.
 
-Area definitions can exclude their source entity from resolution and can select a named telegraph style; the current renderer provides a `soak` gradient. Entities can use a filled circle or ring style with world-unit dimensions.
+Area definitions can exclude their source entity from resolution, can be reused by name, and can select named telegraph styles; the current renderer provides a `soak` gradient. Spawned areas can carry tags for position targeting and can belong to an area group that collects unique participants across a configured number of resolved areas before running shared effects. Entities can use a filled circle or ring style with world-unit dimensions.
 
 Casts are declared under `casts` and contain an immutable name, cast time, visibility flag, and completion effects. A `start_cast` event or effect creates an `ActiveCast` in `GameState`; the simulation resolves it when its completion time is reached. Visible active casts appear in the arena cast bar. Cast effects use the same effect pipeline as timeline mechanics, including area spawning, damage, status application, status removal, nested casts, and delayed effect batches. Area definitions can provide separate `telegraphColor` and `executionColor` values; the renderer uses the telegraph color before resolution and the execution color after resolution.
 
-Statuses now have an optional `onRemove` effect list. `remove_status` events, explicit removal effects, and natural expiration all use the same removal path, so removal-triggered effects behave consistently. The example encounter demonstrates a timed `volatile` status that starts a cast when it expires, as well as a boss `Flamefrost` cast.
+Statuses now have an optional `onRemove` effect list and an optional `maxStacks` cap. `apply_status` and `remove_status` can add or remove a specific number of stacks; capped statuses are stored as one instance and the renderer shows their current stack count. Events, explicit removal effects, and natural expiration all use the same removal path, so removal-triggered effects behave consistently. The `Forsaken` encounter uses `Spells Trouble` stacks during its soak cycle and retains its randomized damage/non-damage trigger assignment before distributing those triggers.
 
 Encounters declare named graphics under `resources.graphics`. `EncounterLoader` resolves those names through the shared `public/resources/graphics.json` library into image URLs. An encounter's `background` names the initial arena image, changeable mid-timeline with a `set_background` event. A status's `icon` swaps its default colored badge for an image, in both the arena and the roster. A `show_graphic` event or effect displays a timed image at a fixed position or tracked to an entity; this is separate from the cast bar and is used for things like a brief flash on a status's target via `onApply`, or a ground marker that telegraphs an upcoming mechanic.
 

@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "name": "Forsaken",
   "duration": 22000,
   "background": "bg-default",
@@ -44,7 +44,63 @@
       "count": 2
     }
   },
+  "areas": {
+    "forsaken-soak": {
+      "shape": "circle",
+      "radius": 2,
+      "mechanic": "forsaken-soak",
+      "telegraphDuration": 12000,
+      "telegraphStyle": "soak",
+      "telegraphColor": "#bbbbff",
+      "duration": 100,
+      "executionColor": "#8d78ff",
+      "resolution": [
+        {
+          "condition": { "type": "player_count", "min": 2 },
+          "effects": [
+            { "type": "damage", "target": "inside", "damage": { "amount": 1, "type": "physical" } },
+            { "type": "remove_status", "target": "inside", "status": "spells-trouble" },
+            { "type": "remove_status", "target": "inside", "status": "stack-trigger" },
+            { "type": "remove_status", "target": "inside", "status": "spread-trigger" },
+            { "type": "remove_status", "target": "inside", "status": "cone-trigger" }
+          ]
+        },
+        {
+          "condition": { "type": "player_count", "max": 1 },
+          "effects": [
+            { "type": "damage", "target": "all", "damage": { "amount": 5, "type": "magical" } },
+            { "type": "remove_status", "target": "inside", "status": "spells-trouble" },
+            { "type": "remove_status", "target": "inside", "status": "stack-trigger" },
+            { "type": "remove_status", "target": "inside", "status": "spread-trigger" },
+            { "type": "remove_status", "target": "inside", "status": "cone-trigger" }
+          ]
+        }
+      ]
+    }
+  },
+  "areaGroups": {
+    "forsaken-soaks": {
+      "count": 2,
+      "effects": [
+        {
+          "type": "distribute_statuses",
+          "target": "inside",
+          "statuses": ["spread-trigger", "spread-trigger", "cone-trigger", "cone-trigger"]
+        },
+        { "type": "recalculate_roles", "group": "forsaken" },
+        { "type": "recalculate_positions", "group": "forsaken" }
+      ]
+    }
+  },
   "statuses": [
+    {
+      "id": "spells-trouble",
+      "name": "Spells Trouble",
+      "maxStacks": 4,
+      "color": "#ffbe49",
+      "character": "!",
+      "icon": "icon-damage-down"
+    },
     {
       "id": "stack-trigger",
       "name": "Stack Trigger",
@@ -259,158 +315,26 @@
           "statuses": "$triggerAssignments.nonDamage"
         },
         {
-          "type": "spawn_area",
-          "position": { "type": "polar", "angle": "$soakAngles[0]", "radius": 5 },
-          "label": "soak-a",
-          "shape": "circle",
-          "radius": 2,
-          "mechanic": "forsaken-soak",
-          "telegraphDuration": 12000,
-          "telegraphStyle": "soak",
-          "telegraphColor": "#bbbbff",
-          "duration": 100,
-          "executionColor": "#8d78ff",
-          "resolution": [
-            {
-              "condition": {
-                "type": "player_count",
-                "min": 2
-              },
-              "effects": [
-                {
-                  "type": "damage",
-                  "target": "inside",
-                  "damage": {
-                    "amount": 1,
-                    "type": "physical"
-                  }
-                },
-                {
-                  "type": "remove_status",
-                  "target": "inside",
-                  "status": "stack-trigger"
-                },
-                {
-                  "type": "remove_status",
-                  "target": "inside",
-                  "status": "spread-trigger"
-                },
-                {
-                  "type": "remove_status",
-                  "target": "inside",
-                  "status": "cone-trigger"
-                }
-              ]
-            },
-            {
-              "condition": {
-                "type": "player_count",
-                "max": 1
-              },
-              "effects": [
-                {
-                  "type": "damage",
-                  "target": "all",
-                  "damage": {
-                    "amount": 5,
-                    "type": "magical"
-                  }
-                },
-                {
-                  "type": "remove_status",
-                  "target": "inside",
-                  "status": "stack-trigger"
-                },
-                {
-                  "type": "remove_status",
-                  "target": "inside",
-                  "status": "spread-trigger"
-                },
-                {
-                  "type": "remove_status",
-                  "target": "inside",
-                  "status": "cone-trigger"
-                }
-              ]
-            }
-          ]
+          "type": "apply_status",
+          "target": "all",
+          "status": "spells-trouble",
+          "stacks": 4
         },
         {
           "type": "spawn_area",
+          "area": "forsaken-soak",
+          "position": { "type": "polar", "angle": "$soakAngles[0]", "radius": 5 },
+          "label": "soak-a",
+          "tags": ["soak-a"],
+          "areaGroup": "forsaken-soaks"
+        },
+        {
+          "type": "spawn_area",
+          "area": "forsaken-soak",
           "position": { "type": "polar", "angle": "$soakAngles[1]", "radius": 5 },
           "label": "soak-b",
-          "shape": "circle",
-          "radius": 2,
-          "mechanic": "forsaken-soak",
-          "telegraphDuration": 12000,
-          "telegraphStyle": "soak",
-          "telegraphColor": "#bbbbff",
-          "duration": 100,
-          "executionColor": "#8d78ff",
-          "resolution": [
-            {
-              "condition": {
-                "type": "player_count",
-                "min": 2
-              },
-              "effects": [
-                {
-                  "type": "damage",
-                  "target": "inside",
-                  "damage": {
-                    "amount": 1,
-                    "type": "physical"
-                  }
-                },
-                {
-                  "type": "remove_status",
-                  "target": "inside",
-                  "status": "stack-trigger"
-                },
-                {
-                  "type": "remove_status",
-                  "target": "inside",
-                  "status": "spread-trigger"
-                },
-                {
-                  "type": "remove_status",
-                  "target": "inside",
-                  "status": "cone-trigger"
-                }
-              ]
-            },
-            {
-              "condition": {
-                "type": "player_count",
-                "max": 1
-              },
-              "effects": [
-                {
-                  "type": "damage",
-                  "target": "all",
-                  "damage": {
-                    "amount": 5,
-                    "type": "magical"
-                  }
-                },
-                {
-                  "type": "remove_status",
-                  "target": "inside",
-                  "status": "stack-trigger"
-                },
-                {
-                  "type": "remove_status",
-                  "target": "inside",
-                  "status": "spread-trigger"
-                },
-                {
-                  "type": "remove_status",
-                  "target": "inside",
-                  "status": "cone-trigger"
-                }
-              ]
-            }
-          ]
+          "tags": ["soak-b"],
+          "areaGroup": "forsaken-soaks"       
         },
         {
           "type": "recalculate_roles",
