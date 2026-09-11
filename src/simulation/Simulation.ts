@@ -30,7 +30,7 @@ export class Simulation {
     const players = structuredClone(encounter.players).map((player) => ({ ...player, maxHealth: player.maxHealth ?? player.health, controlled: player.id === options.controlledPlayerId, mechanicalRoles: player.mechanicalRoles ?? [] }));
     this.state = { time: 0, deltaTime: 0, currentMechanic: undefined, players, enemies: structuredClone(encounter.enemies), effects: [], worldGraphics: [], background: encounter.background, casts: [], running: false, completed: false, log: [] };
     this.roleEvaluator = new MechanicalRoleEvaluator(encounter.mechanicalRoles);
-    this.positionEvaluator = new PositionEvaluator(encounter.positions);
+    this.positionEvaluator = new PositionEvaluator(encounter.positions, <T>(value: T) => randomContext.resolve(value));
     this.executor = new MechanicExecutor(this.state, this.random, encounter.statuses, encounter.casts, randomContext, (group) => this.roleEvaluator.recalculate(this.state, group), (group) => this.positionEvaluator.recalculate(this.state, group));
     const eventTimes = new Map<string, number>();
     for (const event of encounter.events) {

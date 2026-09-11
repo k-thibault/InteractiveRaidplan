@@ -10,6 +10,7 @@ import type { ApplyStatusAssignment, DistributeStatusesEffect } from './Effect';
 import type { GraphicAnchor } from './Graphic';
 import { formatStatusName } from '../util/format';
 import type { CastDefinition } from './Cast';
+import { resolvePositionValue } from '../geometry/Vector2';
 
 export class MechanicExecutor {
   private readonly state: GameState;
@@ -20,6 +21,7 @@ export class MechanicExecutor {
   private readonly castDefinitions: Record<string, CastDefinition>;
   private readonly recalculateRoles: (group?: string) => void;
   private readonly recalculatePositions: (group?: string) => void;
+  private readonly pendingEffects: { executeAt: number; effects: EffectDefinition[]; inside: Set<string>; sourceId: string; sourceName?: string }[] = [];
 
   constructor(
     state: GameState,
@@ -60,6 +62,11 @@ export class MechanicExecutor {
       if (!definition) continue;
       for (const rawEffect of definition.effects) this.executeEffect(this.randomContext.resolve(rawEffect), new Set(), cast.sourceId, definition.name);
     }
+    for (const pending of [...this.pendingEffects]) {
+      if (pending.executeAt > this.state.time) continue;
+      this.pendingEffects.splice(this.pendingEffects.indexOf(pending), 1);
+      for (const rawEffect of pending.effects) this.executeEffect(this.randomContext.resolve(rawEffect), pending.inside, pending.sourceId, pending.sourceName);
+    }
   }
 
   expireStatuses(): void {
@@ -71,16 +78,25 @@ export class MechanicExecutor {
   }
 
   private spawnArea(event: SpawnAreaEvent | SpawnAreaEffect): void {
-    const source = event.position ?? findEntity(this.state, event.source ?? '')?.position;
+    const source = (event.position ? resolvePositionValue(event.position) : undefined) ?? findEntity(this.state, event.source ?? '')?.position;
     if (!source) return;
     const base = {
       id: `effect-${this.state.effects.length + 1}`,
       position: { ...source }, rotation: 0, createdAt: this.state.time,
       telegraphDuration: event.telegraphDuration, duration: event.duration,
       radius: event.radius, element: event.element, mechanic: event.mechanic, resolution: event.resolution,
-      telegraphColor: event.telegraphColor, executionColor: event.executionColor
+      telegraphColor: event.telegraphColor, executionColor: event.executionColor, label: event.label
     };
     if (event.direction === 'back') base.rotation = Math.PI;
+    if (event.direction === 'nearest_player') {
+      const sourcePlayer = findEntity(this.state, event.source ?? '');
+      if (sourcePlayer && 'role' in sourcePlayer) {
+        const target = this.state.players
+          .filter((player) => player.alive && player.id !== sourcePlayer.id)
+          .sort((a, b) => Math.hypot(a.position.x - sourcePlayer.position.x, a.position.y - sourcePlayer.position.y) - Math.hypot(b.position.x - sourcePlayer.position.x, b.position.y - sourcePlayer.position.y))[0];
+        if (target) base.rotation = Math.atan2(target.position.y - sourcePlayer.position.y, target.position.x - sourcePlayer.position.x);
+      }
+    }
     const effect: AreaEffect = event.shape === 'cone'
       ? { ...base, shape: 'cone', angle: event.angle ?? 60 }
       : event.shape === 'half_room'
@@ -106,6 +122,13 @@ export class MechanicExecutor {
   }
 
   executeEffect(effect: EffectDefinition, inside: Set<string>, sourceId = 'boss', sourceName?: string): void {
+    if (effect.type === 'delayed_effects') {
+      // Keep the nested effects unresolved until they actually fire, so any random/`$ref` values inside
+      // them (e.g. a sequence) are resolved once, at execution time, rather than once now and once then.
+      const delay = this.randomContext.resolve(effect.delay);
+      this.pendingEffects.push({ executeAt: this.state.time + delay, effects: effect.effects, inside, sourceId, sourceName });
+      return;
+    }
     const resolvedEffect = this.randomContext.resolve(effect);
     if (resolvedEffect.type === 'assign_distribution') {
       const participants = this.state.players.filter((player) => player.alive && inside.has(player.id));
@@ -122,7 +145,13 @@ export class MechanicExecutor {
     if (resolvedEffect.type === 'recalculate_roles') { this.recalculateRoles(resolvedEffect.group); return; }
     if (resolvedEffect.type === 'recalculate_positions') { this.recalculatePositions(resolvedEffect.group); return; }
     if (resolvedEffect.type === 'spawn_area') { this.spawnArea({ ...resolvedEffect, source: resolvedEffect.source ?? sourceId }); return; }
-    if (resolvedEffect.type === 'remove_status') { for (const player of selectPlayers(resolvedEffect.target, this.state, this.random)) this.removeStatus(player, resolvedEffect.status); return; }
+    if (resolvedEffect.type === 'remove_status') {
+      const targets = typeof resolvedEffect.target === 'string'
+        ? this.state.players.filter((player) => player.alive && (resolvedEffect.target === 'all' || (resolvedEffect.target === 'inside' ? inside.has(player.id) : !inside.has(player.id))))
+        : selectPlayers(resolvedEffect.target, this.state, this.random);
+      for (const player of targets) this.removeStatus(player, resolvedEffect.status);
+      return;
+    }
     if (resolvedEffect.type === 'show_graphic') { this.spawnGraphic(resolvedEffect.image, resolvedEffect.anchor ?? { type: 'entity', entity: sourceId }, resolvedEffect.radius, resolvedEffect.duration); return; }
     const targets = typeof resolvedEffect.target === 'string'
       ? (resolvedEffect.target === 'all'

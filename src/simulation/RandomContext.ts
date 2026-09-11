@@ -2,7 +2,18 @@ import { Random } from './Random';
 
 export interface ShuffleRandomGroup { mode: 'shuffle'; values: unknown[]; }
 export interface ChoiceRandomGroup { mode: 'choice'; values: unknown[]; }
-export type RandomGroup = ShuffleRandomGroup | ChoiceRandomGroup;
+/**
+ * Produces a list of `count` compass angles (degrees), evenly spaced `step`
+ * degrees apart, starting from one randomly-chosen candidate in `start`.
+ * This is how an encounter declares "N things arranged around the room,
+ * some fixed angle apart, starting somewhere random" without enumerating
+ * every rotated copy by hand - e.g. two soaks 90 degrees apart at a random
+ * intercardinal is `{ start: [45, 135, 225, 315], step: 90, count: 2 }`.
+ * Adding more soaks, a different spacing, or a later second wave is just a
+ * different `count`/`step`/`start`, not new hand-written cases.
+ */
+export interface RotationRandomGroup { mode: 'rotation'; start: number[]; step: number; count: number; }
+export type RandomGroup = ShuffleRandomGroup | ChoiceRandomGroup | RotationRandomGroup;
 export interface DistributionDefinition { mode: 'shuffle'; values: unknown[]; }
 export interface RandomExpression {
   random: {
@@ -27,7 +38,9 @@ export class RandomContext {
   constructor(groups: Record<string, RandomGroup> = {}, sequences: Record<string, SequenceDefinition> = {}, distributions: Record<string, DistributionDefinition> = {}, random: Random) {
     this.random = random;
     for (const [name, group] of Object.entries(groups)) {
-      this.values.set(name, group.mode === 'shuffle' ? random.shuffle(group.values) : group.values[random.integer(0, group.values.length - 1)]);
+      if (group.mode === 'shuffle') this.values.set(name, random.shuffle(group.values));
+      else if (group.mode === 'choice') this.values.set(name, group.values[random.integer(0, group.values.length - 1)]);
+      else this.values.set(name, this.rollRotation(group, random));
     }
     for (const [name, definition] of Object.entries(sequences)) {
       if (definition.values.length === 0) continue;
@@ -42,13 +55,17 @@ export class RandomContext {
 
   resolve<T>(value: T): T {
     if (typeof value === 'string') {
-      const match = /^\$([\w-]+)(?:\.(\d+)|\[(\d+)\])?$/.exec(value);
+      const match = /^\$([\w-]+)((?:\.[\w-]+|\[\d+\])*)$/.exec(value);
       if (!match) return value;
       if (value.startsWith('$assignedValue')) return value;
-      if (match[2] === undefined && match[3] === undefined && this.sequences.has(match[1])) return this.nextSequenceValue(match[1]) as T;
-      const stored = this.values.get(match[1]);
-      const index = match[2] ?? match[3];
-      return (index === undefined ? stored : (stored as unknown[] | undefined)?.[Number(index)]) as T;
+      if (!match[2] && this.sequences.has(match[1])) return this.nextSequenceValue(match[1]) as T;
+      let resolved: unknown = this.values.get(match[1]);
+      const path = match[2].match(/(?:\.([\w-]+)|\[(\d+)\])/g) ?? [];
+      for (const segment of path) {
+        const key = segment.startsWith('.') ? segment.slice(1) : Number(segment.slice(1, -1));
+        resolved = resolved == null ? undefined : (resolved as Record<string | number, unknown>)[key];
+      }
+      return resolved as T;
     }
     if (Array.isArray(value)) return value.map((item) => this.resolve(item)) as T;
     if (value !== null && typeof value === 'object') return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, key === 'distribution' ? item : this.resolve(item)])) as T;
@@ -88,6 +105,13 @@ export class RandomContext {
   }
 
   private wrap(value: number, length: number): number { return ((value % length) + length) % length; }
+
+  private rollRotation(group: RotationRandomGroup, random: Random): number[] {
+    const start = group.start[random.integer(0, group.start.length - 1)];
+    const angles: number[] = [];
+    for (let index = 0; index < group.count; index += 1) angles.push(this.wrap(start + index * group.step, 360));
+    return angles;
+  }
 
   private shuffle<T>(items: T[]): T[] {
     const result = [...items];

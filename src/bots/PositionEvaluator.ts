@@ -2,6 +2,7 @@ import type { GameState } from '../simulation/GameState';
 import type { PositionTarget, EntityReference } from './PositionTarget';
 import { findEntity } from '../mechanics/Selector';
 import { MechanicalRoleEvaluator, type ConditionExpression } from './MechanicalRoleEvaluator';
+import { fromPolar } from '../geometry/Vector2';
 
 export interface PositionRule { when: ConditionExpression; target: PositionTarget; }
 /** Position rules are grouped and only the requested group is evaluated. */
@@ -11,10 +12,12 @@ export type PositionDefinitions = Record<string, PositionDefinition>;
 export class PositionEvaluator {
   private readonly definitions: PositionDefinitions;
   private readonly conditionEvaluator: MechanicalRoleEvaluator;
+  private readonly resolveValue: <T>(value: T) => T;
 
-  constructor(definitions: PositionDefinitions = {}) {
+  constructor(definitions: PositionDefinitions = {}, resolveValue: <T>(value: T) => T = (value) => value) {
     this.definitions = definitions;
     this.conditionEvaluator = new MechanicalRoleEvaluator();
+    this.resolveValue = resolveValue;
   }
 
   recalculate(state: GameState, group?: string): void {
@@ -30,11 +33,21 @@ export class PositionEvaluator {
   }
 
   private resolve(target: PositionTarget, state: GameState): { x: number; y: number } | undefined {
-    if (target.type === 'fixed') return { ...target.position };
+    if (target.type === 'fixed') {
+      const position = this.resolveValue(target.position);
+      return typeof position === 'string' ? undefined : { ...position };
+    }
+    if (target.type === 'polar') {
+      const angle = this.resolveValue(target.angle);
+      const radius = this.resolveValue(target.radius);
+      if (typeof angle !== 'number' || typeof radius !== 'number') return undefined;
+      return fromPolar(angle, radius, target.origin);
+    }
     if (target.type === 'area') {
       const effect = state.effects.find((candidate) =>
         candidate.resolvedAt === undefined &&
-        (!target.mechanic || candidate.mechanic === target.mechanic));
+        (!target.mechanic || candidate.mechanic === target.mechanic) &&
+        (!target.label || candidate.label === target.label));
       return effect ? {
         x: effect.position.x + (target.offset?.x ?? 0),
         y: effect.position.y + (target.offset?.y ?? 0)

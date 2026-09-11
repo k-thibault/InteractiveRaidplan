@@ -8,5 +8,8 @@
   "icon-physical-vulnerability": "/resources/graphics/icon-physical-vulnerability.svg",
   "icon-damage-down": "/resources/graphics/icon-damage-down.svg",
   "icon-physical-damage-down": "/resources/graphics/icon-physical-damage-down.svg",
-  "icon-magical-damage-down": "/resources/graphics/icon-magical-damage-down.svg"
+  "icon-magical-damage-down": "/resources/graphics/icon-magical-damage-down.svg",
+  "icon-forsaken-stack": "/resources/graphics/icon-forsaken-stack.svg",
+  "icon-forsaken-spread": "/resources/graphics/icon-forsaken-spread.svg",
+  "icon-forsaken-cone": "/resources/graphics/icon-forsaken-cone.svg"
 }

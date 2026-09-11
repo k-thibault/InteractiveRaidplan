@@ -1,4 +1,4 @@
-import type { Vector2 } from '../geometry/Vector2';
+import type { Vector2, PositionValue } from '../geometry/Vector2';
 import type { PlayerSelector } from './Selector';
 import type { GraphicAnchor } from './Graphic';
 
@@ -8,16 +8,16 @@ export type EffectTarget = 'inside' | 'outside' | 'all' | PlayerSelector;
 export interface HealEffect { type: 'heal'; target: EffectTarget; amount?: number; full?: boolean; }
 export interface DamageEffect { type: 'damage'; target: EffectTarget; damage: DamageDefinition; }
 export interface ApplyStatusEffect { type: 'apply_status'; target: EffectTarget; status: string; duration?: number; }
-export interface RemoveStatusEffect { type: 'remove_status'; target: PlayerSelector; status: string; }
+export interface RemoveStatusEffect { type: 'remove_status'; target: EffectTarget; status: string; }
 export interface StartCastEffect { type: 'start_cast'; cast: string; source?: string; mechanic?: string; }
 export interface RecalculateRolesEffect { type: 'recalculate_roles'; group?: string; }
 export interface RecalculatePositionsEffect { type: 'recalculate_positions'; group?: string; }
 export interface SetMechanicEffect { type: 'set_mechanic'; mechanic: string; }
 export interface SpawnAreaEffect {
-  type: 'spawn_area'; source?: string; position?: Vector2; shape: 'circle' | 'cone' | 'half_room';
-  radius: number; angle?: number; direction?: 'front' | 'back'; side?: 'north' | 'south'; element?: DamageType; mechanic?: string;
+  type: 'spawn_area'; source?: string; position?: PositionValue; shape: 'circle' | 'cone' | 'half_room';
+  radius: number; angle?: number; direction?: 'front' | 'back' | 'nearest_player'; side?: 'north' | 'south'; element?: DamageType; mechanic?: string;
   telegraphDuration: number; duration: number; resolution: AreaResolutionRule[];
-  telegraphColor?: string; executionColor?: string;
+  telegraphColor?: string; executionColor?: string; label?: string;
 }
 export interface AssignDistributionEffect { type: 'assign_distribution'; distribution: string; target: 'participants'; effect: ApplyStatusAssignment; }
 export interface ApplyStatusAssignment { type: 'apply_status'; status: string; duration?: number; }
@@ -36,13 +36,19 @@ export interface DistributeStatusesEffect {
  * its target" case.
  */
 export interface ShowGraphicEffect { type: 'show_graphic'; image: string; anchor?: GraphicAnchor; radius?: number; duration: number; }
-export type EffectDefinition = HealEffect | DamageEffect | ApplyStatusEffect | RemoveStatusEffect | StartCastEffect | RecalculateRolesEffect | RecalculatePositionsEffect | SetMechanicEffect | SpawnAreaEffect | AssignDistributionEffect | DistributeStatusesEffect | ShowGraphicEffect;
+/**
+ * Runs `effects` after `delay` ms instead of immediately. Used, for example,
+ * to give players a moment to notice a status they were just assigned
+ * before bots react and start moving into position for it.
+ */
+export interface DelayedEffectsEffect { type: 'delayed_effects'; delay: number; effects: EffectDefinition[]; }
+export type EffectDefinition = HealEffect | DamageEffect | ApplyStatusEffect | RemoveStatusEffect | StartCastEffect | RecalculateRolesEffect | RecalculatePositionsEffect | SetMechanicEffect | SpawnAreaEffect | AssignDistributionEffect | DistributeStatusesEffect | ShowGraphicEffect | DelayedEffectsEffect;
 export interface AreaCondition { type: 'player_count'; min?: number; max?: number; }
 export interface AreaResolutionRule { condition: AreaCondition; effects: EffectDefinition[]; }
 export interface BaseAreaEffect {
   id: string; position: Vector2; rotation: number; createdAt: number; telegraphDuration: number; duration: number;
   radius: number; element?: DamageType; mechanic?: string; resolution?: AreaResolutionRule[]; resolvedAt?: number;
-  telegraphColor?: string; executionColor?: string;
+  telegraphColor?: string; executionColor?: string; label?: string;
 }
 export interface CircleArea extends BaseAreaEffect { shape: 'circle'; }
 export interface ConeArea extends BaseAreaEffect { shape: 'cone'; angle: number; }

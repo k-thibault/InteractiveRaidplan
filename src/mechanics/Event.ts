@@ -1,5 +1,6 @@
 import type { DamageDefinition, DamageType, EffectDefinition } from './Effect';
 import type { PlayerSelector } from './Selector';
+import type { PositionValue } from '../geometry/Vector2';
 
 
 interface BaseEvent { id: string; at?: number; after?: string; delay?: number; }
@@ -11,7 +12,7 @@ export interface SetMechanicEvent extends BaseEvent { type: 'set_mechanic'; mech
 export interface ApplyStatusEvent extends BaseEvent { type: 'apply_status'; target: PlayerSelector; status: string; duration?: number; }
 export interface HealEvent extends BaseEvent { type: 'heal'; target: PlayerSelector; amount?: number; full?: boolean; }
 export interface DamageEvent extends BaseEvent { type: 'damage'; target: PlayerSelector; damage: DamageDefinition; }
-export interface SpawnAreaEvent extends BaseEvent { type: 'spawn_area'; source?: string; position?: { x: number; y: number }; shape: 'circle' | 'cone' | 'half_room'; radius: number; angle?: number; direction?: 'front' | 'back'; element?: DamageType; mechanic?: string; side?: 'north' | 'south'; telegraphDuration: number; duration: number; resolution: { condition: { type: 'player_count'; min?: number; max?: number }; effects: EffectDefinition[] }[]; telegraphColor?: string; executionColor?: string; }
+export interface SpawnAreaEvent extends BaseEvent { type: 'spawn_area'; source?: string; position?: PositionValue; shape: 'circle' | 'cone' | 'half_room'; radius: number; angle?: number; direction?: 'front' | 'back' | 'nearest_player'; element?: DamageType; mechanic?: string; side?: 'north' | 'south'; label?: string; telegraphDuration: number; duration: number; resolution: { condition: { type: 'player_count'; min?: number; max?: number }; effects: EffectDefinition[] }[]; telegraphColor?: string; executionColor?: string; }
 /** Displays a world graphic at a fixed position or on an entity, e.g. to signal an upcoming mechanic. Distinct from the cast bar. */
 export interface ShowGraphicEvent extends BaseEvent { type: 'show_graphic'; image: string; source?: string; position?: { x: number; y: number }; radius?: number; duration: number; }
 /** Changes the arena background graphic, e.g. partway through a timeline as the encounter shifts phase. */

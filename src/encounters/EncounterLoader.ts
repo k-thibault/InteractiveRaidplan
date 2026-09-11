@@ -1,13 +1,20 @@
 import type { Encounter } from './Encounter';
 
-interface GraphicLibrary {
-  [name: string]: string;
+export interface EncounterManifestEntry {
+  id: string;
+  name: string;
+  file: string;
 }
 
-/**
- * Loads an encounter and resolves the named graphics it uses from the shared
- * graphic library. Encounter JSON never needs to contain SVG/data URLs.
- */
+interface GraphicLibrary { [name: string]: string; }
+
+export async function loadEncounterManifest(url = '/encounters/index.json'): Promise<EncounterManifestEntry[]> {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`Unable to load encounter list: ${response.status}`);
+  return await response.json() as EncounterManifestEntry[];
+}
+
+/** Loads an encounter and resolves its named resources from the shared graphic library. */
 export async function loadEncounter(url: string): Promise<Encounter> {
   const response = await fetch(url);
   if (!response.ok) throw new Error(`Unable to load encounter: ${response.status}`);

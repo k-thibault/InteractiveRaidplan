@@ -10,6 +10,8 @@ export interface StatusDefinition {
   color?: string;
   /** Resource key of an image to draw in place of the default colored badge. */
   icon?: string;
+  /** Status exists mechanically but is omitted from HUD status lists. */
+  hidden?: boolean;
   onRemove?: EffectDefinition[];
   /**
    * Effects run the moment this status is applied. Commonly used to spawn a

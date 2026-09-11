@@ -1,0 +1,863 @@
+{
+  "version": 4,
+  "name": "Forsaken",
+  "duration": 22000,
+  "background": "bg-default",
+  "randomGroups": {
+    "triggerAssignments": {
+      "mode": "choice",
+      "values": [
+        {
+          "damage": [
+            "stack-trigger",
+            "cone-trigger",
+            "cone-trigger",
+            "cone-trigger"
+          ],
+          "nonDamage": [
+            "stack-trigger",
+            "spread-trigger",
+            "spread-trigger",
+            "spread-trigger"
+          ]
+        },
+        {
+          "damage": [
+            "stack-trigger",
+            "spread-trigger",
+            "spread-trigger",
+            "spread-trigger"
+          ],
+          "nonDamage": [
+            "stack-trigger",
+            "cone-trigger",
+            "cone-trigger",
+            "cone-trigger"
+          ]
+        }
+      ]
+    },
+    "soakAngles": {
+      "mode": "rotation",
+      "start": [45, 135, 225, 315],
+      "step": 90,
+      "count": 2
+    }
+  },
+  "statuses": [
+    {
+      "id": "stack-trigger",
+      "name": "Stack Trigger",
+      "hidden": true,
+      "onApply": [
+        {
+          "type": "show_graphic",
+          "image": "icon-forsaken-stack",
+          "radius": 1.25,
+          "duration": 5000
+        }
+      ],
+      "onRemove": [
+        {
+          "type": "spawn_area",
+          "shape": "circle",
+          "radius": 2.7,
+          "mechanic": "forsaken-stack",
+          "telegraphDuration": 0,
+          "duration": 200,
+          "executionColor": "#ffbe49",
+          "resolution": [
+            {
+              "condition": {
+                "type": "player_count",
+                "min": 3
+              },
+              "effects": [
+                {
+                  "type": "damage",
+                  "target": "inside",
+                  "damage": {
+                    "amount": 20,
+                    "type": "magical"
+                  }
+                },
+                {
+                  "type": "apply_status",
+                  "target": "inside",
+                  "status": "magic-vulnerability",
+                  "duration": 3000
+                }
+              ]
+            },
+            {
+              "condition": {
+                "type": "player_count",
+                "max": 2
+              },
+              "effects": [
+                {
+                  "type": "damage",
+                  "target": "inside",
+                  "damage": {
+                    "amount": 1,
+                    "type": "magical",
+                    "fatal": true
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "spread-trigger",
+      "name": "Spread Trigger",
+      "hidden": true,
+      "onApply": [
+        {
+          "type": "show_graphic",
+          "image": "icon-forsaken-spread",
+          "radius": 1.15,
+          "duration": 5000
+        }
+      ],
+      "onRemove": [
+        {
+          "type": "spawn_area",
+          "shape": "circle",
+          "radius": 2.7,
+          "mechanic": "forsaken-spread",
+          "telegraphDuration": 0,
+          "duration": 200,
+          "executionColor": "#ffbe49",
+          "resolution": [
+            {
+              "condition": {
+                "type": "player_count",
+                "min": 0
+              },
+              "effects": [
+                {
+                  "type": "damage",
+                  "target": "inside",
+                  "damage": {
+                    "amount": 20,
+                    "type": "magical"
+                  }
+                },
+                {
+                  "type": "apply_status",
+                  "target": "inside",
+                  "status": "magic-vulnerability",
+                  "duration": 3000
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cone-trigger",
+      "name": "Cone Trigger",
+      "hidden": true,
+      "onApply": [
+        {
+          "type": "show_graphic",
+          "image": "icon-forsaken-cone",
+          "radius": 1.15,
+          "duration": 5000
+        }
+      ],
+      "onRemove": [
+        {
+          "type": "spawn_area",
+          "shape": "cone",
+          "radius": 30,
+          "angle": 90,
+          "direction": "nearest_player",
+          "mechanic": "forsaken-cone",
+          "telegraphDuration": 0,
+          "duration": 200,
+          "executionColor": "#ffbe49",
+          "resolution": [
+            {
+              "condition": {
+                "type": "player_count",
+                "min": 0
+              },
+              "effects": [
+                {
+                  "type": "damage",
+                  "target": "inside",
+                  "damage": {
+                    "amount": 20,
+                    "type": "magical"
+                  }
+                },
+                {
+                  "type": "apply_status",
+                  "target": "inside",
+                  "status": "magic-vulnerability",
+                  "duration": 3000
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "magic-vulnerability",
+      "name": "Magic Vulnerability",
+      "tags": [
+        "vulnerability"
+      ],
+      "damageTaken": [
+        {
+          "damageType": "magical",
+          "fatal": true
+        }
+      ],
+      "icon": "icon-magic-vulnerability"
+    }
+  ],
+  "casts": {
+    "forsaken": {
+      "id": "forsaken",
+      "name": "Forsaken",
+      "castTime": 1500,
+      "visible": true,
+      "effects": [
+        {
+          "type": "damage",
+          "target": "all",
+          "damage": {
+            "amount": 25,
+            "type": "magical"
+          }
+        },
+        {
+          "type": "distribute_statuses",
+          "target": {
+            "type": "role",
+            "role": "damage"
+          },
+          "statuses": "$triggerAssignments.damage"
+        },
+        {
+          "type": "distribute_statuses",
+          "target": {
+            "type": "role_any",
+            "roles": [
+              "tank",
+              "healer"
+            ]
+          },
+          "statuses": "$triggerAssignments.nonDamage"
+        },
+        {
+          "type": "spawn_area",
+          "position": { "type": "polar", "angle": "$soakAngles[0]", "radius": 5 },
+          "label": "soak-a",
+          "shape": "circle",
+          "radius": 2,
+          "mechanic": "forsaken-soak",
+          "telegraphDuration": 12000,
+          "duration": 100,
+          "executionColor": "#8d78ff",
+          "resolution": [
+            {
+              "condition": {
+                "type": "player_count",
+                "min": 2
+              },
+              "effects": [
+                {
+                  "type": "damage",
+                  "target": "inside",
+                  "damage": {
+                    "amount": 1,
+                    "type": "physical"
+                  }
+                },
+                {
+                  "type": "remove_status",
+                  "target": "inside",
+                  "status": "stack-trigger"
+                },
+                {
+                  "type": "remove_status",
+                  "target": "inside",
+                  "status": "spread-trigger"
+                },
+                {
+                  "type": "remove_status",
+                  "target": "inside",
+                  "status": "cone-trigger"
+                }
+              ]
+            },
+            {
+              "condition": {
+                "type": "player_count",
+                "max": 1
+              },
+              "effects": [
+                {
+                  "type": "damage",
+                  "target": "all",
+                  "damage": {
+                    "amount": 5,
+                    "type": "magical"
+                  }
+                },
+                {
+                  "type": "remove_status",
+                  "target": "inside",
+                  "status": "stack-trigger"
+                },
+                {
+                  "type": "remove_status",
+                  "target": "inside",
+                  "status": "spread-trigger"
+                },
+                {
+                  "type": "remove_status",
+                  "target": "inside",
+                  "status": "cone-trigger"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "spawn_area",
+          "position": { "type": "polar", "angle": "$soakAngles[1]", "radius": 5 },
+          "label": "soak-b",
+          "shape": "circle",
+          "radius": 2,
+          "mechanic": "forsaken-soak",
+          "telegraphDuration": 12000,
+          "duration": 100,
+          "executionColor": "#8d78ff",
+          "resolution": [
+            {
+              "condition": {
+                "type": "player_count",
+                "min": 2
+              },
+              "effects": [
+                {
+                  "type": "damage",
+                  "target": "inside",
+                  "damage": {
+                    "amount": 1,
+                    "type": "physical"
+                  }
+                },
+                {
+                  "type": "remove_status",
+                  "target": "inside",
+                  "status": "stack-trigger"
+                },
+                {
+                  "type": "remove_status",
+                  "target": "inside",
+                  "status": "spread-trigger"
+                },
+                {
+                  "type": "remove_status",
+                  "target": "inside",
+                  "status": "cone-trigger"
+                }
+              ]
+            },
+            {
+              "condition": {
+                "type": "player_count",
+                "max": 1
+              },
+              "effects": [
+                {
+                  "type": "damage",
+                  "target": "all",
+                  "damage": {
+                    "amount": 5,
+                    "type": "magical"
+                  }
+                },
+                {
+                  "type": "remove_status",
+                  "target": "inside",
+                  "status": "stack-trigger"
+                },
+                {
+                  "type": "remove_status",
+                  "target": "inside",
+                  "status": "spread-trigger"
+                },
+                {
+                  "type": "remove_status",
+                  "target": "inside",
+                  "status": "cone-trigger"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "recalculate_roles",
+          "group": "forsaken"
+        },
+        {
+          "type": "delayed_effects",
+          "delay": 3000,
+          "effects": [
+            {
+              "type": "recalculate_positions",
+              "group": "forsaken"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "players": [
+    {
+      "id": "mt",
+      "name": "MT",
+      "type": "player",
+      "role": "tank",
+      "team": "red",
+      "mechanicalRoles": [],
+      "moveSpeed": 5,
+      "health": 100,
+      "alive": true,
+      "position": {
+        "x": 2.83,
+        "y": -2.83
+      },
+      "statuses": []
+    },
+    {
+      "id": "ot",
+      "name": "OT",
+      "type": "player",
+      "role": "tank",
+      "team": "purple",
+      "mechanicalRoles": [],
+      "moveSpeed": 5,
+      "health": 100,
+      "alive": true,
+      "position": {
+        "x": -2.83,
+        "y": -2.83
+      },
+      "statuses": []
+    },
+    {
+      "id": "h1",
+      "name": "H1",
+      "type": "player",
+      "role": "healer",
+      "team": "purple",
+      "mechanicalRoles": [],
+      "moveSpeed": 5,
+      "health": 100,
+      "alive": true,
+      "position": {
+        "x": -4.95,
+        "y": -4.95
+      },
+      "statuses": []
+    },
+    {
+      "id": "h2",
+      "name": "H2",
+      "type": "player",
+      "role": "healer",
+      "team": "red",
+      "mechanicalRoles": [],
+      "moveSpeed": 5,
+      "health": 100,
+      "alive": true,
+      "position": {
+        "x": 4.95,
+        "y": -4.95
+      },
+      "statuses": []
+    },
+    {
+      "id": "m1",
+      "name": "M1",
+      "type": "player",
+      "role": "damage",
+      "team": "blue",
+      "mechanicalRoles": [],
+      "moveSpeed": 5,
+      "health": 100,
+      "alive": true,
+      "position": {
+        "x": -2.83,
+        "y": 2.83
+      },
+      "statuses": [],
+      "damagePosition": "melee"
+    },
+    {
+      "id": "m2",
+      "name": "M2",
+      "type": "player",
+      "role": "damage",
+      "team": "yellow",
+      "mechanicalRoles": [],
+      "moveSpeed": 5,
+      "health": 100,
+      "alive": true,
+      "position": {
+        "x": 2.83,
+        "y": 2.83
+      },
+      "statuses": [],
+      "damagePosition": "melee"
+    },
+    {
+      "id": "r1",
+      "name": "R1",
+      "type": "player",
+      "role": "damage",
+      "team": "blue",
+      "mechanicalRoles": [],
+      "moveSpeed": 5,
+      "health": 100,
+      "alive": true,
+      "position": {
+        "x": -4.95,
+        "y": 4.95
+      },
+      "statuses": [],
+      "damagePosition": "ranged"
+    },
+    {
+      "id": "r2",
+      "name": "R2",
+      "type": "player",
+      "role": "damage",
+      "team": "yellow",
+      "mechanicalRoles": [],
+      "moveSpeed": 5,
+      "health": 100,
+      "alive": true,
+      "position": {
+        "x": 4.95,
+        "y": 4.95
+      },
+      "statuses": [],
+      "damagePosition": "ranged"
+    }
+  ],
+  "enemies": [
+    {
+      "id": "boss",
+      "name": "Boss",
+      "type": "enemy",
+      "alive": true,
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "statuses": []
+    }
+  ],
+  "resources": {
+    "graphics": [
+      "bg-default",
+      "icon-forsaken-stack",
+      "icon-forsaken-spread",
+      "icon-forsaken-cone",
+      "icon-magic-vulnerability"
+    ]
+  },
+  "mechanicalRoles": {
+    "forsaken": {
+      "bait_team": [
+        {
+          "type": "or",
+          "conditions": [
+            [
+              {
+                "type": "has_status",
+                "status": "spread-trigger"
+              },
+              {
+                "type": "player_condition",
+                "player": {
+                  "type": "team_partner"
+                },
+                "condition": {
+                  "type": "has_status",
+                  "status": "spread-trigger"
+                }
+              }
+            ],
+            [
+              {
+                "type": "has_status",
+                "status": "cone-trigger"
+              },
+              {
+                "type": "player_condition",
+                "player": {
+                  "type": "team_partner"
+                },
+                "condition": {
+                  "type": "has_status",
+                  "status": "cone-trigger"
+                }
+              }
+            ]
+          ]
+        }
+      ],
+      "tower_team": [
+        {
+          "type": "or",
+          "conditions": [
+            [
+              {
+                "type": "has_status",
+                "status": "stack-trigger"
+              },
+              {
+                "type": "player_condition",
+                "player": {
+                  "type": "team_partner"
+                },
+                "condition": {
+                  "type": "not_has_status",
+                  "status": "stack-trigger"
+                }
+              }
+            ],
+            [
+              {
+                "type": "has_status",
+                "status": "spread-trigger"
+              },
+              {
+                "type": "player_condition",
+                "player": {
+                  "type": "team_partner"
+                },
+                "condition": {
+                  "type": "not_has_status",
+                  "status": "spread-trigger"
+                }
+              }
+            ],
+            [
+              {
+                "type": "has_status",
+                "status": "cone-trigger"
+              },
+              {
+                "type": "player_condition",
+                "player": {
+                  "type": "team_partner"
+                },
+                "condition": {
+                  "type": "not_has_status",
+                  "status": "cone-trigger"
+                }
+              }
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  "positions": {
+    "default": [
+      {
+        "when": [
+          { "type": "team", "team": "red" },
+          { "type": "gameplay_role", "role": "tank" }
+        ],
+        "target": { "type": "polar", "angle": 45, "radius": 4 }
+      },
+      {
+        "when": [
+          { "type": "team", "team": "red" },
+          { "type": "gameplay_role", "role": "healer" }
+        ],
+        "target": { "type": "polar", "angle": 45, "radius": 7 }
+      },
+      {
+        "when": [
+          { "type": "team", "team": "purple" },
+          { "type": "gameplay_role", "role": "tank" }
+        ],
+        "target": { "type": "polar", "angle": 315, "radius": 4 }
+      },
+      {
+        "when": [
+          { "type": "team", "team": "purple" },
+          { "type": "gameplay_role", "role": "healer" }
+        ],
+        "target": { "type": "polar", "angle": 315, "radius": 7 }
+      },
+      {
+        "when": [
+          { "type": "team", "team": "blue" },
+          { "type": "damage_position", "position": "melee" }
+        ],
+        "target": { "type": "polar", "angle": 225, "radius": 4 }
+      },
+      {
+        "when": [
+          { "type": "team", "team": "blue" },
+          { "type": "damage_position", "position": "ranged" }
+        ],
+        "target": { "type": "polar", "angle": 225, "radius": 7 }
+      },
+      {
+        "when": [
+          { "type": "team", "team": "yellow" },
+          { "type": "damage_position", "position": "melee" }
+        ],
+        "target": { "type": "polar", "angle": 135, "radius": 4 }
+      },
+      {
+        "when": [
+          { "type": "team", "team": "yellow" },
+          { "type": "damage_position", "position": "ranged" }
+        ],
+        "target": { "type": "polar", "angle": 135, "radius": 7 }
+      }
+    ],
+    "forsaken": [
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait_team"
+          },
+          {
+            "type": "or",
+            "conditions": [
+              {
+                "type": "gameplay_role",
+                "role": "tank"
+              },
+              {
+                "type": "gameplay_role",
+                "role": "healer"
+              }
+            ]
+          }
+        ],
+        "target": { "type": "polar", "angle": "$soakAngles[0]", "radius": 2.9 }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait_team"
+          },
+          {
+            "type": "damage_position",
+            "position": "melee"
+          }
+        ],
+        "target": { "type": "polar", "angle": "$soakAngles[1]", "radius": 2.9 }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait_team"
+          },
+          {
+            "type": "damage_position",
+            "position": "ranged"
+          }
+        ],
+        "target": { "type": "polar", "angle": "$soakAngles[1]", "radius": 7.1 }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "tower_team"
+          },
+          {
+            "type": "has_status",
+            "status": "stack-trigger"
+          },
+          {
+            "type": "gameplay_role",
+            "role": "damage"
+          }
+        ],
+        "target": { "type": "polar", "angle": "$soakAngles[1]", "radius": 3.1 }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "tower_team"
+          },
+          {
+            "type": "has_status",
+            "status": "stack-trigger"
+          }
+        ],
+        "target": { "type": "polar", "angle": "$soakAngles[0]", "radius": 3.1 }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "tower_team"
+          },
+          {
+            "type": "has_status",
+            "status": "spread-trigger"
+          }
+        ],
+        "target": { "type": "polar", "angle": "$soakAngles[0]", "radius": 6.9 }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "tower_team"
+          },
+          {
+            "type": "has_status",
+            "status": "cone-trigger"
+          }
+        ],
+        "target": { "type": "polar", "angle": "$soakAngles[1]", "radius": 5.3 }
+      }
+    ]
+  },
+  "events": [
+    {
+      "id": "default-positions",
+      "at": 0,
+      "type": "recalculate_positions",
+      "group": "default"
+    },
+    {
+      "id": "forsaken",
+      "at": 1000,
+      "type": "start_cast",
+      "source": "boss",
+      "cast": "forsaken",
+      "mechanic": "forsaken"
+    }
+  ]
+}
