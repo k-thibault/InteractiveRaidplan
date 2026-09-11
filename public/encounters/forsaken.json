@@ -177,6 +177,7 @@
           "radius": 30,
           "angle": 90,
           "direction": "nearest_player",
+          "excludeSource": true,
           "mechanic": "forsaken-cone",
           "telegraphDuration": 0,
           "duration": 200,
@@ -265,6 +266,8 @@
           "radius": 2,
           "mechanic": "forsaken-soak",
           "telegraphDuration": 12000,
+          "telegraphStyle": "soak",
+          "telegraphColor": "#bbbbff",
           "duration": 100,
           "executionColor": "#8d78ff",
           "resolution": [
@@ -340,6 +343,8 @@
           "radius": 2,
           "mechanic": "forsaken-soak",
           "telegraphDuration": 12000,
+          "telegraphStyle": "soak",
+          "telegraphColor": "#bbbbff",
           "duration": 100,
           "executionColor": "#8d78ff",
           "resolution": [
@@ -436,8 +441,8 @@
       "health": 200,
       "alive": true,
       "position": {
-        "x": 2.83,
-        "y": -2.83
+        "x": 3.1,
+        "y": -3.1
       },
       "statuses": []
     },
@@ -452,8 +457,8 @@
       "health": 200,
       "alive": true,
       "position": {
-        "x": -2.83,
-        "y": -2.83
+        "x": -3.1,
+        "y": -3.1
       },
       "statuses": []
     },
@@ -500,8 +505,8 @@
       "health": 100,
       "alive": true,
       "position": {
-        "x": -2.83,
-        "y": 2.83
+        "x": -3.1,
+        "y": 3.1
       },
       "statuses": [],
       "damagePosition": "melee"
@@ -517,8 +522,8 @@
       "health": 100,
       "alive": true,
       "position": {
-        "x": 2.83,
-        "y": 2.83
+        "x": 3.1,
+        "y": 3.1
       },
       "statuses": [],
       "damagePosition": "melee"
@@ -568,6 +573,7 @@
         "x": 0,
         "y": 0
       },
+      "style": { "type": "ring", "radius": 3.6, "thickness": 0.14 },
       "statuses": []
     }
   ],

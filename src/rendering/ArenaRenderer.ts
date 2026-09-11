@@ -64,6 +64,25 @@ export class ArenaRenderer {
     return image && image.complete && image.naturalWidth > 0 ? image : undefined;
   }
 
+  /** Returns the configured telegraph fill, or the default flat fill. */
+  private telegraphFillStyle(style: string | undefined, point: { x: number; y: number }, pixelRadius: number, color: string): string | CanvasGradient {
+    if (style === 'soak') return this.buildSoakTelegraphGradient(point, pixelRadius, color);
+    return hexToRgba(color, .28);
+  }
+
+  /** Builds the radial gradient used by soak telegraphs. */
+  private buildSoakTelegraphGradient(point: { x: number; y: number }, pixelRadius: number, color: string): CanvasGradient {
+    const gradient = this.context.createRadialGradient(point.x, point.y, 0, point.x, point.y, Math.max(pixelRadius, 1));
+    const stop = (offset: number, alpha: number) => gradient.addColorStop(Math.min(1, Math.max(0, offset)), hexToRgba(color, alpha));
+    stop(0, .85);
+    stop(.18, 0);
+    stop(.78, 0); // transparent in between
+    stop(.98, .85); // short fade in to the outer ring
+    stop(.99, .85); // bright ring
+    stop(1, 0); // short fade out past the ring
+    return gradient;
+  }
+
   render(state: GameState): void {
     const { canvas, context } = this;
     const scale = Math.min(canvas.width / 30, canvas.height / 20);
@@ -78,8 +97,9 @@ export class ArenaRenderer {
     for (let y = -9; y <= 9; y += 1) { const point = toCanvas(-14, y); context.beginPath(); context.moveTo(0, point.y); context.lineTo(canvas.width, point.y); context.stroke(); }
     for (const effect of state.effects) {
       const point = toCanvas(effect.position.x, effect.position.y);
-      const color = effect.resolvedAt === undefined ? (effect.telegraphColor ?? DEFAULT_TELEGRAPH_COLOR) : (effect.executionColor ?? DEFAULT_EXECUTION_COLOR);
-      context.fillStyle = hexToRgba(color, .28);
+      const isTelegraph = effect.resolvedAt === undefined;
+      const color = isTelegraph ? (effect.telegraphColor ?? DEFAULT_TELEGRAPH_COLOR) : (effect.executionColor ?? DEFAULT_EXECUTION_COLOR);
+      context.fillStyle = isTelegraph ? this.telegraphFillStyle(effect.telegraphStyle, point, effect.radius * scale, color) : hexToRgba(color, .28);
       context.beginPath();
       if (effect.shape === 'circle') context.arc(point.x, point.y, effect.radius * scale, 0, Math.PI * 2);
       else if (effect.shape === 'half_room') {
@@ -129,9 +149,22 @@ export class ArenaRenderer {
   }
 
   private drawUnit(entity: Entity & { statuses: StatusInstance[] }, color: string, scale: number, toCanvas: (x: number, y: number) => { x: number; y: number }, showInlineStatuses: boolean): void {
-    const point = toCanvas(entity.position.x, entity.position.y); this.context.fillStyle = color; this.context.beginPath(); this.context.arc(point.x, point.y, scale * .38, 0, Math.PI * 2); this.context.fill();
-    this.context.fillStyle = '#dbe7f2'; this.context.font = '12px sans-serif'; this.context.textAlign = 'center'; this.context.fillText(entity.name, point.x, point.y - scale * .6);
-    if (showInlineStatuses) entity.statuses.filter((status) => !this.statusDefinitions.get(status.definitionId)?.hidden).forEach((status, index) => this.drawStatusIcon(status, point.x + scale * (.62 + index * .48), point.y - scale * .38, scale));
+    const point = toCanvas(entity.position.x, entity.position.y);
+    const style = entity.style ?? { type: 'circle' };
+    const radius = (style.type === 'ring' ? style.radius : style.radius ?? .38) * scale;
+    this.context.beginPath();
+    if (style.type === 'ring') {
+      this.context.strokeStyle = color;
+      this.context.lineWidth = (style.thickness ?? .12) * scale;
+      this.context.arc(point.x, point.y, radius, 0, Math.PI * 2);
+      this.context.stroke();
+    } else {
+      this.context.fillStyle = color;
+      this.context.arc(point.x, point.y, radius, 0, Math.PI * 2);
+      this.context.fill();
+    }
+    this.context.fillStyle = '#dbe7f2'; this.context.font = '12px sans-serif'; this.context.textAlign = 'center'; this.context.fillText(entity.name, point.x, point.y - radius - 8);
+    if (showInlineStatuses) entity.statuses.filter((status) => !this.statusDefinitions.get(status.definitionId)?.hidden).forEach((status, index) => this.drawStatusIcon(status, point.x + radius + scale * (.24 + index * .48), point.y - radius * .5, scale));
   }
 
   /** The controlled player's statuses get a dedicated, larger display bottom-center instead of crowding their on-field icon. Every icon reserves the same space for a duration label (a "-" for permanent statuses) so icons stay aligned regardless of which statuses have a timer. */

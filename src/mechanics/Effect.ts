@@ -16,6 +16,10 @@ export interface SetMechanicEffect { type: 'set_mechanic'; mechanic: string; }
 export interface SpawnAreaEffect {
   type: 'spawn_area'; source?: string; position?: PositionValue; shape: 'circle' | 'cone' | 'half_room';
   radius: number; angle?: number; direction?: 'front' | 'back' | 'nearest_player'; side?: 'north' | 'south'; element?: DamageType; mechanic?: string;
+  /** Excludes the source entity from area resolution. */
+  excludeSource?: boolean;
+  /** Optional named telegraph fill style. */
+  telegraphStyle?: string;
   telegraphDuration: number; duration: number; resolution: AreaResolutionRule[];
   telegraphColor?: string; executionColor?: string; label?: string;
 }
@@ -28,19 +32,9 @@ export interface DistributeStatusesEffect {
   statuses: string[];
   duration?: number;
 }
-/**
- * Shows a resource-backed graphic in the arena for `duration` ms. When
- * `anchor` is omitted it defaults to the entity this effect is being
- * executed on behalf of (the status's target for onApply/onRemove, or the
- * cast's source for cast effects), which is the common "show something on
- * its target" case.
- */
+/** Shows a resource-backed graphic for a limited duration. */
 export interface ShowGraphicEffect { type: 'show_graphic'; image: string; anchor?: GraphicAnchor; radius?: number; duration: number; }
-/**
- * Runs `effects` after `delay` ms instead of immediately. Used, for example,
- * to give players a moment to notice a status they were just assigned
- * before bots react and start moving into position for it.
- */
+/** Runs nested effects after a delay. */
 export interface DelayedEffectsEffect { type: 'delayed_effects'; delay: number; effects: EffectDefinition[]; }
 export type EffectDefinition = HealEffect | DamageEffect | ApplyStatusEffect | RemoveStatusEffect | StartCastEffect | RecalculateRolesEffect | RecalculatePositionsEffect | SetMechanicEffect | SpawnAreaEffect | AssignDistributionEffect | DistributeStatusesEffect | ShowGraphicEffect | DelayedEffectsEffect;
 export interface AreaCondition { type: 'player_count'; min?: number; max?: number; }
@@ -48,7 +42,7 @@ export interface AreaResolutionRule { condition: AreaCondition; effects: EffectD
 export interface BaseAreaEffect {
   id: string; position: Vector2; rotation: number; createdAt: number; telegraphDuration: number; duration: number;
   radius: number; element?: DamageType; mechanic?: string; resolution?: AreaResolutionRule[]; resolvedAt?: number;
-  telegraphColor?: string; executionColor?: string; label?: string;
+  telegraphColor?: string; executionColor?: string; label?: string; sourceId?: string; excludeSource?: boolean; telegraphStyle?: string;
 }
 export interface CircleArea extends BaseAreaEffect { shape: 'circle'; }
 export interface ConeArea extends BaseAreaEffect { shape: 'cone'; angle: number; }

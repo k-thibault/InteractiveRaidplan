@@ -85,7 +85,8 @@ export class MechanicExecutor {
       position: { ...source }, rotation: 0, createdAt: this.state.time,
       telegraphDuration: event.telegraphDuration, duration: event.duration,
       radius: event.radius, element: event.element, mechanic: event.mechanic, resolution: event.resolution,
-      telegraphColor: event.telegraphColor, executionColor: event.executionColor, label: event.label
+      telegraphColor: event.telegraphColor, executionColor: event.executionColor, label: event.label,
+      sourceId: event.source, excludeSource: event.excludeSource, telegraphStyle: event.telegraphStyle
     };
     if (event.direction === 'back') base.rotation = Math.PI;
     if (event.direction === 'nearest_player') {
@@ -123,8 +124,7 @@ export class MechanicExecutor {
 
   executeEffect(effect: EffectDefinition, inside: Set<string>, sourceId = 'boss', sourceName?: string): void {
     if (effect.type === 'delayed_effects') {
-      // Keep the nested effects unresolved until they actually fire, so any random/`$ref` values inside
-      // them (e.g. a sequence) are resolved once, at execution time, rather than once now and once then.
+      // Resolve nested references when the delayed batch runs.
       const delay = this.randomContext.resolve(effect.delay);
       this.pendingEffects.push({ executeAt: this.state.time + delay, effects: effect.effects, inside, sourceId, sourceName });
       return;
@@ -196,8 +196,8 @@ export class MechanicExecutor {
 
   private applyStatus(player: typeof this.state.players[number], statusId: string, duration: number | undefined): void {
     player.statuses.push({ definitionId: statusId, appliedAt: this.state.time, expiresAt: duration === undefined ? undefined : this.state.time + duration, stacks: 1 });
-    if (player.controlled) this.logEvent(`You were affected by ${formatStatusName(statusId)}.`);
     const definition = this.statusDefinitions.get(statusId);
+    if (player.controlled && !definition?.hidden) this.logEvent(`You were affected by ${formatStatusName(statusId)}.`);
     for (const effect of definition?.onApply ?? []) this.executeEffect(effect, new Set(), player.id);
   }
 
@@ -207,7 +207,7 @@ export class MechanicExecutor {
     player.statuses.splice(index, 1);
     const definition = this.statusDefinitions.get(statusId);
     for (const effect of definition?.onRemove ?? []) this.executeEffect(effect, new Set(), player.id);
-    if (player.controlled) this.logEvent(`Your ${formatStatusName(statusId)} status ended.`);
+    if (player.controlled && !definition?.hidden) this.logEvent(`Your ${formatStatusName(statusId)} status ended.`);
   }
 
   private logEvent(message: string): void { this.state.log.push({ id: `log-${this.state.log.length + 1}`, time: this.state.time, message }); }
