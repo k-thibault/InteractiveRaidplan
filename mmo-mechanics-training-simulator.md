@@ -27,6 +27,7 @@ Encounters are described in JSON rather than hardcoded in the UI. The example en
 - multiple selectable encounter timelines, including the `Forsaken` encounter
 - team- and damage-position-aware role assignments
 - delayed effects and rotation-based random groups
+- styled entity markers and custom soak telegraphs
 
 ## Architecture
 
@@ -68,6 +69,8 @@ The app loads an encounter manifest from `public/encounters/index.json` and expo
 Mechanical roles are declared as named groups under `mechanicalRoles`. Each group maps role names to conditions, and `recalculate_roles` can select the group needed by the current mechanic. Conditions support status, gameplay role, damage position, team, mechanical role, active cast/area, boolean, compact array-as-AND, and cross-player predicates such as `team_partner`. Assignments are calculated from the same prior state and committed together. The `Forsaken` encounter uses trigger assignments to select different stack, cone, and spread mechanics for damage and non-damage players.
 
 Bot positioning is also event-driven and grouped under `positions`. A player may declare a fixed, player-relative, active-area, or polar `positionTarget`; `recalculate_positions` can select the group needed by the current mechanic and skips the controlled player. Position targets can resolve named random values, area labels, role references, and polar coordinates. `BotManager` moves each bot toward its desired position at its configured move speed.
+
+Area definitions can exclude their source entity from resolution and can select a named telegraph style; the current renderer provides a `soak` gradient. Entities can use a filled circle or ring style with world-unit dimensions.
 
 Casts are declared under `casts` and contain an immutable name, cast time, visibility flag, and completion effects. A `start_cast` event or effect creates an `ActiveCast` in `GameState`; the simulation resolves it when its completion time is reached. Visible active casts appear in the arena cast bar. Cast effects use the same effect pipeline as timeline mechanics, including area spawning, damage, status application, status removal, nested casts, and delayed effect batches. Area definitions can provide separate `telegraphColor` and `executionColor` values; the renderer uses the telegraph color before resolution and the execution color after resolution.
 

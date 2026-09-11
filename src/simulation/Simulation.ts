@@ -62,6 +62,7 @@ export class Simulation {
       const inside = new Set<string>();
       for (const player of this.state.players) {
         if (!player.alive) continue;
+        if (effect.excludeSource && player.id === effect.sourceId) continue;
         const hit = effect.shape === 'circle'
           ? pointInCircle(player.position, effect.position, effect.radius)
           : effect.shape === 'cone'
