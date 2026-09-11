@@ -433,7 +433,7 @@
       "team": "red",
       "mechanicalRoles": [],
       "moveSpeed": 5,
-      "health": 100,
+      "health": 200,
       "alive": true,
       "position": {
         "x": 2.83,
@@ -449,7 +449,7 @@
       "team": "purple",
       "mechanicalRoles": [],
       "moveSpeed": 5,
-      "health": 100,
+      "health": 200,
       "alive": true,
       "position": {
         "x": -2.83,
