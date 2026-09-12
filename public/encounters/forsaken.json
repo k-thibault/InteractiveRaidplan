@@ -75,6 +75,7 @@
         {
           "condition": { "type": "player_count", "max": 1 },
           "effects": [
+            { "type": "apply_status", "target": "all", "status": "damage-down" },
             { "type": "damage", "target": "all", "damage": { "amount": 5, "type": "magical" } },
             { "type": "remove_status", "target": "inside", "status": "spells-trouble" },
             { "type": "remove_status", "target": "inside", "status": "stack-trigger" },
@@ -305,6 +306,14 @@
         }
       ],
       "icon": "icon-magic-vulnerability"
+    },
+    {
+      "id": "damage-down",
+      "name": "Damage Down",
+      "tags": [
+        "debuff"
+      ],
+      "icon": "icon-damage-down"
     }
   ],
   "casts": {
@@ -543,7 +552,8 @@
       "icon-forsaken-spread",
       "icon-forsaken-cone",
       "icon-magic-vulnerability",
-      "icon-spells-trouble"
+      "icon-spells-trouble",
+      "icon-damage-down"
     ]
   },
   "mechanicalRoles": {
