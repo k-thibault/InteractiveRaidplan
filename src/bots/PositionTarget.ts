@@ -16,6 +16,6 @@ export type PositionTarget =
    */
   | { type: 'polar'; angle: number | string; radius: number | string; origin?: { x: number; y: number } }
   | { type: 'entity'; player: EntityReference; offset?: { x: number; y: number } }
-  | { type: 'area'; mechanic?: string; label?: string; offset?: { x: number; y: number } };
+  | { type: 'area'; mechanic?: string; label?: string; tag?: string; offset?: { x: number; y: number } };
 
 export interface PositionRule { when: import('./MechanicalRoleEvaluator').Condition; target: PositionTarget; }

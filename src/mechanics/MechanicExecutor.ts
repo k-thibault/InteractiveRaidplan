@@ -2,7 +2,7 @@ import type { GameState } from '../simulation/GameState';
 import type { Random } from '../simulation/Random';
 import { findEntity, selectPlayers } from './Selector';
 import type { EncounterEvent, SpawnAreaEvent, ShowGraphicEvent } from './Event';
-import type { AreaEffect, EffectDefinition, DamageDefinition, SpawnAreaEffect } from './Effect';
+import type { AreaEffect, EffectDefinition, DamageDefinition, SpawnAreaEffect, AreaDefinition } from './Effect';
 import { DamageResolver } from './DamageResolver';
 import type { StatusDefinition } from '../entities/Status';
 import type { RandomContext } from '../simulation/RandomContext';
@@ -19,6 +19,7 @@ export class MechanicExecutor {
   private readonly randomContext: RandomContext;
   private readonly statusDefinitions: Map<string, StatusDefinition>;
   private readonly castDefinitions: Record<string, CastDefinition>;
+  private readonly areaDefinitions: Record<string, AreaDefinition>;
   private readonly recalculateRoles: (group?: string) => void;
   private readonly recalculatePositions: (group?: string) => void;
   private readonly pendingEffects: { executeAt: number; effects: EffectDefinition[]; inside: Set<string>; sourceId: string; sourceName?: string }[] = [];
@@ -29,6 +30,7 @@ export class MechanicExecutor {
     statuses: StatusDefinition[],
     casts: Record<string, CastDefinition> = {},
     randomContext: RandomContext,
+    areas: Record<string, AreaDefinition> = {},
     recalculateRoles: (group?: string) => void = () => undefined,
     recalculatePositions: (group?: string) => void = () => undefined
   ) {
@@ -38,17 +40,18 @@ export class MechanicExecutor {
     this.randomContext = randomContext;
     this.statusDefinitions = new Map(statuses.map((status) => [status.id, status]));
     this.castDefinitions = casts;
+    this.areaDefinitions = areas;
     this.recalculateRoles = recalculateRoles;
     this.recalculatePositions = recalculatePositions;
   }
 
   execute(event: EncounterEvent): void {
     if (event.type === 'set_mechanic') this.state.currentMechanic = event.mechanic;
-    else if (event.type === 'apply_status') for (const player of selectPlayers(event.target, this.state, this.random)) this.applyStatus(player, event.status, event.duration);
+    else if (event.type === 'apply_status') for (const player of selectPlayers(event.target, this.state, this.random)) this.applyStatus(player, event.status, event.duration, event.stacks ?? 1);
     else if (event.type === 'damage') this.applyDamage(selectPlayers(event.target, this.state, this.random), event.damage);
     else if (event.type === 'heal') this.healPlayers(selectPlayers(event.target, this.state, this.random), event.amount, event.full);
     else if (event.type === 'start_cast') this.startCast(event.cast, event.source, event.mechanic);
-    else if (event.type === 'remove_status') for (const player of selectPlayers(event.target, this.state, this.random)) this.removeStatus(player, event.status);
+    else if (event.type === 'remove_status') for (const player of selectPlayers(event.target, this.state, this.random)) this.removeStatus(player, event.status, event.stacks ?? 1);
     else if (event.type === 'spawn_area') this.spawnArea(this.randomContext.resolve(event));
     else if (event.type === 'set_background') this.state.background = event.image;
     else if (event.type === 'show_graphic') this.showGraphicEvent(event);
@@ -78,19 +81,24 @@ export class MechanicExecutor {
   }
 
   private spawnArea(event: SpawnAreaEvent | SpawnAreaEffect): void {
-    const source = (event.position ? resolvePositionValue(event.position) : undefined) ?? findEntity(this.state, event.source ?? '')?.position;
+    const definition = event.area ? this.areaDefinitions[event.area] : undefined;
+    if (event.area && !definition) return;
+    const resolved = { ...(definition ?? {}), ...event };
+    if (!resolved.shape || resolved.radius === undefined || resolved.telegraphDuration === undefined || resolved.duration === undefined || !resolved.resolution) return;
+    const source = (resolved.position ? resolvePositionValue(resolved.position) : undefined) ?? findEntity(this.state, resolved.source ?? '')?.position;
     if (!source) return;
     const base = {
       id: `effect-${this.state.effects.length + 1}`,
       position: { ...source }, rotation: 0, createdAt: this.state.time,
-      telegraphDuration: event.telegraphDuration, duration: event.duration,
-      radius: event.radius, element: event.element, mechanic: event.mechanic, resolution: event.resolution,
-      telegraphColor: event.telegraphColor, executionColor: event.executionColor, label: event.label,
-      sourceId: event.source, excludeSource: event.excludeSource, telegraphStyle: event.telegraphStyle
+      telegraphDuration: resolved.telegraphDuration, duration: resolved.duration,
+      radius: resolved.radius, element: resolved.element, mechanic: resolved.mechanic, resolution: resolved.resolution,
+      telegraphColor: resolved.telegraphColor, executionColor: resolved.executionColor, label: resolved.label,
+      tags: resolved.tags, sourceId: resolved.source, excludeSource: resolved.excludeSource, telegraphStyle: resolved.telegraphStyle,
+      areaGroup: resolved.areaGroup
     };
-    if (event.direction === 'back') base.rotation = Math.PI;
-    if (event.direction === 'nearest_player') {
-      const sourcePlayer = findEntity(this.state, event.source ?? '');
+    if (resolved.direction === 'back') base.rotation = Math.PI;
+    if (resolved.direction === 'nearest_player') {
+      const sourcePlayer = findEntity(this.state, resolved.source ?? '');
       if (sourcePlayer && 'role' in sourcePlayer) {
         const target = this.state.players
           .filter((player) => player.alive && player.id !== sourcePlayer.id)
@@ -98,10 +106,10 @@ export class MechanicExecutor {
         if (target) base.rotation = Math.atan2(target.position.y - sourcePlayer.position.y, target.position.x - sourcePlayer.position.x);
       }
     }
-    const effect: AreaEffect = event.shape === 'cone'
-      ? { ...base, shape: 'cone', angle: event.angle ?? 60 }
-      : event.shape === 'half_room'
-        ? { ...base, shape: 'half_room', side: event.side ?? 'north' }
+    const effect: AreaEffect = resolved.shape === 'cone'
+      ? { ...base, shape: 'cone', angle: resolved.angle ?? 60 }
+      : resolved.shape === 'half_room'
+        ? { ...base, shape: 'half_room', side: resolved.side ?? 'north' }
         : { ...base, shape: 'circle' };
     this.state.effects.push(effect);
   }
@@ -137,7 +145,12 @@ export class MechanicExecutor {
       return;
     }
     if (resolvedEffect.type === 'distribute_statuses') {
-      this.distributeStatuses(resolvedEffect);
+      const players = typeof resolvedEffect.target === 'string'
+        ? this.state.players.filter((player) => player.alive && (
+          resolvedEffect.target === 'all' ||
+          (resolvedEffect.target === 'inside' ? inside.has(player.id) : !inside.has(player.id))))
+        : selectPlayers(resolvedEffect.target, this.state, this.random);
+      this.distributeStatuses(resolvedEffect, players);
       return;
     }
     if (resolvedEffect.type === 'start_cast') { this.startCast(resolvedEffect.cast, resolvedEffect.source ?? sourceId, resolvedEffect.mechanic); return; }
@@ -149,7 +162,7 @@ export class MechanicExecutor {
       const targets = typeof resolvedEffect.target === 'string'
         ? this.state.players.filter((player) => player.alive && (resolvedEffect.target === 'all' || (resolvedEffect.target === 'inside' ? inside.has(player.id) : !inside.has(player.id))))
         : selectPlayers(resolvedEffect.target, this.state, this.random);
-      for (const player of targets) this.removeStatus(player, resolvedEffect.status);
+      for (const player of targets) this.removeStatus(player, resolvedEffect.status, resolvedEffect.stacks ?? 1);
       return;
     }
     if (resolvedEffect.type === 'show_graphic') { this.spawnGraphic(resolvedEffect.image, resolvedEffect.anchor ?? { type: 'entity', entity: sourceId }, resolvedEffect.radius, resolvedEffect.duration); return; }
@@ -160,7 +173,7 @@ export class MechanicExecutor {
       : selectPlayers(resolvedEffect.target, this.state, this.random);
     if (resolvedEffect.type === 'damage') this.applyDamage(targets, resolvedEffect.damage, sourceName);
     else if (resolvedEffect.type === 'heal') this.healPlayers(targets, resolvedEffect.amount, resolvedEffect.full);
-    else for (const player of targets) this.applyStatus(player, resolvedEffect.status, resolvedEffect.duration);
+    else for (const player of targets) this.applyStatus(player, resolvedEffect.status, resolvedEffect.duration, resolvedEffect.stacks ?? 1);
   }
 
   private healPlayers(players: typeof this.state.players, amount?: number, full?: boolean): void {
@@ -181,8 +194,8 @@ export class MechanicExecutor {
     }
   }
 
-  private distributeStatuses(effect: DistributeStatusesEffect): void {
-    const players = this.random.shuffle(selectPlayers(effect.target, this.state, this.random));
+  private distributeStatuses(effect: DistributeStatusesEffect, selectedPlayers: typeof this.state.players): void {
+    const players = this.random.shuffle(selectedPlayers);
     const statuses = this.random.shuffle(effect.statuses.map((status) => this.randomContext.resolve(status)));
 
     for (let index = 0; index < Math.min(players.length, statuses.length); index += 1) {
@@ -194,18 +207,29 @@ export class MechanicExecutor {
     if (effect.type === 'apply_status' && effect.status) this.applyStatus(player, effect.status, effect.duration);
   }
 
-  private applyStatus(player: typeof this.state.players[number], statusId: string, duration: number | undefined): void {
-    player.statuses.push({ definitionId: statusId, appliedAt: this.state.time, expiresAt: duration === undefined ? undefined : this.state.time + duration, stacks: 1 });
+  private applyStatus(player: typeof this.state.players[number], statusId: string, duration: number | undefined, stacks = 1): void {
     const definition = this.statusDefinitions.get(statusId);
+    const existing = player.statuses.find((status) => status.definitionId === statusId);
+    if (existing && definition?.maxStacks) {
+      existing.stacks = Math.min(definition.maxStacks, existing.stacks + stacks);
+      if (duration !== undefined) existing.expiresAt = this.state.time + duration;
+      return;
+    }
+    player.statuses.push({ definitionId: statusId, appliedAt: this.state.time, expiresAt: duration === undefined ? undefined : this.state.time + duration, stacks });
     if (player.controlled && !definition?.hidden) this.logEvent(`You were affected by ${formatStatusName(statusId)}.`);
     for (const effect of definition?.onApply ?? []) this.executeEffect(effect, new Set(), player.id);
   }
 
-  private removeStatus(player: typeof this.state.players[number], statusId: string): void {
+  private removeStatus(player: typeof this.state.players[number], statusId: string, stacks = 1): void {
     const index = player.statuses.findIndex((status) => status.definitionId === statusId);
     if (index === -1) return;
-    player.statuses.splice(index, 1);
     const definition = this.statusDefinitions.get(statusId);
+    const instance = player.statuses[index];
+    if (definition?.maxStacks && instance.stacks > stacks) {
+      instance.stacks -= stacks;
+      return;
+    }
+    player.statuses.splice(index, 1);
     for (const effect of definition?.onRemove ?? []) this.executeEffect(effect, new Set(), player.id);
     if (player.controlled && !definition?.hidden) this.logEvent(`Your ${formatStatusName(statusId)} status ended.`);
   }

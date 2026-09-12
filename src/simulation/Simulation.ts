@@ -20,18 +20,22 @@ export class Simulation {
   private readonly encounterDuration: number;
   private readonly areaResolver = new AreaResolver();
   private readonly botManager = new BotManager();
+  private readonly areaGroups: NonNullable<Encounter['areaGroups']>;
+  private readonly areaGroupParticipants = new Map<string, Set<string>>();
+  private readonly areaGroupResolvedCount = new Map<string, number>();
   private readonly roleEvaluator: MechanicalRoleEvaluator;
   private positionEvaluator: PositionEvaluator;
 
   constructor(encounter: Encounter, options: SimulationOptions) {
     this.encounterDuration = encounter.duration;
+    this.areaGroups = encounter.areaGroups ?? {};
     this.random = new Random(options.seed);
     const randomContext = new RandomContext(encounter.randomGroups, encounter.sequences, encounter.distributions, this.random);
     const players = structuredClone(encounter.players).map((player) => ({ ...player, maxHealth: player.maxHealth ?? player.health, controlled: player.id === options.controlledPlayerId, mechanicalRoles: player.mechanicalRoles ?? [] }));
     this.state = { time: 0, deltaTime: 0, currentMechanic: undefined, players, enemies: structuredClone(encounter.enemies), effects: [], worldGraphics: [], background: encounter.background, casts: [], running: false, completed: false, log: [] };
     this.roleEvaluator = new MechanicalRoleEvaluator(encounter.mechanicalRoles);
     this.positionEvaluator = new PositionEvaluator(encounter.positions, <T>(value: T) => randomContext.resolve(value));
-    this.executor = new MechanicExecutor(this.state, this.random, encounter.statuses, encounter.casts, randomContext, (group) => this.roleEvaluator.recalculate(this.state, group), (group) => this.positionEvaluator.recalculate(this.state, group));
+    this.executor = new MechanicExecutor(this.state, this.random, encounter.statuses, encounter.casts, randomContext, encounter.areas, (group) => this.roleEvaluator.recalculate(this.state, group), (group) => this.positionEvaluator.recalculate(this.state, group));
     const eventTimes = new Map<string, number>();
     for (const event of encounter.events) {
       const executeAt = event.at ?? (event.after ? (eventTimes.get(event.after) ?? 0) + (event.delay ?? 0) : 0);
@@ -72,6 +76,21 @@ export class Simulation {
       }
       effect.resolvedAt = this.state.time;
       for (const resolution of this.areaResolver.resolve(effect, this.state.players.filter((player) => inside.has(player.id)))) this.executor.executeEffect(resolution, inside);
+      if (effect.areaGroup) {
+        const group = this.areaGroups[effect.areaGroup];
+        if (group) {
+          const participants = this.areaGroupParticipants.get(effect.areaGroup) ?? new Set<string>();
+          for (const playerId of inside) participants.add(playerId);
+          this.areaGroupParticipants.set(effect.areaGroup, participants);
+          const resolvedCount = (this.areaGroupResolvedCount.get(effect.areaGroup) ?? 0) + 1;
+          this.areaGroupResolvedCount.set(effect.areaGroup, resolvedCount);
+          if (resolvedCount >= group.count) {
+            for (const groupedEffect of group.effects) this.executor.executeEffect(groupedEffect, participants);
+            this.areaGroupParticipants.delete(effect.areaGroup);
+            this.areaGroupResolvedCount.delete(effect.areaGroup);
+          }
+        }
+      }
     }
     this.state.effects = this.state.effects.filter((effect) => effect.resolvedAt === undefined || this.state.time < effect.resolvedAt + effect.duration);
     this.state.worldGraphics = this.state.worldGraphics.filter((graphic) => this.state.time < graphic.createdAt + graphic.duration);

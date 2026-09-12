@@ -47,7 +47,8 @@ export class PositionEvaluator {
       const effect = state.effects.find((candidate) =>
         candidate.resolvedAt === undefined &&
         (!target.mechanic || candidate.mechanic === target.mechanic) &&
-        (!target.label || candidate.label === target.label));
+        (!target.label || candidate.label === target.label) &&
+        (!target.tag || candidate.tags?.includes(target.tag)));
       return effect ? {
         x: effect.position.x + (target.offset?.x ?? 0),
         y: effect.position.y + (target.offset?.y ?? 0)

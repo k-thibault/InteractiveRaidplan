@@ -23,6 +23,9 @@ const castFill = document.querySelector<HTMLDivElement>('#cast-fill')!;
 const logList = document.querySelector<HTMLUListElement>('#event-log')!;
 const controlledPlayer = document.querySelector<HTMLSelectElement>('#controlled-player')!;
 const encounterSelect = document.querySelector<HTMLSelectElement>('#encounter-select')!;
+const rosterTooltip = document.createElement('div');
+rosterTooltip.className = 'status-tooltip';
+document.body.append(rosterTooltip);
 
 interface RosterRow { playerId: string; root: HTMLDivElement; fill: HTMLDivElement; value: HTMLSpanElement; statuses: HTMLDivElement; }
 let rosterRows: RosterRow[] = [];
@@ -67,9 +70,30 @@ function updateRoster(players: Player[], now: number): void {
     row.statuses.replaceChildren();
     for (const status of player.statuses) {
       const definition = statusDefinitions.get(status.definitionId); if (definition?.hidden) continue;
-      const badge = document.createElement('div'); badge.className = 'roster-status'; badge.title = formatStatusName(status.definitionId);
+      const badge = document.createElement('div');
+      badge.className = 'roster-status';
+      badge.addEventListener('mouseenter', (event) => {
+        rosterTooltip.textContent = formatStatusName(status.definitionId);
+        rosterTooltip.style.left = `${event.clientX + 12}px`;
+        rosterTooltip.style.top = `${event.clientY - 34}px`;
+        rosterTooltip.classList.add('visible');
+      });
+      badge.addEventListener('mousemove', (event) => {
+        rosterTooltip.style.left = `${event.clientX + 12}px`;
+        rosterTooltip.style.top = `${event.clientY - 34}px`;
+      });
+      badge.addEventListener('mouseleave', () => {
+        rosterTooltip.classList.remove('visible');
+      });
+
       const icon = document.createElement('div'); icon.className = 'roster-status__icon'; const iconUrl = definition?.icon ? imageResources[definition.icon] : undefined;
-      if (iconUrl) icon.style.backgroundImage = `url("${iconUrl}")`; else { icon.style.backgroundColor = definition?.color ?? '#ffbe49'; icon.textContent = definition?.character ?? '!'; }
+      if (iconUrl) {
+        icon.style.backgroundImage = `url("${iconUrl}")`;
+      } else {
+        icon.classList.add('roster-status__icon--default');
+        icon.style.setProperty('--status-color', definition?.color ?? '#ffbe49');
+        icon.textContent = definition?.character ?? '!';
+      }
       badge.append(icon); const timer = document.createElement('span'); timer.className = 'roster-status__timer'; timer.textContent = status.expiresAt === undefined ? '-' : String(Math.max(0, Math.ceil((status.expiresAt - now) / 1000))); badge.append(timer); row.statuses.append(badge);
     }
   }
