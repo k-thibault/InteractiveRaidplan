@@ -210,12 +210,15 @@ export class MechanicExecutor {
   private applyStatus(player: typeof this.state.players[number], statusId: string, duration: number | undefined, stacks = 1): void {
     const definition = this.statusDefinitions.get(statusId);
     const existing = player.statuses.find((status) => status.definitionId === statusId);
-    if (existing && definition?.maxStacks) {
-      existing.stacks = Math.min(definition.maxStacks, existing.stacks + stacks);
-      if (duration !== undefined) existing.expiresAt = this.state.time + duration;
+    const newExpiresAt = duration === undefined ? undefined : this.state.time + duration;
+    if (existing) {
+      if (definition?.maxStacks) existing.stacks = Math.min(definition.maxStacks, existing.stacks + stacks);
+      // A permanent (undefined) duration always counts as longer than any finite one; two permanents are equal.
+      const isLonger = newExpiresAt === undefined ? existing.expiresAt !== undefined : existing.expiresAt !== undefined && newExpiresAt > existing.expiresAt;
+      if (isLonger) existing.expiresAt = newExpiresAt;
       return;
     }
-    player.statuses.push({ definitionId: statusId, appliedAt: this.state.time, expiresAt: duration === undefined ? undefined : this.state.time + duration, stacks });
+    player.statuses.push({ definitionId: statusId, appliedAt: this.state.time, expiresAt: newExpiresAt, stacks });
     if (player.controlled && !definition?.hidden) this.logEvent(`You were affected by ${formatStatusName(statusId)}.`);
     for (const effect of definition?.onApply ?? []) this.executeEffect(effect, new Set(), player.id);
   }

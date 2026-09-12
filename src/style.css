@@ -17,7 +17,7 @@ button { border: 1px solid #3b4e61; border-radius: 3px; background: #18232e; col
 .roster-entry__fill { height: 100%; width: 100%; background: #74d4a0; transition: width .15s ease, background-color .15s ease; }
 .roster-entry__fill--low { background: #ffbe49; }
 .roster-entry__fill--critical { background: #ff7757; }
-.roster-entry__statuses { flex: 0 0 132px; width: 132px; height: 34px; display: flex; align-items: center; justify-content: flex-end; gap: 4px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
+.roster-entry__statuses { flex: 0 0 132px; width: 132px; height: 42px; padding-top: 8px; display: flex; align-items: center; justify-content: flex-end; gap: 4px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
 .roster-entry__statuses::-webkit-scrollbar { display: none; }
 .roster-status { display: flex; flex-direction: column; align-items: center; flex: 0 0 22px; width: 22px; }
 .roster-status__icon { position: relative; width: 18px; height: 18px; border-radius: 0; display: flex; align-items: center; justify-content: center; font: 700 10px 'DM Mono', monospace; color: #dbe7f2; background-size: contain; background-repeat: no-repeat; background-position: center; flex-shrink: 0; }
