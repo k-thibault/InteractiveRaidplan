@@ -13,7 +13,9 @@ export type Condition =
   | { type: 'active_area'; mechanic?: string; element?: string }
   | { type: 'and'; conditions: ConditionExpression[] }
   | { type: 'or'; conditions: ConditionExpression[] }
-  | { type: 'player_condition'; player: PlayerReference; condition: ConditionExpression };
+  | { type: 'not'; condition: ConditionExpression }
+  | { type: 'player_condition'; player: PlayerReference; condition: ConditionExpression }
+  | { type: 'flex_conflict_loser'; pairRole: string; statuses: string[] };
 
 export type ConditionExpression = Condition | ConditionExpression[];
 
@@ -40,6 +42,7 @@ export class MechanicalRoleEvaluator {
   recalculate(state: GameState, group?: string): void {
     const definition = group ? this.definitions[group] : undefined;
     const groups = definition ? [definition] : Object.values(this.definitions);
+    const roleKeys = new Set(groups.flatMap((current) => Object.keys(current)));
     const assignments = new Map<string, string[]>();
 
     for (const player of state.players) {
@@ -50,7 +53,10 @@ export class MechanicalRoleEvaluator {
       assignments.set(player.id, roles);
     }
 
-    for (const player of state.players) player.mechanicalRoles = assignments.get(player.id) ?? [];
+    for (const player of state.players) {
+      const kept = player.mechanicalRoles.filter((role) => !roleKeys.has(role));
+      player.mechanicalRoles = [...kept, ...(assignments.get(player.id) ?? [])];
+    }
   }
 
   evaluate(condition: ConditionExpression, player: Player, state: GameState): boolean {
@@ -75,10 +81,20 @@ export class MechanicalRoleEvaluator {
         (condition.element === undefined || effect.element === condition.element));
       case 'and': return condition.conditions.every((child) => this.matches(child, player, state));
       case 'or': return condition.conditions.some((child) => this.matches(child, player, state));
+      case 'not': return !this.matches(condition.condition, player, state);
       case 'player_condition':
         return state.players.some((candidate) =>
           this.matchesReference(candidate, condition.player, player) &&
           this.matches(condition.condition, candidate, state));
+      case 'flex_conflict_loser': {
+        if (!player.mechanicalRoles.includes(condition.pairRole)) return false;
+        const partner = state.players.find((candidate) => candidate.id !== player.id && candidate.mechanicalRoles.includes(condition.pairRole));
+        if (!partner) return false;
+        const sharedStatus = condition.statuses.some((statusId) =>
+          player.statuses.some((status) => status.definitionId === statusId) &&
+          partner.statuses.some((status) => status.definitionId === statusId));
+        return sharedStatus && (player.flexPriority ?? 0) < (partner.flexPriority ?? 0);
+      }
     }
   }
 

@@ -223,17 +223,20 @@ export class ArenaRenderer {
       this.context.textBaseline = 'alphabetic';
     }
     if (status.stacks > 1) {
-      const stackRadius = Math.max(5, radius * .32);
-      this.context.beginPath();
-      this.context.arc(x + radius * .68, y + radius * .68, stackRadius, 0, Math.PI * 2);
-      this.context.fillStyle = '#18232e';
-      this.context.fill();
-
+      const stackText = String(status.stacks);
+      const stackFontSize = Math.max(15, radius * .95);
+      const stackX = x + radius * .82;
+      const stackY = y - radius * .78;
+      this.context.font = `800 ${stackFontSize}px 'DM Mono', monospace`;
+      this.context.textAlign = 'center';
+      this.context.textBaseline = 'middle';
+      this.context.lineJoin = 'round';
+      this.context.miterLimit = 2;
+      this.context.lineWidth = Math.max(3, stackFontSize * .24);
+      this.context.strokeStyle = '#0a0f14';
+      this.context.strokeText(stackText, stackX, stackY);
       this.context.fillStyle = '#ffffff';
-      this.context.font = `700 ${Math.max(15, radius * .62)}px 'DM Mono', monospace`;
-      this.context.textAlign = 'right';
-      this.context.textBaseline = 'bottom';
-      this.context.fillText(String(status.stacks), x + radius * .78, y + radius * .95);
+      this.context.fillText(stackText, stackX, stackY);
       this.context.textBaseline = 'alphabetic';
     }
     this.statusHitAreas.push({ x, y, status });

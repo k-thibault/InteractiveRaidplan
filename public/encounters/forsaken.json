@@ -1,7 +1,7 @@
 {
   "version": 5,
   "name": "Forsaken",
-  "duration": 22000,
+  "duration": 30000,
   "background": "bg-default",
   "randomGroups": {
     "triggerAssignments": {
@@ -40,6 +40,13 @@
     "soakAngles": {
       "mode": "rotation",
       "start": [45, 135, 225, 315],
+      "step": 90,
+      "count": 2
+    },
+    "soakAngles2": {
+      "mode": "offset_rotation",
+      "from": "soakAngles",
+      "offsets": [45, -45],
       "step": 90,
       "count": 2
     }
@@ -85,7 +92,29 @@
         {
           "type": "distribute_statuses",
           "target": "inside",
-          "statuses": ["spread-trigger", "spread-trigger", "cone-trigger", "cone-trigger"]
+          "statuses": ["cone-trigger", "cone-trigger", "spread-trigger", "spread-trigger"]
+        },
+        {
+          "type": "spawn_area",
+          "area": "forsaken-soak",
+          "position": { "type": "polar", "angle": "$soakAngles2[0]", "radius": 5 },
+          "label": "soak-2-a",
+          "tags": ["soak-2-a"]
+        },
+        {
+          "type": "spawn_area",
+          "area": "forsaken-soak",
+          "position": { "type": "polar", "angle": "$soakAngles2[1]", "radius": 5 },
+          "label": "soak-2-b",
+          "tags": ["soak-2-b"]
+        },
+        {
+          "type": "delayed_effects",
+          "delay": 3000,
+          "effects": [
+            { "type": "recalculate_roles", "group": "forsaken-flex" },
+            { "type": "recalculate_positions", "group": "forsaken-round-2" }
+          ]
         }
       ]
     }
@@ -358,6 +387,7 @@
       "type": "player",
       "role": "tank",
       "team": "red",
+      "flexPriority": 1,
       "mechanicalRoles": [],
       "moveSpeed": 5,
       "health": 200,
@@ -374,6 +404,7 @@
       "type": "player",
       "role": "tank",
       "team": "purple",
+      "flexPriority": 1,
       "mechanicalRoles": [],
       "moveSpeed": 5,
       "health": 200,
@@ -390,6 +421,7 @@
       "type": "player",
       "role": "healer",
       "team": "purple",
+      "flexPriority": 4,
       "mechanicalRoles": [],
       "moveSpeed": 5,
       "health": 100,
@@ -406,6 +438,7 @@
       "type": "player",
       "role": "healer",
       "team": "red",
+      "flexPriority": 4,
       "mechanicalRoles": [],
       "moveSpeed": 5,
       "health": 100,
@@ -422,6 +455,7 @@
       "type": "player",
       "role": "damage",
       "team": "blue",
+      "flexPriority": 2,
       "mechanicalRoles": [],
       "moveSpeed": 5,
       "health": 100,
@@ -439,6 +473,7 @@
       "type": "player",
       "role": "damage",
       "team": "yellow",
+      "flexPriority": 2,
       "mechanicalRoles": [],
       "moveSpeed": 5,
       "health": 100,
@@ -456,6 +491,7 @@
       "type": "player",
       "role": "damage",
       "team": "blue",
+      "flexPriority": 3,
       "mechanicalRoles": [],
       "moveSpeed": 5,
       "health": 100,
@@ -473,6 +509,7 @@
       "type": "player",
       "role": "damage",
       "team": "yellow",
+      "flexPriority": 3,
       "mechanicalRoles": [],
       "moveSpeed": 5,
       "health": 100,
@@ -510,6 +547,32 @@
     ]
   },
   "mechanicalRoles": {
+    "forsaken-flex": {
+      "clockwise_soak": [
+        {
+          "type": "or",
+          "conditions": [
+            [
+              { "type": "mechanical_role", "role": "clockwise_soak" },
+              { "type": "not", "condition": { "type": "flex_conflict_loser", "pairRole": "clockwise_soak", "statuses": ["cone-trigger", "spread-trigger"] } }
+            ],
+            { "type": "flex_conflict_loser", "pairRole": "counterclockwise_soak", "statuses": ["cone-trigger", "spread-trigger"] }
+          ]
+        }
+      ],
+      "counterclockwise_soak": [
+        {
+          "type": "or",
+          "conditions": [
+            [
+              { "type": "mechanical_role", "role": "counterclockwise_soak" },
+              { "type": "not", "condition": { "type": "flex_conflict_loser", "pairRole": "counterclockwise_soak", "statuses": ["cone-trigger", "spread-trigger"] } }
+            ],
+            { "type": "flex_conflict_loser", "pairRole": "clockwise_soak", "statuses": ["cone-trigger", "spread-trigger"] }
+          ]
+        }
+      ]
+    },
     "forsaken": {
       "bait_team": [
         {
@@ -770,6 +833,68 @@
           }
         ],
         "target": { "type": "polar", "angle": "$soakAngles[1]", "radius": 5.3 }
+      }
+    ],
+    "forsaken-round-2": [
+      {
+        "when": [
+          { "type": "mechanical_role", "role": "bait_team" },
+          { "type": "gameplay_role", "role": "healer" }
+        ],
+        "target": { "type": "polar", "angle": "$soakAngles2[0]", "radius": 7.3 }
+      },
+      {
+        "when": [
+          { "type": "mechanical_role", "role": "bait_team" },
+          { "type": "damage_position", "position": "ranged" }
+        ],
+        "target": { "type": "polar", "angle": "$soakAngles2[1]", "radius": 7.3 }
+      },
+      {
+        "when": [
+          { "type": "mechanical_role", "role": "bait_team" },
+          { "type": "gameplay_role", "role": "tank" }
+        ],
+        "target": { "type": "polar", "angle": "$soakAngles2[1]", "radius": 4, "angleOffset": 180 }
+      },
+      {
+        "when": [
+          { "type": "mechanical_role", "role": "bait_team" },
+          { "type": "damage_position", "position": "melee" }
+        ],
+        "target": { "type": "polar", "angle": "$soakAngles2[0]", "radius": 4, "angleOffset": 180 }
+      },
+      {
+        "when": [
+          { "type": "mechanical_role", "role": "tower_team" },
+          { "type": "has_status", "status": "cone-trigger" },
+          { "type": "mechanical_role", "role": "clockwise_soak" }
+        ],
+        "target": { "type": "polar", "angle": "$soakAngles2[1]", "radius": 3.1 }
+      },
+      {
+        "when": [
+          { "type": "mechanical_role", "role": "tower_team" },
+          { "type": "has_status", "status": "cone-trigger" },
+          { "type": "mechanical_role", "role": "counterclockwise_soak" }
+        ],
+        "target": { "type": "polar", "angle": "$soakAngles2[0]", "radius": 3.1 }
+      },
+      {
+        "when": [
+          { "type": "mechanical_role", "role": "tower_team" },
+          { "type": "has_status", "status": "spread-trigger" },
+          { "type": "mechanical_role", "role": "clockwise_soak" }
+        ],
+        "target": { "type": "polar", "angle": "$soakAngles2[1]", "radius": 6.9 }
+      },
+      {
+        "when": [
+          { "type": "mechanical_role", "role": "tower_team" },
+          { "type": "has_status", "status": "spread-trigger" },
+          { "type": "mechanical_role", "role": "counterclockwise_soak" }
+        ],
+        "target": { "type": "polar", "angle": "$soakAngles2[0]", "radius": 6.9 }
       }
     ]
   },

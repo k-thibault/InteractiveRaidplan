@@ -13,6 +13,7 @@ export interface Player extends Entity {
   /** Optional mechanical team used by encounters that pair players. */
   team?: string;
   damagePosition?: DamagePosition;
+  flexPriority?: number;
   mechanicalRoles: string[];
   positionTarget?: PositionTarget;
   desiredPosition?: { x: number; y: number };
