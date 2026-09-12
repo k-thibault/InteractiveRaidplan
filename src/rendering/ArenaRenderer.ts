@@ -204,7 +204,9 @@ export class ArenaRenderer {
       const top = y - radius;
       const bottom = y + radius;
       const neck = y + radius * .05;
-      this.context.fillStyle = definition?.color ?? '#ffbe49';
+      const color = definition?.color ?? '#ffbe49';
+      this.context.strokeStyle = color;
+      this.context.lineWidth = Math.max(1.5, radius * .1);
       this.context.beginPath();
       this.context.moveTo(x - radius * .72, top);
       this.context.lineTo(x + radius * .72, top);
@@ -212,8 +214,8 @@ export class ArenaRenderer {
       this.context.lineTo(x, bottom);
       this.context.lineTo(x - radius * .72, neck);
       this.context.closePath();
-      this.context.fill();
-      this.context.fillStyle = '#18232e';
+      this.context.stroke();
+      this.context.fillStyle = color;
       this.context.font = `500 ${Math.max(9, scale * .25)}px 'DM Mono', monospace`;
       this.context.textAlign = 'center';
       this.context.textBaseline = 'middle';
@@ -221,11 +223,17 @@ export class ArenaRenderer {
       this.context.textBaseline = 'alphabetic';
     }
     if (status.stacks > 1) {
+      const stackRadius = Math.max(5, radius * .32);
+      this.context.beginPath();
+      this.context.arc(x + radius * .68, y + radius * .68, stackRadius, 0, Math.PI * 2);
       this.context.fillStyle = '#18232e';
-      this.context.font = `700 ${Math.max(9, radius * .62)}px 'DM Mono', monospace`;
+      this.context.fill();
+
+      this.context.fillStyle = '#ffffff';
+      this.context.font = `700 ${Math.max(15, radius * .62)}px 'DM Mono', monospace`;
       this.context.textAlign = 'right';
       this.context.textBaseline = 'bottom';
-      this.context.fillText(String(status.stacks), x + radius * .72, y + radius * .82);
+      this.context.fillText(String(status.stacks), x + radius * .78, y + radius * .95);
       this.context.textBaseline = 'alphabetic';
     }
     this.statusHitAreas.push({ x, y, status });

@@ -86,9 +86,7 @@
           "type": "distribute_statuses",
           "target": "inside",
           "statuses": ["spread-trigger", "spread-trigger", "cone-trigger", "cone-trigger"]
-        },
-        { "type": "recalculate_roles", "group": "forsaken" },
-        { "type": "recalculate_positions", "group": "forsaken" }
+        }
       ]
     }
   },
@@ -99,7 +97,7 @@
       "maxStacks": 4,
       "color": "#ffbe49",
       "character": "!",
-      "icon": "icon-damage-down"
+      "icon": "icon-spells-trouble"
     },
     {
       "id": "stack-trigger",
@@ -507,7 +505,8 @@
       "icon-forsaken-stack",
       "icon-forsaken-spread",
       "icon-forsaken-cone",
-      "icon-magic-vulnerability"
+      "icon-magic-vulnerability",
+      "icon-spells-trouble"
     ]
   },
   "mechanicalRoles": {
