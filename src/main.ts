@@ -94,6 +94,12 @@ function updateRoster(players: Player[], now: number): void {
         icon.style.setProperty('--status-color', definition?.color ?? '#ffbe49');
         icon.textContent = definition?.character ?? '!';
       }
+      if (status.stacks > 1) {
+        const stack = document.createElement('span');
+        stack.className = 'roster-status__stack';
+        stack.textContent = String(status.stacks);
+        icon.append(stack);
+      }
       badge.append(icon); const timer = document.createElement('span'); timer.className = 'roster-status__timer'; timer.textContent = status.expiresAt === undefined ? '-' : String(Math.max(0, Math.ceil((status.expiresAt - now) / 1000))); badge.append(timer); row.statuses.append(badge);
     }
   }

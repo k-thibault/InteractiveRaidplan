@@ -48,6 +48,7 @@ export class MechanicExecutor {
   execute(event: EncounterEvent): void {
     if (event.type === 'set_mechanic') this.state.currentMechanic = event.mechanic;
     else if (event.type === 'apply_status') for (const player of selectPlayers(event.target, this.state, this.random)) this.applyStatus(player, event.status, event.duration, event.stacks ?? 1);
+    else if (event.type === 'distribute_statuses') this.distributeStatuses(event, selectPlayers(event.target, this.state, this.random));
     else if (event.type === 'damage') this.applyDamage(selectPlayers(event.target, this.state, this.random), event.damage);
     else if (event.type === 'heal') this.healPlayers(selectPlayers(event.target, this.state, this.random), event.amount, event.full);
     else if (event.type === 'start_cast') this.startCast(event.cast, event.source, event.mechanic);
@@ -210,12 +211,15 @@ export class MechanicExecutor {
   private applyStatus(player: typeof this.state.players[number], statusId: string, duration: number | undefined, stacks = 1): void {
     const definition = this.statusDefinitions.get(statusId);
     const existing = player.statuses.find((status) => status.definitionId === statusId);
-    if (existing && definition?.maxStacks) {
-      existing.stacks = Math.min(definition.maxStacks, existing.stacks + stacks);
-      if (duration !== undefined) existing.expiresAt = this.state.time + duration;
+    const newExpiresAt = duration === undefined ? undefined : this.state.time + duration;
+    if (existing) {
+      if (definition?.maxStacks) existing.stacks = Math.min(definition.maxStacks, existing.stacks + stacks);
+      // A permanent (undefined) duration always counts as longer than any finite one; two permanents are equal.
+      const isLonger = newExpiresAt === undefined ? existing.expiresAt !== undefined : existing.expiresAt !== undefined && newExpiresAt > existing.expiresAt;
+      if (isLonger) existing.expiresAt = newExpiresAt;
       return;
     }
-    player.statuses.push({ definitionId: statusId, appliedAt: this.state.time, expiresAt: duration === undefined ? undefined : this.state.time + duration, stacks });
+    player.statuses.push({ definitionId: statusId, appliedAt: this.state.time, expiresAt: newExpiresAt, stacks });
     if (player.controlled && !definition?.hidden) this.logEvent(`You were affected by ${formatStatusName(statusId)}.`);
     for (const effect of definition?.onApply ?? []) this.executeEffect(effect, new Set(), player.id);
   }

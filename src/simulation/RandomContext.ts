@@ -13,7 +13,8 @@ export interface ChoiceRandomGroup { mode: 'choice'; values: unknown[]; }
  * different `count`/`step`/`start`, not new hand-written cases.
  */
 export interface RotationRandomGroup { mode: 'rotation'; start: number[]; step: number; count: number; }
-export type RandomGroup = ShuffleRandomGroup | ChoiceRandomGroup | RotationRandomGroup;
+export interface OffsetRotationRandomGroup { mode: 'offset_rotation'; from: string; offsets: number[]; step: number; count: number; }
+export type RandomGroup = ShuffleRandomGroup | ChoiceRandomGroup | RotationRandomGroup | OffsetRotationRandomGroup;
 export interface DistributionDefinition { mode: 'shuffle'; values: unknown[]; }
 export interface RandomExpression {
   random: {
@@ -40,6 +41,7 @@ export class RandomContext {
     for (const [name, group] of Object.entries(groups)) {
       if (group.mode === 'shuffle') this.values.set(name, random.shuffle(group.values));
       else if (group.mode === 'choice') this.values.set(name, group.values[random.integer(0, group.values.length - 1)]);
+      else if (group.mode === 'offset_rotation') this.values.set(name, this.rollOffsetRotation(group, random));
       else this.values.set(name, this.rollRotation(group, random));
     }
     for (const [name, definition] of Object.entries(sequences)) {
@@ -110,6 +112,15 @@ export class RandomContext {
     const start = group.start[random.integer(0, group.start.length - 1)];
     const angles: number[] = [];
     for (let index = 0; index < group.count; index += 1) angles.push(this.wrap(start + index * group.step, 360));
+    return angles;
+  }
+
+  private rollOffsetRotation(group: OffsetRotationRandomGroup, random: Random): number[] {
+    const base = this.values.get(group.from);
+    const baseAngle = Array.isArray(base) ? Number(base[0]) : 0;
+    const offset = group.offsets[random.integer(0, group.offsets.length - 1)];
+    const angles: number[] = [];
+    for (let index = 0; index < group.count; index += 1) angles.push(this.wrap(baseAngle + offset + index * group.step, 360));
     return angles;
   }
 

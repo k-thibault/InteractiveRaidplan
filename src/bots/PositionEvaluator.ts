@@ -41,7 +41,7 @@ export class PositionEvaluator {
       const angle = this.resolveValue(target.angle);
       const radius = this.resolveValue(target.radius);
       if (typeof angle !== 'number' || typeof radius !== 'number') return undefined;
-      return fromPolar(angle, radius, target.origin);
+      return fromPolar(angle + (target.angleOffset ?? 0), radius, target.origin);
     }
     if (target.type === 'area') {
       const effect = state.effects.find((candidate) =>

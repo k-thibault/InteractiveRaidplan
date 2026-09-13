@@ -14,7 +14,7 @@ export type PositionTarget =
    * along the same line as a randomly-placed soak - without the encounter
    * declaring a separate literal x/y for every possible direction.
    */
-  | { type: 'polar'; angle: number | string; radius: number | string; origin?: { x: number; y: number } }
+  | { type: 'polar'; angle: number | string; radius: number | string; origin?: { x: number; y: number }; angleOffset?: number }
   | { type: 'entity'; player: EntityReference; offset?: { x: number; y: number } }
   | { type: 'area'; mechanic?: string; label?: string; tag?: string; offset?: { x: number; y: number } };
 
