@@ -56,7 +56,6 @@ export class Simulation {
     if (!this.state.running || this.state.completed) return;
     this.state.deltaTime = deltaMs;
     this.state.time += deltaMs;
-    this.scheduler.update(this.state.time);
     this.executor.expireStatuses();
     this.executor.update();
     for (const effect of this.state.effects) {
@@ -92,6 +91,7 @@ export class Simulation {
         }
       }
     }
+    this.scheduler.update(this.state.time);
     this.state.effects = this.state.effects.filter((effect) => effect.resolvedAt === undefined || this.state.time < effect.resolvedAt + effect.duration);
     this.state.worldGraphics = this.state.worldGraphics.filter((graphic) => this.state.time < graphic.createdAt + graphic.duration);
     this.botManager.update(this.state);

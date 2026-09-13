@@ -87,35 +87,23 @@
     }
   },
   "areaGroups": {
-    "forsaken-soaks-round-2": {
+    "forsaken-soaks-odd": {
       "count": 2,
       "effects": [
         {
           "type": "distribute_statuses",
           "target": "inside",
           "statuses": ["cone-trigger", "cone-trigger", "spread-trigger", "spread-trigger"]
-        },
+        }
+      ]
+    },
+    "forsaken-soaks-even": {
+      "count": 2,
+      "effects": [
         {
-          "type": "spawn_area",
-          "area": "forsaken-soak",
-          "position": { "type": "polar", "angle": "$soakAngles2[0]", "radius": 5 },
-          "label": "soak-2-a",
-          "tags": ["soak-2-a"]
-        },
-        {
-          "type": "spawn_area",
-          "area": "forsaken-soak",
-          "position": { "type": "polar", "angle": "$soakAngles2[1]", "radius": 5 },
-          "label": "soak-2-b",
-          "tags": ["soak-2-b"]
-        },
-        {
-          "type": "delayed_effects",
-          "delay": 3000,
-          "effects": [
-            { "type": "recalculate_roles", "group": "forsaken-flex" },
-            { "type": "recalculate_positions", "group": "forsaken-round-2" }
-          ]
+          "type": "distribute_statuses",
+          "target": "inside",
+          "statuses": ["cone-trigger", "stack-trigger", "stack-trigger", "spread-trigger"]
         }
       ]
     }
@@ -355,40 +343,6 @@
           "target": "all",
           "status": "spells-trouble",
           "stacks": 4
-        },
-        {
-          "type": "spawn_area",
-          "area": "forsaken-soak",
-          "position": { "type": "polar", "angle": "$soakAngles[0]", "radius": 5 },
-          "label": "soak-a",
-          "tags": ["soak-a"],
-          "areaGroup": "forsaken-soaks-round-2"
-        },
-        {
-          "type": "spawn_area",
-          "area": "forsaken-soak",
-          "position": { "type": "polar", "angle": "$soakAngles[1]", "radius": 5 },
-          "label": "soak-b",
-          "tags": ["soak-b"],
-          "areaGroup": "forsaken-soaks-round-2"
-        },
-        {
-          "type": "recalculate_roles",
-          "group": "forsaken"
-        },
-        {
-          "type": "recalculate_roles",
-          "group": "forsaken-flex-seed"
-        },
-        {
-          "type": "delayed_effects",
-          "delay": 3000,
-          "effects": [
-            {
-              "type": "recalculate_positions",
-              "group": "forsaken"
-            }
-          ]
         }
       ]
     }
@@ -954,6 +908,85 @@
       "source": "boss",
       "cast": "forsaken",
       "mechanic": "forsaken"
+    },
+    {
+      "id": "forsaken-round-1-roles",
+      "after": "forsaken",
+      "delay": 1500,
+      "type": "recalculate_roles",
+      "group": "forsaken"
+    },
+    {
+      "id": "forsaken-round-1-flex-seed",
+      "after": "forsaken-round-1-roles",
+      "delay": 0,
+      "type": "recalculate_roles",
+      "group": "forsaken-flex-seed"
+    },
+    {
+      "id": "forsaken-round-1-soak-a",
+      "after": "forsaken",
+      "delay": 1500,
+      "type": "spawn_area",
+      "area": "forsaken-soak",
+      "position": { "type": "polar", "angle": "$soakAngles[0]", "radius": 5 },
+      "label": "soak-a",
+      "tags": ["soak-a"],
+      "areaGroup": "forsaken-soaks-odd"
+    },
+    {
+      "id": "forsaken-round-1-soak-b",
+      "after": "forsaken",
+      "delay": 1500,
+      "type": "spawn_area",
+      "area": "forsaken-soak",
+      "position": { "type": "polar", "angle": "$soakAngles[1]", "radius": 5 },
+      "label": "soak-b",
+      "tags": ["soak-b"],
+      "areaGroup": "forsaken-soaks-odd"
+    },
+    {
+      "id": "forsaken-round-1-positions",
+      "after": "forsaken-round-1-soak-a",
+      "delay": 3000,
+      "type": "recalculate_positions",
+      "group": "forsaken"
+    },
+    {
+      "id": "forsaken-round-2-soak-a",
+      "after": "forsaken-round-1-soak-a",
+      "delay": 12000,
+      "type": "spawn_area",
+      "area": "forsaken-soak",
+      "position": { "type": "polar", "angle": "$soakAngles2[0]", "radius": 5 },
+      "label": "soak-2-a",
+      "tags": ["soak-2-a"],
+      "areaGroup": "forsaken-soaks-even"
+    },
+    {
+      "id": "forsaken-round-2-soak-b",
+      "after": "forsaken-round-1-soak-a",
+      "delay": 12000,
+      "type": "spawn_area",
+      "area": "forsaken-soak",
+      "position": { "type": "polar", "angle": "$soakAngles2[1]", "radius": 5 },
+      "label": "soak-2-b",
+      "tags": ["soak-2-b"],
+      "areaGroup": "forsaken-soaks-even"
+    },
+    {
+      "id": "forsaken-round-2-flex",
+      "after": "forsaken-round-2-soak-a",
+      "delay": 3000,
+      "type": "recalculate_roles",
+      "group": "forsaken-flex"
+    },
+    {
+      "id": "forsaken-round-2-positions",
+      "after": "forsaken-round-2-flex",
+      "delay": 0,
+      "type": "recalculate_positions",
+      "group": "forsaken-round-2"
     }
   ]
 }

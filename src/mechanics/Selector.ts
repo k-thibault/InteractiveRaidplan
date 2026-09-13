@@ -12,6 +12,7 @@ export type PlayerSelector =
   | { type: 'nearest'; source: string }
   | { type: 'with_status'; status: string }
   | { type: 'without_status'; status: string }
+  | { type: 'mechanical_role'; role: string }
   | { type: 'and'; selectors: PlayerSelector[] }
   | { type: 'or'; selectors: PlayerSelector[] };
 
@@ -26,6 +27,7 @@ export function selectPlayers(selector: PlayerSelector, state: GameState, random
   if (selector.type === 'role_any') return players.filter((player) => selector.roles.includes(player.role));
   if (selector.type === 'with_status') return players.filter((player) => player.statuses.some((status) => status.definitionId === selector.status));
   if (selector.type === 'without_status') return players.filter((player) => !player.statuses.some((status) => status.definitionId === selector.status));
+  if (selector.type === 'mechanical_role') return players.filter((player) => player.mechanicalRoles.includes(selector.role));
   if (selector.type === 'and') {
     return players.filter((player) => selector.selectors.every((child) => selectPlayers(child, state, random).some((candidate) => candidate.id === player.id)));
   }

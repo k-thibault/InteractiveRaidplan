@@ -10,6 +10,7 @@ export interface RecalculateRolesEvent extends BaseEvent { type: 'recalculate_ro
 export interface RecalculatePositionsEvent extends BaseEvent { type: 'recalculate_positions'; group?: string; }
 export interface SetMechanicEvent extends BaseEvent { type: 'set_mechanic'; mechanic: string; }
 export interface ApplyStatusEvent extends BaseEvent { type: 'apply_status'; target: PlayerSelector; status: string; duration?: number; stacks?: number; }
+export interface DistributeStatusesEvent extends BaseEvent { type: 'distribute_statuses'; target: PlayerSelector; statuses: string[]; duration?: number; }
 export interface HealEvent extends BaseEvent { type: 'heal'; target: PlayerSelector; amount?: number; full?: boolean; }
 export interface DamageEvent extends BaseEvent { type: 'damage'; target: PlayerSelector; damage: DamageDefinition; }
 export interface SpawnAreaEvent extends BaseEvent, Partial<AreaDefinition> { type: 'spawn_area'; area?: string; areaGroup?: string; source?: string; position?: PositionValue; }
@@ -17,4 +18,4 @@ export interface SpawnAreaEvent extends BaseEvent, Partial<AreaDefinition> { typ
 export interface ShowGraphicEvent extends BaseEvent { type: 'show_graphic'; image: string; source?: string; position?: { x: number; y: number }; radius?: number; duration: number; }
 /** Changes the arena background graphic, e.g. partway through a timeline as the encounter shifts phase. */
 export interface SetBackgroundEvent extends BaseEvent { type: 'set_background'; image: string; }
-export type EncounterEvent = ApplyStatusEvent | HealEvent | DamageEvent | SpawnAreaEvent | StartCastEvent | RemoveStatusEvent | RecalculateRolesEvent | RecalculatePositionsEvent | SetMechanicEvent | ShowGraphicEvent | SetBackgroundEvent;
+export type EncounterEvent = ApplyStatusEvent | DistributeStatusesEvent | HealEvent | DamageEvent | SpawnAreaEvent | StartCastEvent | RemoveStatusEvent | RecalculateRolesEvent | RecalculatePositionsEvent | SetMechanicEvent | ShowGraphicEvent | SetBackgroundEvent;

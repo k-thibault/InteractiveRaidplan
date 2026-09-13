@@ -48,6 +48,7 @@ export class MechanicExecutor {
   execute(event: EncounterEvent): void {
     if (event.type === 'set_mechanic') this.state.currentMechanic = event.mechanic;
     else if (event.type === 'apply_status') for (const player of selectPlayers(event.target, this.state, this.random)) this.applyStatus(player, event.status, event.duration, event.stacks ?? 1);
+    else if (event.type === 'distribute_statuses') this.distributeStatuses(event, selectPlayers(event.target, this.state, this.random));
     else if (event.type === 'damage') this.applyDamage(selectPlayers(event.target, this.state, this.random), event.damage);
     else if (event.type === 'heal') this.healPlayers(selectPlayers(event.target, this.state, this.random), event.amount, event.full);
     else if (event.type === 'start_cast') this.startCast(event.cast, event.source, event.mechanic);
