@@ -20,14 +20,7 @@ export function distance(a: Vector2, b: Vector2): number {
   return length(subtract(a, b));
 }
 
-/**
- * A position expressed as a compass angle (degrees, 0 = north, increasing
- * clockwise: 90 = east, 180 = south, 270 = west) and a radius from an
- * origin. This lets encounter JSON declare positions like "on the
- * north-east intercardinal, 7 units out" without spelling out x/y, and lets
- * that angle be a random reference (e.g. `$soakAngles[0]`) so the resulting
- * position rotates with whatever direction the mechanic actually picked.
- */
+/** Compass-angle position relative to an origin. */
 export interface PolarPosition {
   type: 'polar';
   angle: number | string;
@@ -35,20 +28,39 @@ export interface PolarPosition {
   origin?: Vector2;
 }
 
-export type PositionValue = Vector2 | PolarPosition;
+/** A point offset toward a live entity's current position. */
+export interface TowardsPosition {
+  type: 'towards';
+  from: PositionValue;
+  target: string;
+  distance: number | string;
+}
+
+export type PositionValue = Vector2 | PolarPosition | TowardsPosition;
 
 export function isPolarPosition(value: unknown): value is PolarPosition {
   return typeof value === 'object' && value !== null && (value as { type?: unknown }).type === 'polar';
 }
 
-/** Converts a compass angle/radius pair into a world-space offset from `origin` (defaults to the arena center). */
+export function isTowardsPosition(value: unknown): value is TowardsPosition {
+  return typeof value === 'object' && value !== null && (value as { type?: unknown }).type === 'towards';
+}
+
+/** Converts a compass angle/radius pair into world-space coordinates. */
 export function fromPolar(angleDegrees: number, radius: number, origin: Vector2 = { x: 0, y: 0 }): Vector2 {
   const radians = (angleDegrees * Math.PI) / 180;
   return { x: origin.x + radius * Math.sin(radians), y: origin.y - radius * Math.cos(radians) };
 }
 
-/** Resolves a position value that may already be a plain Vector2 or may still need polar-to-cartesian conversion. Angle/radius must already be numbers (resolve random/`$ref` strings first). */
-export function resolvePositionValue(value: PositionValue): Vector2 {
+/**
+ * Resolves a position value that may already be a plain Vector2 or may
+ * still need polar-to-cartesian conversion. Angle/radius must already be
+ * numbers (resolve random/`$ref` strings first). Does NOT handle
+ * `TowardsPosition` (that needs a live entity lookup) - use
+ * `MechanicExecutor.resolvePosition` for anything that might be one of
+ * those.
+ */
+export function resolvePositionValue(value: Vector2 | PolarPosition): Vector2 {
   if (!isPolarPosition(value)) return value;
   const angle = Number(value.angle);
   const radius = Number(value.radius);

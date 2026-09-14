@@ -1,7 +1,7 @@
 {
   "version": 5,
   "name": "Forsaken",
-  "duration": 30000,
+  "duration": 40000,
   "background": "bg-default",
   "randomGroups": {
     "triggerAssignments": {
@@ -81,6 +81,23 @@
             { "type": "remove_status", "target": "inside", "status": "stack-trigger" },
             { "type": "remove_status", "target": "inside", "status": "spread-trigger" },
             { "type": "remove_status", "target": "inside", "status": "cone-trigger" }
+          ]
+        }
+      ]
+    },
+    "pasts-future-aoe": {
+      "shape": "circle",
+      "radius": 2,
+      "mechanic": "pasts-future",
+      "telegraphDuration": 0,
+      "duration": 100,
+      "executionColor": "#8d78ff",
+      "resolution": [
+        {
+          "condition": { "type": "player_count", "min": 1 },
+          "effects": [
+            { "type": "damage", "target": "inside", "damage": { "amount": 30, "type": "magical" } },
+            { "type": "apply_status", "target": "inside", "status": "magic-vulnerability", "duration": 3000 }
           ]
         }
       ]
@@ -343,6 +360,193 @@
           "target": "all",
           "status": "spells-trouble",
           "stacks": 4
+        }
+      ]
+    },
+      "back-sweep": {
+        "id": "back-sweep",
+        "name": "All Things Ending",
+        "castTime": 5000,
+        "facing": { "type": "random_player" },
+        "effects": [
+          {
+            "type": "spawn_area",
+            "shape": "cone",
+            "angle": 180,
+            "radius": 30,
+            "direction": "cast_direction",
+            "rotationOffset": 180,
+            "telegraphDuration": 0,
+            "duration": 200,
+            "resolution": [ 
+              {
+                "condition": {
+                  "type": "player_count",
+                  "min": 0
+                },
+                "effects": [
+                  {
+                    "type": "damage",
+                    "target": "inside",
+                    "damage": {
+                      "amount": 70,
+                      "type": "magical",
+                      "fatal": true
+                    }
+                  } 
+                ] 
+              } 
+            ]
+          }
+        ]
+      },
+      "front-sweep": {
+        "id": "front-sweep",
+        "name": "All Things Ending",
+        "castTime": 5000,
+        "facing": { "type": "random_player" },
+        "effects": [
+          {
+            "type": "spawn_area",
+            "shape": "cone",
+            "angle": 180,
+            "radius": 30,
+            "direction": "cast_direction",
+            "telegraphDuration": 0,
+            "duration": 200,
+            "resolution": [ 
+              {
+                "condition": {
+                  "type": "player_count",
+                  "min": 0
+                },
+                "effects": [
+                  {
+                    "type": "damage",
+                    "target": "inside",
+                    "damage": {
+                      "amount": 70,
+                      "type": "magical",
+                      "fatal": true
+                    }
+                  } 
+                ] 
+              } 
+            ]
+          }
+        ]
+    },
+    "pasts": {
+      "id": "pasts",
+      "name": "Past's End",
+      "castTime": 5000,
+      "visible": true,
+      "effects": [
+        { 
+          "type": "select_group",
+          "name": "kickTargets",
+          "selector": {
+            "type": "nearest",
+            "source": "boss",
+            "count": 4
+          }
+        },
+        {
+          "type": "for_each_group",
+          "group": "kickTargets",
+          "effects": [
+            { 
+              "type": "spawn_area",
+              "area": "pasts-future-aoe",
+              "position": "$groupMember.position"
+            },
+            { 
+              "type": "spawn_enemy",
+              "name": "Add",
+              "position": { 
+                "type": "towards",
+                "from": "$groupMember.position",
+                "target": "boss",
+                "distance": 2
+              },
+              "addToGroup": "spawnedAdds"
+            }
+          ]
+        },
+        {
+          "type": "delayed_effects",
+          "delay": 7000,
+          "effects": [
+            {
+              "type": "for_each_group",
+              "delay": 7000,
+              "group": "spawnedAdds",
+              "effects": [
+                { 
+                  "type": "start_cast",
+                  "source": "$groupMember.id",
+                  "cast": "back-sweep"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "futures": {
+      "id": "futures",
+      "name": "Future's End",
+      "castTime": 5000,
+      "visible": true,
+      "effects": [
+        { 
+          "type": "select_group",
+          "name": "kickTargets",
+          "selector": {
+            "type": "nearest",
+            "source": "boss",
+            "count": 4
+          }
+        },
+        {
+          "type": "for_each_group",
+          "group": "kickTargets",
+          "effects": [
+            { 
+              "type": "spawn_area",
+              "area": "pasts-future-aoe",
+              "position": "$groupMember.position"
+            },
+            { 
+              "type": "spawn_enemy",
+              "name": "Add",
+              "position": { 
+                "type": "towards",
+                "from": "$groupMember.position",
+                "target": "boss",
+                "distance": 2
+              },
+              "addToGroup": "spawnedAdds"
+            }
+          ]
+        },
+        {
+          "type": "delayed_effects",
+          "delay": 7000,
+          "effects": [
+            {
+              "type": "for_each_group",
+              "delay": 7000,
+              "group": "spawnedAdds",
+              "effects": [
+                { 
+                  "type": "start_cast",
+                  "source": "$groupMember.id",
+                  "cast": "front-sweep"
+                }
+              ]
+            }
+          ]
         }
       ]
     }
@@ -987,6 +1191,15 @@
       "delay": 0,
       "type": "recalculate_positions",
       "group": "forsaken-round-2"
+    },
+    {
+      "id": "pasts-future-cast",
+      "after": "forsaken-round-2-soak-a",
+      "delay": 7000,
+      "type": "start_cast",
+      "source": "boss",
+      "cast": "pasts",
+      "mechanic": "pasts-future"
     }
   ]
 }

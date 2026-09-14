@@ -10,7 +10,7 @@ export interface Player extends Entity {
   health: number;
   maxHealth?: number;
   role: PlayerRole;
-  /** Optional mechanical team used by encounters that pair players. */
+  /** Optional mechanical team for paired mechanics. */
   team?: string;
   damagePosition?: DamagePosition;
   flexPriority?: number;

@@ -2,16 +2,7 @@ import { Random } from './Random';
 
 export interface ShuffleRandomGroup { mode: 'shuffle'; values: unknown[]; }
 export interface ChoiceRandomGroup { mode: 'choice'; values: unknown[]; }
-/**
- * Produces a list of `count` compass angles (degrees), evenly spaced `step`
- * degrees apart, starting from one randomly-chosen candidate in `start`.
- * This is how an encounter declares "N things arranged around the room,
- * some fixed angle apart, starting somewhere random" without enumerating
- * every rotated copy by hand - e.g. two soaks 90 degrees apart at a random
- * intercardinal is `{ start: [45, 135, 225, 315], step: 90, count: 2 }`.
- * Adding more soaks, a different spacing, or a later second wave is just a
- * different `count`/`step`/`start`, not new hand-written cases.
- */
+/** Produces evenly spaced angles from a random start point. */
 export interface RotationRandomGroup { mode: 'rotation'; start: number[]; step: number; count: number; }
 export interface OffsetRotationRandomGroup { mode: 'offset_rotation'; from: string; offsets: number[]; step: number; count: number; }
 export type RandomGroup = ShuffleRandomGroup | ChoiceRandomGroup | RotationRandomGroup | OffsetRotationRandomGroup;
@@ -59,7 +50,7 @@ export class RandomContext {
     if (typeof value === 'string') {
       const match = /^\$([\w-]+)((?:\.[\w-]+|\[\d+\])*)$/.exec(value);
       if (!match) return value;
-      if (value.startsWith('$assignedValue')) return value;
+      if (value.startsWith('$assignedValue') || value.startsWith('$groupMember') || value === '$castTarget') return value;
       if (!match[2] && this.sequences.has(match[1])) return this.nextSequenceValue(match[1]) as T;
       let resolved: unknown = this.values.get(match[1]);
       const path = match[2].match(/(?:\.([\w-]+)|\[(\d+)\])/g) ?? [];
@@ -79,16 +70,17 @@ export class RandomContext {
     return this.distributions.has(name) ? this.shuffle(this.distributions.get(name)!.values) : [];
   }
 
-  resolveAssigned<T>(value: T, assignedValue: unknown): T {
+  /** Replaces a per-player/per-member marker with its assigned value. */
+  resolveAssigned<T>(value: T, assignedValue: unknown, marker = 'assignedValue'): T {
     if (typeof value === 'string') {
-      const match = /^\$assignedValue(?:\.([\w-]+)|\[(\d+)\])?$/.exec(value);
+      const match = new RegExp(`^\\$${marker}(?:\\.([\\w-]+)|\\[(\\d+)\\])?$`).exec(value);
       if (!match) return value;
       if (match[1] !== undefined && assignedValue !== null && typeof assignedValue === 'object') return (assignedValue as Record<string, unknown>)[match[1]] as T;
       if (match[2] !== undefined && Array.isArray(assignedValue)) return assignedValue[Number(match[2])] as T;
       return assignedValue as T;
     }
-    if (Array.isArray(value)) return value.map((item) => this.resolveAssigned(item, assignedValue)) as T;
-    if (value !== null && typeof value === 'object') return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, this.resolveAssigned(item, assignedValue)])) as T;
+    if (Array.isArray(value)) return value.map((item) => this.resolveAssigned(item, assignedValue, marker)) as T;
+    if (value !== null && typeof value === 'object') return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, this.resolveAssigned(item, assignedValue, marker)])) as T;
     return value;
   }
 

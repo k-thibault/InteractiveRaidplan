@@ -10,7 +10,7 @@ import { BotManager } from '../bots/BotManager';
 import { MechanicalRoleEvaluator } from '../bots/MechanicalRoleEvaluator';
 import { PositionEvaluator } from '../bots/PositionEvaluator';
 
-export interface SimulationOptions { seed: number; controlledPlayerId?: string; }
+export interface SimulationOptions { seed: number; controlledPlayerId?: string; replayOutcomes?: Map<string, Record<string, unknown>>; }
 
 export class Simulation {
   readonly state: GameState;
@@ -32,10 +32,10 @@ export class Simulation {
     this.random = new Random(options.seed);
     const randomContext = new RandomContext(encounter.randomGroups, encounter.sequences, encounter.distributions, this.random);
     const players = structuredClone(encounter.players).map((player) => ({ ...player, maxHealth: player.maxHealth ?? player.health, controlled: player.id === options.controlledPlayerId, mechanicalRoles: player.mechanicalRoles ?? [] }));
-    this.state = { time: 0, deltaTime: 0, currentMechanic: undefined, players, enemies: structuredClone(encounter.enemies), effects: [], worldGraphics: [], background: encounter.background, casts: [], running: false, completed: false, log: [] };
+    this.state = { time: 0, deltaTime: 0, currentMechanic: undefined, players, enemies: structuredClone(encounter.enemies), effects: [], worldGraphics: [], background: encounter.background, casts: [], running: false, completed: false, log: [], groups: {} };
     this.roleEvaluator = new MechanicalRoleEvaluator(encounter.mechanicalRoles);
     this.positionEvaluator = new PositionEvaluator(encounter.positions, <T>(value: T) => randomContext.resolve(value));
-    this.executor = new MechanicExecutor(this.state, this.random, encounter.statuses, encounter.casts, randomContext, encounter.areas, (group) => this.roleEvaluator.recalculate(this.state, group), (group) => this.positionEvaluator.recalculate(this.state, group));
+    this.executor = new MechanicExecutor(this.state, this.random, encounter.statuses, encounter.casts, randomContext, encounter.areas, (group) => this.roleEvaluator.recalculate(this.state, group), (group) => this.positionEvaluator.recalculate(this.state, group), encounter.enemyTemplates, options.replayOutcomes);
     const eventTimes = new Map<string, number>();
     for (const event of encounter.events) {
       const executeAt = event.at ?? (event.after ? (eventTimes.get(event.after) ?? 0) + (event.delay ?? 0) : 0);
@@ -57,6 +57,7 @@ export class Simulation {
     this.state.deltaTime = deltaMs;
     this.state.time += deltaMs;
     this.executor.expireStatuses();
+    this.executor.expireEnemies();
     this.executor.update();
     for (const effect of this.state.effects) {
       const resolves = this.state.time >= effect.createdAt + effect.telegraphDuration;

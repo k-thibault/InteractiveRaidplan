@@ -8,11 +8,11 @@ export interface StatusDefinition {
   tags?: string[];
   character?: string;
   color?: string;
-  /** Allows multiple stacks to be stored in one status instance. */
+  /** Allows multiple stacks in a single status instance. */
   maxStacks?: number;
-  /** Resource key of an image to draw in place of the default colored badge. */
+  /** Resource key used instead of the default badge icon. */
   icon?: string;
-  /** Status exists mechanically but is omitted from HUD status lists. */
+  /** Hidden from HUD status lists but still active mechanically. */
   hidden?: boolean;
   onRemove?: EffectDefinition[];
   /**
