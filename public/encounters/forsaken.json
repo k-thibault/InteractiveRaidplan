@@ -38,17 +38,12 @@
       ]
     },
     "soakAngles": {
-      "mode": "rotation",
+      "mode": "chained_rotation",
       "start": [45, 135, 225, 315],
       "step": 90,
-      "count": 2
-    },
-    "soakAngles2": {
-      "mode": "offset_rotation",
-      "from": "soakAngles",
+      "count": 2,
       "offsets": [45, -45],
-      "step": 90,
-      "count": 2
+      "rounds": 8
     }
   },
   "areas": {
@@ -479,7 +474,6 @@
           "effects": [
             {
               "type": "for_each_group",
-              "delay": 7000,
               "group": "spawnedAdds",
               "effects": [
                 { 
@@ -536,7 +530,6 @@
           "effects": [
             {
               "type": "for_each_group",
-              "delay": 7000,
               "group": "spawnedAdds",
               "effects": [
                 { 
@@ -950,7 +943,7 @@
             ]
           }
         ],
-        "target": { "type": "polar", "angle": "$soakAngles[0]", "radius": 2.9 }
+        "target": { "type": "area", "tag": "soak-a", "polar": { "radius": 2.9 } }
       },
       {
         "when": [
@@ -963,7 +956,7 @@
             "position": "melee"
           }
         ],
-        "target": { "type": "polar", "angle": "$soakAngles[1]", "radius": 2.9 }
+        "target": { "type": "area", "tag": "soak-b", "polar": { "radius": 2.9 } }
       },
       {
         "when": [
@@ -976,7 +969,7 @@
             "position": "ranged"
           }
         ],
-        "target": { "type": "polar", "angle": "$soakAngles[1]", "radius": 7.1 }
+        "target": { "type": "area", "tag": "soak-b", "polar": { "radius": 7.1 } }
       },
       {
         "when": [
@@ -993,7 +986,7 @@
             "role": "damage"
           }
         ],
-        "target": { "type": "polar", "angle": "$soakAngles[1]", "radius": 3.1 }
+        "target": { "type": "area", "tag": "soak-b", "polar": { "radius": 3.1 } }
       },
       {
         "when": [
@@ -1006,7 +999,7 @@
             "status": "stack-trigger"
           }
         ],
-        "target": { "type": "polar", "angle": "$soakAngles[0]", "radius": 3.1 }
+        "target": { "type": "area", "tag": "soak-a", "polar": { "radius": 3.1 } }
       },
       {
         "when": [
@@ -1019,7 +1012,7 @@
             "status": "spread-trigger"
           }
         ],
-        "target": { "type": "polar", "angle": "$soakAngles[0]", "radius": 6.9 }
+        "target": { "type": "area", "tag": "soak-a", "polar": { "radius": 6.9 } }
       },
       {
         "when": [
@@ -1032,7 +1025,7 @@
             "status": "cone-trigger"
           }
         ],
-        "target": { "type": "polar", "angle": "$soakAngles[1]", "radius": 5.3 }
+        "target": { "type": "area", "tag": "soak-b", "polar": { "radius": 5.3 } }
       }
     ],
     "forsaken-round-2": [
@@ -1041,28 +1034,28 @@
           { "type": "mechanical_role", "role": "bait_team" },
           { "type": "gameplay_role", "role": "healer" }
         ],
-        "target": { "type": "polar", "angle": "$soakAngles2[0]", "radius": 5, "angleOffset": -27 }
+        "target": { "type": "area", "tag": "soak-a", "polar": { "radius": 5, "angleOffset": -27 } }
       },
       {
         "when": [
           { "type": "mechanical_role", "role": "bait_team" },
           { "type": "damage_position", "position": "ranged" }
         ],
-        "target": { "type": "polar", "angle": "$soakAngles2[1]", "radius": 5, "angleOffset": 27 }
+        "target": { "type": "area", "tag": "soak-b", "polar": { "radius": 5, "angleOffset": 27 } }
       },
       {
         "when": [
           { "type": "mechanical_role", "role": "bait_team" },
           { "type": "gameplay_role", "role": "tank" }
         ],
-        "target": { "type": "polar", "angle": "$soakAngles2[1]", "radius": 3.1, "angleOffset": 180 }
+        "target": { "type": "area", "tag": "soak-b", "polar": { "radius": 3.1, "angleOffset": 180 } }
       },
       {
         "when": [
           { "type": "mechanical_role", "role": "bait_team" },
           { "type": "damage_position", "position": "melee" }
         ],
-        "target": { "type": "polar", "angle": "$soakAngles2[0]", "radius": 3.1, "angleOffset": 180 }
+        "target": { "type": "area", "tag": "soak-a", "polar": { "radius": 3.1, "angleOffset": 180 } }
       },
       {
         "when": [
@@ -1070,7 +1063,7 @@
           { "type": "has_status", "status": "cone-trigger" },
           { "type": "mechanical_role", "role": "clockwise_soak" }
         ],
-        "target": { "type": "polar", "angle": "$soakAngles2[1]", "radius": 3.1 }
+        "target": { "type": "area", "tag": "soak-b", "polar": { "radius": 3.1 } }
       },
       {
         "when": [
@@ -1078,7 +1071,7 @@
           { "type": "has_status", "status": "cone-trigger" },
           { "type": "mechanical_role", "role": "counterclockwise_soak" }
         ],
-        "target": { "type": "polar", "angle": "$soakAngles2[0]", "radius": 3.1 }
+        "target": { "type": "area", "tag": "soak-a", "polar": { "radius": 3.1 } }
       },
       {
         "when": [
@@ -1086,7 +1079,7 @@
           { "type": "has_status", "status": "spread-trigger" },
           { "type": "mechanical_role", "role": "clockwise_soak" }
         ],
-        "target": { "type": "polar", "angle": "$soakAngles2[1]", "radius": 6.9 }
+        "target": { "type": "area", "tag": "soak-b", "polar": { "radius": 6.9 } }
       },
       {
         "when": [
@@ -1094,7 +1087,17 @@
           { "type": "has_status", "status": "spread-trigger" },
           { "type": "mechanical_role", "role": "counterclockwise_soak" }
         ],
-        "target": { "type": "polar", "angle": "$soakAngles2[0]", "radius": 6.9 }
+        "target": { "type": "area", "tag": "soak-a", "polar": { "radius": 6.9 } }
+      }
+    ],
+    "forsaken-pasts-future-prep": [
+      {
+        "when": { "type": "mechanic", "mechanic": "pasts" },
+        "target": { "type": "polar", "angle": "$soakAngles[$round][0]", "angleOffset": 45, "radius": 5 }
+      },
+      {
+        "when": { "type": "mechanic", "mechanic": "futures" },
+        "target": { "type": "polar", "angle": "$soakAngles[$round][0]", "angleOffset": 225, "radius": 5 }
       }
     ]
   },
@@ -1133,7 +1136,7 @@
       "delay": 1500,
       "type": "spawn_area",
       "area": "forsaken-soak",
-      "position": { "type": "polar", "angle": "$soakAngles[0]", "radius": 5 },
+      "position": { "type": "polar", "angle": "$soakAngles[0][0]", "radius": 5 },
       "label": "soak-a",
       "tags": ["soak-a"],
       "areaGroup": "forsaken-soaks-odd"
@@ -1144,7 +1147,7 @@
       "delay": 1500,
       "type": "spawn_area",
       "area": "forsaken-soak",
-      "position": { "type": "polar", "angle": "$soakAngles[1]", "radius": 5 },
+      "position": { "type": "polar", "angle": "$soakAngles[0][1]", "radius": 5 },
       "label": "soak-b",
       "tags": ["soak-b"],
       "areaGroup": "forsaken-soaks-odd"
@@ -1162,9 +1165,9 @@
       "delay": 12000,
       "type": "spawn_area",
       "area": "forsaken-soak",
-      "position": { "type": "polar", "angle": "$soakAngles2[0]", "radius": 5 },
-      "label": "soak-2-a",
-      "tags": ["soak-2-a"],
+      "position": { "type": "polar", "angle": "$soakAngles2[1][0]", "radius": 5 },
+      "label": "soak-a",
+      "tags": ["soak-a"],
       "areaGroup": "forsaken-soaks-even"
     },
     {
@@ -1173,9 +1176,9 @@
       "delay": 12000,
       "type": "spawn_area",
       "area": "forsaken-soak",
-      "position": { "type": "polar", "angle": "$soakAngles2[1]", "radius": 5 },
-      "label": "soak-2-b",
-      "tags": ["soak-2-b"],
+      "position": { "type": "polar", "angle": "$soakAngles2[1][1]", "radius": 5 },
+      "label": "soak-b",
+      "tags": ["soak-b"],
       "areaGroup": "forsaken-soaks-even"
     },
     {
@@ -1198,8 +1201,44 @@
       "delay": 7000,
       "type": "start_cast",
       "source": "boss",
-      "cast": "pasts",
-      "mechanic": "pasts-future"
+      "castChoices": ["pasts", "futures"]
+    },
+    {
+      "id": "forsaken-round-3-soak-a",
+      "after": "forsaken-round-2-soak-a",
+      "delay": 12000,
+      "type": "spawn_area",
+      "area": "forsaken-soak",
+      "position": { "type": "polar", "angle": "$soakAngles[2][0]", "radius": 5 },
+      "label": "soak-a",
+      "tags": ["soak-a"],
+      "areaGroup": "forsaken-soaks-odd"
+    },
+    {
+      "id": "forsaken-round-3-soak-b",
+      "after": "forsaken-round-2-soak-a",
+      "delay": 12000,
+      "type": "spawn_area",
+      "area": "forsaken-soak",
+      "position": { "type": "polar", "angle": "$soakAngles[2][1]", "radius": 5 },
+      "label": "soak-b",
+      "tags": ["soak-b"],
+      "areaGroup": "forsaken-soaks-odd"
+    },
+        {
+      "id": "forsaken-pasts-future-prep-positions",
+      "after": "forsaken-round-2-soak-a",
+      "delay": 12500,
+      "type": "recalculate_positions",
+      "group": "forsaken-pasts-future-prep",
+      "params": { "round": 2 }
+    },
+    {
+      "id": "bait-1",
+      "after": "pasts-future-cast",
+      "delay": 14500,
+      "type": "recalculate_positions",
+      "group": "forsaken" 
     }
   ]
 }

@@ -11,9 +11,17 @@ export interface HealEffect { type: 'heal'; target: EffectTarget; amount?: numbe
 export interface DamageEffect { type: 'damage'; target: EffectTarget; damage: DamageDefinition; }
 export interface ApplyStatusEffect { type: 'apply_status'; target: EffectTarget; status: string; duration?: number; stacks?: number; }
 export interface RemoveStatusEffect { type: 'remove_status'; target: EffectTarget; status: string; stacks?: number; }
-export interface StartCastEffect { type: 'start_cast'; cast: string; source?: string; mechanic?: string; facing?: CastFacing; /** Pins the `facing` target id to a replay record. */ replayId?: string; }
+export interface StartCastEffect {
+  type: 'start_cast'; source?: string; mechanic?: string; facing?: CastFacing; 
+  /** Pins the `facing` target id to a replay record. */ 
+  replayId?: string;
+  /** Fixed cast id. Mutually exclusive with `castChoices`. */
+  cast?: string;
+  /** Rolled fresh, independently, the moment this effect executes */
+  castChoices?: string[];
+}
 export interface RecalculateRolesEffect { type: 'recalculate_roles'; group?: string; }
-export interface RecalculatePositionsEffect { type: 'recalculate_positions'; group?: string; }
+export interface RecalculatePositionsEffect { type: 'recalculate_positions'; group?: string; params?: Record<string, number>; }
 export interface SetMechanicEffect { type: 'set_mechanic'; mechanic: string; }
 export interface AreaDefinition {
   shape: 'circle' | 'cone' | 'half_room';

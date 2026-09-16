@@ -5,7 +5,8 @@ export interface ChoiceRandomGroup { mode: 'choice'; values: unknown[]; }
 /** Produces evenly spaced angles from a random start point. */
 export interface RotationRandomGroup { mode: 'rotation'; start: number[]; step: number; count: number; }
 export interface OffsetRotationRandomGroup { mode: 'offset_rotation'; from: string; offsets: number[]; step: number; count: number; }
-export type RandomGroup = ShuffleRandomGroup | ChoiceRandomGroup | RotationRandomGroup | OffsetRotationRandomGroup;
+export interface ChainedRotationRandomGroup { mode: 'chained_rotation'; start: number[]; step: number; count: number; offsets: number[]; rounds: number; }
+export type RandomGroup = ShuffleRandomGroup | ChoiceRandomGroup | RotationRandomGroup | OffsetRotationRandomGroup | ChainedRotationRandomGroup;
 export interface DistributionDefinition { mode: 'shuffle'; values: unknown[]; }
 export interface RandomExpression {
   random: {
@@ -33,6 +34,7 @@ export class RandomContext {
       if (group.mode === 'shuffle') this.values.set(name, random.shuffle(group.values));
       else if (group.mode === 'choice') this.values.set(name, group.values[random.integer(0, group.values.length - 1)]);
       else if (group.mode === 'offset_rotation') this.values.set(name, this.rollOffsetRotation(group, random));
+      else if (group.mode === 'chained_rotation') this.values.set(name, this.rollChainedRotation(group, random));
       else this.values.set(name, this.rollRotation(group, random));
     }
     for (const [name, definition] of Object.entries(sequences)) {
@@ -114,6 +116,19 @@ export class RandomContext {
     const angles: number[] = [];
     for (let index = 0; index < group.count; index += 1) angles.push(this.wrap(baseAngle + offset + index * group.step, 360));
     return angles;
+  }
+
+  private rollChainedRotation(group: ChainedRotationRandomGroup, random: Random): number[][] {
+    const start = group.start[random.integer(0, group.start.length - 1)];
+    // Rolled once so every round keeps rotating the same direction. 
+    const offset = group.offsets[random.integer(0, group.offsets.length - 1)];
+    const rounds: number[][] = [];
+    for (let round = 0; round < group.rounds; round += 1) {
+      const angles: number[] = [];
+      for (let index = 0; index < group.count; index += 1) angles.push(this.wrap(start + index * group.step + round * offset, 360));
+      rounds.push(angles);
+    }
+    return rounds;
   }
 
   private shuffle<T>(items: T[]): T[] {

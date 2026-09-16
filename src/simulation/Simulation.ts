@@ -35,7 +35,7 @@ export class Simulation {
     this.state = { time: 0, deltaTime: 0, currentMechanic: undefined, players, enemies: structuredClone(encounter.enemies), effects: [], worldGraphics: [], background: encounter.background, casts: [], running: false, completed: false, log: [], groups: {} };
     this.roleEvaluator = new MechanicalRoleEvaluator(encounter.mechanicalRoles);
     this.positionEvaluator = new PositionEvaluator(encounter.positions, <T>(value: T) => randomContext.resolve(value));
-    this.executor = new MechanicExecutor(this.state, this.random, encounter.statuses, encounter.casts, randomContext, encounter.areas, (group) => this.roleEvaluator.recalculate(this.state, group), (group) => this.positionEvaluator.recalculate(this.state, group), encounter.enemyTemplates, options.replayOutcomes);
+    this.executor = new MechanicExecutor(this.state, this.random, encounter.statuses, encounter.casts, randomContext, encounter.areas, (group) => this.roleEvaluator.recalculate(this.state, group), (group, params) => this.positionEvaluator.recalculate(this.state, group, params), encounter.enemyTemplates, options.replayOutcomes);
     const eventTimes = new Map<string, number>();
     for (const event of encounter.events) {
       const executeAt = event.at ?? (event.after ? (eventTimes.get(event.after) ?? 0) + (event.delay ?? 0) : 0);
@@ -43,7 +43,7 @@ export class Simulation {
       this.scheduler.schedule(event.id, executeAt, () => {
         const resolved = randomContext.resolve(event);
         if (resolved.type === 'recalculate_roles') this.roleEvaluator.recalculate(this.state, resolved.group);
-        else if (resolved.type === 'recalculate_positions') this.positionEvaluator.recalculate(this.state, resolved.group);
+        else if (resolved.type === 'recalculate_positions') this.positionEvaluator.recalculate(this.state, resolved.group, resolved.params);
         else this.executor.execute(resolved);
       });
     }

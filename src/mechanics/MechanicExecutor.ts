@@ -27,7 +27,7 @@ export class MechanicExecutor {
   private readonly areaDefinitions: Record<string, AreaDefinition>;
   private readonly enemyTemplates: Record<string, EnemyTemplate>;
   private readonly recalculateRoles: (group?: string) => void;
-  private readonly recalculatePositions: (group?: string) => void;
+  private readonly recalculatePositions: (group?: string, params?: Record<string, number>) => void;
   private readonly pendingEffects: { executeAt: number; effects: EffectDefinition[]; inside: Set<string>; sourceId: string; sourceName?: string; cast?: CastContext }[] = [];
   /** Stores the outcomes of replayable rolls, keyed by `replayId`. */
   private readonly replayOutcomes: Map<string, Record<string, unknown>>;
@@ -40,7 +40,7 @@ export class MechanicExecutor {
     randomContext: RandomContext,
     areas: Record<string, AreaDefinition> = {},
     recalculateRoles: (group?: string) => void = () => undefined,
-    recalculatePositions: (group?: string) => void = () => undefined,
+    recalculatePositions: (group?: string, params?: Record<string, number>) => void = () => undefined,
     enemyTemplates: Record<string, EnemyTemplate> = {},
     replayOutcomes: Map<string, Record<string, unknown>> = new Map()
   ) {
@@ -74,7 +74,12 @@ export class MechanicExecutor {
     else if (event.type === 'distribute_statuses') this.distributeStatuses(event, selectPlayers(event.target, this.state, this.random), event.replayId);
     else if (event.type === 'damage') this.applyDamage(selectPlayers(event.target, this.state, this.random), event.damage);
     else if (event.type === 'heal') this.healPlayers(selectPlayers(event.target, this.state, this.random), event.amount, event.full);
-    else if (event.type === 'start_cast') this.startCast(event.cast, event.source, event.mechanic, event.facing, event.replayId);
+    else if (event.type === 'start_cast') {
+      const cast = this.resolveCastChoice(event.cast, event.castChoices);
+      // When the cast was rolled from `castChoices` and no `mechanic` was given, default the mechanic flag to
+      // whichever cast got picked, so `{"type":"mechanic"}` position/role rules can react to the outcome.
+      this.startCast(cast, event.source, event.mechanic ?? (event.castChoices ? cast : undefined), event.facing, event.replayId);
+    }
     else if (event.type === 'remove_status') for (const player of selectPlayers(event.target, this.state, this.random)) this.removeStatus(player, event.status, event.stacks ?? 1);
     else if (event.type === 'spawn_area') this.spawnArea(this.randomContext.resolve(event));
     else if (event.type === 'set_background') this.state.background = event.image;
@@ -197,6 +202,12 @@ export class MechanicExecutor {
     this.state.worldGraphics.push({ id: `graphic-${this.state.worldGraphics.length + 1}-${this.state.time}`, image, anchor, radius, createdAt: this.state.time, duration });
   }
 
+  private resolveCastChoice(cast: string | undefined, castChoices: string[] | undefined): string {
+    if (cast) return cast;
+    if (!castChoices || castChoices.length === 0) throw new Error('start_cast requires either "cast" or "castChoices"');
+    return castChoices[this.random.integer(0, castChoices.length - 1)];
+  }
+
   private startCast(castId: string, sourceId: string, mechanic?: string, facing?: CastFacing, replayId?: string): void {
     const definition = this.castDefinitions[castId];
     if (!definition || this.state.casts.some((cast) => cast.sourceId === sourceId && cast.definitionId === castId)) return;
@@ -314,10 +325,15 @@ export class MechanicExecutor {
       this.distributeStatuses(resolvedEffect, players, resolvedEffect.replayId);
       return;
     }
-    if (resolvedEffect.type === 'start_cast') { this.startCast(resolvedEffect.cast, resolvedEffect.source ?? sourceId, resolvedEffect.mechanic, resolvedEffect.facing, resolvedEffect.replayId); return; }
+    if (resolvedEffect.type === 'start_cast') {
+      const cast = this.resolveCastChoice(resolvedEffect.cast, resolvedEffect.castChoices);
+      const mechanic = resolvedEffect.mechanic ?? (resolvedEffect.castChoices ? cast : undefined);
+      this.startCast(cast, resolvedEffect.source ?? sourceId, mechanic, resolvedEffect.facing, resolvedEffect.replayId);
+      return;
+    }
     if (resolvedEffect.type === 'set_mechanic') { this.state.currentMechanic = resolvedEffect.mechanic; return; }
     if (resolvedEffect.type === 'recalculate_roles') { this.recalculateRoles(resolvedEffect.group); return; }
-    if (resolvedEffect.type === 'recalculate_positions') { this.recalculatePositions(resolvedEffect.group); return; }
+    if (resolvedEffect.type === 'recalculate_positions') { this.recalculatePositions(resolvedEffect.group, resolvedEffect.params); return; }
     if (resolvedEffect.type === 'spawn_area') { this.spawnArea({ ...resolvedEffect, source: resolvedEffect.source ?? sourceId }, cast); return; }
     if (resolvedEffect.type === 'select_group') { this.selectGroup(resolvedEffect); return; }
     if (resolvedEffect.type === 'select_group_subset') { this.selectGroupSubset(resolvedEffect); return; }

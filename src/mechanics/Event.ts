@@ -6,10 +6,16 @@ import type { CastFacing } from './Cast';
 
 
 interface BaseEvent { id: string; at?: number; after?: string; delay?: number; }
-export interface StartCastEvent extends BaseEvent { type: 'start_cast'; source: string; cast: string; mechanic?: string; facing?: CastFacing; replayId?: string; }
+export interface StartCastEvent extends BaseEvent {
+  type: 'start_cast'; source: string; mechanic?: string; facing?: CastFacing; replayId?: string;
+  /** Fixed cast id. Mutually exclusive with `castChoices`. */
+  cast?: string;
+  /** Rolled fresh, independently, the moment this event fires */
+  castChoices?: string[];
+}
 export interface RemoveStatusEvent extends BaseEvent { type: 'remove_status'; target: PlayerSelector; status: string; stacks?: number; }
 export interface RecalculateRolesEvent extends BaseEvent { type: 'recalculate_roles'; group?: string; }
-export interface RecalculatePositionsEvent extends BaseEvent { type: 'recalculate_positions'; group?: string; }
+export interface RecalculatePositionsEvent extends BaseEvent { type: 'recalculate_positions'; group?: string; params?: Record<string, number>; }
 export interface SetMechanicEvent extends BaseEvent { type: 'set_mechanic'; mechanic: string; }
 export interface ApplyStatusEvent extends BaseEvent { type: 'apply_status'; target: PlayerSelector; status: string; duration?: number; stacks?: number; }
 export interface DistributeStatusesEvent extends BaseEvent { type: 'distribute_statuses'; target: PlayerSelector; statuses: string[]; duration?: number; replayId?: string; }

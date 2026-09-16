@@ -46,20 +46,28 @@ export function isTowardsPosition(value: unknown): value is TowardsPosition {
   return typeof value === 'object' && value !== null && (value as { type?: unknown }).type === 'towards';
 }
 
-/** Converts a compass angle/radius pair into world-space coordinates. */
 export function fromPolar(angleDegrees: number, radius: number, origin: Vector2 = { x: 0, y: 0 }): Vector2 {
   const radians = (angleDegrees * Math.PI) / 180;
   return { x: origin.x + radius * Math.sin(radians), y: origin.y - radius * Math.cos(radians) };
 }
 
-/**
- * Resolves a position value that may already be a plain Vector2 or may
- * still need polar-to-cartesian conversion. Angle/radius must already be
- * numbers (resolve random/`$ref` strings first). Does NOT handle
- * `TowardsPosition` (that needs a live entity lookup) - use
- * `MechanicExecutor.resolvePosition` for anything that might be one of
- * those.
- */
+export function toPolarAngle(position: Vector2, origin: Vector2 = { x: 0, y: 0 }): number {
+  const radians = Math.atan2(position.x - origin.x, -(position.y - origin.y));
+  const degrees = (radians * 180) / Math.PI;
+  return ((degrees % 360) + 360) % 360;
+}
+
+export function circularMeanAngle(anglesDegrees: number[]): number {
+  const sum = anglesDegrees.reduce(
+    (acc, angle) => {
+      const radians = (angle * Math.PI) / 180;
+      return { x: acc.x + Math.sin(radians), y: acc.y - Math.cos(radians) };
+    },
+    { x: 0, y: 0 }
+  );
+  return toPolarAngle(sum, { x: 0, y: 0 });
+}
+
 export function resolvePositionValue(value: Vector2 | PolarPosition): Vector2 {
   if (!isPolarPosition(value)) return value;
   const angle = Number(value.angle);
