@@ -8,7 +8,7 @@ import type { StatusDefinition } from './entities/Status';
 import type { Player } from './entities/Player';
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
-app.innerHTML = `<main class="workbench"><header class="topbar"><div><p class="eyebrow">ENCOUNTER LAB / TIMELINES</p><h1 id="encounter-name">Loading encounter&hellip;</h1></div><div class="encounter-picker"><label for="encounter-select">Timeline</label><select id="encounter-select"></select></div><div class="readout"><span id="phase">READY</span><strong id="clock">00:00.0</strong></div></header><section class="arena-row"><aside id="roster" class="roster-panel" aria-label="Party health"></aside><div class="arena-panel"><canvas id="arena" width="1200" height="800" aria-label="Encounter arena"></canvas><div id="cast-bar" class="cast-bar" aria-live="polite"><span id="cast-name" class="cast-bar__name"></span><div class="cast-bar__track"><div id="cast-fill" class="cast-bar__fill"></div></div></div></div><aside class="event-log-panel"><h2>Event Log</h2><ul id="event-log"><li class="event-log__empty">No events yet.</li></ul></aside></section><footer class="controls"><div class="control-group"><button id="toggle" type="button">Start</button><button id="restart" type="button">Restart</button><label><input id="keep-rng" type="checkbox"> Keep previous RNG</label><label for="controlled-player">Control</label><select id="controlled-player"></select></div><div class="speed-group" role="group" aria-label="Simulation speed"><span>Speed</span><button data-speed="0.5" type="button">0.5x</button><button class="selected" data-speed="1" type="button">1x</button><button data-speed="2" type="button">2x</button><button data-speed="4" type="button">4x</button></div><p class="hint">Move with WASD or the arrow keys.</p></footer></main>`;
+app.innerHTML = `<main class="workbench"><header class="topbar"><div><p class="eyebrow">ENCOUNTER LAB / TIMELINES</p><h1 id="encounter-name">Loading encounter&hellip;</h1></div><div class="encounter-picker"><label for="encounter-select">Timeline</label><select id="encounter-select"></select></div><div class="readout"><span id="phase">READY</span><strong id="clock">00:00.0</strong></div></header><section class="arena-row"><aside id="roster" class="roster-panel" aria-label="Party health"></aside><div class="arena-panel"><canvas id="arena" width="1200" height="800" aria-label="Encounter arena"></canvas><div id="cast-bars" class="cast-bars" aria-live="polite"></div></div><aside class="event-log-panel"><h2>Event Log</h2><ul id="event-log"><li class="event-log__empty">No events yet.</li></ul></aside></section><footer class="controls"><div class="control-group"><button id="toggle" type="button">Start</button><button id="restart" type="button">Restart</button><label><input id="keep-rng" type="checkbox"> Keep previous RNG</label><label><input id="debug-mode" type="checkbox"> Debug log</label><label for="controlled-player">Control</label><select id="controlled-player"></select></div><div class="speed-group" role="group" aria-label="Simulation speed"><span>Speed</span><button data-speed="0.5" type="button">0.5x</button><button class="selected" data-speed="1" type="button">1x</button><button data-speed="2" type="button">2x</button><button data-speed="4" type="button">4x</button></div><p class="hint">Move with WASD or the arrow keys.</p></footer></main>`;
 
 const canvas = document.querySelector<HTMLCanvasElement>('#arena')!;
 const renderer = new ArenaRenderer(canvas);
@@ -17,9 +17,8 @@ const clock = document.querySelector<HTMLElement>('#clock')!;
 const toggle = document.querySelector<HTMLButtonElement>('#toggle')!;
 const heading = document.querySelector<HTMLHeadingElement>('#encounter-name')!;
 const roster = document.querySelector<HTMLDivElement>('#roster')!;
-const castBar = document.querySelector<HTMLDivElement>('#cast-bar')!;
-const castName = document.querySelector<HTMLSpanElement>('#cast-name')!;
-const castFill = document.querySelector<HTMLDivElement>('#cast-fill')!;
+const castBars = document.querySelector<HTMLDivElement>('#cast-bars')!;
+const castBarRows = new Map<string, { root: HTMLDivElement; name: HTMLSpanElement; fill: HTMLDivElement }>();
 const logList = document.querySelector<HTMLUListElement>('#event-log')!;
 const controlledPlayer = document.querySelector<HTMLSelectElement>('#controlled-player')!;
 const encounterSelect = document.querySelector<HTMLSelectElement>('#encounter-select')!;
@@ -35,6 +34,8 @@ let controller: PlayerController;
 let statusDefinitions = new Map<string, StatusDefinition>();
 let imageResources: Record<string, string> = {};
 let currentSeed = createAttemptSeed();
+/** Replay cache for RNG outcomes while the seed remains fixed. */
+let replayOutcomes = new Map<string, Record<string, unknown>>();
 let speed = 1;
 let previous = performance.now();
 let accumulator = 0;
@@ -111,10 +112,12 @@ function resetLog(): void {
 
 function rebuild(): void {
   if (!encounter) return;
-  if (!document.querySelector<HTMLInputElement>('#keep-rng')!.checked) currentSeed = createAttemptSeed();
-  simulation = new Simulation(encounter, { seed: currentSeed, controlledPlayerId: controlledPlayer.value || undefined });
+  if (!document.querySelector<HTMLInputElement>('#keep-rng')!.checked) { currentSeed = createAttemptSeed(); replayOutcomes = new Map(); }
+  const debug = document.querySelector<HTMLInputElement>('#debug-mode')!.checked;
+  simulation = new Simulation(encounter, { seed: currentSeed, controlledPlayerId: controlledPlayer.value || undefined, replayOutcomes, debug });
   controller = new PlayerController(simulation.state.players.find((player) => player.controlled));
   buildRoster(simulation.state.players); accumulator = 0; previous = performance.now(); toggle.textContent = 'Start'; phase.textContent = 'READY'; resetLog();
+  castBars.replaceChildren(); castBarRows.clear();
 }
 
 async function selectEncounter(entry: EncounterManifestEntry): Promise<void> {
@@ -138,14 +141,33 @@ document.querySelectorAll<HTMLButtonElement>('[data-speed]').forEach((button) =>
 
 await selectEncounter(manifest[0]);
 
+function entityName(id: string): string | undefined {
+  return simulation.state.players.find((player) => player.id === id)?.name ?? simulation.state.enemies.find((enemy) => enemy.id === id)?.name;
+}
+
 function renderHud(): void {
-  const cast = simulation.state.casts.find((active) => encounter.casts?.[active.definitionId]?.visible !== false);
-  if (cast) { const definition = encounter.casts?.[cast.definitionId]; const duration = Math.max(1, cast.completesAt - cast.startedAt); castName.textContent = definition?.name ?? cast.definitionId; castFill.style.width = `${Math.max(0, Math.min(100, ((simulation.state.time - cast.startedAt) / duration) * 100))}%`; castBar.classList.add('cast-bar--visible'); }
-  else { castBar.classList.remove('cast-bar--visible'); castFill.style.width = '0%'; }
+  const visibleCasts = simulation.state.casts.filter((active) => encounter.casts?.[active.definitionId]?.visible !== false);
+  const activeIds = new Set(visibleCasts.map((active) => active.id));
+  for (const [id, row] of castBarRows) { if (!activeIds.has(id)) { row.root.remove(); castBarRows.delete(id); } }
+  for (const cast of visibleCasts) {
+    let row = castBarRows.get(cast.id);
+    if (!row) {
+      const root = document.createElement('div'); root.className = 'cast-bar cast-bar--visible';
+      const name = document.createElement('span'); name.className = 'cast-bar__name';
+      const track = document.createElement('div'); track.className = 'cast-bar__track';
+      const fill = document.createElement('div'); fill.className = 'cast-bar__fill';
+      track.append(fill); root.append(name, track); castBars.append(root);
+      row = { root, name, fill }; castBarRows.set(cast.id, row);
+    }
+    const definition = encounter.casts?.[cast.definitionId];
+    const duration = Math.max(1, cast.completesAt - cast.startedAt);
+    const source = entityName(cast.sourceId);
+    row.name.textContent = source ? `${definition?.name ?? cast.definitionId} — ${source}` : (definition?.name ?? cast.definitionId);
+    row.fill.style.width = `${Math.max(0, Math.min(100, ((simulation.state.time - cast.startedAt) / duration) * 100))}%`;
+  }
   updateRoster(simulation.state.players, simulation.state.time);
   const entries = simulation.state.log; if (loggedCount === 0 && entries.length > 0) logList.replaceChildren();
-  for (; loggedCount < entries.length; loggedCount++) { const entry = entries[loggedCount]; const item = document.createElement('li'); const time = document.createElement('span'); time.className = 'event-log__time'; time.textContent = formatClock(entry.time); item.append(time, document.createTextNode(entry.message)); logList.prepend(item); }
-}
+  for (; loggedCount < entries.length; loggedCount++) { const entry = entries[loggedCount]; const item = document.createElement('li'); if (entry.channel === 'debug') item.classList.add('event-log__entry--debug'); const time = document.createElement('span'); time.className = 'event-log__time'; time.textContent = formatClock(entry.time); item.append(time, document.createTextNode(entry.message)); logList.prepend(item); }}
 
 function frame(now: number): void {
   const elapsed = Math.min(now - previous, 100); previous = now; controller?.update(elapsed / 1000 * speed); accumulator += elapsed * speed;

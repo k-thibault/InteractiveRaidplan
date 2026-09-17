@@ -48,7 +48,7 @@ export class ArenaRenderer {
     for (const status of statuses) this.statusDefinitions.set(status.id, status);
   }
 
-  /** Preloads the encounter's resource-based graphics (arena backgrounds, status icons, world graphics). Images that are still loading, missing, or fail simply fall back to the built-in shapes/colors. */
+  /** Preloads resource-backed background/icon/graphic assets. */
   setResources(resources: EncounterResources | undefined): void {
     this.images.clear();
     for (const [key, src] of Object.entries(resources?.images ?? {})) {
@@ -64,7 +64,7 @@ export class ArenaRenderer {
     return image && image.complete && image.naturalWidth > 0 ? image : undefined;
   }
 
-  /** Returns the configured telegraph fill, or the default flat fill. */
+  /** Returns the configured telegraph fill or the default solid fill. */
   private telegraphFillStyle(style: string | undefined, point: { x: number; y: number }, pixelRadius: number, color: string): string | CanvasGradient {
     if (style === 'soak') return this.buildSoakTelegraphGradient(point, pixelRadius, color);
     return hexToRgba(color, .28);
@@ -167,7 +167,7 @@ export class ArenaRenderer {
     if (showInlineStatuses) entity.statuses.filter((status) => !this.statusDefinitions.get(status.definitionId)?.hidden).forEach((status, index) => this.drawStatusIcon(status, point.x + radius + scale * (.24 + index * .48), point.y - radius * .5, scale));
   }
 
-  /** The controlled player's statuses get a dedicated, larger display bottom-center instead of crowding their on-field icon. Every icon reserves the same space for a duration label (a "-" for permanent statuses) so icons stay aligned regardless of which statuses have a timer. */
+  /** Renders the controlled player's statuses in a dedicated HUD row. */
   private drawControlledStatuses(state: GameState, scale: number): void {
     const controlled = state.players.find((player) => player.controlled);
     if (!controlled) return;

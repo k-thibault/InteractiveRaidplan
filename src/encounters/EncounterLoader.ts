@@ -26,7 +26,7 @@ function resolveResourceUrl(value: string, baseUrl: string): string {
   return new URL(value.replace(/^\/+/, ''), value.startsWith('/') ? base : baseUrl).href;
 }
 
-/** Loads an encounter and resolves its named resources from the shared graphic library. */
+/** Loads an encounter and resolves any shared resource-backed graphics. */
 export async function loadEncounter(url: string): Promise<Encounter> {
   const response = await fetch(url);
   if (!response.ok) throw new Error(`Unable to load encounter: ${response.status}`);

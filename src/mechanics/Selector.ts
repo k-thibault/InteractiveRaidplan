@@ -9,10 +9,13 @@ export type PlayerSelector =
   | { type: 'role'; role: PlayerRole }
   | { type: 'role_any'; roles: PlayerRole[] }
   | { type: 'random'; count: number; role?: PlayerRole; roles?: PlayerRole[] }
-  | { type: 'nearest'; source: string }
+  /** The closest alive players to `source`, nearest first. */
+  | { type: 'nearest'; source: string; count?: number }
   | { type: 'with_status'; status: string }
   | { type: 'without_status'; status: string }
   | { type: 'mechanical_role'; role: string }
+  /** Players captured into a named runtime group. */
+  | { type: 'from_group'; group: string }
   | { type: 'and'; selectors: PlayerSelector[] }
   | { type: 'or'; selectors: PlayerSelector[] };
 
@@ -28,6 +31,10 @@ export function selectPlayers(selector: PlayerSelector, state: GameState, random
   if (selector.type === 'with_status') return players.filter((player) => player.statuses.some((status) => status.definitionId === selector.status));
   if (selector.type === 'without_status') return players.filter((player) => !player.statuses.some((status) => status.definitionId === selector.status));
   if (selector.type === 'mechanical_role') return players.filter((player) => player.mechanicalRoles.includes(selector.role));
+  if (selector.type === 'from_group') {
+    const ids = new Set((state.groups?.[selector.group] ?? []).map((entry) => entry.id));
+    return players.filter((player) => ids.has(player.id));
+  }
   if (selector.type === 'and') {
     return players.filter((player) => selector.selectors.every((child) => selectPlayers(child, state, random).some((candidate) => candidate.id === player.id)));
   }
@@ -41,5 +48,5 @@ export function selectPlayers(selector: PlayerSelector, state: GameState, random
     return random.shuffle(players).slice(0, selector.count);
   }
   const source = findEntity(state, selector.source);
-  return source ? players.sort((a, b) => distance(a.position, source.position) - distance(b.position, source.position)).slice(0, 1) : [];
+  return source ? players.sort((a, b) => distance(a.position, source.position) - distance(b.position, source.position)).slice(0, selector.count ?? 1) : [];
 }

@@ -1,4 +1,4 @@
-import type { Enemy } from '../entities/Enemy';
+import type { Enemy, EnemyTemplate } from '../entities/Enemy';
 import type { Player } from '../entities/Player';
 import type { StatusDefinition } from '../entities/Status';
 import type { EncounterEvent } from '../mechanics/Event';
@@ -8,11 +8,11 @@ import type { PositionDefinition } from '../bots/PositionEvaluator';
 import type { CastDefinition } from '../mechanics/Cast';
 import type { AreaDefinition, EffectDefinition } from '../mechanics/Effect';
 
-/** Named image resources an encounter can reference for backgrounds, status icons, and world graphics. Values are any URL an <img>/Image can load, including data: URIs. */
+/** Encounter-owned resources for backgrounds, icons, and world graphics. */
 export interface EncounterResources {
-  /** Names in the shared public/resources/graphics.json library. */
+  /** Names in the shared graphics library. */
   graphics?: string[];
-  /** Resolved graphic URLs populated by EncounterLoader. */
+  /** Resolved graphic URLs for runtime rendering. */
   images?: Record<string, string>;
 }
 
@@ -24,7 +24,7 @@ export interface Encounter {
   enemies: Enemy[];
   statuses: StatusDefinition[];
   resources?: EncounterResources;
-  /** Resource key of the initial arena background. Change it mid-timeline with a `set_background` event. */
+  /** Resource key for the current arena background. */
   background?: string;
   randomGroups?: Record<string, RandomGroup>;
   sequences?: Record<string, SequenceDefinition>;
@@ -34,7 +34,9 @@ export interface Encounter {
   casts?: Record<string, CastDefinition>;
   /** Reusable area definitions referenced by spawn-area effects. */
   areas?: Record<string, AreaDefinition>;
-  /** Collects the unique players hit by a set of area instances and runs effects once all instances resolve. */
+  /** Reusable enemy templates referenced by `spawn_enemy` events/effects. */
+  enemyTemplates?: Record<string, EnemyTemplate>;
+  /** Groups area hits and resolves shared effects when all members are done. */
   areaGroups?: Record<string, { count: number; effects: EffectDefinition[] }>;
   events: EncounterEvent[];
 }
