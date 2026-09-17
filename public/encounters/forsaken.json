@@ -1,7 +1,7 @@
 {
   "version": 5,
   "name": "Forsaken",
-  "duration": 40000,
+  "duration": 45000,
   "background": "bg-default",
   "randomGroups": {
     "triggerAssignments": {
@@ -70,12 +70,18 @@
         {
           "condition": { "type": "player_count", "max": 1 },
           "effects": [
-            { "type": "apply_status", "target": "all", "status": "damage-down" },
-            { "type": "damage", "target": "all", "damage": { "amount": 5, "type": "magical" } },
-            { "type": "remove_status", "target": "inside", "status": "spells-trouble" },
-            { "type": "remove_status", "target": "inside", "status": "stack-trigger" },
-            { "type": "remove_status", "target": "inside", "status": "spread-trigger" },
-            { "type": "remove_status", "target": "inside", "status": "cone-trigger" }
+            { 
+              "type": "delayed_effects",
+              "delay": 1000,
+              "effects": [
+                { "type": "apply_status", "target": "all", "status": "damage-down" },
+                { "type": "damage", "target": "all", "damage": { "amount": 5, "type": "magical" } },
+                { "type": "remove_status", "target": "inside", "status": "spells-trouble" },
+                { "type": "remove_status", "target": "inside", "status": "stack-trigger" },
+                { "type": "remove_status", "target": "inside", "status": "spread-trigger" },
+                { "type": "remove_status", "target": "inside", "status": "cone-trigger" }
+              ]
+            }
           ]
         }
       ]
@@ -91,7 +97,7 @@
         {
           "condition": { "type": "player_count", "min": 1 },
           "effects": [
-            { "type": "damage", "target": "inside", "damage": { "amount": 30, "type": "magical" } },
+            { "type": "damage", "target": "inside", "damage": { "amount": 80, "type": "magical" } },
             { "type": "apply_status", "target": "inside", "status": "magic-vulnerability", "duration": 3000 }
           ]
         }
@@ -161,7 +167,7 @@
                   "type": "damage",
                   "target": "inside",
                   "damage": {
-                    "amount": 20,
+                    "amount": 80,
                     "type": "magical"
                   }
                 },
@@ -183,7 +189,7 @@
                   "type": "damage",
                   "target": "inside",
                   "damage": {
-                    "amount": 1,
+                    "amount": 120,
                     "type": "magical",
                     "fatal": true
                   }
@@ -226,7 +232,7 @@
                   "type": "damage",
                   "target": "inside",
                   "damage": {
-                    "amount": 20,
+                    "amount": 80,
                     "type": "magical"
                   }
                 },
@@ -277,7 +283,7 @@
                   "type": "damage",
                   "target": "inside",
                   "damage": {
-                    "amount": 20,
+                    "amount": 80,
                     "type": "magical"
                   }
                 },
@@ -327,7 +333,7 @@
           "type": "damage",
           "target": "all",
           "damage": {
-            "amount": 25,
+            "amount": 90,
             "type": "magical"
           }
         },
@@ -384,7 +390,7 @@
                     "type": "damage",
                     "target": "inside",
                     "damage": {
-                      "amount": 70,
+                      "amount": 120,
                       "type": "magical",
                       "fatal": true
                     }
@@ -420,7 +426,7 @@
                     "type": "damage",
                     "target": "inside",
                     "damage": {
-                      "amount": 70,
+                      "amount": 120,
                       "type": "magical",
                       "fatal": true
                     }
@@ -712,44 +718,90 @@
     ]
   },
   "mechanicalRoles": {
-    "forsaken-flex-seed": {
+    "forsaken-initial-towers": {
       "clockwise_soak": [
-        { "type": "mechanical_role", "role": "tower_team" },
-        {
+        { 
           "type": "or",
-          "conditions": [
-            { "type": "has_status", "status": "cone-trigger" },
+          "conditions": [ 
             [
-              { "type": "has_status", "status": "stack-trigger" },
-              { "type": "gameplay_role", "role": "damage" }
+              { "type": "mechanical_role", "role": "tower_team" },
+              {
+                "type": "or",
+                "conditions": [
+                  { "type": "has_status", "status": "cone-trigger" },
+                  [
+                    { "type": "has_status", "status": "stack-trigger" },
+                    { "type": "gameplay_role", "role": "damage" }
+                  ]
+                ]
+              }
+            ],
+            [
+              { "type": "mechanical_role", "role": "bait_team" },
+              {
+                "type": "or",
+                "conditions": [
+                  { "type": "gameplay_role", "role": "tank" },
+                  { "type": "damage_position", "role": "ranged" }
+                ]
+              }
             ]
           ]
         }
       ],
       "counterclockwise_soak": [
-        { "type": "mechanical_role", "role": "tower_team" },
-        {
+        { 
           "type": "or",
-          "conditions": [
-            { "type": "has_status", "status": "spread-trigger" },
+          "conditions": [ 
             [
-              { "type": "has_status", "status": "stack-trigger" },
-              { "type": "not", "condition": { "type": "gameplay_role", "role": "damage" } }
+              { "type": "mechanical_role", "role": "tower_team" },
+              {
+                "type": "or",
+                "conditions": [
+                  { "type": "has_status", "status": "spread-trigger" },
+                  [
+                    { "type": "has_status", "status": "stack-trigger" },
+                    { "type": "not", "condition": { "type": "gameplay_role", "role": "damage" } }
+                  ]
+                ]
+              }
+            ],
+            [
+              { "type": "mechanical_role", "role": "bait_team" },
+              {
+                "type": "or",
+                "conditions": [
+                  { "type": "gameplay_role", "role": "healer" },
+                  { "type": "damage_position", "role": "melee" }
+                ]
+              }
             ]
           ]
         }
       ]
     },
-    "forsaken-flex": {
+    "forsaken-flex-even": {
       "clockwise_soak": [
         {
           "type": "or",
           "conditions": [
             [
-              { "type": "mechanical_role", "role": "clockwise_soak" },
-              { "type": "not", "condition": { "type": "flex_conflict_loser", "pairRole": "clockwise_soak", "statuses": ["cone-trigger", "spread-trigger"] } }
+              { "type": "mechanical_role", "role": "tower_team" },
+              {
+                "type": "or",
+                "conditions": [
+                  [
+                    { "type": "mechanical_role", "role": "clockwise_soak" },
+                    { "type": "not", "condition": { "type": "flex_conflict_loser", "pairRole": "clockwise_soak", "statuses": ["cone-trigger", "spread-trigger"] } }
+                  ],
+                  { "type": "flex_conflict_loser", "pairRole": "counterclockwise_soak", "statuses": ["cone-trigger", "spread-trigger"] }
+                ]
+              }
             ],
-            { "type": "flex_conflict_loser", "pairRole": "counterclockwise_soak", "statuses": ["cone-trigger", "spread-trigger"] }
+            [
+              { "type": "mechanical_role", "role": "bait_team" },
+              { "type": "mechanical_role", "role": "clockwise_soak" }
+            ]
           ]
         }
       ],
@@ -758,10 +810,58 @@
           "type": "or",
           "conditions": [
             [
-              { "type": "mechanical_role", "role": "counterclockwise_soak" },
-              { "type": "not", "condition": { "type": "flex_conflict_loser", "pairRole": "counterclockwise_soak", "statuses": ["cone-trigger", "spread-trigger"] } }
+              { "type": "mechanical_role", "role": "tower_team" },
+              {
+                "type": "or",
+                "conditions": [
+                  [
+                    { "type": "mechanical_role", "role": "counterclockwise_soak" },
+                    { "type": "not", "condition": { "type": "flex_conflict_loser", "pairRole": "counterclockwise_soak", "statuses": ["cone-trigger", "spread-trigger"] } }
+                  ],
+                  { "type": "flex_conflict_loser", "pairRole": "clockwise_soak", "statuses": ["cone-trigger", "spread-trigger"] }
+                ]
+              }
             ],
-            { "type": "flex_conflict_loser", "pairRole": "clockwise_soak", "statuses": ["cone-trigger", "spread-trigger"] }
+            [
+              { "type": "mechanical_role", "role": "bait_team" },
+              { "type": "mechanical_role", "role": "counterclockwise_soak" }
+            ]
+          ]
+        }
+      ]
+    },
+    "forsaken-flex-odd": {
+      "clockwise_soak": [
+        {
+          "type": "or",
+          "conditions": [            
+            { "type": "has_status", "status": "cone-trigger" },           
+            { "type": "flex_conflict_loser", "pairRole": "counterclockwise_soak", "statuses": ["stack-trigger"] }
+          ]
+        }
+      ],
+      "counterclockwise_soak": [
+        {
+          "type": "or",
+          "conditions": [            
+            { "type": "has_status", "status": "spread-trigger" },           
+            { "type": "flex_conflict_loser", "pairRole": "clockwise_soak", "statuses": ["stack-trigger"] }
+          ]
+        }
+      ]
+    },
+    "swap-teams": {
+      "tower_team": [
+        {
+          "conditions": [            
+            { "type": "mechanical_role", "role": "bait_team" }
+          ]
+        }
+      ],
+      "bait_team": [
+        {
+          "conditions": [            
+            { "type": "mechanical_role", "role": "tower_team" }
           ]
         }
       ]
@@ -922,7 +1022,7 @@
         "target": { "type": "polar", "angle": 135, "radius": 7 }
       }
     ],
-    "forsaken": [
+    "forsaken-odd-towers": [
       {
         "when": [
           {
@@ -1028,7 +1128,7 @@
         "target": { "type": "area", "tag": "soak-b", "polar": { "radius": 5.3 } }
       }
     ],
-    "forsaken-round-2": [
+    "forsaken-even-towers": [
       {
         "when": [
           { "type": "mechanical_role", "role": "bait_team" },
@@ -1090,7 +1190,7 @@
         "target": { "type": "area", "tag": "soak-a", "polar": { "radius": 6.9 } }
       }
     ],
-    "forsaken-pasts-future-prep": [
+    "past-future-baits": [
       {
         "when": { "type": "mechanic", "mechanic": "pasts" },
         "target": { "type": "polar", "angle": "$soakAngles[$round][0]", "angleOffset": 45, "radius": 5 }
@@ -1117,21 +1217,21 @@
       "mechanic": "forsaken"
     },
     {
-      "id": "forsaken-round-1-roles",
+      "id": "tower-1-roles",
       "after": "forsaken",
       "delay": 1500,
       "type": "recalculate_roles",
       "group": "forsaken"
     },
     {
-      "id": "forsaken-round-1-flex-seed",
-      "after": "forsaken-round-1-roles",
+      "id": "tower-1-flex-seed",
+      "after": "tower-1-roles",
       "delay": 0,
       "type": "recalculate_roles",
-      "group": "forsaken-flex-seed"
+      "group": "forsaken-initial-towers"
     },
     {
-      "id": "forsaken-round-1-soak-a",
+      "id": "tower-1-soak-a",
       "after": "forsaken",
       "delay": 1500,
       "type": "spawn_area",
@@ -1142,7 +1242,7 @@
       "areaGroup": "forsaken-soaks-odd"
     },
     {
-      "id": "forsaken-round-1-soak-b",
+      "id": "tower-1-soak-b",
       "after": "forsaken",
       "delay": 1500,
       "type": "spawn_area",
@@ -1153,59 +1253,87 @@
       "areaGroup": "forsaken-soaks-odd"
     },
     {
-      "id": "forsaken-round-1-positions",
-      "after": "forsaken-round-1-soak-a",
+      "id": "tower-1-positions",
+      "after": "tower-1-soak-a",
       "delay": 3000,
       "type": "recalculate_positions",
-      "group": "forsaken"
+      "group": "forsaken-odd-towers"
     },
     {
-      "id": "forsaken-round-2-soak-a",
-      "after": "forsaken-round-1-soak-a",
+      "id": "heal-before-t1",
+      "after": "tower-1-soak-a",
+      "delay": 5000,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "tower-2-soak-a",
+      "after": "tower-1-soak-a",
       "delay": 12000,
       "type": "spawn_area",
       "area": "forsaken-soak",
-      "position": { "type": "polar", "angle": "$soakAngles2[1][0]", "radius": 5 },
+      "position": { "type": "polar", "angle": "$soakAngles[1][0]", "radius": 5 },
       "label": "soak-a",
       "tags": ["soak-a"],
       "areaGroup": "forsaken-soaks-even"
     },
     {
-      "id": "forsaken-round-2-soak-b",
-      "after": "forsaken-round-1-soak-a",
+      "id": "tower-2-soak-b",
+      "after": "tower-1-soak-a",
       "delay": 12000,
       "type": "spawn_area",
       "area": "forsaken-soak",
-      "position": { "type": "polar", "angle": "$soakAngles2[1][1]", "radius": 5 },
+      "position": { "type": "polar", "angle": "$soakAngles[1][1]", "radius": 5 },
       "label": "soak-b",
       "tags": ["soak-b"],
       "areaGroup": "forsaken-soaks-even"
     },
     {
-      "id": "forsaken-round-2-flex",
-      "after": "forsaken-round-2-soak-a",
+      "id": "tower-2-flex",
+      "after": "tower-2-soak-a",
       "delay": 3000,
       "type": "recalculate_roles",
-      "group": "forsaken-flex"
+      "group": "forsaken-flex-even"
     },
     {
-      "id": "forsaken-round-2-positions",
-      "after": "forsaken-round-2-flex",
+      "id": "tower-2-positions",
+      "after": "tower-2-flex",
       "delay": 0,
       "type": "recalculate_positions",
-      "group": "forsaken-round-2"
+      "group": "forsaken-even-towers"
+    },
+    {
+      "id": "heal-before-t2",
+      "after": "tower-2-soak-a",
+      "delay": 5000,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
     },
     {
       "id": "pasts-future-cast",
-      "after": "forsaken-round-2-soak-a",
+      "after": "tower-2-soak-a",
       "delay": 7000,
       "type": "start_cast",
       "source": "boss",
       "castChoices": ["pasts", "futures"]
     },
     {
-      "id": "forsaken-round-3-soak-a",
-      "after": "forsaken-round-2-soak-a",
+      "id": "bait-1",
+      "after": "tower-2-soak-a",
+      "delay": 13500,
+      "type": "recalculate_positions",
+      "group": "past-future-baits",
+      "params": { "round": 2 }
+    },
+    {
+      "id": "tower-3-soak-a",
+      "after": "tower-2-soak-a",
       "delay": 12000,
       "type": "spawn_area",
       "area": "forsaken-soak",
@@ -1215,8 +1343,8 @@
       "areaGroup": "forsaken-soaks-odd"
     },
     {
-      "id": "forsaken-round-3-soak-b",
-      "after": "forsaken-round-2-soak-a",
+      "id": "tower-3-soak-b",
+      "after": "tower-2-soak-a",
       "delay": 12000,
       "type": "spawn_area",
       "area": "forsaken-soak",
@@ -1225,20 +1353,98 @@
       "tags": ["soak-b"],
       "areaGroup": "forsaken-soaks-odd"
     },
-        {
-      "id": "forsaken-pasts-future-prep-positions",
-      "after": "forsaken-round-2-soak-a",
-      "delay": 12500,
-      "type": "recalculate_positions",
-      "group": "forsaken-pasts-future-prep",
-      "params": { "round": 2 }
+    {
+      "id": "tower-3-flex",
+      "after": "tower-3-soak-a",
+      "delay": 7500,
+      "type": "recalculate_roles",
+      "group": "forsaken-flex-odd"
     },
     {
-      "id": "bait-1",
-      "after": "pasts-future-cast",
-      "delay": 14500,
+      "id": "tower-3-positions",
+      "after": "tower-3-flex",
+      "delay": 0,
       "type": "recalculate_positions",
-      "group": "forsaken" 
+      "group": "forsaken-odd-towers"
+    },
+    {
+      "id": "heal-before-t3",
+      "after": "tower-3-soak-a",
+      "delay": 5000,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "tower-4-soak-a",
+      "after": "tower-3-soak-a",
+      "delay": 12000,
+      "type": "spawn_area",
+      "area": "forsaken-soak",
+      "position": { "type": "polar", "angle": "$soakAngles[3][0]", "radius": 5 },
+      "label": "soak-a",
+      "tags": ["soak-a"],
+      "areaGroup": "forsaken-soaks-even"
+    },
+    {
+      "id": "tower-4-soak-b",
+      "after": "tower-3-soak-a",
+      "delay": 12000,
+      "type": "spawn_area",
+      "area": "forsaken-soak",
+      "position": { "type": "polar", "angle": "$soakAngles[3][1]", "radius": 5 },
+      "label": "soak-b",
+      "tags": ["soak-b"],
+      "areaGroup": "forsaken-soaks-even"
+    },
+    {
+      "id": "tower-4-flex",
+      "after": "tower-4-soak-a",
+      "delay": 3000,
+      "type": "recalculate_roles",
+      "group": "forsaken-flex-even"
+    },
+    {
+      "id": "tower-4-team-swap",
+      "after": "tower-4-flex",
+      "delay": 0,
+      "type": "recalculate_roles",
+      "group": "swap-teams"
+    },
+    {
+      "id": "tower-4-positions",
+      "after": "tower-4-team-swap",
+      "delay": 0,
+      "type": "recalculate_positions",
+      "group": "forsaken-even-towers"
+    },
+    {
+      "id": "heal-before-t4",
+      "after": "tower-4-soak-a",
+      "delay": 5000,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "pasts-future-cast",
+      "after": "tower-4-soak-a",
+      "delay": 7000,
+      "type": "start_cast",
+      "source": "boss",
+      "castChoices": ["pasts", "futures"]
+    },
+    {
+      "id": "bait-2",
+      "after": "tower-4-soak-a",
+      "delay": 13500,
+      "type": "recalculate_positions",
+      "group": "past-future-baits",
+      "params": { "round": 4 }
     }
   ]
 }
