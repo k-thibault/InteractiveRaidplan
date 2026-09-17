@@ -70,16 +70,16 @@
         {
           "condition": { "type": "player_count", "max": 1 },
           "effects": [
+            { "type": "remove_status", "target": "inside", "status": "spells-trouble" },
+            { "type": "remove_status", "target": "inside", "status": "stack-trigger" },
+            { "type": "remove_status", "target": "inside", "status": "spread-trigger" },
+            { "type": "remove_status", "target": "inside", "status": "cone-trigger" },  
             { 
               "type": "delayed_effects",
               "delay": 1000,
               "effects": [
                 { "type": "apply_status", "target": "all", "status": "damage-down" },
-                { "type": "damage", "target": "all", "damage": { "amount": 5, "type": "magical" } },
-                { "type": "remove_status", "target": "inside", "status": "spells-trouble" },
-                { "type": "remove_status", "target": "inside", "status": "stack-trigger" },
-                { "type": "remove_status", "target": "inside", "status": "spread-trigger" },
-                { "type": "remove_status", "target": "inside", "status": "cone-trigger" }
+                { "type": "damage", "target": "all", "damage": { "amount": 5, "type": "magical" } }
               ]
             }
           ]
@@ -744,7 +744,7 @@
                 "type": "or",
                 "conditions": [
                   { "type": "gameplay_role", "role": "tank" },
-                  { "type": "damage_position", "role": "ranged" }
+                  { "type": "damage_position", "position": "ranged" }
                 ]
               }
             ]
@@ -774,7 +774,7 @@
                 "type": "or",
                 "conditions": [
                   { "type": "gameplay_role", "role": "healer" },
-                  { "type": "damage_position", "role": "melee" }
+                  { "type": "damage_position", "position": "melee" }
                 ]
               }
             ]
@@ -895,19 +895,11 @@
       ]
     },
     "swap-teams": {
-      "tower_team": [
-        {
-          "conditions": [            
-            { "type": "mechanical_role", "role": "bait_team" }
-          ]
-        }
+      "tower_team": [            
+        { "type": "mechanical_role", "role": "bait_team" }                 
       ],
-      "bait_team": [
-        {
-          "conditions": [            
-            { "type": "mechanical_role", "role": "tower_team" }
-          ]
-        }
+      "bait_team": [        
+        { "type": "mechanical_role", "role": "tower_team" }
       ]
     },
     "forsaken": {
@@ -1126,8 +1118,8 @@
             "status": "stack-trigger"
           },
           {
-            "type": "gameplay_role",
-            "role": "damage"
+            "type": "mechanical_role",
+            "role": "clockwise_soak"
           }
         ],
         "target": { "type": "area", "tag": "soak-b", "polar": { "radius": 3.1 } }
@@ -1141,6 +1133,10 @@
           {
             "type": "has_status",
             "status": "stack-trigger"
+          },
+          {
+            "type": "mechanical_role",
+            "role": "counterclockwise_soak"
           }
         ],
         "target": { "type": "area", "tag": "soak-a", "polar": { "radius": 3.1 } }
@@ -1270,7 +1266,7 @@
     {
       "id": "tower-1-flex-seed",
       "after": "tower-1-roles",
-      "delay": 0,
+      "delay": 100,
       "type": "recalculate_roles",
       "group": "forsaken-initial-towers"
     },

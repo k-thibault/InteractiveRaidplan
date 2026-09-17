@@ -8,9 +8,10 @@ import { AreaResolver } from '../mechanics/AreaResolver';
 import { RandomContext } from './RandomContext';
 import { BotManager } from '../bots/BotManager';
 import { MechanicalRoleEvaluator } from '../bots/MechanicalRoleEvaluator';
+import type { RoleChange } from '../bots/MechanicalRoleEvaluator';
 import { PositionEvaluator } from '../bots/PositionEvaluator';
 
-export interface SimulationOptions { seed: number; controlledPlayerId?: string; replayOutcomes?: Map<string, Record<string, unknown>>; }
+export interface SimulationOptions { seed: number; controlledPlayerId?: string; replayOutcomes?: Map<string, Record<string, unknown>>; debug?: boolean; }
 
 export class Simulation {
   readonly state: GameState;
@@ -25,27 +26,39 @@ export class Simulation {
   private readonly areaGroupResolvedCount = new Map<string, number>();
   private readonly roleEvaluator: MechanicalRoleEvaluator;
   private positionEvaluator: PositionEvaluator;
+  private readonly debug: boolean;
 
   constructor(encounter: Encounter, options: SimulationOptions) {
     this.encounterDuration = encounter.duration;
     this.areaGroups = encounter.areaGroups ?? {};
     this.random = new Random(options.seed);
+    this.debug = options.debug ?? false;
     const randomContext = new RandomContext(encounter.randomGroups, encounter.sequences, encounter.distributions, this.random);
     const players = structuredClone(encounter.players).map((player) => ({ ...player, maxHealth: player.maxHealth ?? player.health, controlled: player.id === options.controlledPlayerId, mechanicalRoles: player.mechanicalRoles ?? [] }));
     this.state = { time: 0, deltaTime: 0, currentMechanic: undefined, players, enemies: structuredClone(encounter.enemies), effects: [], worldGraphics: [], background: encounter.background, casts: [], running: false, completed: false, log: [], groups: {} };
     this.roleEvaluator = new MechanicalRoleEvaluator(encounter.mechanicalRoles);
     this.positionEvaluator = new PositionEvaluator(encounter.positions, <T>(value: T) => randomContext.resolve(value));
-    this.executor = new MechanicExecutor(this.state, this.random, encounter.statuses, encounter.casts, randomContext, encounter.areas, (group) => this.roleEvaluator.recalculate(this.state, group), (group, params) => this.positionEvaluator.recalculate(this.state, group, params), encounter.enemyTemplates, options.replayOutcomes);
+    const recalculateRoles = (group?: string) => this.logRoleChanges(this.roleEvaluator.recalculate(this.state, group));
+    this.executor = new MechanicExecutor(this.state, this.random, encounter.statuses, encounter.casts, randomContext, encounter.areas, recalculateRoles, (group, params) => this.positionEvaluator.recalculate(this.state, group, params), encounter.enemyTemplates, options.replayOutcomes, options.debug);
     const eventTimes = new Map<string, number>();
     for (const event of encounter.events) {
       const executeAt = event.at ?? (event.after ? (eventTimes.get(event.after) ?? 0) + (event.delay ?? 0) : 0);
       eventTimes.set(event.id, executeAt);
       this.scheduler.schedule(event.id, executeAt, () => {
         const resolved = randomContext.resolve(event);
-        if (resolved.type === 'recalculate_roles') this.roleEvaluator.recalculate(this.state, resolved.group);
+        if (resolved.type === 'recalculate_roles') recalculateRoles(resolved.group);
         else if (resolved.type === 'recalculate_positions') this.positionEvaluator.recalculate(this.state, resolved.group, resolved.params);
         else this.executor.execute(resolved);
       });
+    }
+  }
+
+  private logRoleChanges(changes: RoleChange[]): void {
+    if (!this.debug) return;
+    for (const { playerId, added, removed } of changes) {
+      const name = this.state.players.find((player) => player.id === playerId)?.name ?? playerId;
+      if (added.length) this.state.log.push({ id: `log-${this.state.log.length + 1}`, time: this.state.time, message: `${name} gained role(s): ${added.join(', ')}.`, channel: 'debug' });
+      if (removed.length) this.state.log.push({ id: `log-${this.state.log.length + 1}`, time: this.state.time, message: `${name} lost role(s): ${removed.join(', ')}.`, channel: 'debug' });
     }
   }
 

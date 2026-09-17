@@ -8,7 +8,7 @@ import type { StatusDefinition } from './entities/Status';
 import type { Player } from './entities/Player';
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
-app.innerHTML = `<main class="workbench"><header class="topbar"><div><p class="eyebrow">ENCOUNTER LAB / TIMELINES</p><h1 id="encounter-name">Loading encounter&hellip;</h1></div><div class="encounter-picker"><label for="encounter-select">Timeline</label><select id="encounter-select"></select></div><div class="readout"><span id="phase">READY</span><strong id="clock">00:00.0</strong></div></header><section class="arena-row"><aside id="roster" class="roster-panel" aria-label="Party health"></aside><div class="arena-panel"><canvas id="arena" width="1200" height="800" aria-label="Encounter arena"></canvas><div id="cast-bars" class="cast-bars" aria-live="polite"></div></div><aside class="event-log-panel"><h2>Event Log</h2><ul id="event-log"><li class="event-log__empty">No events yet.</li></ul></aside></section><footer class="controls"><div class="control-group"><button id="toggle" type="button">Start</button><button id="restart" type="button">Restart</button><label><input id="keep-rng" type="checkbox"> Keep previous RNG</label><label for="controlled-player">Control</label><select id="controlled-player"></select></div><div class="speed-group" role="group" aria-label="Simulation speed"><span>Speed</span><button data-speed="0.5" type="button">0.5x</button><button class="selected" data-speed="1" type="button">1x</button><button data-speed="2" type="button">2x</button><button data-speed="4" type="button">4x</button></div><p class="hint">Move with WASD or the arrow keys.</p></footer></main>`;
+app.innerHTML = `<main class="workbench"><header class="topbar"><div><p class="eyebrow">ENCOUNTER LAB / TIMELINES</p><h1 id="encounter-name">Loading encounter&hellip;</h1></div><div class="encounter-picker"><label for="encounter-select">Timeline</label><select id="encounter-select"></select></div><div class="readout"><span id="phase">READY</span><strong id="clock">00:00.0</strong></div></header><section class="arena-row"><aside id="roster" class="roster-panel" aria-label="Party health"></aside><div class="arena-panel"><canvas id="arena" width="1200" height="800" aria-label="Encounter arena"></canvas><div id="cast-bars" class="cast-bars" aria-live="polite"></div></div><aside class="event-log-panel"><h2>Event Log</h2><ul id="event-log"><li class="event-log__empty">No events yet.</li></ul></aside></section><footer class="controls"><div class="control-group"><button id="toggle" type="button">Start</button><button id="restart" type="button">Restart</button><label><input id="keep-rng" type="checkbox"> Keep previous RNG</label><label><input id="debug-mode" type="checkbox"> Debug log</label><label for="controlled-player">Control</label><select id="controlled-player"></select></div><div class="speed-group" role="group" aria-label="Simulation speed"><span>Speed</span><button data-speed="0.5" type="button">0.5x</button><button class="selected" data-speed="1" type="button">1x</button><button data-speed="2" type="button">2x</button><button data-speed="4" type="button">4x</button></div><p class="hint">Move with WASD or the arrow keys.</p></footer></main>`;
 
 const canvas = document.querySelector<HTMLCanvasElement>('#arena')!;
 const renderer = new ArenaRenderer(canvas);
@@ -113,7 +113,8 @@ function resetLog(): void {
 function rebuild(): void {
   if (!encounter) return;
   if (!document.querySelector<HTMLInputElement>('#keep-rng')!.checked) { currentSeed = createAttemptSeed(); replayOutcomes = new Map(); }
-  simulation = new Simulation(encounter, { seed: currentSeed, controlledPlayerId: controlledPlayer.value || undefined, replayOutcomes });
+  const debug = document.querySelector<HTMLInputElement>('#debug-mode')!.checked;
+  simulation = new Simulation(encounter, { seed: currentSeed, controlledPlayerId: controlledPlayer.value || undefined, replayOutcomes, debug });
   controller = new PlayerController(simulation.state.players.find((player) => player.controlled));
   buildRoster(simulation.state.players); accumulator = 0; previous = performance.now(); toggle.textContent = 'Start'; phase.textContent = 'READY'; resetLog();
   castBars.replaceChildren(); castBarRows.clear();
@@ -166,8 +167,7 @@ function renderHud(): void {
   }
   updateRoster(simulation.state.players, simulation.state.time);
   const entries = simulation.state.log; if (loggedCount === 0 && entries.length > 0) logList.replaceChildren();
-  for (; loggedCount < entries.length; loggedCount++) { const entry = entries[loggedCount]; const item = document.createElement('li'); const time = document.createElement('span'); time.className = 'event-log__time'; time.textContent = formatClock(entry.time); item.append(time, document.createTextNode(entry.message)); logList.prepend(item); }
-}
+  for (; loggedCount < entries.length; loggedCount++) { const entry = entries[loggedCount]; const item = document.createElement('li'); if (entry.channel === 'debug') item.classList.add('event-log__entry--debug'); const time = document.createElement('span'); time.className = 'event-log__time'; time.textContent = formatClock(entry.time); item.append(time, document.createTextNode(entry.message)); logList.prepend(item); }}
 
 function frame(now: number): void {
   const elapsed = Math.min(now - previous, 100); previous = now; controller?.update(elapsed / 1000 * speed); accumulator += elapsed * speed;

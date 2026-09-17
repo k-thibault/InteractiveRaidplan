@@ -18,12 +18,8 @@ export type Condition =
   | { type: 'flex_conflict_loser'; pairRole: string; statuses: string[] };
 
 export type ConditionExpression = Condition | ConditionExpression[];
+export interface RoleChange { playerId: string; added: string[]; removed: string[]; }
 
-/**
- * A role group is evaluated only when the timeline explicitly asks for it.
- * The array form of `when` is an implicit AND, avoiding the repetitive
- * { type: 'and', conditions: [...] } wrapper.
- */
 export type MechanicalRoleGroup = Record<string, ConditionExpression>;
 export type MechanicalRoleDefinitions = Record<string, MechanicalRoleGroup>;
 
@@ -39,7 +35,7 @@ export class MechanicalRoleEvaluator {
 
   constructor(definitions: MechanicalRoleDefinitions = {}) { this.definitions = definitions; }
 
-  recalculate(state: GameState, group?: string): void {
+  recalculate(state: GameState, group?: string): RoleChange[] {
     const definition = group ? this.definitions[group] : undefined;
     const groups = definition ? [definition] : Object.values(this.definitions);
     const roleKeys = new Set(groups.flatMap((current) => Object.keys(current)));
@@ -52,11 +48,16 @@ export class MechanicalRoleEvaluator {
         .map(([role]) => role);
       assignments.set(player.id, roles);
     }
-
+    const changes: RoleChange[] = [];
     for (const player of state.players) {
       const kept = player.mechanicalRoles.filter((role) => !roleKeys.has(role));
-      player.mechanicalRoles = [...kept, ...(assignments.get(player.id) ?? [])];
+      const next = [...kept, ...(assignments.get(player.id) ?? [])];
+      const added = next.filter((role) => !player.mechanicalRoles.includes(role));
+      const removed = player.mechanicalRoles.filter((role) => !next.includes(role));
+      if (added.length || removed.length) changes.push({ playerId: player.id, added, removed });
+      player.mechanicalRoles = next;
     }
+    return changes;
   }
 
   evaluate(condition: ConditionExpression, player: Player, state: GameState): boolean {

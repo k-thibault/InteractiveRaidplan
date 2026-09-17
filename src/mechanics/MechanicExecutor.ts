@@ -1,4 +1,5 @@
 import type { GameState } from '../simulation/GameState';
+import type { LogEntry } from '../simulation/Log';
 import type { Random } from '../simulation/Random';
 import { findEntity, selectPlayers } from './Selector';
 import type { EncounterEvent, SpawnAreaEvent, ShowGraphicEvent, SpawnEnemyEvent, SelectGroupEvent, SelectGroupSubsetEvent, ForEachGroupEvent } from './Event';
@@ -31,6 +32,7 @@ export class MechanicExecutor {
   private readonly pendingEffects: { executeAt: number; effects: EffectDefinition[]; inside: Set<string>; sourceId: string; sourceName?: string; cast?: CastContext }[] = [];
   /** Stores the outcomes of replayable rolls, keyed by `replayId`. */
   private readonly replayOutcomes: Map<string, Record<string, unknown>>;
+  private readonly debug: boolean;
 
   constructor(
     state: GameState,
@@ -42,7 +44,8 @@ export class MechanicExecutor {
     recalculateRoles: (group?: string) => void = () => undefined,
     recalculatePositions: (group?: string, params?: Record<string, number>) => void = () => undefined,
     enemyTemplates: Record<string, EnemyTemplate> = {},
-    replayOutcomes: Map<string, Record<string, unknown>> = new Map()
+    replayOutcomes: Map<string, Record<string, unknown>> = new Map(),
+    debug = false
   ) {
     this.state = state;
     this.random = random;
@@ -55,6 +58,7 @@ export class MechanicExecutor {
     this.recalculateRoles = recalculateRoles;
     this.recalculatePositions = recalculatePositions;
     this.replayOutcomes = replayOutcomes;
+    this.debug = debug;
   }
 
   /** Reads a single recorded replay value for this `replayId`. */
@@ -122,6 +126,16 @@ export class MechanicExecutor {
     const expiredIds = new Set(expired.map((enemy) => enemy.id));
     this.state.enemies = this.state.enemies.filter((enemy) => !expiredIds.has(enemy.id));
     this.state.casts = this.state.casts.filter((cast) => !expiredIds.has(cast.sourceId));
+    this.pruneGroups(expiredIds);
+  }
+
+  private pruneGroups(ids: Set<string>): void {
+    for (const name of Object.keys(this.state.groups)) {
+      const members = this.state.groups[name];
+      if (members.some((entry) => ids.has(entry.id))) {
+        this.state.groups[name] = members.filter((entry) => !ids.has(entry.id));
+      }
+    }
   }
 
   /** Resolves positions, including live `towards` targets. */
@@ -210,7 +224,8 @@ export class MechanicExecutor {
 
   private startCast(castId: string, sourceId: string, mechanic?: string, facing?: CastFacing, replayId?: string): void {
     const definition = this.castDefinitions[castId];
-    if (!definition || this.state.casts.some((cast) => cast.sourceId === sourceId && cast.definitionId === castId)) return;
+    if (!definition || !findEntity(this.state, sourceId)) return;
+    if (this.state.casts.some((cast) => cast.sourceId === sourceId && cast.definitionId === castId)) return;
     if (mechanic) this.state.currentMechanic = mechanic;
     // Instance facing overrides the default cast definition. 
     const effectiveFacing = facing ?? definition.facing;
@@ -263,7 +278,8 @@ export class MechanicExecutor {
     for (const member of members) {
       // Snapshot position is fixed; livePosition reads the current position. 
       const live = findEntity(this.state, member.id)?.position;
-      const augmentedMember = { id: member.id, position: member.position, livePosition: live ? { ...live } : member.position };
+      if (!live) continue; // stale member (its entity expired/was removed since it was added to the group)
+      const augmentedMember = { id: member.id, position: member.position, livePosition: { ...live } };
       for (const rawEffect of event.effects) {
         this.executeEffect(this.randomContext.resolveAssigned(rawEffect, augmentedMember, 'groupMember'), inside, sourceId, sourceName, cast);
       }
@@ -292,6 +308,7 @@ export class MechanicExecutor {
   private removeEnemy(id: string): void {
     this.state.enemies = this.state.enemies.filter((enemy) => enemy.id !== id);
     this.state.casts = this.state.casts.filter((cast) => cast.sourceId !== id);
+    this.pruneGroups(new Set([id]));
   }
 
   executeEffect(effect: EffectDefinition, inside: Set<string>, sourceId = 'boss', sourceName?: string, cast?: CastContext): void {
@@ -372,6 +389,9 @@ export class MechanicExecutor {
       if (player.controlled) {
         if (result.fatal) this.logEvent(`You took fatal ${damage.type} damage${sourceName ? ` from ${sourceName}` : ''}.`);
         else this.logEvent(`${sourceName ? `You were hit by ${sourceName} for` : 'You were hit for'} ${Math.round(result.amount)} ${damage.type} damage.`);
+      } else if (this.debug) {
+        if (result.fatal) this.logEvent(`${player.name} took fatal ${damage.type} damage${sourceName ? ` from ${sourceName}` : ''}.`, 'debug');
+        else this.logEvent(`${player.name} ${sourceName ? `was hit by ${sourceName} for` : 'was hit for'} ${Math.round(result.amount)} ${damage.type} damage.`, 'debug');
       }
     }
   }
@@ -411,6 +431,7 @@ export class MechanicExecutor {
     }
     player.statuses.push({ definitionId: statusId, appliedAt: this.state.time, expiresAt: newExpiresAt, stacks });
     if (player.controlled && !definition?.hidden) this.logEvent(`You were affected by ${formatStatusName(statusId)}.`);
+    else if (this.debug) this.logEvent(`${player.name} gained ${formatStatusName(statusId)}${definition?.hidden ? ' (hidden)' : ''}.`, 'debug');
     for (const effect of definition?.onApply ?? []) this.executeEffect(effect, new Set(), player.id);
   }
 
@@ -426,7 +447,10 @@ export class MechanicExecutor {
     player.statuses.splice(index, 1);
     for (const effect of definition?.onRemove ?? []) this.executeEffect(effect, new Set(), player.id);
     if (player.controlled && !definition?.hidden) this.logEvent(`Your ${formatStatusName(statusId)} status ended.`);
+    else if (this.debug) this.logEvent(`${player.name}'s ${formatStatusName(statusId)}${definition?.hidden ? ' (hidden)' : ''} status ended.`, 'debug');
   }
 
-  private logEvent(message: string): void { this.state.log.push({ id: `log-${this.state.log.length + 1}`, time: this.state.time, message }); }
+  private logEvent(message: string, channel: LogEntry['channel'] = 'player'): void {
+    this.state.log.push({ id: `log-${this.state.log.length + 1}`, time: this.state.time, message, channel });
+  }
 }
