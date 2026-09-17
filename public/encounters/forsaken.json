@@ -1,7 +1,7 @@
 {
   "version": 5,
   "name": "Forsaken",
-  "duration": 45000,
+  "duration": 60000,
   "background": "bg-default",
   "randomGroups": {
     "triggerAssignments": {
@@ -470,7 +470,8 @@
                 "target": "boss",
                 "distance": 2
               },
-              "addToGroup": "spawnedAdds"
+              "addToGroup": "spawnedAdds",
+              "expiresAfter": 13000
             }
           ]
         },
@@ -526,7 +527,8 @@
                 "target": "boss",
                 "distance": 2
               },
-              "addToGroup": "spawnedAdds"
+              "addToGroup": "spawnedAdds",
+              "expiresAfter": 13000
             }
           ]
         },
@@ -792,9 +794,9 @@
                 "conditions": [
                   [
                     { "type": "mechanical_role", "role": "clockwise_soak" },
-                    { "type": "not", "condition": { "type": "flex_conflict_loser", "pairRole": "clockwise_soak", "statuses": ["cone-trigger", "spread-trigger"] } }
+                    { "type": "not", "condition": { "type": "flex_conflict_loser", "pairRole": ["clockwise_soak", "tower_team"], "statuses": ["cone-trigger", "spread-trigger"] } }
                   ],
-                  { "type": "flex_conflict_loser", "pairRole": "counterclockwise_soak", "statuses": ["cone-trigger", "spread-trigger"] }
+                  { "type": "flex_conflict_loser", "pairRole": ["counterclockwise_soak", "tower_team"], "statuses": ["cone-trigger", "spread-trigger"] }
                 ]
               }
             ],
@@ -816,9 +818,9 @@
                 "conditions": [
                   [
                     { "type": "mechanical_role", "role": "counterclockwise_soak" },
-                    { "type": "not", "condition": { "type": "flex_conflict_loser", "pairRole": "counterclockwise_soak", "statuses": ["cone-trigger", "spread-trigger"] } }
+                    { "type": "not", "condition": { "type": "flex_conflict_loser", "pairRole": ["counterclockwise_soak", "tower_team"], "statuses": ["cone-trigger", "spread-trigger"] } }
                   ],
-                  { "type": "flex_conflict_loser", "pairRole": "clockwise_soak", "statuses": ["cone-trigger", "spread-trigger"] }
+                  { "type": "flex_conflict_loser", "pairRole": ["clockwise_soak", "tower_team"], "statuses": ["cone-trigger", "spread-trigger"] }
                 ]
               }
             ],
@@ -832,20 +834,62 @@
     },
     "forsaken-flex-odd": {
       "clockwise_soak": [
-        {
+       {
           "type": "or",
-          "conditions": [            
-            { "type": "has_status", "status": "cone-trigger" },           
-            { "type": "flex_conflict_loser", "pairRole": "counterclockwise_soak", "statuses": ["stack-trigger"] }
+          "conditions": [
+            [
+              { "type": "mechanical_role", "role": "tower_team" },
+              {
+                "type": "or",
+                "conditions": [            
+                  { "type": "has_status", "status": "cone-trigger" },           
+                  {
+                    "type": "or",
+                    "conditions": [
+                      [
+                        { "type": "mechanical_role", "role": "clockwise_soak" },
+                        { "type": "not", "condition": { "type": "flex_conflict_loser", "pairRole": ["clockwise_soak", "tower_team"], "statuses": ["stack-trigger"] } }
+                      ],
+                      { "type": "flex_conflict_loser", "pairRole": ["counterclockwise_soak", "tower_team"], "statuses": ["stack-trigger"] }
+                    ]
+                  }
+                ]
+              }
+            ],
+            [
+              { "type": "mechanical_role", "role": "bait_team" },
+              { "type": "mechanical_role", "role": "clockwise_soak" }
+            ]
           ]
         }
       ],
       "counterclockwise_soak": [
         {
           "type": "or",
-          "conditions": [            
-            { "type": "has_status", "status": "spread-trigger" },           
-            { "type": "flex_conflict_loser", "pairRole": "clockwise_soak", "statuses": ["stack-trigger"] }
+          "conditions": [
+            [
+              { "type": "mechanical_role", "role": "tower_team" },
+              {
+                "type": "or",
+                "conditions": [            
+                  { "type": "has_status", "status": "spread-trigger" },           
+                  {
+                    "type": "or",
+                    "conditions": [
+                      [
+                        { "type": "mechanical_role", "role": "counterclockwise_soak" },
+                        { "type": "not", "condition": { "type": "flex_conflict_loser", "pairRole": ["counterclockwise_soak", "tower_team"], "statuses": ["stack-trigger"] } }
+                      ],
+                      { "type": "flex_conflict_loser", "pairRole": ["clockwise_soak", "tower_team"], "statuses": ["stack-trigger"] }
+                    ]
+                  }
+                ]
+              }
+            ],
+            [
+              { "type": "mechanical_role", "role": "bait_team" },
+              { "type": "mechanical_role", "role": "counterclockwise_soak" }
+            ]
           ]
         }
       ]

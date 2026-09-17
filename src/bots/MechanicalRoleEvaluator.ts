@@ -87,8 +87,11 @@ export class MechanicalRoleEvaluator {
           this.matchesReference(candidate, condition.player, player) &&
           this.matches(condition.condition, candidate, state));
       case 'flex_conflict_loser': {
-        if (!player.mechanicalRoles.includes(condition.pairRole)) return false;
-        const partner = state.players.find((candidate) => candidate.id !== player.id && candidate.mechanicalRoles.includes(condition.pairRole));
+        const requiredRoles = Array.isArray(condition.pairRole) ? condition.pairRole : [condition.pairRole];
+        if (!requiredRoles.every((role) => player.mechanicalRoles.includes(role))) return false;
+        const partner = state.players.find((candidate) =>
+          candidate.id !== player.id &&
+          requiredRoles.every((role) => candidate.mechanicalRoles.includes(role)));
         if (!partner) return false;
         const sharedStatus = condition.statuses.some((statusId) =>
           player.statuses.some((status) => status.definitionId === statusId) &&
