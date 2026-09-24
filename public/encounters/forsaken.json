@@ -133,7 +133,8 @@
       "maxStacks": 4,
       "color": "#ffbe49",
       "character": "!",
-      "icon": "icon-spells-trouble"
+      "icon": "icon-spells-trouble",
+      "showStacks": true
     },
     {
       "id": "stack-trigger",
@@ -550,7 +551,32 @@
           ]
         }
       ]
-    }
+    },
+    "light-of-judgment": {
+      "id": "light-of-judgment",
+      "name": "Light of Judgment",
+      "castTime": 5000,
+      "visible": true,
+      "effects": [
+        {
+          "type": "damage",
+          "target": { "type": "without_status", "status": "spells-trouble" },
+          "damage": {
+            "amount": 90,
+            "type": "magical"
+          }
+        },
+        {
+          "type": "damage",
+          "target": { "type": "with_status", "status": "spells-trouble" },
+          "damage": {
+            "amount": 9999,
+            "type": "magical",
+            "fatal": true
+          }
+        }
+      ]
+     }
   },
   "players": [
     {
@@ -1241,16 +1267,16 @@
       }
     ],
     "last-bait": [
-      { "target": { "type": "polar", "angle": -90, "radius": 5 } }
+      { "target": { "type": "polar", "angle": 0, "radius": 5 } }
     ],
     "last-dodge": [
       {
         "when": { "type": "mechanic", "mechanic": "pasts" },
-        "target": { "type": "polar", "angle": -90, "radius": 5 }
+        "target": { "type": "polar", "angle": 0, "radius": 5 }
       },
       {
         "when": { "type": "mechanic", "mechanic": "futures" },
-        "target": { "type": "polar", "angle": 90, "radius": 5 }
+        "target": { "type": "polar", "angle": 180, "radius": 5 }
       }
     ]
   },
@@ -1727,6 +1753,24 @@
       "delay": 7500,
       "type": "recalculate_positions",
       "group": "last-dodge"
+    },
+    {
+      "id": "heal-before-judgment",
+      "after": "dodge-last-adds",
+      "delay": 5000,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "light-of-judgment-cast",
+      "after": "dodge-last-adds",
+      "delay": 4000,
+      "type": "start_cast",
+      "source": "boss",
+      "cast": "light-of-judgment"
     }
   ]
 }

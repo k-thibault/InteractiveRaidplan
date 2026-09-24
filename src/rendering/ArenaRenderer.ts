@@ -222,7 +222,7 @@ export class ArenaRenderer {
       this.context.fillText(definition?.character ?? '!', x, y - radius * .18);
       this.context.textBaseline = 'alphabetic';
     }
-    if (status.stacks > 1) {
+    if (definition?.showStacks) {
       const stackText = String(status.stacks);
       const stackFontSize = Math.max(15, radius * .95);
       const stackX = x + radius * .82;

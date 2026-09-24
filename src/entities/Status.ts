@@ -10,6 +10,7 @@ export interface StatusDefinition {
   color?: string;
   /** Allows multiple stacks in a single status instance. */
   maxStacks?: number;
+  showStacks?: boolean;
   /** Resource key used instead of the default badge icon. */
   icon?: string;
   /** Hidden from HUD status lists but still active mechanically. */

@@ -95,7 +95,7 @@ function updateRoster(players: Player[], now: number): void {
         icon.style.setProperty('--status-color', definition?.color ?? '#ffbe49');
         icon.textContent = definition?.character ?? '!';
       }
-      if (status.stacks > 1) {
+      if (definition?.showStacks) {
         const stack = document.createElement('span');
         stack.className = 'roster-status__stack';
         stack.textContent = String(status.stacks);
