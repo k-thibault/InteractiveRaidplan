@@ -1,7 +1,7 @@
 {
   "version": 5,
   "name": "Forsaken",
-  "duration": 60000,
+  "duration": 120000,
   "background": "bg-default",
   "randomGroups": {
     "triggerAssignments": {
@@ -133,7 +133,8 @@
       "maxStacks": 4,
       "color": "#ffbe49",
       "character": "!",
-      "icon": "icon-spells-trouble"
+      "icon": "icon-spells-trouble",
+      "showStacks": true
     },
     {
       "id": "stack-trigger",
@@ -550,7 +551,32 @@
           ]
         }
       ]
-    }
+    },
+    "light-of-judgment": {
+      "id": "light-of-judgment",
+      "name": "Light of Judgment",
+      "castTime": 5000,
+      "visible": true,
+      "effects": [
+        {
+          "type": "damage",
+          "target": { "type": "without_status", "status": "spells-trouble" },
+          "damage": {
+            "amount": 90,
+            "type": "magical"
+          }
+        },
+        {
+          "type": "damage",
+          "target": { "type": "with_status", "status": "spells-trouble" },
+          "damage": {
+            "amount": 9999,
+            "type": "magical",
+            "fatal": true
+          }
+        }
+      ]
+     }
   },
   "players": [
     {
@@ -1239,6 +1265,19 @@
         "when": { "type": "mechanic", "mechanic": "futures" },
         "target": { "type": "polar", "angle": "$soakAngles[$round][0]", "angleOffset": 225, "radius": 5 }
       }
+    ],
+    "last-bait": [
+      { "target": { "type": "polar", "angle": 0, "radius": 5 } }
+    ],
+    "last-dodge": [
+      {
+        "when": { "type": "mechanic", "mechanic": "pasts" },
+        "target": { "type": "polar", "angle": 0, "radius": 5 }
+      },
+      {
+        "when": { "type": "mechanic", "mechanic": "futures" },
+        "target": { "type": "polar", "angle": 180, "radius": 5 }
+      }
     ]
   },
   "events": [
@@ -1485,6 +1524,253 @@
       "type": "recalculate_positions",
       "group": "past-future-baits",
       "params": { "round": 4 }
+    },
+    {
+      "id": "tower-5-soak-a",
+      "after": "tower-4-soak-a",
+      "delay": 12000,
+      "type": "spawn_area",
+      "area": "forsaken-soak",
+      "position": { "type": "polar", "angle": "$soakAngles[4][0]", "radius": 5 },
+      "label": "soak-a",
+      "tags": ["soak-a"],
+      "areaGroup": "forsaken-soaks-odd"
+    },
+    {
+      "id": "tower-5-soak-b",
+      "after": "tower-4-soak-a",
+      "delay": 12000,
+      "type": "spawn_area",
+      "area": "forsaken-soak",
+      "position": { "type": "polar", "angle": "$soakAngles[4][1]", "radius": 5 },
+      "label": "soak-b",
+      "tags": ["soak-b"],
+      "areaGroup": "forsaken-soaks-odd"
+    },
+    {
+      "id": "tower-5-flex",
+      "after": "tower-5-soak-a",
+      "delay": 7500,
+      "type": "recalculate_roles",
+      "group": "forsaken-flex-odd"
+    },
+    {
+      "id": "tower-5-positions",
+      "after": "tower-5-flex",
+      "delay": 0,
+      "type": "recalculate_positions",
+      "group": "forsaken-odd-towers"
+    },
+    {
+      "id": "heal-before-t5",
+      "after": "tower-5-soak-a",
+      "delay": 5000,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "tower-6-soak-a",
+      "after": "tower-5-soak-a",
+      "delay": 12000,
+      "type": "spawn_area",
+      "area": "forsaken-soak",
+      "position": { "type": "polar", "angle": "$soakAngles[5][0]", "radius": 5 },
+      "label": "soak-a",
+      "tags": ["soak-a"],
+      "areaGroup": "forsaken-soaks-even"
+    },
+    {
+      "id": "tower-6-soak-b",
+      "after": "tower-5-soak-a",
+      "delay": 12000,
+      "type": "spawn_area",
+      "area": "forsaken-soak",
+      "position": { "type": "polar", "angle": "$soakAngles[5][1]", "radius": 5 },
+      "label": "soak-b",
+      "tags": ["soak-b"],
+      "areaGroup": "forsaken-soaks-even"
+    },
+    {
+      "id": "tower-6-flex",
+      "after": "tower-6-soak-a",
+      "delay": 3000,
+      "type": "recalculate_roles",
+      "group": "forsaken-flex-even"
+    },
+    {
+      "id": "tower-6-positions",
+      "after": "tower-6-flex",
+      "delay": 0,
+      "type": "recalculate_positions",
+      "group": "forsaken-even-towers"
+    },
+    {
+      "id": "heal-before-t6",
+      "after": "tower-6-soak-a",
+      "delay": 5000,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "pasts-future-cast",
+      "after": "tower-6-soak-a",
+      "delay": 7000,
+      "type": "start_cast",
+      "source": "boss",
+      "castChoices": ["pasts", "futures"]
+    },
+    {
+      "id": "bait-3",
+      "after": "tower-6-soak-a",
+      "delay": 13500,
+      "type": "recalculate_positions",
+      "group": "past-future-baits",
+      "params": { "round": 6 }
+    },
+    {
+      "id": "tower-7-soak-a",
+      "after": "tower-6-soak-a",
+      "delay": 12000,
+      "type": "spawn_area",
+      "area": "forsaken-soak",
+      "position": { "type": "polar", "angle": "$soakAngles[6][0]", "radius": 5 },
+      "label": "soak-a",
+      "tags": ["soak-a"],
+      "areaGroup": "forsaken-soaks-odd"
+    },
+    {
+      "id": "tower-7-soak-b",
+      "after": "tower-6-soak-a",
+      "delay": 12000,
+      "type": "spawn_area",
+      "area": "forsaken-soak",
+      "position": { "type": "polar", "angle": "$soakAngles[6][1]", "radius": 5 },
+      "label": "soak-b",
+      "tags": ["soak-b"],
+      "areaGroup": "forsaken-soaks-odd"
+    },
+    {
+      "id": "tower-7-flex",
+      "after": "tower-7-soak-a",
+      "delay": 7500,
+      "type": "recalculate_roles",
+      "group": "forsaken-flex-odd"
+    },
+    {
+      "id": "tower-7-positions",
+      "after": "tower-7-flex",
+      "delay": 0,
+      "type": "recalculate_positions",
+      "group": "forsaken-odd-towers"
+    },
+    {
+      "id": "heal-before-t7",
+      "after": "tower-7-soak-a",
+      "delay": 5000,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "tower-8-soak-a",
+      "after": "tower-7-soak-a",
+      "delay": 12000,
+      "type": "spawn_area",
+      "area": "forsaken-soak",
+      "position": { "type": "polar", "angle": "$soakAngles[7][0]", "radius": 5 },
+      "label": "soak-a",
+      "tags": ["soak-a"],
+      "areaGroup": "forsaken-soaks-even"
+    },
+    {
+      "id": "tower-8-soak-b",
+      "after": "tower-7-soak-a",
+      "delay": 12000,
+      "type": "spawn_area",
+      "area": "forsaken-soak",
+      "position": { "type": "polar", "angle": "$soakAngles[7][1]", "radius": 5 },
+      "label": "soak-b",
+      "tags": ["soak-b"],
+      "areaGroup": "forsaken-soaks-even"
+    },
+    {
+      "id": "tower-8-flex",
+      "after": "tower-8-soak-a",
+      "delay": 3000,
+      "type": "recalculate_roles",
+      "group": "forsaken-flex-even"
+    },
+    {
+      "id": "tower-8-team-swap",
+      "after": "tower-8-flex",
+      "delay": 0,
+      "type": "recalculate_roles",
+      "group": "swap-teams"
+    },
+    {
+      "id": "tower-8-positions",
+      "after": "tower-8-team-swap",
+      "delay": 0,
+      "type": "recalculate_positions",
+      "group": "forsaken-even-towers"
+    },
+    {
+      "id": "heal-before-t8",
+      "after": "tower-8-soak-a",
+      "delay": 5000,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "pasts-future-cast",
+      "after": "tower-8-soak-a",
+      "delay": 7000,
+      "type": "start_cast",
+      "source": "boss",
+      "castChoices": ["pasts", "futures"]
+    },
+    {
+      "id": "bait-4",
+      "after": "tower-8-soak-a",
+      "delay": 13500,
+      "type": "recalculate_positions",
+      "group": "last-bait"
+    },
+    {
+      "id": "dodge-last-adds",
+      "after": "bait-4",
+      "delay": 7500,
+      "type": "recalculate_positions",
+      "group": "last-dodge"
+    },
+    {
+      "id": "heal-before-judgment",
+      "after": "dodge-last-adds",
+      "delay": 5000,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "light-of-judgment-cast",
+      "after": "dodge-last-adds",
+      "delay": 4000,
+      "type": "start_cast",
+      "source": "boss",
+      "cast": "light-of-judgment"
     }
   ]
 }

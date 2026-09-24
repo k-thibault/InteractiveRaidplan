@@ -5,7 +5,7 @@ import { findEntity } from '../mechanics/Selector';
 import { MechanicalRoleEvaluator, type ConditionExpression } from './MechanicalRoleEvaluator';
 import { fromPolar, toPolarAngle, circularMeanAngle } from '../geometry/Vector2';
 
-export interface PositionRule { when: ConditionExpression; target: PositionTarget; }
+export interface PositionRule { when?: ConditionExpression; target: PositionTarget; }
 /** Position rules are grouped and only the requested group is evaluated. */
 export type PositionDefinition = PositionRule[];
 export type PositionDefinitions = Record<string, PositionDefinition>;
@@ -28,7 +28,7 @@ export class PositionEvaluator {
 
     for (const player of state.players) {
       if (player.controlled) continue;
-      const rule = rules.find((candidate) => this.conditionEvaluator.evaluate(candidate.when, player, state));
+      const rule = rules.find((candidate) => candidate.when === undefined || this.conditionEvaluator.evaluate(candidate.when, player, state));
       player.desiredPosition = rule ? this.resolve(rule.target, state, params) : undefined;
     }
   }
