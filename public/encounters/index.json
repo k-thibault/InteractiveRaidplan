@@ -1,4 +1,5 @@
 [
   { "id": "example", "name": "Alter Weakness", "file": "./example.json" },
-  { "id": "forsaken", "name": "Forsaken", "file": "./forsaken.json" }
+  { "id": "forsaken", "name": "Forsaken", "file": "./forsaken.json" },
+  { "id": "movement", "name": "Movement Effects", "file": "./movement.json" }
 ]

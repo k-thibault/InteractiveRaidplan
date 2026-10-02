@@ -3,6 +3,8 @@ import type { PlayerSelector } from './Selector';
 import type { GraphicAnchor } from './Graphic';
 import type { EnemyTemplate } from '../entities/Enemy';
 import type { CastFacing } from './Cast';
+import type { KnockParams } from './Knock';
+import type { FollowSettings } from '../bots/FollowManager';
 
 export type DamageType = 'physical' | 'magical' | 'dark' | 'fire' | 'ice' | 'poison';
 export interface DamageDefinition { amount: number; type: DamageType; fatal?: boolean; }
@@ -20,14 +22,23 @@ export interface StartCastEffect {
   /** Rolled fresh, independently, the moment this effect executes */
   castChoices?: string[];
 }
+/** Forced movement that suspends regular movement until it finishes. Ignores roots and stuns. */
+export interface KnockEffect extends KnockParams { type: 'knock'; target: EffectTarget; }
+/** Starts follow mode on `source` (the effect's source entity when unset). */
+export interface StartFollowEffect extends FollowSettings { type: 'start_follow'; source?: string; }
+/** Ends follow mode on `source` (the effect's source entity when unset). */
+export interface StopFollowEffect { type: 'stop_follow'; source?: string; }
 export interface RecalculateRolesEffect { type: 'recalculate_roles'; group?: string; }
 export interface RecalculatePositionsEffect { type: 'recalculate_positions'; group?: string; params?: Record<string, number>; }
 /** Re-matches facing rules for every player and enemy against the `facing` definitions. */
 export interface RecalculateFacingEffect { type: 'recalculate_facing'; group?: string; }
 export interface SetMechanicEffect { type: 'set_mechanic'; mechanic: string; }
 export interface AreaDefinition {
-  shape: 'circle' | 'cone' | 'half_room';
+  shape: 'circle' | 'cone' | 'half_room' | 'donut';
+  /** Outer radius for donuts. */
   radius: number;
+  /** Donut hole radius. */
+  innerRadius?: number;
   angle?: number;
   /** Anchor entity when `position` is unset; `$castTarget` is also valid. */
   source?: string;
@@ -92,7 +103,7 @@ export interface SpawnEnemyEffect extends Partial<EnemyTemplate> {
 /** Removes a temporary enemy and cancels its active casts. */
 export interface RemoveEnemyEffect { type: 'remove_enemy'; id: string; }
 
-export type EffectDefinition = HealEffect | DamageEffect | ApplyStatusEffect | RemoveStatusEffect | StartCastEffect | RecalculateRolesEffect | RecalculatePositionsEffect | RecalculateFacingEffect | SetMechanicEffect | SpawnAreaEffect | AssignDistributionEffect | DistributeStatusesEffect | ShowGraphicEffect | DelayedEffectsEffect | SelectGroupEffect | SelectGroupSubsetEffect | ForEachGroupEffect | SpawnEnemyEffect | RemoveEnemyEffect;
+export type EffectDefinition = HealEffect | DamageEffect | ApplyStatusEffect | RemoveStatusEffect | KnockEffect | StartFollowEffect | StopFollowEffect | StartCastEffect | RecalculateRolesEffect | RecalculatePositionsEffect | RecalculateFacingEffect | SetMechanicEffect | SpawnAreaEffect | AssignDistributionEffect | DistributeStatusesEffect | ShowGraphicEffect | DelayedEffectsEffect | SelectGroupEffect | SelectGroupSubsetEffect | ForEachGroupEffect | SpawnEnemyEffect | RemoveEnemyEffect;
 export interface AreaCondition { type: 'player_count'; min?: number; max?: number; }
 export interface AreaResolutionRule { condition: AreaCondition; effects: EffectDefinition[]; }
 export interface BaseAreaEffect {
@@ -103,4 +114,5 @@ export interface BaseAreaEffect {
 export interface CircleArea extends BaseAreaEffect { shape: 'circle'; }
 export interface ConeArea extends BaseAreaEffect { shape: 'cone'; angle: number; }
 export interface HalfRoomArea extends BaseAreaEffect { shape: 'half_room'; side: 'north' | 'south'; }
-export type AreaEffect = CircleArea | ConeArea | HalfRoomArea;
+export interface DonutArea extends BaseAreaEffect { shape: 'donut'; innerRadius: number; }
+export type AreaEffect = CircleArea | ConeArea | HalfRoomArea | DonutArea;

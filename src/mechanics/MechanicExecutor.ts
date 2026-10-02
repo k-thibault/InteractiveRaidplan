@@ -12,8 +12,13 @@ import type { ApplyStatusAssignment, DistributeStatusesEffect } from './Effect';
 import type { GraphicAnchor } from './Graphic';
 import { formatStatusName } from '../util/format';
 import type { CastDefinition, CastFacing } from './Cast';
-import { resolvePositionValue, isTowardsPosition } from '../geometry/Vector2';
+import { resolvePositionValue, isTowardsPosition, fromPolar, normalize, subtract } from '../geometry/Vector2';
 import type { PositionValue, Vector2 } from '../geometry/Vector2';
+import { DEFAULT_FACING } from '../geometry/Facing';
+import { DEFAULT_KNOCK_DURATION } from './Knock';
+import type { KnockDirection, KnockParams } from './Knock';
+import type { FollowSettings } from '../bots/FollowManager';
+import type { Player } from '../entities/Player';
 
 /** Carries the cast's locked target/direction into nested effects. */
 interface CastContext { direction?: number; targetId?: string; }
@@ -97,6 +102,9 @@ export class MechanicExecutor {
     else if (event.type === 'spawn_enemy') this.spawnEnemy(this.randomContext.resolve(event));
     else if (event.type === 'remove_enemy') this.removeEnemy(event.id);
     else if (event.type === 'recalculate_facing') this.recalculateFacing(event.group);
+    else if (event.type === 'knock') this.applyKnock(selectPlayers(event.target, this.state, this.random), event, event.source ?? 'boss');
+    else if (event.type === 'start_follow') this.startFollow(event.source ?? 'boss', event);
+    else if (event.type === 'stop_follow') this.stopFollow(event.source ?? 'boss');
   }
 
   update(): void {
@@ -207,7 +215,9 @@ export class MechanicExecutor {
       ? { ...base, shape: 'cone', angle: resolved.angle ?? 60 }
       : resolved.shape === 'half_room'
         ? { ...base, shape: 'half_room', side: resolved.side ?? 'north' }
-        : { ...base, shape: 'circle' };
+        : resolved.shape === 'donut'
+          ? { ...base, shape: 'donut', innerRadius: resolved.innerRadius ?? 0 }
+          : { ...base, shape: 'circle' };
     this.state.effects.push(effect);
   }
 
@@ -362,6 +372,8 @@ export class MechanicExecutor {
     if (resolvedEffect.type === 'for_each_group') { this.forEachGroup(resolvedEffect, inside, sourceId, sourceName, cast); return; }
     if (resolvedEffect.type === 'spawn_enemy') { this.spawnEnemy(resolvedEffect); return; }
     if (resolvedEffect.type === 'remove_enemy') { this.removeEnemy(resolvedEffect.id); return; }
+    if (resolvedEffect.type === 'start_follow') { this.startFollow(resolvedEffect.source ?? sourceId, resolvedEffect); return; }
+    if (resolvedEffect.type === 'stop_follow') { this.stopFollow(resolvedEffect.source ?? sourceId); return; }
     if (resolvedEffect.type === 'remove_status') {
       const targets = typeof resolvedEffect.target === 'string'
         ? this.state.players.filter((player) => player.alive && (resolvedEffect.target === 'all' || (resolvedEffect.target === 'inside' ? inside.has(player.id) : !inside.has(player.id))))
@@ -377,7 +389,44 @@ export class MechanicExecutor {
       : selectPlayers(resolvedEffect.target, this.state, this.random);
     if (resolvedEffect.type === 'damage') this.applyDamage(targets, resolvedEffect.damage, sourceName);
     else if (resolvedEffect.type === 'heal') this.healPlayers(targets, resolvedEffect.amount, resolvedEffect.full);
+    else if (resolvedEffect.type === 'knock') this.applyKnock(targets, resolvedEffect, sourceId);
     else for (const player of targets) this.applyStatus(player, resolvedEffect.status, resolvedEffect.duration, resolvedEffect.stacks ?? 1);
+  }
+
+  /** Starts a knock on each living player, replacing any knock already in progress. */
+  private applyKnock(players: Player[], knock: KnockParams, sourceId: string): void {
+    const duration = knock.duration ?? DEFAULT_KNOCK_DURATION;
+    if (!(duration > 0)) return;
+    for (const player of players) {
+      if (!player.alive) continue;
+      const direction = this.knockHeading(player, knock.direction, sourceId);
+      if (direction) player.knock = { direction, speed: knock.distance / (duration / 1000), remaining: duration };
+    }
+  }
+
+  /** Unit vector for the knock, or undefined when its origin can't be resolved. */
+  private knockHeading(player: Player, direction: KnockDirection, sourceId: string): Vector2 | undefined {
+    if (direction.type === 'linear') {
+      const angle = Number(direction.angle);
+      return Number.isFinite(angle) ? fromPolar(angle, 1) : undefined;
+    }
+    const origin = typeof direction.from === 'string'
+      ? findEntity(this.state, direction.from)?.position
+      : direction.from ? this.resolvePosition(direction.from) : findEntity(this.state, sourceId)?.position;
+    if (!origin) return undefined;
+    const away = normalize(subtract(player.position, origin));
+    // Standing exactly on the origin has no away direction, so fall back to north.
+    return away.x === 0 && away.y === 0 ? fromPolar(DEFAULT_FACING, 1) : away;
+  }
+
+  private startFollow(enemyId: string, settings: FollowSettings): void {
+    const enemy = this.state.enemies.find((candidate) => candidate.id === enemyId);
+    if (enemy) enemy.follow = { target: settings.target, distance: settings.distance, moveSpeed: settings.moveSpeed };
+  }
+
+  private stopFollow(enemyId: string): void {
+    const enemy = this.state.enemies.find((candidate) => candidate.id === enemyId);
+    if (enemy) enemy.follow = undefined;
   }
 
   private healPlayers(players: typeof this.state.players, amount?: number, full?: boolean): void {
@@ -435,6 +484,7 @@ export class MechanicExecutor {
       return;
     }
     player.statuses.push({ definitionId: statusId, appliedAt: this.state.time, expiresAt: newExpiresAt, stacks });
+    this.refreshControl(player);
     if (player.controlled && !definition?.hidden) this.logEvent(`You were affected by ${formatStatusName(statusId)}.`);
     else if (this.debug) this.logEvent(`${player.name} gained ${formatStatusName(statusId)}${definition?.hidden ? ' (hidden)' : ''}.`, 'debug');
     for (const effect of definition?.onApply ?? []) this.executeEffect(effect, new Set(), player.id);
@@ -450,9 +500,17 @@ export class MechanicExecutor {
       return;
     }
     player.statuses.splice(index, 1);
+    this.refreshControl(player);
     for (const effect of definition?.onRemove ?? []) this.executeEffect(effect, new Set(), player.id);
     if (player.controlled && !definition?.hidden) this.logEvent(`Your ${formatStatusName(statusId)} status ended.`);
     else if (this.debug) this.logEvent(`${player.name}'s ${formatStatusName(statusId)}${definition?.hidden ? ' (hidden)' : ''} status ended.`, 'debug');
+  }
+
+  /** Recomputes root/stun from the statuses currently on the player. */
+  private refreshControl(player: Player): void {
+    const controls = player.statuses.map((status) => this.statusDefinitions.get(status.definitionId)?.control);
+    player.rooted = controls.includes('root');
+    player.stunned = controls.includes('stun');
   }
 
   private logEvent(message: string, channel: LogEntry['channel'] = 'player'): void {

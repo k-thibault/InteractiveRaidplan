@@ -1,5 +1,5 @@
 import type { Encounter } from '../encounters/Encounter';
-import { pointInCircle, pointInCone } from '../geometry/Collision';
+import { pointInCircle, pointInCone, pointInDonut } from '../geometry/Collision';
 import { MechanicExecutor } from '../mechanics/MechanicExecutor';
 import { Scheduler } from './Scheduler';
 import type { GameState } from './GameState';
@@ -7,10 +7,13 @@ import { Random } from './Random';
 import { AreaResolver } from '../mechanics/AreaResolver';
 import { RandomContext } from './RandomContext';
 import { BotManager, defaultBossFacing } from '../bots/BotManager';
+import { FollowManager } from '../bots/FollowManager';
+import { advanceKnocks } from '../mechanics/Knock';
 import { MechanicalRoleEvaluator } from '../bots/MechanicalRoleEvaluator';
 import type { RoleChange } from '../bots/MechanicalRoleEvaluator';
 import { PositionEvaluator } from '../bots/PositionEvaluator';
 import { FacingEvaluator } from '../bots/FacingEvaluator';
+import type { StatusInstance } from '../entities/Status';
 
 export interface SimulationOptions { seed: number; controlledPlayerId?: string; replayOutcomes?: Map<string, Record<string, unknown>>; debug?: boolean; }
 
@@ -22,6 +25,7 @@ export class Simulation {
   private readonly encounterDuration: number;
   private readonly areaResolver = new AreaResolver();
   private readonly botManager = new BotManager();
+  private readonly followManager: FollowManager;
   private readonly areaGroups: NonNullable<Encounter['areaGroups']>;
   private readonly areaGroupParticipants = new Map<string, Set<string>>();
   private readonly areaGroupResolvedCount = new Map<string, number>();
@@ -35,9 +39,16 @@ export class Simulation {
     this.areaGroups = encounter.areaGroups ?? {};
     this.random = new Random(options.seed);
     this.debug = options.debug ?? false;
+    this.followManager = new FollowManager(encounter.casts);
     const randomContext = new RandomContext(encounter.randomGroups, encounter.sequences, encounter.distributions, this.random);
-    const players = structuredClone(encounter.players).map((player) => ({ ...player, maxHealth: player.maxHealth ?? player.health, controlled: player.id === options.controlledPlayerId, mechanicalRoles: player.mechanicalRoles ?? [] }));
-    this.state = { time: 0, deltaTime: 0, currentMechanic: undefined, players, enemies: structuredClone(encounter.enemies), effects: [], worldGraphics: [], background: encounter.background, casts: [], running: false, completed: false, log: [], groups: {} };
+    const statusControls = new Map(encounter.statuses.map((status) => [status.id, status.control]));
+    const getControlState = (statuses: StatusInstance[]) => ({
+      rooted: statuses.some((status) => statusControls.get(status.definitionId) === 'root'),
+      stunned: statuses.some((status) => statusControls.get(status.definitionId) === 'stun')
+    });
+    const players = structuredClone(encounter.players).map((player) => ({ ...player, ...getControlState(player.statuses), maxHealth: player.maxHealth ?? player.health, controlled: player.id === options.controlledPlayerId, mechanicalRoles: player.mechanicalRoles ?? [] }));
+    const enemies = structuredClone(encounter.enemies).map((enemy) => ({ ...enemy, ...getControlState(enemy.statuses) }));
+    this.state = { time: 0, deltaTime: 0, currentMechanic: undefined, players, enemies, effects: [], worldGraphics: [], background: encounter.background, casts: [], running: false, completed: false, log: [], groups: {} };
     this.roleEvaluator = new MechanicalRoleEvaluator(encounter.mechanicalRoles);
     this.positionEvaluator = new PositionEvaluator(encounter.positions, <T>(value: T) => randomContext.resolve(value));
     this.facingEvaluator = new FacingEvaluator(encounter.facing, <T>(value: T) => randomContext.resolve(value));
@@ -94,7 +105,9 @@ export class Simulation {
           ? pointInCircle(player.position, effect.position, effect.radius)
           : effect.shape === 'cone'
             ? pointInCone(player.position, effect.position, effect.rotation, effect.radius, effect.angle)
-            : (effect.side === 'north' ? player.position.y < effect.position.y : player.position.y >= effect.position.y);
+            : effect.shape === 'donut'
+              ? pointInDonut(player.position, effect.position, effect.innerRadius, effect.radius)
+              : (effect.side === 'north' ? player.position.y < effect.position.y : player.position.y >= effect.position.y);
         if (hit) inside.add(player.id);
       }
       effect.resolvedAt = this.state.time;
@@ -118,7 +131,9 @@ export class Simulation {
     this.scheduler.update(this.state.time);
     this.state.effects = this.state.effects.filter((effect) => effect.resolvedAt === undefined || this.state.time < effect.resolvedAt + effect.duration);
     this.state.worldGraphics = this.state.worldGraphics.filter((graphic) => this.state.time < graphic.createdAt + graphic.duration);
+    advanceKnocks(this.state, this.state.deltaTime);
     this.botManager.update(this.state);
+    this.followManager.update(this.state);
     if (this.state.time >= this.encounterDuration) { this.state.completed = true; this.state.running = false; }
   }
 }

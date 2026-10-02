@@ -9,7 +9,7 @@ Encounters are described in JSON rather than hardcoded in the UI. The example en
 - absolute and relative timeline events
 - seeded random target selection
 - role and status selectors
-- circle and cone area telegraphs
+- circle, cone, and donut area telegraphs
 - configurable telegraph and execution colors for area effects
 - one-shot area resolution with player-count conditions
 - typed damage and status-based vulnerability
@@ -31,6 +31,7 @@ Encounters are described in JSON rather than hardcoded in the UI. The example en
 - reusable named area definitions and area tags for bot positioning
 - grouped area resolution that combines unique participants across multiple telegraphs
 - stacked statuses with capped application, partial removal, and visible stack counts
+- root and stun statuses, knocks, and a boss follow mode (see the `Movement Effects` encounter)
 
 ## Architecture
 
@@ -82,6 +83,14 @@ Statuses now have an optional `onRemove` effect list and an optional `maxStacks`
 Encounters declare named graphics under `resources.graphics`. `EncounterLoader` resolves those names through the shared `public/resources/graphics.json` library into image URLs. An encounter's `background` names the initial arena image, changeable mid-timeline with a `set_background` event. A status's `icon` swaps its default colored badge for an image, in both the arena and the roster. A `show_graphic` event or effect displays a timed image at a fixed position or tracked to an entity; this is separate from the cast bar and is used for things like a brief flash on a status's target via `onApply`, or a ground marker that telegraphs an upcoming mechanic.
 
 Status definitions, area success/failure effects, named random groups, named sequences, and distributions are part of the encounter data. Shuffle groups are randomized once per encounter and can be referenced from multiple events with `$group.0` or `$group[0]`. Sequences define `values`, a `start` index or random start, and a numeric `step`; a direct reference such as `$sequence` returns the current value, advances the sequence, and wraps at either end. Random sequence choices are made once when the simulation starts, so later requests remain deterministic. Distributions preserve a multiset of `values` by shuffling it when an `assign_distribution` effect resolves. The `distribute_statuses` effect independently shuffles selected players and a status list, pairing one status with each participant. Assigned values can be referenced as `$assignedValue` or `$assignedValue.property`. The simulation also stores timestamped log entries for controlled-player damage and status changes. The example encounters are located at `public/encounters/example.json` and `public/encounters/forsaken.json`.
+
+Statuses can set `control: "root"` or `control: "stun"`. A root blocks regular movement; a stun also blocks facing changes, including keyboard/cursor facing, bot facing, and `recalculate_facing` rules (a stunned entity is skipped entirely). The block is enforced where movement happens (`PlayerController`, `BotManager`, `FollowManager`), so bot AI can keep choosing destinations. A rooted player or bot that tries to move still turns toward that direction.
+
+`knock` is an effect and event that gives a player a forced movement with a fixed heading: `direction` is `{ "type": "radial", "from"?: entityId | position }` (away from the point; defaults to the effect's source) or `{ "type": "linear", "angle": degrees }` (compass heading). `distance` is covered in `duration` ms (default 500), so larger knocks move faster. Regular movement is disabled until the knock ends and resumes immediately after unless a root or stun is active. Knocks ignore roots and stuns and are clamped to the arena.
+
+The `donut` area shape uses `radius` as the outer edge and `innerRadius` as the safe hole.
+
+`start_follow` and `stop_follow` (effects or events) toggle follow mode on a non-player entity (`source`, default `boss`). A follower walks toward its `target` (an entity reference, e.g. the tank role) at `moveSpeed` until it is within `distance`, and faces the target each tick unless a `facing` rule is active. Casts can set `suspendFollow: { "movement": true, "facing": true }` to pause either part while the cast bar is active; following resumes when the cast completes.
 
 Effect targets may be either an area target (`inside`, `outside`, `all`) or a `PlayerSelector`. This lets effects such as `apply_status` select a specific random player without treating the selector as an area target. Mechanical-role conditions also support `player_condition`, which checks whether a player reference (`self`, an id, a gameplay role, or a mechanical role) satisfies another condition. In the example encounter, overload handling uses this to assign fire- and frost-specific roles only when the matching damage player has the corresponding overload status; other roles remain gated by the active mechanic and relevant statuses.
 

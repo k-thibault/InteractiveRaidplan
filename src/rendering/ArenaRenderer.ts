@@ -114,7 +114,11 @@ export class ArenaRenderer {
       context.fillStyle = isTelegraph ? this.telegraphFillStyle(effect.telegraphStyle, point, effect.radius * scale, color) : hexToRgba(color, .28);
       context.beginPath();
       if (effect.shape === 'circle') context.arc(point.x, point.y, effect.radius * scale, 0, Math.PI * 2);
-      else if (effect.shape === 'half_room') {
+      else if (effect.shape === 'donut') {
+        context.arc(point.x, point.y, effect.radius * scale, 0, Math.PI * 2);
+        context.moveTo(point.x + effect.innerRadius * scale, point.y);
+        context.arc(point.x, point.y, effect.innerRadius * scale, 0, Math.PI * 2, true);
+      } else if (effect.shape === 'half_room') {
         const left = toCanvas(-14, 0).x;
         const right = toCanvas(14, 0).x;
         const top = toCanvas(0, -9).y;

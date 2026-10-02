@@ -4,6 +4,7 @@ import type { Entity } from '../entities/Entity';
 import type { Player, PlayerRole } from '../entities/Player';
 import type { Random } from '../simulation/Random';
 import type { GameState } from '../simulation/GameState';
+import type { EntityReference } from '../bots/PositionTarget';
 
 /** An entity id, or a fixed world point, to test facing against. */
 export type FacingSource = string | { x: number; y: number };
@@ -27,6 +28,13 @@ export type PlayerSelector =
 
 export function findEntity(state: GameState, id: string): Entity | undefined {
   return [...state.players, ...state.enemies].find((entity) => entity.id === id);
+}
+
+/** Role references match the first living player; id references match any entity. */
+export function resolveEntityReference(reference: EntityReference, state: GameState): Entity | undefined {
+  if (reference.type === 'id') return findEntity(state, reference.id);
+  if (reference.type === 'gameplay_role') return state.players.find((player) => player.role === reference.role && player.alive);
+  return state.players.find((player) => player.mechanicalRoles.includes(reference.role) && player.alive);
 }
 
 export function selectPlayers(selector: PlayerSelector, state: GameState, random: Random): Player[] {

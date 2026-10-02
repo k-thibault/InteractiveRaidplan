@@ -15,6 +15,8 @@ export interface StatusDefinition {
   icon?: string;
   /** Hidden from HUD status lists but still active mechanically. */
   hidden?: boolean;
+  /** While active, a root blocks movement and a stun blocks movement and facing changes. */
+  control?: 'root' | 'stun';
   onRemove?: EffectDefinition[];
   /**
    * Effects run the moment this status is applied. Commonly used to spawn a

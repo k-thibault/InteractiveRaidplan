@@ -1,7 +1,7 @@
 import type { GameState } from '../simulation/GameState';
 import type { AreaEffect } from '../mechanics/Effect';
-import type { PositionTarget, EntityReference } from './PositionTarget';
-import { findEntity } from '../mechanics/Selector';
+import type { PositionTarget } from './PositionTarget';
+import { resolveEntityReference } from '../mechanics/Selector';
 import { MechanicalRoleEvaluator, type ConditionExpression } from './MechanicalRoleEvaluator';
 import { fromPolar, toPolarAngle, circularMeanAngle } from '../geometry/Vector2';
 
@@ -46,7 +46,7 @@ export class PositionEvaluator {
     }
     if (target.type === 'area') return this.resolveArea(target, state);
 
-    const entity = this.resolveReference(target.player, state);
+    const entity = resolveEntityReference(target.player, state);
     return entity ? {
       x: entity.position.x + (target.offset?.x ?? 0),
       y: entity.position.y + (target.offset?.y ?? 0)
@@ -80,11 +80,5 @@ export class PositionEvaluator {
     const x = selected.reduce((sum, effect) => sum + effect.position.x, 0) / selected.length;
     const y = selected.reduce((sum, effect) => sum + effect.position.y, 0) / selected.length;
     return { x: x + (target.offset?.x ?? 0), y: y + (target.offset?.y ?? 0) };
-  }
-
-  private resolveReference(reference: EntityReference, state: GameState) {
-    if (reference.type === 'id') return findEntity(state, reference.id);
-    if (reference.type === 'gameplay_role') return state.players.find((player) => player.role === reference.role && player.alive);
-    return state.players.find((player) => player.mechanicalRoles.includes(reference.role) && player.alive);
   }
 }
