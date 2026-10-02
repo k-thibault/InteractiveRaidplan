@@ -6,10 +6,11 @@ import type { GameState } from './GameState';
 import { Random } from './Random';
 import { AreaResolver } from '../mechanics/AreaResolver';
 import { RandomContext } from './RandomContext';
-import { BotManager } from '../bots/BotManager';
+import { BotManager, defaultBossFacing } from '../bots/BotManager';
 import { MechanicalRoleEvaluator } from '../bots/MechanicalRoleEvaluator';
 import type { RoleChange } from '../bots/MechanicalRoleEvaluator';
 import { PositionEvaluator } from '../bots/PositionEvaluator';
+import { FacingEvaluator } from '../bots/FacingEvaluator';
 
 export interface SimulationOptions { seed: number; controlledPlayerId?: string; replayOutcomes?: Map<string, Record<string, unknown>>; debug?: boolean; }
 
@@ -26,6 +27,7 @@ export class Simulation {
   private readonly areaGroupResolvedCount = new Map<string, number>();
   private readonly roleEvaluator: MechanicalRoleEvaluator;
   private positionEvaluator: PositionEvaluator;
+  private readonly facingEvaluator: FacingEvaluator;
   private readonly debug: boolean;
 
   constructor(encounter: Encounter, options: SimulationOptions) {
@@ -38,8 +40,15 @@ export class Simulation {
     this.state = { time: 0, deltaTime: 0, currentMechanic: undefined, players, enemies: structuredClone(encounter.enemies), effects: [], worldGraphics: [], background: encounter.background, casts: [], running: false, completed: false, log: [], groups: {} };
     this.roleEvaluator = new MechanicalRoleEvaluator(encounter.mechanicalRoles);
     this.positionEvaluator = new PositionEvaluator(encounter.positions, <T>(value: T) => randomContext.resolve(value));
+    this.facingEvaluator = new FacingEvaluator(encounter.facing, <T>(value: T) => randomContext.resolve(value));
     const recalculateRoles = (group?: string) => this.logRoleChanges(this.roleEvaluator.recalculate(this.state, group));
-    this.executor = new MechanicExecutor(this.state, this.random, encounter.statuses, encounter.casts, randomContext, encounter.areas, recalculateRoles, (group, params) => this.positionEvaluator.recalculate(this.state, group, params), encounter.enemyTemplates, options.replayOutcomes, options.debug);
+    const recalculateFacing = (group?: string) => this.facingEvaluator.recalculate(this.state, group);
+    this.executor = new MechanicExecutor(this.state, this.random, encounter.statuses, encounter.casts, randomContext, encounter.areas, recalculateRoles, (group, params) => this.positionEvaluator.recalculate(this.state, group, params), encounter.enemyTemplates, options.replayOutcomes, options.debug, recalculateFacing);
+    // Apply initial facing rules, then point unconfigured bots toward the boss.
+    recalculateFacing();
+    for (const player of this.state.players) {
+      if (player.facing === undefined && !player.controlled && !player.facingRuleActive) player.facing = defaultBossFacing(this.state, player.position);
+    }
     const eventTimes = new Map<string, number>();
     for (const event of encounter.events) {
       const executeAt = event.at ?? (event.after ? (eventTimes.get(event.after) ?? 0) + (event.delay ?? 0) : 0);
@@ -48,6 +57,7 @@ export class Simulation {
         const resolved = randomContext.resolve(event);
         if (resolved.type === 'recalculate_roles') recalculateRoles(resolved.group);
         else if (resolved.type === 'recalculate_positions') this.positionEvaluator.recalculate(this.state, resolved.group, resolved.params);
+        else if (resolved.type === 'recalculate_facing') recalculateFacing(resolved.group);
         else this.executor.execute(resolved);
       });
     }

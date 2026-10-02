@@ -29,6 +29,7 @@ export class MechanicExecutor {
   private readonly enemyTemplates: Record<string, EnemyTemplate>;
   private readonly recalculateRoles: (group?: string) => void;
   private readonly recalculatePositions: (group?: string, params?: Record<string, number>) => void;
+  private readonly recalculateFacing: (group?: string) => void;
   private readonly pendingEffects: { executeAt: number; effects: EffectDefinition[]; inside: Set<string>; sourceId: string; sourceName?: string; cast?: CastContext }[] = [];
   /** Stores the outcomes of replayable rolls, keyed by `replayId`. */
   private readonly replayOutcomes: Map<string, Record<string, unknown>>;
@@ -45,7 +46,8 @@ export class MechanicExecutor {
     recalculatePositions: (group?: string, params?: Record<string, number>) => void = () => undefined,
     enemyTemplates: Record<string, EnemyTemplate> = {},
     replayOutcomes: Map<string, Record<string, unknown>> = new Map(),
-    debug = false
+    debug = false,
+    recalculateFacing: (group?: string) => void = () => undefined
   ) {
     this.state = state;
     this.random = random;
@@ -57,6 +59,7 @@ export class MechanicExecutor {
     this.enemyTemplates = enemyTemplates;
     this.recalculateRoles = recalculateRoles;
     this.recalculatePositions = recalculatePositions;
+    this.recalculateFacing = recalculateFacing;
     this.replayOutcomes = replayOutcomes;
     this.debug = debug;
   }
@@ -93,6 +96,7 @@ export class MechanicExecutor {
     else if (event.type === 'for_each_group') this.forEachGroup(this.randomContext.resolve(event), new Set(), 'boss', undefined, undefined);
     else if (event.type === 'spawn_enemy') this.spawnEnemy(this.randomContext.resolve(event));
     else if (event.type === 'remove_enemy') this.removeEnemy(event.id);
+    else if (event.type === 'recalculate_facing') this.recalculateFacing(event.group);
   }
 
   update(): void {
@@ -351,6 +355,7 @@ export class MechanicExecutor {
     if (resolvedEffect.type === 'set_mechanic') { this.state.currentMechanic = resolvedEffect.mechanic; return; }
     if (resolvedEffect.type === 'recalculate_roles') { this.recalculateRoles(resolvedEffect.group); return; }
     if (resolvedEffect.type === 'recalculate_positions') { this.recalculatePositions(resolvedEffect.group, resolvedEffect.params); return; }
+    if (resolvedEffect.type === 'recalculate_facing') { this.recalculateFacing(resolvedEffect.group); return; }
     if (resolvedEffect.type === 'spawn_area') { this.spawnArea({ ...resolvedEffect, source: resolvedEffect.source ?? sourceId }, cast); return; }
     if (resolvedEffect.type === 'select_group') { this.selectGroup(resolvedEffect); return; }
     if (resolvedEffect.type === 'select_group_subset') { this.selectGroupSubset(resolvedEffect); return; }

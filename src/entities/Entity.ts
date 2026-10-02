@@ -11,4 +11,8 @@ export interface Entity {
   position: Vector2;
   alive: boolean;
   style?: EntityStyle;
+  /** Compass heading in degrees; defaults to north when unset. */
+  facing?: number;
+  /** Whether a facing rule currently controls this entity. */
+  facingRuleActive?: boolean;
 }

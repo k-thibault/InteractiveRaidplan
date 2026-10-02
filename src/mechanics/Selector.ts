@@ -1,8 +1,12 @@
 import { distance } from '../geometry/Vector2';
+import { isFacingTowards, isFacingAway, DEFAULT_FACING } from '../geometry/Facing';
 import type { Entity } from '../entities/Entity';
 import type { Player, PlayerRole } from '../entities/Player';
 import type { Random } from '../simulation/Random';
 import type { GameState } from '../simulation/GameState';
+
+/** An entity id, or a fixed world point, to test facing against. */
+export type FacingSource = string | { x: number; y: number };
 
 export type PlayerSelector =
   | { type: 'all' }
@@ -16,6 +20,8 @@ export type PlayerSelector =
   | { type: 'mechanical_role'; role: string }
   /** Players captured into a named runtime group. */
   | { type: 'from_group'; group: string }
+  /** Players facing towards or away from a source within the given tolerance. */
+  | { type: 'facing'; source: FacingSource; mode: 'towards' | 'away'; tolerance?: number }
   | { type: 'and'; selectors: PlayerSelector[] }
   | { type: 'or'; selectors: PlayerSelector[] };
 
@@ -34,6 +40,12 @@ export function selectPlayers(selector: PlayerSelector, state: GameState, random
   if (selector.type === 'from_group') {
     const ids = new Set((state.groups?.[selector.group] ?? []).map((entry) => entry.id));
     return players.filter((player) => ids.has(player.id));
+  }
+  if (selector.type === 'facing') {
+    const point = typeof selector.source === 'string' ? findEntity(state, selector.source)?.position : selector.source;
+    if (!point) return [];
+    const test = selector.mode === 'towards' ? isFacingTowards : isFacingAway;
+    return players.filter((player) => test(player.position, player.facing ?? DEFAULT_FACING, point, selector.tolerance));
   }
   if (selector.type === 'and') {
     return players.filter((player) => selector.selectors.every((child) => selectPlayers(child, state, random).some((candidate) => candidate.id === player.id)));

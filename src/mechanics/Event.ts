@@ -16,6 +16,8 @@ export interface StartCastEvent extends BaseEvent {
 export interface RemoveStatusEvent extends BaseEvent { type: 'remove_status'; target: PlayerSelector; status: string; stacks?: number; }
 export interface RecalculateRolesEvent extends BaseEvent { type: 'recalculate_roles'; group?: string; }
 export interface RecalculatePositionsEvent extends BaseEvent { type: 'recalculate_positions'; group?: string; params?: Record<string, number>; }
+/** Re-matches facing rules for every player and enemy. See `RecalculateFacingEffect`. */
+export interface RecalculateFacingEvent extends BaseEvent { type: 'recalculate_facing'; group?: string; }
 export interface SetMechanicEvent extends BaseEvent { type: 'set_mechanic'; mechanic: string; }
 export interface ApplyStatusEvent extends BaseEvent { type: 'apply_status'; target: PlayerSelector; status: string; duration?: number; stacks?: number; }
 export interface DistributeStatusesEvent extends BaseEvent { type: 'distribute_statuses'; target: PlayerSelector; statuses: string[]; duration?: number; replayId?: string; }
@@ -36,4 +38,4 @@ export interface ForEachGroupEvent extends BaseEvent { type: 'for_each_group'; g
 export interface SpawnEnemyEvent extends BaseEvent, Partial<EnemyTemplate> { type: 'spawn_enemy'; enemy?: string; position: PositionValue; expiresAfter?: number; addToGroup?: string; }
 /** See `RemoveEnemyEffect`. */
 export interface RemoveEnemyEvent extends BaseEvent { type: 'remove_enemy'; id: string; }
-export type EncounterEvent = ApplyStatusEvent | DistributeStatusesEvent | HealEvent | DamageEvent | SpawnAreaEvent | StartCastEvent | RemoveStatusEvent | RecalculateRolesEvent | RecalculatePositionsEvent | SetMechanicEvent | ShowGraphicEvent | SetBackgroundEvent | SelectGroupEvent | SelectGroupSubsetEvent | ForEachGroupEvent | SpawnEnemyEvent | RemoveEnemyEvent;
+export type EncounterEvent = ApplyStatusEvent | DistributeStatusesEvent | HealEvent | DamageEvent | SpawnAreaEvent | StartCastEvent | RemoveStatusEvent | RecalculateRolesEvent | RecalculatePositionsEvent | RecalculateFacingEvent | SetMechanicEvent | ShowGraphicEvent | SetBackgroundEvent | SelectGroupEvent | SelectGroupSubsetEvent | ForEachGroupEvent | SpawnEnemyEvent | RemoveEnemyEvent;
