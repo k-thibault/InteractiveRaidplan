@@ -4,6 +4,7 @@ import type { StatusDefinition, StatusInstance } from '../entities/Status';
 import type { EncounterResources } from '../encounters/Encounter';
 import type { GraphicAnchor, WorldGraphicInstance } from '../mechanics/Graphic';
 import { formatStatusName } from '../util/format';
+import { DEFAULT_FACING } from '../geometry/Facing';
 
 interface StatusHitArea {
   x: number;
@@ -81,6 +82,17 @@ export class ArenaRenderer {
     stop(.99, .85); // bright ring
     stop(1, 0); // short fade out past the ring
     return gradient;
+  }
+
+  /** Converts mouse coordinates to world coordinates. */
+  screenToWorld(event: MouseEvent): { x: number; y: number } {
+    const bounds = this.canvas.getBoundingClientRect();
+    const scaleX = this.canvas.width / bounds.width;
+    const scaleY = this.canvas.height / bounds.height;
+    const canvasX = (event.clientX - bounds.left) * scaleX;
+    const canvasY = (event.clientY - bounds.top) * scaleY;
+    const scale = Math.min(this.canvas.width / 30, this.canvas.height / 20);
+    return { x: (canvasX - this.canvas.width / 2) / scale, y: (canvasY - this.canvas.height / 2) / scale };
   }
 
   render(state: GameState): void {
@@ -163,8 +175,35 @@ export class ArenaRenderer {
       this.context.arc(point.x, point.y, radius, 0, Math.PI * 2);
       this.context.fill();
     }
+    this.drawFacingWedge(entity, point, radius, scale);
     this.context.fillStyle = '#dbe7f2'; this.context.font = '12px sans-serif'; this.context.textAlign = 'center'; this.context.fillText(entity.name, point.x, point.y - radius - 8);
     if (showInlineStatuses) entity.statuses.filter((status) => !this.statusDefinitions.get(status.definitionId)?.hidden).forEach((status, index) => this.drawStatusIcon(status, point.x + radius + scale * (.24 + index * .48), point.y - radius * .5, scale));
+  }
+
+  /** Draws a small wedge at the edge of a unit pointing in its current facing direction. */
+  private drawFacingWedge(entity: Entity, point: { x: number; y: number }, radius: number, scale: number): void {
+    const facing = entity.facing ?? DEFAULT_FACING;
+    const radians = (facing * Math.PI) / 180;
+    const dirX = Math.sin(radians);
+    const dirY = -Math.cos(radians);
+    const perpX = -dirY;
+    const perpY = dirX;
+    const tipDistance = radius + scale * 0.22;
+    const baseDistance = Math.max(0, radius - scale * 0.03);
+    const baseHalfWidth = scale * 0.12;
+    const tip = { x: point.x + dirX * tipDistance, y: point.y + dirY * tipDistance };
+    const baseLeft = { x: point.x + dirX * baseDistance + perpX * baseHalfWidth, y: point.y + dirY * baseDistance + perpY * baseHalfWidth };
+    const baseRight = { x: point.x + dirX * baseDistance - perpX * baseHalfWidth, y: point.y + dirY * baseDistance - perpY * baseHalfWidth };
+    this.context.beginPath();
+    this.context.moveTo(tip.x, tip.y);
+    this.context.lineTo(baseLeft.x, baseLeft.y);
+    this.context.lineTo(baseRight.x, baseRight.y);
+    this.context.closePath();
+    this.context.fillStyle = 'rgba(255, 255, 255, 0.9)';
+    this.context.strokeStyle = 'rgba(10, 15, 20, 0.6)';
+    this.context.lineWidth = 1;
+    this.context.fill();
+    this.context.stroke();
   }
 
   /** Renders the controlled player's statuses in a dedicated HUD row. */
@@ -197,8 +236,7 @@ export class ArenaRenderer {
     const definition = this.statusDefinitions.get(status.definitionId);
     const icon = this.resolvedImage(definition?.icon);
     if (icon) {
-      // Status SVGs own their silhouette and transparent padding. Do not crop
-      // them to a circle; the diamond/crest framing is part of the icon design.
+      // Preserve the source icon's silhouette and transparent padding.
       this.context.drawImage(icon, x - radius, y - radius, radius * 2, radius * 2);
     } else {
       const top = y - radius;

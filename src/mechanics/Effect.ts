@@ -22,6 +22,8 @@ export interface StartCastEffect {
 }
 export interface RecalculateRolesEffect { type: 'recalculate_roles'; group?: string; }
 export interface RecalculatePositionsEffect { type: 'recalculate_positions'; group?: string; params?: Record<string, number>; }
+/** Re-matches facing rules for every player and enemy against the `facing` definitions. */
+export interface RecalculateFacingEffect { type: 'recalculate_facing'; group?: string; }
 export interface SetMechanicEffect { type: 'set_mechanic'; mechanic: string; }
 export interface AreaDefinition {
   shape: 'circle' | 'cone' | 'half_room';
@@ -90,7 +92,7 @@ export interface SpawnEnemyEffect extends Partial<EnemyTemplate> {
 /** Removes a temporary enemy and cancels its active casts. */
 export interface RemoveEnemyEffect { type: 'remove_enemy'; id: string; }
 
-export type EffectDefinition = HealEffect | DamageEffect | ApplyStatusEffect | RemoveStatusEffect | StartCastEffect | RecalculateRolesEffect | RecalculatePositionsEffect | SetMechanicEffect | SpawnAreaEffect | AssignDistributionEffect | DistributeStatusesEffect | ShowGraphicEffect | DelayedEffectsEffect | SelectGroupEffect | SelectGroupSubsetEffect | ForEachGroupEffect | SpawnEnemyEffect | RemoveEnemyEffect;
+export type EffectDefinition = HealEffect | DamageEffect | ApplyStatusEffect | RemoveStatusEffect | StartCastEffect | RecalculateRolesEffect | RecalculatePositionsEffect | RecalculateFacingEffect | SetMechanicEffect | SpawnAreaEffect | AssignDistributionEffect | DistributeStatusesEffect | ShowGraphicEffect | DelayedEffectsEffect | SelectGroupEffect | SelectGroupSubsetEffect | ForEachGroupEffect | SpawnEnemyEffect | RemoveEnemyEffect;
 export interface AreaCondition { type: 'player_count'; min?: number; max?: number; }
 export interface AreaResolutionRule { condition: AreaCondition; effects: EffectDefinition[]; }
 export interface BaseAreaEffect {

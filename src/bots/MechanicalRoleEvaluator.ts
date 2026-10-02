@@ -1,5 +1,8 @@
 import type { Player } from '../entities/Player';
 import type { GameState } from '../simulation/GameState';
+import type { FacingSource } from '../mechanics/Selector';
+import { isFacingTowards, isFacingAway, DEFAULT_FACING } from '../geometry/Facing';
+import { findEntity } from '../mechanics/Selector';
 
 export type Condition =
   | { type: 'has_status'; status: string }
@@ -11,6 +14,8 @@ export type Condition =
   | { type: 'mechanic'; mechanic: string }
   | { type: 'active_cast'; cast: string; source?: string }
   | { type: 'active_area'; mechanic?: string; element?: string }
+  /** True if this player's current facing points towards/away from `source`. See `PlayerSelector`'s `facing` type. */
+  | { type: 'facing'; source: FacingSource; mode: 'towards' | 'away'; tolerance?: number }
   | { type: 'and'; conditions: ConditionExpression[] }
   | { type: 'or'; conditions: ConditionExpression[] }
   | { type: 'not'; condition: ConditionExpression }
@@ -80,6 +85,12 @@ export class MechanicalRoleEvaluator {
         effect.resolvedAt === undefined &&
         (condition.mechanic === undefined || effect.mechanic === condition.mechanic) &&
         (condition.element === undefined || effect.element === condition.element));
+      case 'facing': {
+        const point = typeof condition.source === 'string' ? findEntity(state, condition.source)?.position : condition.source;
+        if (!point) return false;
+        const test = condition.mode === 'towards' ? isFacingTowards : isFacingAway;
+        return test(player.position, player.facing ?? DEFAULT_FACING, point, condition.tolerance);
+      }
       case 'and': return condition.conditions.every((child) => this.matches(child, player, state));
       case 'or': return condition.conditions.some((child) => this.matches(child, player, state));
       case 'not': return !this.matches(condition.condition, player, state);

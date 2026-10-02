@@ -5,6 +5,7 @@ import type { EncounterEvent } from '../mechanics/Event';
 import type { DistributionDefinition, RandomGroup, SequenceDefinition } from '../simulation/RandomContext';
 import type { MechanicalRoleDefinitions } from '../bots/MechanicalRoleEvaluator';
 import type { PositionDefinition } from '../bots/PositionEvaluator';
+import type { FacingDefinition } from '../bots/FacingEvaluator';
 import type { CastDefinition } from '../mechanics/Cast';
 import type { AreaDefinition, EffectDefinition } from '../mechanics/Effect';
 
@@ -31,6 +32,8 @@ export interface Encounter {
   distributions?: Record<string, DistributionDefinition>;
   mechanicalRoles?: MechanicalRoleDefinitions;
   positions?: Record<string, PositionDefinition>;
+  /** Facing rules, grouped like `positions`. Applies to both players and enemies. */
+  facing?: Record<string, FacingDefinition>;
   casts?: Record<string, CastDefinition>;
   /** Reusable area definitions referenced by spawn-area effects. */
   areas?: Record<string, AreaDefinition>;
