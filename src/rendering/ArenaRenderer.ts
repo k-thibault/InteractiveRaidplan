@@ -3,6 +3,7 @@ import type { Entity } from '../entities/Entity';
 import type { StatusDefinition, StatusInstance } from '../entities/Status';
 import type { EncounterResources } from '../encounters/Encounter';
 import type { GraphicAnchor, WorldGraphicInstance } from '../mechanics/Graphic';
+import type { MarkerDefinition } from '../encounters/Encounter';
 import { formatStatusName } from '../util/format';
 import { DEFAULT_FACING } from '../geometry/Facing';
 
@@ -107,6 +108,8 @@ export class ArenaRenderer {
     context.strokeStyle = '#273443'; context.lineWidth = 1;
     for (let x = -14; x <= 14; x += 1) { const point = toCanvas(x, -9); context.beginPath(); context.moveTo(point.x, 0); context.lineTo(point.x, canvas.height); context.stroke(); }
     for (let y = -9; y <= 9; y += 1) { const point = toCanvas(-14, y); context.beginPath(); context.moveTo(0, point.y); context.lineTo(canvas.width, point.y); context.stroke(); }
+    // Encounter markers sit above the arena background/grid but below telegraphs and units.
+    for (const marker of state.markers) this.drawMarker(marker, scale, toCanvas);
     for (const effect of state.effects) {
       const point = toCanvas(effect.position.x, effect.position.y);
       const isTelegraph = effect.resolvedAt === undefined;
@@ -139,6 +142,38 @@ export class ArenaRenderer {
     if (anchor.type === 'position') return anchor.position;
     const entity = [...state.players, ...state.enemies].find((candidate) => candidate.id === anchor.entity);
     return entity?.position;
+  }
+
+  private drawMarker(marker: MarkerDefinition & { resolvedPosition: { x: number; y: number } }, scale: number, toCanvas: (x: number, y: number) => { x: number; y: number }): void {
+    const point = toCanvas(marker.resolvedPosition.x, marker.resolvedPosition.y);
+    const radius = (marker.border?.radius ?? 0.55) * scale;
+    const color = marker.color ?? '#dbe7f2';
+
+    this.context.save();
+    this.context.globalAlpha = 0.6;
+    if (marker.border) {
+      this.context.strokeStyle = marker.border.color ?? color;
+      this.context.lineWidth = Math.max(1, scale * 0.045);
+      this.context.beginPath();
+      if (marker.border.shape === 'circle') {
+        this.context.arc(point.x, point.y, radius, 0, Math.PI * 2);
+      } else {
+        this.context.rect(point.x - radius, point.y - radius, radius * 2, radius * 2);
+      }
+      this.context.stroke();
+    }
+
+    const image = this.resolvedImage(marker.image);
+    if (image) {
+      this.context.drawImage(image, point.x - radius, point.y - radius, radius * 2, radius * 2);
+    } else if (marker.character) {
+      this.context.fillStyle = color;
+      this.context.font = `600 ${Math.max(12, radius * 1.35)}px sans-serif`;
+      this.context.textAlign = 'center';
+      this.context.textBaseline = 'middle';
+      this.context.fillText(marker.character, point.x, point.y);
+    }
+    this.context.restore();
   }
 
   private drawWorldGraphic(graphic: WorldGraphicInstance, state: GameState, scale: number, toCanvas: (x: number, y: number) => { x: number; y: number }): void {

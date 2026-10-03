@@ -8,6 +8,21 @@ import type { PositionDefinition } from '../bots/PositionEvaluator';
 import type { FacingDefinition } from '../bots/FacingEvaluator';
 import type { CastDefinition } from '../mechanics/Cast';
 import type { AreaDefinition, BatchDefinition, EffectDefinition } from '../mechanics/Effect';
+import type { PolarPosition, Vector2 } from '../geometry/Vector2';
+
+export interface MarkerDefinition {
+  /** Stable marker id used by positioning rules. */
+  id: string;
+  /** Fixed or polar world position. */
+  position: Vector2 | PolarPosition;
+  /** Render either a text character or a shared graphic resource. */
+  character?: string;
+  image?: string;
+  /** Optional marker border. Omit for no border. */
+  border?: { shape: 'square' | 'circle'; radius: number; color?: string };
+  /** Color used for the character, or the border when border.color is omitted. */
+  color?: string;
+}
 
 /** Encounter-owned resources for backgrounds, icons, and world graphics. */
 export interface EncounterResources {
@@ -32,6 +47,8 @@ export interface Encounter {
   distributions?: Record<string, DistributionDefinition>;
   mechanicalRoles?: MechanicalRoleDefinitions;
   positions?: Record<string, PositionDefinition>;
+  /** Static arena markers that can also be used as position targets. */
+  markers?: MarkerDefinition[];
   /** Facing rules, grouped like `positions`. Applies to both players and enemies. */
   facing?: Record<string, FacingDefinition>;
   casts?: Record<string, CastDefinition>;

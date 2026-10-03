@@ -7,6 +7,8 @@ export type EntityReference =
 
 export type PositionTarget =
   | { type: 'fixed'; position: { x: number; y: number } | string }
+  /** Position relative to a named encounter marker. */
+  | { type: 'marker'; marker: string; offset?: { x: number; y: number } }
   /** `angleFrom` takes the bearing of an entity from `origin` instead of a fixed `angle`. */
   | { type: 'polar'; angle?: number | string; angleFrom?: EntityReference; radius: number | string; origin?: { x: number; y: number }; angleOffset?: number }
   /** A point on the line from `a` to `b`: `t` 0 is `a`, 1 is `b`, default 0.5. */

@@ -1,4 +1,5 @@
 import type { Encounter } from './Encounter';
+import { resolvePositionValue } from '../geometry/Vector2';
 
 export interface EncounterManifestEntry {
   id: string;
@@ -32,7 +33,23 @@ export async function loadEncounter(url: string): Promise<Encounter> {
   if (!response.ok) throw new Error(`Unable to load encounter: ${response.status}`);
 
   const encounter = await response.json() as Encounter;
-  const graphics = encounter.resources?.graphics ?? [];
+  const markerIds = new Set<string>();
+  for (const marker of encounter.markers ?? []) {
+    if (!marker.id) throw new Error('Encounter marker ids must be non-empty');
+    if (markerIds.has(marker.id)) throw new Error(`Encounter contains duplicate marker id "${marker.id}"`);
+    if (!marker.character && !marker.image) throw new Error(`Encounter marker "${marker.id}" must define either character or image`);
+    if (marker.character && marker.image) throw new Error(`Encounter marker "${marker.id}" cannot define both character and image`);
+    const position = resolvePositionValue(marker.position);
+    if (!Number.isFinite(position.x) || !Number.isFinite(position.y)) throw new Error(`Encounter marker "${marker.id}" must have a finite position`);
+    if (marker.border && (!Number.isFinite(marker.border.radius) || marker.border.radius <= 0)) {
+      throw new Error(`Encounter marker "${marker.id}" border radius must be a positive finite number`);
+    }
+    markerIds.add(marker.id);
+  }
+  const graphics = [...new Set([
+    ...(encounter.resources?.graphics ?? []),
+    ...(encounter.markers?.flatMap((marker) => marker.image ? [marker.image] : []) ?? []),
+  ])];
   if (graphics.length === 0) return encounter;
 
   const libraryUrl = new URL('resources/graphics.json', new URL(import.meta.env.BASE_URL, window.location.origin));
