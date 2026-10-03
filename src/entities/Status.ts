@@ -23,6 +23,10 @@ export interface StatusDefinition {
   onExpire?: EffectDefinition[];
   /** Runs only when the status is removed before it times out. */
   onEarlyRemove?: EffectDefinition[];
+  /** Keeps this status when its carrier dies. */
+  keepOnDeath?: boolean;
+  /** Removal hook to run on death; defaults to none. */
+  deathRemovalTrigger?: 'none' | 'remove' | 'early_remove' | 'expire';
   /** If the carrier is dead on removal, `onRemove` effects run on a random living player instead. */
   reassignIfDead?: boolean;
   /**

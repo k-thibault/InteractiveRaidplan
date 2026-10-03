@@ -500,7 +500,9 @@ export class MechanicExecutor {
 
   private applyDamage(players: typeof this.state.players, damage: DamageDefinition, sourceName?: string): void {
     for (const player of players) {
+      const wasAlive = player.alive;
       const result = this.damageResolver.resolve(player, damage);
+      if (result.killed && wasAlive) this.removeStatusesOnDeath(player);
       if (player.controlled) {
         if (result.fatal) this.logEvent(`You took fatal ${damage.type} damage${sourceName ? ` from ${sourceName}` : ''}.`);
         else this.logEvent(`${sourceName ? `You were hit by ${sourceName} for` : 'You were hit for'} ${Math.round(result.amount)} ${damage.type} damage.`);
@@ -551,7 +553,22 @@ export class MechanicExecutor {
     for (const effect of definition?.onApply ?? []) this.executeEffect(effect, new Set(), player.id);
   }
 
-  private removeStatus(player: typeof this.state.players[number], statusId: string, stacks = 1, reason: 'expired' | 'removed' = 'removed'): void {
+  private removeStatusesOnDeath(player: typeof this.state.players[number]): void {
+    for (const status of [...player.statuses]) {
+      const definition = this.statusDefinitions.get(status.definitionId);
+      if (definition?.keepOnDeath) continue;
+      const trigger = definition?.deathRemovalTrigger ?? 'none';
+      this.removeStatus(player, status.definitionId, status.stacks, 'death', trigger);
+    }
+  }
+
+  private removeStatus(
+    player: typeof this.state.players[number],
+    statusId: string,
+    stacks = 1,
+    reason: 'expired' | 'removed' | 'death' = 'removed',
+    deathTrigger?: 'none' | 'remove' | 'early_remove' | 'expire'
+  ): void {
     const index = player.statuses.findIndex((status) => status.definitionId === statusId);
     if (index === -1) return;
     const definition = this.statusDefinitions.get(statusId);
@@ -562,11 +579,24 @@ export class MechanicExecutor {
     }
     player.statuses.splice(index, 1);
     this.refreshControl(player);
-    const reasonEffects = reason === 'expired' ? definition?.onExpire : definition?.onEarlyRemove;
-    for (const effect of reasonEffects ?? []) this.executeEffect(effect, new Set(), player.id);
-    // A dead carrier hands removal effects to a random living player when the status asks for it.
-    const holder = player.alive || !definition?.reassignIfDead ? player : (selectPlayers({ type: 'random', count: 1 }, this.state, this.random)[0] ?? player);
-    for (const effect of definition?.onRemove ?? []) this.executeEffect(effect, new Set(), holder.id);
+    if (reason === 'death') {
+      const effects = deathTrigger === 'remove'
+        ? definition?.onRemove
+        : deathTrigger === 'early_remove'
+          ? definition?.onEarlyRemove
+          : deathTrigger === 'expire'
+            ? definition?.onExpire
+            : [];
+      const holder = deathTrigger === 'remove' && definition?.reassignIfDead
+        ? selectPlayers({ type: 'random', count: 1 }, this.state, this.random)[0] ?? player
+        : player;
+      for (const effect of effects ?? []) this.executeEffect(effect, new Set(), holder.id);
+    } else {
+      const reasonEffects = reason === 'expired' ? definition?.onExpire : definition?.onEarlyRemove;
+      for (const effect of reasonEffects ?? []) this.executeEffect(effect, new Set(), player.id);
+      const holder = player.alive || !definition?.reassignIfDead ? player : (selectPlayers({ type: 'random', count: 1 }, this.state, this.random)[0] ?? player);
+      for (const effect of definition?.onRemove ?? []) this.executeEffect(effect, new Set(), holder.id);
+    }
     if (player.controlled && !definition?.hidden) this.logEvent(`Your ${formatStatusName(statusId)} status ended.`);
     else if (this.debug) this.logEvent(`${player.name}'s ${formatStatusName(statusId)}${definition?.hidden ? ' (hidden)' : ''} status ended.`, 'debug');
   }
