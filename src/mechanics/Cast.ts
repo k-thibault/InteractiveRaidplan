@@ -8,6 +8,8 @@ export interface CastDefinition {
   effects: EffectDefinition[];
   /** Default targeting rule for this cast type. */
   facing?: CastFacing;
+  /** Pauses the caster's follow movement and/or facing until the cast completes. */
+  suspendFollow?: { movement?: boolean; facing?: boolean };
 }
 
 /** Targeting resolves once at cast start. */

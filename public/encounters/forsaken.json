@@ -134,12 +134,14 @@
       "color": "#ffbe49",
       "character": "!",
       "icon": "icon-spells-trouble",
-      "showStacks": true
+      "showStacks": true,
+      "keepOnDeath": true
     },
     {
       "id": "stack-trigger",
       "name": "Stack Trigger",
       "hidden": true,
+      "keepOnDeath": true,
       "onApply": [
         {
           "type": "show_graphic",
@@ -205,6 +207,7 @@
       "id": "spread-trigger",
       "name": "Spread Trigger",
       "hidden": true,
+      "keepOnDeath": true,
       "onApply": [
         {
           "type": "show_graphic",
@@ -253,6 +256,7 @@
       "id": "cone-trigger",
       "name": "Cone Trigger",
       "hidden": true,
+      "keepOnDeath": true,
       "onApply": [
         {
           "type": "show_graphic",
@@ -369,6 +373,7 @@
         "id": "back-sweep",
         "name": "All Things Ending",
         "castTime": 5000,
+        "suspendFollow": { "movement": true, "facing": true },
         "facing": { "type": "random_player" },
         "effects": [
           {
@@ -376,7 +381,7 @@
             "shape": "cone",
             "angle": 180,
             "radius": 30,
-            "direction": "cast_direction",
+            "direction": "facing",
             "rotationOffset": 180,
             "telegraphDuration": 0,
             "duration": 200,
@@ -406,6 +411,7 @@
         "id": "front-sweep",
         "name": "All Things Ending",
         "castTime": 5000,
+        "suspendFollow": { "movement": true, "facing": true },
         "facing": { "type": "random_player" },
         "effects": [
           {
@@ -413,7 +419,7 @@
             "shape": "cone",
             "angle": 180,
             "radius": 30,
-            "direction": "cast_direction",
+            "direction": "facing",
             "telegraphDuration": 0,
             "duration": 200,
             "resolution": [ 

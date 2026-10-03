@@ -15,7 +15,20 @@ export interface StatusDefinition {
   icon?: string;
   /** Hidden from HUD status lists but still active mechanically. */
   hidden?: boolean;
+  /** While active, a root blocks movement and a stun blocks movement and facing changes. */
+  control?: 'root' | 'stun';
+  /** Runs on any removal, including expiry. */
   onRemove?: EffectDefinition[];
+  /** Runs only when the status times out. */
+  onExpire?: EffectDefinition[];
+  /** Runs only when the status is removed before it times out. */
+  onEarlyRemove?: EffectDefinition[];
+  /** Keeps this status when its carrier dies. */
+  keepOnDeath?: boolean;
+  /** Removal hook to run on death; defaults to none. */
+  deathRemovalTrigger?: 'none' | 'remove' | 'early_remove' | 'expire';
+  /** If the carrier is dead on removal, `onRemove` effects run on a random living player instead. */
+  reassignIfDead?: boolean;
   /**
    * Effects run the moment this status is applied. Commonly used to spawn a
    * short-lived world graphic on the target (e.g. a flash that fades after a

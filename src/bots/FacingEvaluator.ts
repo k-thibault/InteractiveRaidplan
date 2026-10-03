@@ -1,8 +1,8 @@
 import type { GameState } from '../simulation/GameState';
 import type { Entity } from '../entities/Entity';
 import type { FacingTarget } from './FacingTarget';
-import type { EntityReference } from './PositionTarget';
-import { findEntity } from '../mechanics/Selector';
+import { resolveEntityReference } from '../mechanics/Selector';
+import { canTurn } from '../entities/Control';
 import { toPolarAngle } from '../geometry/Vector2';
 
 /** Facing conditions use state shared by players and enemies. */
@@ -37,6 +37,8 @@ export class FacingEvaluator {
     void params; // Reserved for API parity with position recalculation.
     const rules = group ? (this.definitions[group] ?? []) : Object.values(this.definitions).flat();
     for (const entity of [...state.players, ...state.enemies] as Entity[]) {
+      // A stunned entity keeps its current facing and rule state.
+      if (!canTurn(entity)) continue;
       const rule = rules.find((candidate) => candidate.when === undefined || this.matches(candidate.when, entity, state));
       if (rule) {
         const angle = this.resolve(rule.target, state, entity);
@@ -50,6 +52,12 @@ export class FacingEvaluator {
 
   /** Resolves a facing target, relative to `self`, to a compass-degree heading. */
   resolve(target: FacingTarget, state: GameState, self: Entity): number | undefined {
+    if (target.type === 'nearest_player') {
+      const nearest = state.players
+        .filter((player) => player.alive)
+        .sort((a, b) => Math.hypot(a.position.x - self.position.x, a.position.y - self.position.y) - Math.hypot(b.position.x - self.position.x, b.position.y - self.position.y))[0];
+      return nearest ? toPolarAngle(nearest.position, self.position) : undefined;
+    }
     if (target.type === 'absolute') {
       const angle = this.resolveValue(target.angle);
       const resolved = typeof angle === 'number' ? angle : Number(angle);
@@ -60,14 +68,8 @@ export class FacingEvaluator {
       if (typeof position === 'string') return undefined;
       return toPolarAngle(position, self.position) + (target.offset ?? 0);
     }
-    const entity = this.resolveReference(target.entity, state);
+    const entity = resolveEntityReference(target.entity, state);
     return entity ? toPolarAngle(entity.position, self.position) + (target.offset ?? 0) : undefined;
-  }
-
-  private resolveReference(reference: EntityReference, state: GameState) {
-    if (reference.type === 'id') return findEntity(state, reference.id);
-    if (reference.type === 'gameplay_role') return state.players.find((player) => player.role === reference.role && player.alive);
-    return state.players.find((player) => player.mechanicalRoles.includes(reference.role) && player.alive);
   }
 
   private matches(condition: FacingConditionExpression, entity: Entity, state: GameState): boolean {

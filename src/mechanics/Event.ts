@@ -3,6 +3,8 @@ import type { PlayerSelector } from './Selector';
 import type { PositionValue } from '../geometry/Vector2';
 import type { EnemyTemplate } from '../entities/Enemy';
 import type { CastFacing } from './Cast';
+import type { KnockParams } from './Knock';
+import type { FollowSettings } from '../bots/FollowManager';
 
 
 interface BaseEvent { id: string; at?: number; after?: string; delay?: number; }
@@ -14,6 +16,12 @@ export interface StartCastEvent extends BaseEvent {
   castChoices?: string[];
 }
 export interface RemoveStatusEvent extends BaseEvent { type: 'remove_status'; target: PlayerSelector; status: string; stacks?: number; }
+/** See `KnockEffect`. */
+export interface KnockEvent extends BaseEvent, KnockParams { type: 'knock'; target: PlayerSelector; /** Origin for radial knocks without `from`. Defaults to the boss. */ source?: string; }
+/** See `StartFollowEffect`. Defaults to the boss. */
+export interface StartFollowEvent extends BaseEvent, FollowSettings { type: 'start_follow'; source?: string; }
+/** See `StopFollowEffect`. Defaults to the boss. */
+export interface StopFollowEvent extends BaseEvent { type: 'stop_follow'; source?: string; }
 export interface RecalculateRolesEvent extends BaseEvent { type: 'recalculate_roles'; group?: string; }
 export interface RecalculatePositionsEvent extends BaseEvent { type: 'recalculate_positions'; group?: string; params?: Record<string, number>; }
 /** Re-matches facing rules for every player and enemy. See `RecalculateFacingEffect`. */
@@ -35,7 +43,7 @@ export interface SelectGroupSubsetEvent extends BaseEvent { type: 'select_group_
 /** See `ForEachGroupEffect`. */
 export interface ForEachGroupEvent extends BaseEvent { type: 'for_each_group'; group: string; effects: EffectDefinition[]; }
 /** See `SpawnEnemyEffect`. */
-export interface SpawnEnemyEvent extends BaseEvent, Partial<EnemyTemplate> { type: 'spawn_enemy'; enemy?: string; position: PositionValue; expiresAfter?: number; addToGroup?: string; }
+export interface SpawnEnemyEvent extends BaseEvent, Partial<EnemyTemplate> { type: 'spawn_enemy'; enemyId?: string; enemy?: string; position: PositionValue; expiresAfter?: number; addToGroup?: string; }
 /** See `RemoveEnemyEffect`. */
 export interface RemoveEnemyEvent extends BaseEvent { type: 'remove_enemy'; id: string; }
-export type EncounterEvent = ApplyStatusEvent | DistributeStatusesEvent | HealEvent | DamageEvent | SpawnAreaEvent | StartCastEvent | RemoveStatusEvent | RecalculateRolesEvent | RecalculatePositionsEvent | RecalculateFacingEvent | SetMechanicEvent | ShowGraphicEvent | SetBackgroundEvent | SelectGroupEvent | SelectGroupSubsetEvent | ForEachGroupEvent | SpawnEnemyEvent | RemoveEnemyEvent;
+export type EncounterEvent = KnockEvent | StartFollowEvent | StopFollowEvent | ApplyStatusEvent | DistributeStatusesEvent | HealEvent | DamageEvent | SpawnAreaEvent | StartCastEvent | RemoveStatusEvent | RecalculateRolesEvent | RecalculatePositionsEvent | RecalculateFacingEvent | SetMechanicEvent | ShowGraphicEvent | SetBackgroundEvent | SelectGroupEvent | SelectGroupSubsetEvent | ForEachGroupEvent | SpawnEnemyEvent | RemoveEnemyEvent;

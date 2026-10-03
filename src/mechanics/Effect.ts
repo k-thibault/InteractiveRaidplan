@@ -3,13 +3,22 @@ import type { PlayerSelector } from './Selector';
 import type { GraphicAnchor } from './Graphic';
 import type { EnemyTemplate } from '../entities/Enemy';
 import type { CastFacing } from './Cast';
+import type { KnockParams } from './Knock';
+import type { FollowSettings } from '../bots/FollowManager';
 
 export type DamageType = 'physical' | 'magical' | 'dark' | 'fire' | 'ice' | 'poison';
 export interface DamageDefinition { amount: number; type: DamageType; fatal?: boolean; }
-export type EffectTarget = 'inside' | 'outside' | 'all' | PlayerSelector;
+/** `source` targets the effect source; `inside_others` excludes an area's anchor. */
+export type EffectTarget = 'inside' | 'inside_others' | 'outside' | 'all' | 'source' | PlayerSelector;
 export interface HealEffect { type: 'heal'; target: EffectTarget; amount?: number; full?: boolean; }
 export interface DamageEffect { type: 'damage'; target: EffectTarget; damage: DamageDefinition; }
-export interface ApplyStatusEffect { type: 'apply_status'; target: EffectTarget; status: string; duration?: number; stacks?: number; }
+export interface ApplyStatusEffect {
+  type: 'apply_status'; target: EffectTarget; duration?: number; stacks?: number;
+  /** Fixed status id. Mutually exclusive with `statusChoices`. */
+  status?: string;
+  /** Rolled independently for each target when the effect executes. */
+  statusChoices?: string[];
+}
 export interface RemoveStatusEffect { type: 'remove_status'; target: EffectTarget; status: string; stacks?: number; }
 export interface StartCastEffect {
   type: 'start_cast'; source?: string; mechanic?: string; facing?: CastFacing; 
@@ -20,19 +29,32 @@ export interface StartCastEffect {
   /** Rolled fresh, independently, the moment this effect executes */
   castChoices?: string[];
 }
+/** Forced movement that suspends regular movement until it finishes. Ignores roots and stuns. */
+export interface KnockEffect extends KnockParams { type: 'knock'; target: EffectTarget; }
+/** Starts follow mode on `source` (the effect's source entity when unset). */
+export interface StartFollowEffect extends FollowSettings { type: 'start_follow'; source?: string; }
+/** Ends follow mode on `source` (the effect's source entity when unset). */
+export interface StopFollowEffect { type: 'stop_follow'; source?: string; }
+/** Counts toward the named batch; see `BatchDefinition`. */
+export interface AddToBatchEffect { type: 'add_to_batch'; batch: string; }
+/** Collects calls over a window, then runs effects with `$batchCount`. */
+export interface BatchDefinition { window?: number; effects: EffectDefinition[]; }
 export interface RecalculateRolesEffect { type: 'recalculate_roles'; group?: string; }
 export interface RecalculatePositionsEffect { type: 'recalculate_positions'; group?: string; params?: Record<string, number>; }
 /** Re-matches facing rules for every player and enemy against the `facing` definitions. */
 export interface RecalculateFacingEffect { type: 'recalculate_facing'; group?: string; }
 export interface SetMechanicEffect { type: 'set_mechanic'; mechanic: string; }
 export interface AreaDefinition {
-  shape: 'circle' | 'cone' | 'half_room';
+  shape: 'circle' | 'cone' | 'half_room' | 'donut';
+  /** Outer radius for donuts. */
   radius: number;
+  /** Donut hole radius. */
+  innerRadius?: number;
   angle?: number;
   /** Anchor entity when `position` is unset; `$castTarget` is also valid. */
   source?: string;
   /** Spawn-time targeting mode; `cast_*` reuses the locked cast target. */
-  direction?: 'front' | 'back' | 'nearest_player' | 'random_player' | 'cast_direction' | 'cast_target';
+  direction?: 'front' | 'back' | 'nearest_player' | 'random_player' | 'cast_direction' | 'cast_target' | 'facing';
   rotationOffset?: number;
   /** Enables replay-safe resolution for nearest/random player direction picks. */
   replayableDirection?: boolean;
@@ -83,6 +105,8 @@ export interface ForEachGroupEffect { type: 'for_each_group'; group: string; eff
 /** Creates a temporary enemy instance. */
 export interface SpawnEnemyEffect extends Partial<EnemyTemplate> {
   type: 'spawn_enemy';
+  /** Fixed id so later selectors and effects can refer to this enemy. */
+  enemyId?: string;
   /** Name of a reusable template in `encounter.enemyTemplates`. */
   enemy?: string;
   position: PositionValue;
@@ -92,7 +116,7 @@ export interface SpawnEnemyEffect extends Partial<EnemyTemplate> {
 /** Removes a temporary enemy and cancels its active casts. */
 export interface RemoveEnemyEffect { type: 'remove_enemy'; id: string; }
 
-export type EffectDefinition = HealEffect | DamageEffect | ApplyStatusEffect | RemoveStatusEffect | StartCastEffect | RecalculateRolesEffect | RecalculatePositionsEffect | RecalculateFacingEffect | SetMechanicEffect | SpawnAreaEffect | AssignDistributionEffect | DistributeStatusesEffect | ShowGraphicEffect | DelayedEffectsEffect | SelectGroupEffect | SelectGroupSubsetEffect | ForEachGroupEffect | SpawnEnemyEffect | RemoveEnemyEffect;
+export type EffectDefinition = HealEffect | DamageEffect | ApplyStatusEffect | RemoveStatusEffect | KnockEffect | StartFollowEffect | StopFollowEffect | AddToBatchEffect | StartCastEffect | RecalculateRolesEffect | RecalculatePositionsEffect | RecalculateFacingEffect | SetMechanicEffect | SpawnAreaEffect | AssignDistributionEffect | DistributeStatusesEffect | ShowGraphicEffect | DelayedEffectsEffect | SelectGroupEffect | SelectGroupSubsetEffect | ForEachGroupEffect | SpawnEnemyEffect | RemoveEnemyEffect;
 export interface AreaCondition { type: 'player_count'; min?: number; max?: number; }
 export interface AreaResolutionRule { condition: AreaCondition; effects: EffectDefinition[]; }
 export interface BaseAreaEffect {
@@ -103,4 +127,5 @@ export interface BaseAreaEffect {
 export interface CircleArea extends BaseAreaEffect { shape: 'circle'; }
 export interface ConeArea extends BaseAreaEffect { shape: 'cone'; angle: number; }
 export interface HalfRoomArea extends BaseAreaEffect { shape: 'half_room'; side: 'north' | 'south'; }
-export type AreaEffect = CircleArea | ConeArea | HalfRoomArea;
+export interface DonutArea extends BaseAreaEffect { shape: 'donut'; innerRadius: number; }
+export type AreaEffect = CircleArea | ConeArea | HalfRoomArea | DonutArea;

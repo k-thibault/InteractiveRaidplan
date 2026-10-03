@@ -114,7 +114,11 @@ export class ArenaRenderer {
       context.fillStyle = isTelegraph ? this.telegraphFillStyle(effect.telegraphStyle, point, effect.radius * scale, color) : hexToRgba(color, .28);
       context.beginPath();
       if (effect.shape === 'circle') context.arc(point.x, point.y, effect.radius * scale, 0, Math.PI * 2);
-      else if (effect.shape === 'half_room') {
+      else if (effect.shape === 'donut') {
+        context.arc(point.x, point.y, effect.radius * scale, 0, Math.PI * 2);
+        context.moveTo(point.x + effect.innerRadius * scale, point.y);
+        context.arc(point.x, point.y, effect.innerRadius * scale, 0, Math.PI * 2, true);
+      } else if (effect.shape === 'half_room') {
         const left = toCanvas(-14, 0).x;
         const right = toCanvas(14, 0).x;
         const top = toCanvas(0, -9).y;
@@ -164,20 +168,44 @@ export class ArenaRenderer {
     const point = toCanvas(entity.position.x, entity.position.y);
     const style = entity.style ?? { type: 'circle' };
     const radius = (style.type === 'ring' ? style.radius : style.radius ?? .38) * scale;
+    // Dead units keep the dead color regardless of style.
+    const fill = entity.alive ? (style.color ?? color) : color;
     this.context.beginPath();
     if (style.type === 'ring') {
-      this.context.strokeStyle = color;
+      this.context.strokeStyle = fill;
       this.context.lineWidth = (style.thickness ?? .12) * scale;
       this.context.arc(point.x, point.y, radius, 0, Math.PI * 2);
       this.context.stroke();
-    } else {
-      this.context.fillStyle = color;
+    } else if (style.type === 'circle') {
+      this.context.fillStyle = fill;
       this.context.arc(point.x, point.y, radius, 0, Math.PI * 2);
       this.context.fill();
+    } else {
+      this.tracePolygon(style.type, point, radius);
+      this.context.fillStyle = fill;
+      this.context.fill();
+      this.context.strokeStyle = 'rgba(10, 15, 20, 0.7)';
+      this.context.lineWidth = 2;
+      this.context.stroke();
     }
-    this.drawFacingWedge(entity, point, radius, scale);
+    // Polygon markers are stationary objects and have no heading.
+    if (style.type === 'circle' || style.type === 'ring') this.drawFacingWedge(entity, point, radius, scale);
     this.context.fillStyle = '#dbe7f2'; this.context.font = '12px sans-serif'; this.context.textAlign = 'center'; this.context.fillText(entity.name, point.x, point.y - radius - 8);
     if (showInlineStatuses) entity.statuses.filter((status) => !this.statusDefinitions.get(status.definitionId)?.hidden).forEach((status, index) => this.drawStatusIcon(status, point.x + radius + scale * (.24 + index * .48), point.y - radius * .5, scale));
+  }
+
+  /** Traces a closed marker outline; the triangle points up and the square is axis-aligned. */
+  private tracePolygon(shape: 'diamond' | 'square' | 'triangle', point: { x: number; y: number }, radius: number): void {
+    const offsets = shape === 'diamond'
+      ? [[0, -1], [1, 0], [0, 1], [-1, 0]]
+      : shape === 'square'
+        ? [[-.8, -.8], [.8, -.8], [.8, .8], [-.8, .8]]
+        : [[0, -1], [.87, .5], [-.87, .5]];
+    offsets.forEach(([dx, dy], index) => {
+      if (index === 0) this.context.moveTo(point.x + dx * radius, point.y + dy * radius);
+      else this.context.lineTo(point.x + dx * radius, point.y + dy * radius);
+    });
+    this.context.closePath();
   }
 
   /** Draws a small wedge at the edge of a unit pointing in its current facing direction. */

@@ -7,7 +7,12 @@ export type EntityReference =
 
 export type PositionTarget =
   | { type: 'fixed'; position: { x: number; y: number } | string }
-  | { type: 'polar'; angle: number | string; radius: number | string; origin?: { x: number; y: number }; angleOffset?: number }
+  /** `angleFrom` takes the bearing of an entity from `origin` instead of a fixed `angle`. */
+  | { type: 'polar'; angle?: number | string; angleFrom?: EntityReference; radius: number | string; origin?: { x: number; y: number }; angleOffset?: number }
+  /** A point on the line from `a` to `b`: `t` 0 is `a`, 1 is `b`, default 0.5. */
+  | { type: 'between'; a: EntityReference; b: EntityReference; t?: number }
+  /** Position that moves a following entity to `to`, optionally updating live. */
+  | { type: 'drag'; entity: EntityReference; to: PositionTarget; distance?: number }
   | { type: 'entity'; player: EntityReference; offset?: { x: number; y: number } }
   | {
       type: 'area';
@@ -17,4 +22,4 @@ export type PositionTarget =
       offset?: { x: number; y: number };
     };
 
-export interface PositionRule { when: import('./MechanicalRoleEvaluator').Condition; target: PositionTarget; }
+export interface PositionRule { when: import('./MechanicalRoleEvaluator').Condition; target: PositionTarget; live?: boolean; }

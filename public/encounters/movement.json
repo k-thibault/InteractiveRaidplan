@@ -1,0 +1,62 @@
+{
+  "version": 3,
+  "name": "Movement Effects",
+  "duration": 16000,
+  "statuses": [
+    { "id": "root", "name": "Root", "character": "R", "color": "#c98a3d", "control": "root" },
+    { "id": "stun", "name": "Stun", "character": "S", "color": "#e0d04a", "control": "stun" }
+  ],
+  "casts": {
+    "stomp": {
+      "id": "stomp",
+      "name": "Stomp",
+      "castTime": 2000,
+      "visible": true,
+      "suspendFollow": { "movement": true, "facing": true },
+      "effects": [
+        {
+          "type": "spawn_area",
+          "shape": "donut",
+          "innerRadius": 3,
+          "radius": 8,
+          "telegraphDuration": 1000,
+          "duration": 400,
+          "resolution": [
+            {
+              "condition": { "type": "player_count", "min": 1 },
+              "effects": [
+                { "type": "damage", "target": "inside", "damage": { "amount": 40, "type": "physical" } },
+                { "type": "apply_status", "target": "inside", "status": "root", "duration": 2000 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "shockwave": {
+      "id": "shockwave",
+      "name": "Shockwave",
+      "castTime": 1500,
+      "visible": true,
+      "suspendFollow": { "movement": true },
+      "effects": [
+        { "type": "knock", "target": "all", "distance": 6, "direction": { "type": "radial" } }
+      ]
+    }
+  },
+  "players": [
+    { "id": "player", "name": "Ranged", "type": "player", "role": "damage", "mechanicalRoles": [], "moveSpeed": 5, "health": 100, "alive": true, "position": { "x": 0, "y": 5 }, "statuses": [] },
+    { "id": "tank", "name": "Tank", "type": "player", "role": "tank", "mechanicalRoles": [], "moveSpeed": 5, "health": 100, "alive": true, "position": { "x": -2, "y": -3 }, "statuses": [] },
+    { "id": "healer", "name": "Healer", "type": "player", "role": "healer", "mechanicalRoles": [], "moveSpeed": 5, "health": 100, "alive": true, "position": { "x": 3, "y": 4 }, "statuses": [] }
+  ],
+  "enemies": [
+    { "id": "boss", "name": "Boss", "type": "enemy", "alive": true, "position": { "x": 0, "y": -7 }, "statuses": [] }
+  ],
+  "events": [
+    { "id": "follow-tank", "at": 0, "type": "start_follow", "target": { "type": "gameplay_role", "role": "tank" }, "distance": 3, "moveSpeed": 3 },
+    { "id": "stomp", "at": 1000, "type": "start_cast", "source": "boss", "cast": "stomp", "mechanic": "stomp" },
+    { "id": "shockwave", "at": 6000, "type": "start_cast", "source": "boss", "cast": "shockwave", "mechanic": "shockwave" },
+    { "id": "stun-ranged", "at": 10000, "type": "apply_status", "target": { "type": "role", "role": "damage" }, "status": "stun", "duration": 2000 },
+    { "id": "stop-follow", "at": 13000, "type": "stop_follow" }
+  ]
+}
