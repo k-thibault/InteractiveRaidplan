@@ -58,6 +58,14 @@ export class PositionEvaluator {
   }
 
   private resolve(target: PositionTarget, state: GameState, params?: Record<string, number>, player?: Player): { x: number; y: number } | undefined {
+    if (target.type === 'marker') {
+      const marker = state.markers.find((candidate) => candidate.id === target.marker);
+      if (!marker) return undefined;
+      return {
+        x: marker.resolvedPosition.x + (target.offset?.x ?? 0),
+        y: marker.resolvedPosition.y + (target.offset?.y ?? 0),
+      };
+    }
     if (target.type === 'fixed') {
       const position = this.resolveValue(this.substituteParams(target.position, params));
       return typeof position === 'string' ? undefined : { x: position.x, y: position.y };
