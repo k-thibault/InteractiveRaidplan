@@ -14,6 +14,7 @@ import type { RoleChange } from '../bots/MechanicalRoleEvaluator';
 import { PositionEvaluator } from '../bots/PositionEvaluator';
 import { FacingEvaluator } from '../bots/FacingEvaluator';
 import type { StatusInstance } from '../entities/Status';
+import { resolvePositionValue } from '../geometry/Vector2';
 
 export interface SimulationOptions { seed: number; controlledPlayerId?: string; replayOutcomes?: Map<string, Record<string, unknown>>; debug?: boolean; }
 
@@ -48,7 +49,11 @@ export class Simulation {
     });
     const players = structuredClone(encounter.players).map((player) => ({ ...player, ...getControlState(player.statuses), maxHealth: player.maxHealth ?? player.health, controlled: player.id === options.controlledPlayerId, mechanicalRoles: player.mechanicalRoles ?? [] }));
     const enemies = structuredClone(encounter.enemies).map((enemy) => ({ ...enemy, ...getControlState(enemy.statuses) }));
-    this.state = { time: 0, deltaTime: 0, currentMechanic: undefined, players, enemies, effects: [], worldGraphics: [], background: encounter.background, casts: [], running: false, completed: false, log: [], groups: {} };
+    const markers = (encounter.markers ?? []).map((marker) => ({
+      ...structuredClone(marker),
+      resolvedPosition: resolvePositionValue(marker.position),
+    }));
+    this.state = { time: 0, deltaTime: 0, currentMechanic: undefined, players, enemies, effects: [], worldGraphics: [], background: encounter.background, casts: [], running: false, completed: false, log: [], groups: {}, markers };
     this.roleEvaluator = new MechanicalRoleEvaluator(encounter.mechanicalRoles, <T>(value: T) => randomContext.resolve(value));
     this.positionEvaluator = new PositionEvaluator(encounter.positions, <T>(value: T) => randomContext.resolve(value));
     this.facingEvaluator = new FacingEvaluator(encounter.facing, <T>(value: T) => randomContext.resolve(value));
