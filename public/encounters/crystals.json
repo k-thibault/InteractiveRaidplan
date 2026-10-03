@@ -45,19 +45,19 @@
     }
   },
   "markers": [
-    { "id": "A", "position": { "x": 0, "y": -9 }, "character": "A", "border": { "shape": "circle", "radius": 0.6 }, "color": "#ffffff" },
-    { "id": "1", "position": { "x": 9, "y": -9 }, "character": "1", "border": { "shape": "circle", "radius": 0.6 }, "color": "#ffffff" },
-    { "id": "B", "position": { "x": 9, "y": 0 }, "character": "B", "border": { "shape": "circle", "radius": 0.6 }, "color": "#ffffff" },
-    { "id": "2", "position": { "x": 9, "y": 9 }, "character": "2", "border": { "shape": "circle", "radius": 0.6 }, "color": "#ffffff" },
-    { "id": "C", "position": { "x": 0, "y": 9 }, "character": "C", "border": { "shape": "circle", "radius": 0.6 }, "color": "#ffffff" },
-    { "id": "3", "position": { "x": -9, "y": 9 }, "character": "3", "border": { "shape": "circle", "radius": 0.6 }, "color": "#ffffff" },
-    { "id": "D", "position": { "x": -9, "y": 0 }, "character": "D", "border": { "shape": "circle", "radius": 0.6 }, "color": "#ffffff" },
-    { "id": "4", "position": { "x": -9, "y": -9 }, "character": "4", "border": { "shape": "circle", "radius": 0.6 }, "color": "#ffffff" }
+    { "id": "A", "position": { "x": 0, "y": -7 }, "character": "A", "border": { "shape": "circle", "radius": 0.6 }, "color": "#ff0000" },
+    { "id": "1", "position": { "x": 7, "y": -7 }, "character": "1", "border": { "shape": "square", "radius": 0.6 }, "color": "#ff0000" },
+    { "id": "B", "position": { "x": 7, "y": 0 }, "character": "B", "border": { "shape": "circle", "radius": 0.6 }, "color": "#ffff00" },
+    { "id": "2", "position": { "x": 7, "y": 7 }, "character": "2", "border": { "shape": "square", "radius": 0.6 }, "color": "#ffff00" },
+    { "id": "C", "position": { "x": 0, "y": 7 }, "character": "C", "border": { "shape": "circle", "radius": 0.6 }, "color": "#4444ff" },
+    { "id": "3", "position": { "x": -7, "y": 7 }, "character": "3", "border": { "shape": "square", "radius": 0.6 }, "color": "#4444ff" },
+    { "id": "D", "position": { "x": -7, "y": 0 }, "character": "D", "border": { "shape": "circle", "radius": 0.6 }, "color": "#ff00ff" },
+    { "id": "4", "position": { "x": -7, "y": -7 }, "character": "4", "border": { "shape": "square", "radius": 0.6 }, "color": "#ff00ff" }
   ],
   "areas": {
     "fire-circle": {
       "shape": "circle",
-      "radius": 5,
+      "radius": 3,
       "label": "fire-circle",
       "telegraphDuration": 0,
       "duration": 500,
@@ -84,7 +84,7 @@
     },
     "fire-donut": {
       "shape": "donut",
-      "radius": 9,
+      "radius": 7,
       "label": "fire-donut",
       "telegraphDuration": 0,
       "duration": 500,
@@ -132,11 +132,11 @@
         }
       ],
       "element": "fire",
-      "innerRadius": 4
+      "innerRadius": 3
     },
     "water-donut": {
       "shape": "donut",
-      "radius": 10,
+      "radius": 7,
       "label": "water-donut",
       "telegraphDuration": 0,
       "duration": 500,
@@ -160,11 +160,11 @@
         }
       ],
       "element": "ice",
-      "innerRadius": 4
+      "innerRadius": 3
     },
     "water-circle": {
       "shape": "circle",
-      "radius": 5,
+      "radius": 3,
       "label": "water-circle",
       "telegraphDuration": 0,
       "duration": 500,
@@ -1009,7 +1009,7 @@
   },
   "enemyTemplates": {
     "wind-crystal": {
-      "name": "Wind Crystal",
+      "name": "Wind",
       "style": {
         "type": "diamond",
         "radius": 0.7,
@@ -1017,7 +1017,7 @@
       }
     },
     "water-crystal": {
-      "name": "Water Crystal",
+      "name": "Water",
       "style": {
         "type": "square",
         "radius": 0.7,
@@ -1025,7 +1025,7 @@
       }
     },
     "fire-crystal": {
-      "name": "Fire Crystal",
+      "name": "Fire",
       "style": {
         "type": "triangle",
         "radius": 0.7,
@@ -1182,7 +1182,7 @@
   "enemies": [
     {
       "id": "boss-large",
-      "name": "Large Boss",
+      "name": "Chaos",
       "type": "enemy",
       "alive": true,
       "position": {
@@ -1190,14 +1190,14 @@
         "y": 0
       },
       "style": {
-        "type": "circle",
+        "type": "ring",
         "radius": 1.8
       },
       "statuses": []
     },
     {
       "id": "boss-small",
-      "name": "Small Boss",
+      "name": "Exdeath",
       "type": "enemy",
       "alive": true,
       "position": {
@@ -1205,7 +1205,7 @@
         "y": 0
       },
       "style": {
-        "type": "circle",
+        "type": "ring",
         "radius": 1.0
       },
       "statuses": []
@@ -1228,7 +1228,7 @@
         "id": "mt"
       },
       "distance": 2.6,
-      "moveSpeed": 3
+      "moveSpeed": 4
     },
     {
       "id": "large-follows-ot",
@@ -1240,7 +1240,7 @@
         "id": "ot"
       },
       "distance": 3.4,
-      "moveSpeed": 3
+      "moveSpeed": 4
     },
     {
       "id": "division-large",
