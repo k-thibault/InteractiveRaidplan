@@ -44,6 +44,16 @@
       "count": 2
     }
   },
+  "markers": [
+    { "id": "A", "position": { "x": 0, "y": -9 }, "character": "A", "border": { "shape": "circle", "radius": 0.6 }, "color": "#ffffff" },
+    { "id": "1", "position": { "x": 9, "y": -9 }, "character": "1", "border": { "shape": "circle", "radius": 0.6 }, "color": "#ffffff" },
+    { "id": "B", "position": { "x": 9, "y": 0 }, "character": "B", "border": { "shape": "circle", "radius": 0.6 }, "color": "#ffffff" },
+    { "id": "2", "position": { "x": 9, "y": 9 }, "character": "2", "border": { "shape": "circle", "radius": 0.6 }, "color": "#ffffff" },
+    { "id": "C", "position": { "x": 0, "y": 9 }, "character": "C", "border": { "shape": "circle", "radius": 0.6 }, "color": "#ffffff" },
+    { "id": "3", "position": { "x": -9, "y": 9 }, "character": "3", "border": { "shape": "circle", "radius": 0.6 }, "color": "#ffffff" },
+    { "id": "D", "position": { "x": -9, "y": 0 }, "character": "D", "border": { "shape": "circle", "radius": 0.6 }, "color": "#ffffff" },
+    { "id": "4", "position": { "x": -9, "y": -9 }, "character": "4", "border": { "shape": "circle", "radius": 0.6 }, "color": "#ffffff" }
+  ],
   "areas": {
     "fire-circle": {
       "shape": "circle",
