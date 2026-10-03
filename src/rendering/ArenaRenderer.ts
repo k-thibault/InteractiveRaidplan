@@ -150,9 +150,10 @@ export class ArenaRenderer {
     const color = marker.color ?? '#dbe7f2';
 
     this.context.save();
+    this.context.globalAlpha = 0.6;
     if (marker.border) {
       this.context.strokeStyle = marker.border.color ?? color;
-      this.context.lineWidth = Math.max(1.5, scale * 0.08);
+      this.context.lineWidth = Math.max(1, scale * 0.045);
       this.context.beginPath();
       if (marker.border.shape === 'circle') {
         this.context.arc(point.x, point.y, radius, 0, Math.PI * 2);
