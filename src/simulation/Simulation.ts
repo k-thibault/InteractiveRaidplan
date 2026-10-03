@@ -49,12 +49,12 @@ export class Simulation {
     const players = structuredClone(encounter.players).map((player) => ({ ...player, ...getControlState(player.statuses), maxHealth: player.maxHealth ?? player.health, controlled: player.id === options.controlledPlayerId, mechanicalRoles: player.mechanicalRoles ?? [] }));
     const enemies = structuredClone(encounter.enemies).map((enemy) => ({ ...enemy, ...getControlState(enemy.statuses) }));
     this.state = { time: 0, deltaTime: 0, currentMechanic: undefined, players, enemies, effects: [], worldGraphics: [], background: encounter.background, casts: [], running: false, completed: false, log: [], groups: {} };
-    this.roleEvaluator = new MechanicalRoleEvaluator(encounter.mechanicalRoles);
+    this.roleEvaluator = new MechanicalRoleEvaluator(encounter.mechanicalRoles, <T>(value: T) => randomContext.resolve(value));
     this.positionEvaluator = new PositionEvaluator(encounter.positions, <T>(value: T) => randomContext.resolve(value));
     this.facingEvaluator = new FacingEvaluator(encounter.facing, <T>(value: T) => randomContext.resolve(value));
     const recalculateRoles = (group?: string) => this.logRoleChanges(this.roleEvaluator.recalculate(this.state, group));
     const recalculateFacing = (group?: string) => this.facingEvaluator.recalculate(this.state, group);
-    this.executor = new MechanicExecutor(this.state, this.random, encounter.statuses, encounter.casts, randomContext, encounter.areas, recalculateRoles, (group, params) => this.positionEvaluator.recalculate(this.state, group, params), encounter.enemyTemplates, options.replayOutcomes, options.debug, recalculateFacing);
+    this.executor = new MechanicExecutor(this.state, this.random, encounter.statuses, encounter.casts, randomContext, encounter.areas, recalculateRoles, (group, params) => this.positionEvaluator.recalculate(this.state, group, params), encounter.enemyTemplates, options.replayOutcomes, options.debug, recalculateFacing, encounter.batches);
     // Apply initial facing rules, then point unconfigured bots toward the boss.
     recalculateFacing();
     for (const player of this.state.players) {
@@ -111,7 +111,7 @@ export class Simulation {
         if (hit) inside.add(player.id);
       }
       effect.resolvedAt = this.state.time;
-      for (const resolution of this.areaResolver.resolve(effect, this.state.players.filter((player) => inside.has(player.id)))) this.executor.executeEffect(resolution, inside);
+      for (const resolution of this.areaResolver.resolve(effect, this.state.players.filter((player) => inside.has(player.id)))) this.executor.executeEffect(resolution, inside, undefined, undefined, { area: { position: effect.position, sourceId: effect.sourceId } });
       if (effect.areaGroup) {
         const group = this.areaGroups[effect.areaGroup];
         if (group) {
@@ -132,6 +132,7 @@ export class Simulation {
     this.state.effects = this.state.effects.filter((effect) => effect.resolvedAt === undefined || this.state.time < effect.resolvedAt + effect.duration);
     this.state.worldGraphics = this.state.worldGraphics.filter((graphic) => this.state.time < graphic.createdAt + graphic.duration);
     advanceKnocks(this.state, this.state.deltaTime);
+    this.positionEvaluator.update(this.state);
     this.botManager.update(this.state);
     this.followManager.update(this.state);
     if (this.state.time >= this.encounterDuration) { this.state.completed = true; this.state.running = false; }

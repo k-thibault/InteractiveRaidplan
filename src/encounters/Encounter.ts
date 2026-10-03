@@ -7,7 +7,7 @@ import type { MechanicalRoleDefinitions } from '../bots/MechanicalRoleEvaluator'
 import type { PositionDefinition } from '../bots/PositionEvaluator';
 import type { FacingDefinition } from '../bots/FacingEvaluator';
 import type { CastDefinition } from '../mechanics/Cast';
-import type { AreaDefinition, EffectDefinition } from '../mechanics/Effect';
+import type { AreaDefinition, BatchDefinition, EffectDefinition } from '../mechanics/Effect';
 
 /** Encounter-owned resources for backgrounds, icons, and world graphics. */
 export interface EncounterResources {
@@ -37,6 +37,8 @@ export interface Encounter {
   casts?: Record<string, CastDefinition>;
   /** Reusable area definitions referenced by spawn-area effects. */
   areas?: Record<string, AreaDefinition>;
+  /** Named batches that gather `add_to_batch` effects over a short window. */
+  batches?: Record<string, BatchDefinition>;
   /** Reusable enemy templates referenced by `spawn_enemy` events/effects. */
   enemyTemplates?: Record<string, EnemyTemplate>;
   /** Groups area hits and resolves shared effects when all members are done. */

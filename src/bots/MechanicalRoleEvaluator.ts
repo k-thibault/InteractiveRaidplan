@@ -38,7 +38,13 @@ export type PlayerReference =
 export class MechanicalRoleEvaluator {
   private readonly definitions: MechanicalRoleDefinitions;
 
-  constructor(definitions: MechanicalRoleDefinitions = {}) { this.definitions = definitions; }
+  private readonly resolveValue: <T>(value: T) => T;
+
+  /** `resolveValue` expands random-group references, e.g. a `has_status` whose status is rolled per attempt. */
+  constructor(definitions: MechanicalRoleDefinitions = {}, resolveValue: <T>(value: T) => T = (value) => value) {
+    this.definitions = definitions;
+    this.resolveValue = resolveValue;
+  }
 
   recalculate(state: GameState, group?: string): RoleChange[] {
     const definition = group ? this.definitions[group] : undefined;
@@ -73,8 +79,8 @@ export class MechanicalRoleEvaluator {
     if (Array.isArray(condition)) return condition.every((child) => this.matches(child, player, state));
 
     switch (condition.type) {
-      case 'has_status': return player.statuses.some((status) => status.definitionId === condition.status);
-      case 'not_has_status': return !player.statuses.some((status) => status.definitionId === condition.status);
+      case 'has_status': return player.statuses.some((status) => status.definitionId === this.resolveValue(condition.status));
+      case 'not_has_status': return !player.statuses.some((status) => status.definitionId === this.resolveValue(condition.status));
       case 'gameplay_role': return player.role === condition.role;
       case 'damage_position': return player.damagePosition === condition.position;
       case 'team': return player.team === condition.team;
@@ -101,14 +107,18 @@ export class MechanicalRoleEvaluator {
       case 'flex_conflict_loser': {
         const requiredRoles = Array.isArray(condition.pairRole) ? condition.pairRole : [condition.pairRole];
         if (!requiredRoles.every((role) => player.mechanicalRoles.includes(role))) return false;
+        const relevantStatuses = new Set(
+          player.statuses
+            .map((status) => status.definitionId)
+            .filter((statusId) => condition.statuses.includes(statusId))
+        );
+        if (relevantStatuses.size === 0) return false;
         const partner = state.players.find((candidate) =>
           candidate.id !== player.id &&
-          requiredRoles.every((role) => candidate.mechanicalRoles.includes(role)));
+          requiredRoles.every((role) => candidate.mechanicalRoles.includes(role)) &&
+          candidate.statuses.some((status) => relevantStatuses.has(status.definitionId)));
         if (!partner) return false;
-        const sharedStatus = condition.statuses.some((statusId) =>
-          player.statuses.some((status) => status.definitionId === statusId) &&
-          partner.statuses.some((status) => status.definitionId === statusId));
-        return sharedStatus && (player.flexPriority ?? 0) < (partner.flexPriority ?? 0);
+        return (player.flexPriority ?? 0) < (partner.flexPriority ?? 0);
       }
     }
   }

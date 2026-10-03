@@ -13,9 +13,10 @@ export type PlayerSelector =
   | { type: 'all' }
   | { type: 'role'; role: PlayerRole }
   | { type: 'role_any'; roles: PlayerRole[] }
-  | { type: 'random'; count: number; role?: PlayerRole; roles?: PlayerRole[] }
-  /** The closest alive players to `source`, nearest first. */
-  | { type: 'nearest'; source: string; count?: number }
+  /** `from` restricts the pool before picking, e.g. to exclude players who already have a status. */
+  | { type: 'random'; count: number; role?: PlayerRole; roles?: PlayerRole[]; from?: PlayerSelector }
+  /** The closest alive players to `source`, nearest first. `role`/`roles` filter before ranking. */
+  | { type: 'nearest'; source: string; count?: number; role?: PlayerRole; roles?: PlayerRole[] }
   | { type: 'with_status'; status: string }
   | { type: 'without_status'; status: string }
   | { type: 'mechanical_role'; role: string }
@@ -65,8 +66,14 @@ export function selectPlayers(selector: PlayerSelector, state: GameState, random
   if (selector.type === 'random') {
     if (selector.role) players = players.filter((player) => player.role === selector.role);
     if (selector.roles) players = players.filter((player) => selector.roles!.includes(player.role));
+    if (selector.from) {
+      const pool = new Set(selectPlayers(selector.from, state, random).map((player) => player.id));
+      players = players.filter((player) => pool.has(player.id));
+    }
     return random.shuffle(players).slice(0, selector.count);
   }
+  if (selector.role) players = players.filter((player) => player.role === selector.role);
+  if (selector.roles) players = players.filter((player) => selector.roles!.includes(player.role));
   const source = findEntity(state, selector.source);
   return source ? players.sort((a, b) => distance(a.position, source.position) - distance(b.position, source.position)).slice(0, selector.count ?? 1) : [];
 }

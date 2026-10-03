@@ -43,7 +43,7 @@ export interface SelectGroupSubsetEvent extends BaseEvent { type: 'select_group_
 /** See `ForEachGroupEffect`. */
 export interface ForEachGroupEvent extends BaseEvent { type: 'for_each_group'; group: string; effects: EffectDefinition[]; }
 /** See `SpawnEnemyEffect`. */
-export interface SpawnEnemyEvent extends BaseEvent, Partial<EnemyTemplate> { type: 'spawn_enemy'; enemy?: string; position: PositionValue; expiresAfter?: number; addToGroup?: string; }
+export interface SpawnEnemyEvent extends BaseEvent, Partial<EnemyTemplate> { type: 'spawn_enemy'; enemyId?: string; enemy?: string; position: PositionValue; expiresAfter?: number; addToGroup?: string; }
 /** See `RemoveEnemyEffect`. */
 export interface RemoveEnemyEvent extends BaseEvent { type: 'remove_enemy'; id: string; }
 export type EncounterEvent = KnockEvent | StartFollowEvent | StopFollowEvent | ApplyStatusEvent | DistributeStatusesEvent | HealEvent | DamageEvent | SpawnAreaEvent | StartCastEvent | RemoveStatusEvent | RecalculateRolesEvent | RecalculatePositionsEvent | RecalculateFacingEvent | SetMechanicEvent | ShowGraphicEvent | SetBackgroundEvent | SelectGroupEvent | SelectGroupSubsetEvent | ForEachGroupEvent | SpawnEnemyEvent | RemoveEnemyEvent;

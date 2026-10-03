@@ -52,7 +52,7 @@ export class RandomContext {
     if (typeof value === 'string') {
       const match = /^\$([\w-]+)((?:\.[\w-]+|\[\d+\])*)$/.exec(value);
       if (!match) return value;
-      if (value.startsWith('$assignedValue') || value.startsWith('$groupMember') || value === '$castTarget') return value;
+      if (value.startsWith('$assignedValue') || value.startsWith('$groupMember') || value.startsWith('$batchCount') || value === '$castTarget') return value;
       if (!match[2] && this.sequences.has(match[1])) return this.nextSequenceValue(match[1]) as T;
       let resolved: unknown = this.values.get(match[1]);
       const path = match[2].match(/(?:\.([\w-]+)|\[(\d+)\])/g) ?? [];

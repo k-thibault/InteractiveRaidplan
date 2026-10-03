@@ -52,6 +52,12 @@ export class FacingEvaluator {
 
   /** Resolves a facing target, relative to `self`, to a compass-degree heading. */
   resolve(target: FacingTarget, state: GameState, self: Entity): number | undefined {
+    if (target.type === 'nearest_player') {
+      const nearest = state.players
+        .filter((player) => player.alive)
+        .sort((a, b) => Math.hypot(a.position.x - self.position.x, a.position.y - self.position.y) - Math.hypot(b.position.x - self.position.x, b.position.y - self.position.y))[0];
+      return nearest ? toPolarAngle(nearest.position, self.position) : undefined;
+    }
     if (target.type === 'absolute') {
       const angle = this.resolveValue(target.angle);
       const resolved = typeof angle === 'number' ? angle : Number(angle);
