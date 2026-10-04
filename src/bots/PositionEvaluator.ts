@@ -6,7 +6,7 @@ import type { AreaEffect } from '../mechanics/Effect';
 import type { PositionTarget } from './PositionTarget';
 import { resolveEntityReference } from '../mechanics/Selector';
 import { MechanicalRoleEvaluator, type ConditionExpression } from './MechanicalRoleEvaluator';
-import { fromPolar, toPolarAngle, circularMeanAngle } from '../geometry/Vector2';
+import { fromPolar, toPolarAngle, circularMeanAngle, normalize, subtract } from '../geometry/Vector2';
 
 /** Distance in world units under which a follower counts as standing on its drag goal. */
 const DRAG_ARRIVED = 0.05;
@@ -59,7 +59,8 @@ export class PositionEvaluator {
 
   private resolve(target: PositionTarget, state: GameState, params?: Record<string, number>, player?: Player): { x: number; y: number } | undefined {
     if (target.type === 'marker') {
-      const marker = state.markers.find((candidate) => candidate.id === target.marker);
+      const markerId = this.resolveValue(target.marker);
+      const marker = state.markers.find((candidate) => candidate.id === markerId);
       if (!marker) return undefined;
       return {
         x: marker.resolvedPosition.x + (target.offset?.x ?? 0),
@@ -109,9 +110,19 @@ export class PositionEvaluator {
       const t = target.t ?? 0.5;
       return { x: from.position.x + (to.position.x - from.position.x) * t, y: from.position.y + (to.position.y - from.position.y) * t };
     }
+    if (target.type === 'shift') {
+      const anchor = target.toward ?? target.awayFrom;
+      const from = this.resolve(target.from, state, params, player);
+      const other = anchor ? this.resolve(anchor, state, params, player) : undefined;
+      const distance = this.resolveValue(this.substituteParams(target.distance, params));
+      if (!from || !other || typeof distance !== 'number') return undefined;
+      const heading = normalize(subtract(other, from));
+      const signed = target.toward ? distance : -distance;
+      return { x: from.x + heading.x * signed, y: from.y + heading.y * signed };
+    }
     if (target.type === 'area') return this.resolveArea(target, state);
 
-    const entity = resolveEntityReference(target.player, state);
+    const entity = resolveEntityReference(this.resolveValue(target.player), state);
     return entity ? {
       x: entity.position.x + (target.offset?.x ?? 0),
       y: entity.position.y + (target.offset?.y ?? 0)

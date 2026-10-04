@@ -16,6 +16,8 @@ export type PositionTarget =
   /** Position that moves a following entity to `to`, optionally updating live. */
   | { type: 'drag'; entity: EntityReference; to: PositionTarget; distance?: number }
   | { type: 'entity'; player: EntityReference; offset?: { x: number; y: number } }
+  /** Offsets a position toward or away from another position. */
+  | { type: 'shift'; from: PositionTarget; toward?: PositionTarget; awayFrom?: PositionTarget; distance: number | string }
   | {
       type: 'area';
       mechanic?: string; label?: string; tag?: string;

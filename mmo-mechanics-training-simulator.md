@@ -102,6 +102,8 @@ Role `has_status`/`not_has_status` conditions resolve random-group references, s
 
 The `Crystal Division (scaffold)` encounter exercises all of the above.
 
+The Crystal encounter now continues through Thunder III. A 16-row `layout` choice keeps crystal positions, timers, markers, and assignments aligned; `crystal-setup` handles the initial placement and `crystal-thunder` switches players to their Thunder markers and debuff positions.
+
 Effect targets may be either an area target (`inside`, `outside`, `all`) or a `PlayerSelector`. This lets effects such as `apply_status` select a specific random player without treating the selector as an area target. Mechanical-role conditions also support `player_condition`, which checks whether a player reference (`self`, an id, a gameplay role, or a mechanical role) satisfies another condition. In the example encounter, overload handling uses this to assign fire- and frost-specific roles only when the matching damage player has the corresponding overload status; other roles remain gated by the active mechanic and relevant statuses.
 
 ## Development

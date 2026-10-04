@@ -20,7 +20,9 @@ export type Condition =
   | { type: 'or'; conditions: ConditionExpression[] }
   | { type: 'not'; condition: ConditionExpression }
   | { type: 'player_condition'; player: PlayerReference; condition: ConditionExpression }
-  | { type: 'flex_conflict_loser'; pairRole: string; statuses: string[] };
+  | { type: 'flex_conflict_loser'; pairRole: string; statuses: string[] }
+  /** Selects a living role holder by priority order; calculate the role in an earlier group. */
+  | { type: 'ranked'; role: string; order: string[]; rank?: number };
 
 export type ConditionExpression = Condition | ConditionExpression[];
 export interface RoleChange { playerId: string; added: string[]; removed: string[]; }
@@ -104,6 +106,13 @@ export class MechanicalRoleEvaluator {
         return state.players.some((candidate) =>
           this.matchesReference(candidate, condition.player, player) &&
           this.matches(condition.condition, candidate, state));
+      case 'ranked': {
+        const rankOf = (candidate: Player) => { const index = condition.order.indexOf(candidate.id); return index === -1 ? condition.order.length : index; };
+        const holders = state.players
+          .filter((candidate) => candidate.alive && candidate.mechanicalRoles.includes(condition.role))
+          .sort((a, b) => rankOf(a) - rankOf(b));
+        return holders.indexOf(player) === (condition.rank ?? 0);
+      }
       case 'flex_conflict_loser': {
         const requiredRoles = Array.isArray(condition.pairRole) ? condition.pairRole : [condition.pairRole];
         if (!requiredRoles.every((role) => player.mechanicalRoles.includes(role))) return false;
