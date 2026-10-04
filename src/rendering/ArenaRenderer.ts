@@ -36,6 +36,7 @@ export class ArenaRenderer {
   private readonly statusDefinitions = new Map<string, StatusDefinition>();
   private readonly images = new Map<string, HTMLImageElement>();
   private shotcallVisible = true;
+  private readonly shotcallElement: HTMLDivElement;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -43,6 +44,11 @@ export class ArenaRenderer {
     this.tooltip = document.createElement('div');
     this.tooltip.className = 'status-tooltip';
     document.body.append(this.tooltip);
+    this.shotcallElement = document.createElement('div');
+    this.shotcallElement.className = 'shotcall-display';
+    this.shotcallElement.setAttribute('aria-live', 'polite');
+    this.shotcallElement.hidden = true;
+    canvas.parentElement?.insertBefore(this.shotcallElement, canvas);
     canvas.addEventListener('mousemove', (event) => this.updateTooltip(event));
     canvas.addEventListener('mouseleave', () => this.hideTooltip());
   }
@@ -145,44 +151,14 @@ export class ArenaRenderer {
     context.restore();
     this.drawBorder(state.arena, toCanvas, scale);
     for (const enemy of state.enemies) this.drawUnit(enemy, '#ff7757', scale, toCanvas, true);
-    for (const player of state.players) this.drawUnit(player, !player.alive ? DEAD_COLOR : player.controlled ? CONTROLLED_PLAYER_COLOR : PLAYER_COLOR, scale, toCanvas, false);
-    for (const graphic of state.worldGraphics) this.drawWorldGraphic(graphic, state, scale, toCanvas);
-    this.drawShotcall(state);
-    this.drawControlledStatuses(state, scale);
+    for (const player   /** Updates the dedicated HUD strip so calls never cover the arena canvas. */
+  private updateShotcall(state: GameState): void {
+    const visible = this.shotcallVisible && state.shotcall !== undefined;
+    this.shotcallElement.hidden = !visible;
+    if (visible) this.shotcallElement.textContent = state.shotcall!.text;
   }
 
-  /** Renders the current player-facing shotcall in a compact strip above the fight. */
-  private drawShotcall(state: GameState): void {
-    if (!this.shotcallVisible || !state.shotcall) return;
-    const { context, canvas } = this;
-    const maxWidth = Math.min(820, canvas.width - 80);
-    const paddingX = 20;
-    const paddingY = 10;
-    const lineHeight = 28;
-    context.save();
-    context.font = "700 22px 'DM Mono', monospace";
-    context.textAlign = 'center';
-    context.textBaseline = 'middle';
-
-    const words = state.shotcall.text.split(/\s+/).filter(Boolean);
-    const lines: string[] = [];
-    let line = '';
-    for (const word of words) {
-      const candidate = line ? line + ' ' + word : word;
-      if (context.measureText(candidate).width <= maxWidth - paddingX * 2 || !line) line = candidate;
-      else { lines.push(line); line = word; }
-    }
-    if (line) lines.push(line);
-    const visibleLines = lines.length > 0 ? lines : [''];
-    const boxWidth = Math.min(maxWidth, Math.max(220, Math.max(...visibleLines.map((value) => context.measureText(value).width)) + paddingX * 2));
-    const boxHeight = visibleLines.length * lineHeight + paddingY * 2;
-    const x = (canvas.width - boxWidth) / 2;
-    const y = 58;
-
-    context.fillStyle = 'rgba(8, 13, 19, 0.84)';
-    context.strokeStyle = 'rgba(255, 190, 73, 0.75)';
-    context.lineWidth = 2;
-    context.beginPath();
+ginPath();
     context.rect(x, y, boxWidth, boxHeight);
     context.fill();
     context.stroke();
