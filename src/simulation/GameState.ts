@@ -9,12 +9,20 @@ import type { MarkerDefinition } from '../encounters/Encounter';
 import type { Vector2 } from '../geometry/Vector2';
 import type { Arena } from '../geometry/Arena';
 
+export interface ShotcallState {
+  text: string;
+  createdAt: number;
+  expiresAt?: number;
+}
+
 export interface GameState {
   time: number;
   /** Playable area and its border rule. */
   arena: Arena;
   deltaTime: number;
   currentMechanic?: string;
+  /** Current player-facing shotcall, if one is active. */
+  shotcall?: ShotcallState;
   players: Player[];
   enemies: Enemy[];
   effects: AreaEffect[];
