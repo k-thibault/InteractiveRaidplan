@@ -118,6 +118,7 @@ export class MechanicExecutor {
     else if (event.type === 'spawn_enemy') this.spawnEnemy(this.randomContext.resolve(event));
     else if (event.type === 'remove_enemy') this.removeEnemy(event.id);
     else if (event.type === 'recalculate_facing') this.recalculateFacing(event.group);
+    else if (event.type === 'set_focus') this.setFocus(selectPlayers(event.target, this.state, this.random), event.enemy, event.follow);
     else if (event.type === 'knock') this.applyKnock(selectPlayers(event.target, this.state, this.random), event, event.source ?? 'boss');
     else if (event.type === 'start_follow') this.startFollow(event.source ?? 'boss', event);
     else if (event.type === 'stop_follow') this.stopFollow(event.source ?? 'boss');
@@ -420,6 +421,7 @@ export class MechanicExecutor {
     if (resolvedEffect.type === 'recalculate_roles') { this.recalculateRoles(resolvedEffect.group); return; }
     if (resolvedEffect.type === 'recalculate_positions') { this.recalculatePositions(resolvedEffect.group, resolvedEffect.params); return; }
     if (resolvedEffect.type === 'recalculate_facing') { this.recalculateFacing(resolvedEffect.group); return; }
+    if (resolvedEffect.type === 'set_focus') { this.setFocus(this.effectTargets(resolvedEffect.target, inside, sourceId, cast), resolvedEffect.enemy, resolvedEffect.follow); return; }
     if (resolvedEffect.type === 'spawn_area') { this.spawnArea({ ...resolvedEffect, source: resolvedEffect.source ?? sourceId }, cast); return; }
     if (resolvedEffect.type === 'select_group') { this.selectGroup(resolvedEffect); return; }
     if (resolvedEffect.type === 'select_group_subset') { this.selectGroupSubset(resolvedEffect); return; }
@@ -490,6 +492,13 @@ export class MechanicExecutor {
     const away = normalize(subtract(player.position, origin));
     // Standing exactly on the origin has no away direction, so fall back to north.
     return away.x === 0 && away.y === 0 ? fromPolar(DEFAULT_FACING, 1) : away;
+  }
+
+  private setFocus(players: Player[], enemy?: string, follow?: boolean): void {
+    for (const player of players) {
+      if (enemy !== undefined) player.focus = enemy;
+      if (follow !== undefined) player.followFocus = follow;
+    }
   }
 
   private startFollow(enemyId: string, settings: FollowSettings): void {

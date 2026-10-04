@@ -19,6 +19,10 @@ export interface Player extends Entity {
   positionTarget?: PositionTarget;
   desiredPosition?: { x: number; y: number };
   movementClamp?: DirectionClamp;
+  /** Id of the enemy this player is currently focusing. Bots without a facing rule face it; falls back to the first boss. */
+  focus?: string;
+  /** While true, a bot with no position rule closes in on its focused enemy and stands just outside its indicator. */
+  followFocus?: boolean;
   moveSpeed: number;
   controlled: boolean;
   statuses: StatusInstance[];

@@ -890,7 +890,7 @@
             "front",
             "back"
           ],
-          "duration": 600000,
+          "duration": 67000,
           "target": "all"
         },
         {
@@ -914,6 +914,12 @@
               "$neg": "$fireRotation"
             },
             "radius": 7.5
+          },
+          "expiresAfter": {
+            "$add": [
+              "$debuffTiming.waterDuration",
+              5000
+            ]
           }
         },
         {
@@ -925,6 +931,12 @@
             "angle": "$windDiagonal",
             "angleOffset": "$fireRotation",
             "radius": 7.5
+          },
+          "expiresAfter": {
+            "$add": [
+              "$debuffTiming.fireDuration",
+              5000
+            ]
           }
         },
         {
@@ -978,6 +990,22 @@
             {
               "type": "recalculate_roles",
               "group": "tank-swap"
+            },
+            {
+              "type": "set_focus",
+              "target": {
+                "type": "mechanical_role",
+                "role": "large_tank"
+              },
+              "enemy": "boss-large"
+            },
+            {
+              "type": "set_focus",
+              "target": {
+                "type": "mechanical_role",
+                "role": "small_tank"
+              },
+              "enemy": "boss-small"
             },
             {
               "type": "start_follow",
@@ -2261,7 +2289,8 @@
               "id": "${debuffTiming.shortElement}-crystal"
             }
           },
-          "distance": 0.5
+          "distance": 0.5,
+          "clamp": "intercardinal"
         }
       },
       {
@@ -2677,7 +2706,8 @@
         "x": 5,
         "y": -3
       },
-      "statuses": []
+      "statuses": [],
+      "focus": "boss-small"
     },
     {
       "id": "ot",
@@ -2696,7 +2726,8 @@
         "x": -5,
         "y": -4
       },
-      "statuses": []
+      "statuses": [],
+      "focus": "boss-large"
     },
     {
       "id": "h1",
@@ -2713,7 +2744,8 @@
         "x": -2,
         "y": 4
       },
-      "statuses": []
+      "statuses": [],
+      "focus": "boss-large"
     },
     {
       "id": "h2",
@@ -2730,7 +2762,8 @@
         "x": 2,
         "y": 4
       },
-      "statuses": []
+      "statuses": [],
+      "focus": "boss-small"
     },
     {
       "id": "m1",
@@ -2748,7 +2781,9 @@
         "y": 4
       },
       "statuses": [],
-      "damagePosition": "melee"
+      "damagePosition": "melee",
+      "focus": "boss-large",
+      "followFocus": true
     },
     {
       "id": "m2",
@@ -2766,7 +2801,9 @@
         "y": 3.5
       },
       "statuses": [],
-      "damagePosition": "melee"
+      "damagePosition": "melee",
+      "focus": "boss-large",
+      "followFocus": true
     },
     {
       "id": "r1",
@@ -2784,7 +2821,8 @@
         "y": 3.5
       },
       "statuses": [],
-      "damagePosition": "ranged"
+      "damagePosition": "ranged",
+      "focus": "boss-small"
     },
     {
       "id": "r2",
@@ -2802,7 +2840,8 @@
         "y": 4
       },
       "statuses": [],
-      "damagePosition": "ranged"
+      "damagePosition": "ranged",
+      "focus": "boss-small"
     }
   ],
   "enemies": [
@@ -2951,6 +2990,19 @@
       "group": "facing-release"
     },
     {
+      "id": "thunder-melee-release",
+      "after": "thunder-cast",
+      "delay": 10000,
+      "type": "release_positions",
+      "target": {
+        "type": "players",
+        "ids": [
+          "m1",
+          "m2"
+        ]
+      }
+    },
+    {
       "id": "thunder-heal",
       "after": "thunder-cast",
       "delay": 10000,
@@ -3040,6 +3092,19 @@
       "delay": 11000,
       "type": "recalculate_facing",
       "group": "facing-release"
+    },
+    {
+      "id": "chaos-melee-release",
+      "after": "chaos-cast",
+      "delay": 12000,
+      "type": "release_positions",
+      "target": {
+        "type": "players",
+        "ids": [
+          "m1",
+          "m2"
+        ]
+      }
     }
   ]
 }

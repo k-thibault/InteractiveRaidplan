@@ -58,6 +58,15 @@ export class PositionEvaluator {
     }
   }
 
+  /** Drops the position rule of these players, leaving them with no destination. */
+  release(players: Player[]): void {
+    for (const player of players) {
+      player.desiredPosition = undefined;
+      player.movementClamp = undefined;
+      this.liveRules.delete(player.id);
+    }
+  }
+
   /** Refreshes the destinations of players following a `live` rule. */
   update(state: GameState): void {
     for (const player of state.players) {

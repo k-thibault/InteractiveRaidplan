@@ -16,6 +16,7 @@ import { FacingEvaluator } from '../bots/FacingEvaluator';
 import type { StatusInstance } from '../entities/Status';
 import { resolvePositionValue } from '../geometry/Vector2';
 import { resolveArena } from '../geometry/Arena';
+import { selectPlayers } from '../mechanics/Selector';
 
 export interface SimulationOptions { seed: number; controlledPlayerId?: string; replayOutcomes?: Map<string, Record<string, unknown>>; debug?: boolean; }
 
@@ -64,7 +65,7 @@ export class Simulation {
     // Apply initial facing rules, then point unconfigured bots toward the boss.
     recalculateFacing();
     for (const player of this.state.players) {
-      if (player.facing === undefined && !player.controlled && !player.facingRuleActive) player.facing = defaultBossFacing(this.state, player.position);
+      if (player.facing === undefined && !player.controlled && !player.facingRuleActive) player.facing = defaultBossFacing(this.state, player.position, player.focus);
     }
     const eventTimes = new Map<string, number>();
     for (const event of encounter.events) {
@@ -75,6 +76,7 @@ export class Simulation {
         if (resolved.type === 'recalculate_roles') recalculateRoles(resolved.group);
         else if (resolved.type === 'recalculate_positions') this.positionEvaluator.recalculate(this.state, resolved.group, resolved.params);
         else if (resolved.type === 'recalculate_facing') recalculateFacing(resolved.group);
+        else if (resolved.type === 'release_positions') this.positionEvaluator.release(selectPlayers(resolved.target, this.state, this.random));
         else this.executor.execute(resolved);
       });
     }

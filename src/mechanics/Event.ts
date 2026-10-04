@@ -26,6 +26,10 @@ export interface RecalculateRolesEvent extends BaseEvent { type: 'recalculate_ro
 export interface RecalculatePositionsEvent extends BaseEvent { type: 'recalculate_positions'; group?: string; params?: Record<string, number>; }
 /** Re-matches facing rules for every player and enemy. See `RecalculateFacingEffect`. */
 export interface RecalculateFacingEvent extends BaseEvent { type: 'recalculate_facing'; group?: string; }
+/** Clears the position rule of the targeted players so they stop heading to their spot (and follow their focus, if `followFocus` is on). */
+export interface ReleasePositionsEvent extends BaseEvent { type: 'release_positions'; target: PlayerSelector; }
+/** See `SetFocusEffect`. */
+export interface SetFocusEvent extends BaseEvent { type: 'set_focus'; target: PlayerSelector; enemy?: string; follow?: boolean; }
 export interface SetShotcallEvent extends BaseEvent { type: 'set_shotcall'; text: string; duration?: number; }
 export interface ClearShotcallEvent extends BaseEvent { type: 'clear_shotcall'; }
 export interface SetMechanicEvent extends BaseEvent { type: 'set_mechanic'; mechanic: string; }
@@ -48,4 +52,4 @@ export interface ForEachGroupEvent extends BaseEvent { type: 'for_each_group'; g
 export interface SpawnEnemyEvent extends BaseEvent, Partial<EnemyTemplate> { type: 'spawn_enemy'; enemyId?: string; enemy?: string; position: PositionValue; expiresAfter?: number; addToGroup?: string; }
 /** See `RemoveEnemyEffect`. */
 export interface RemoveEnemyEvent extends BaseEvent { type: 'remove_enemy'; id: string; }
-export type EncounterEvent = KnockEvent | StartFollowEvent | StopFollowEvent | ApplyStatusEvent | DistributeStatusesEvent | HealEvent | DamageEvent | SpawnAreaEvent | StartCastEvent | RemoveStatusEvent | RecalculateRolesEvent | RecalculatePositionsEvent | RecalculateFacingEvent | SetShotcallEvent | ClearShotcallEvent | SetMechanicEvent | ShowGraphicEvent | SetBackgroundEvent | SelectGroupEvent | SelectGroupSubsetEvent | ForEachGroupEvent | SpawnEnemyEvent | RemoveEnemyEvent;
+export type EncounterEvent = KnockEvent | StartFollowEvent | StopFollowEvent | ApplyStatusEvent | DistributeStatusesEvent | HealEvent | DamageEvent | SpawnAreaEvent | StartCastEvent | RemoveStatusEvent | RecalculateRolesEvent | RecalculatePositionsEvent | RecalculateFacingEvent | ReleasePositionsEvent | SetFocusEvent | SetShotcallEvent | ClearShotcallEvent | SetMechanicEvent | ShowGraphicEvent | SetBackgroundEvent | SelectGroupEvent | SelectGroupSubsetEvent | ForEachGroupEvent | SpawnEnemyEvent | RemoveEnemyEvent;
