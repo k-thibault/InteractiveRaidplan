@@ -28,6 +28,7 @@ const DEFAULT_BATCH_WINDOW = 500;
 interface EffectContext {
   direction?: number;
   targetId?: string;
+  targetPosition?: Vector2;
   /** Set while an area's resolution effects run: its center and the entity it is anchored to. */
   area?: { position: Vector2; sourceId?: string };
 }
@@ -136,7 +137,7 @@ export class MechanicExecutor {
       const source = findEntity(this.state, cast.sourceId);
       const hasFacingCast = this.state.casts.some((active) => active.sourceId === cast.sourceId && (active.targetId !== undefined || active.direction !== undefined));
       if (source && !hasFacingCast) source.facingRuleActive = false;
-      const context: EffectContext = { direction: cast.direction, targetId: cast.targetId };
+      const context: EffectContext = { direction: cast.direction, targetId: cast.targetId, targetPosition: cast.targetPosition };
       for (const rawEffect of definition.effects) this.executeEffect(this.randomContext.resolve(rawEffect), new Set(), cast.sourceId, definition.name, context);
     }
     for (const pending of [...this.pendingEffects]) {
@@ -215,7 +216,7 @@ export class MechanicExecutor {
     if (!resolved.shape || resolved.radius === undefined || resolved.telegraphDuration === undefined || resolved.duration === undefined || !resolved.resolution) return;
     // `$castTarget` resolves to the triggering cast's live target. 
     const anchorId = resolved.source === '$castTarget' ? cast?.targetId : resolved.source;
-    const source = (resolved.position ? this.resolvePosition(resolved.position) : undefined) ?? findEntity(this.state, anchorId ?? '')?.position;
+    const source = (resolved.position?.type === 'cast_target' ? cast?.targetPosition : resolved.position ? this.resolvePosition(resolved.position) : undefined) ?? findEntity(this.state, anchorId ?? '')?.position;
     if (!source) return;
     const base = {
       id: `effect-${this.state.effects.length + 1}`,
@@ -300,7 +301,7 @@ export class MechanicExecutor {
       source.facing = toPolarAngle(target.position, source.position);
       source.facingRuleActive = true;
     }
-    this.state.casts.push({ id: `cast-${this.state.casts.length + 1}`, definitionId: castId, sourceId, startedAt: this.state.time, completesAt: this.state.time + definition.castTime, targetId: resolved?.targetId, direction: resolved?.direction });
+    this.state.casts.push({ id: `cast-${this.state.casts.length + 1}`, definitionId: castId, sourceId, startedAt: this.state.time, completesAt: this.state.time + definition.castTime, targetId: resolved?.targetId, direction: resolved?.direction, targetPosition: target ? { ...target.position } : undefined });
   }
 
   private resolveFacing(facing: CastFacing, sourceId: string, replayId?: string): { targetId: string; direction: number } | undefined {
@@ -315,7 +316,9 @@ export class MechanicExecutor {
         ? findEntity(this.state, facing.id)
         : (facing.type === 'random_player'
           ? selectPlayers({ type: 'random', count: 1 }, this.state, this.random)
-          : selectPlayers({ type: 'nearest', source: sourceId, count: 1 }, this.state, this.random))[0]);
+          : facing.type === 'farthest_player'
+            ? this.state.players.filter((player) => player.alive).sort((a, b) => distance(b.position, source.position) - distance(a.position, source.position))
+            : selectPlayers({ type: 'nearest', source: sourceId, count: 1 }, this.state, this.random))[0]);
     if (!target) return undefined;
     this.setReplay(replayId, 'target', target.id);
     return { targetId: target.id, direction: Math.atan2(target.position.y - source.position.y, target.position.x - source.position.x) };
@@ -414,6 +417,12 @@ export class MechanicExecutor {
       const cast = this.resolveCastChoice(resolvedEffect.cast, resolvedEffect.castChoices);
       const mechanic = resolvedEffect.mechanic ?? (resolvedEffect.castChoices ? cast : undefined);
       this.startCast(cast, resolvedEffect.source ?? sourceId, mechanic, resolvedEffect.facing, resolvedEffect.replayId);
+      return;
+    }
+    if (resolvedEffect.type === 'move_entity') {
+      const entity = findEntity(this.state, resolvedEffect.target);
+      const position = resolvedEffect.position.type === 'cast_target' ? cast?.targetPosition : this.resolvePosition(resolvedEffect.position);
+      if (entity && position) { entity.position = { ...position }; entity.knock = undefined; }
       return;
     }
     if (resolvedEffect.type === 'set_mechanic') { this.state.currentMechanic = resolvedEffect.mechanic; return; }
