@@ -95,7 +95,9 @@ export class MechanicExecutor {
   }
 
   execute(event: EncounterEvent): void {
-    if (event.type === 'set_mechanic') this.state.currentMechanic = event.mechanic;
+    if (event.type === 'set_shotcall') this.setShotcall(event.text, event.duration);
+    else if (event.type === 'clear_shotcall') this.state.shotcall = undefined;
+    else if (event.type === 'set_mechanic') this.state.currentMechanic = event.mechanic;
     else if (event.type === 'apply_status') for (const player of selectPlayers(event.target, this.state, this.random)) this.applyStatus(player, event.status, event.duration, event.stacks ?? 1);
     else if (event.type === 'distribute_statuses') this.distributeStatuses(event, selectPlayers(event.target, this.state, this.random), event.replayId);
     else if (event.type === 'damage') this.applyDamage(selectPlayers(event.target, this.state, this.random), event.damage);
@@ -262,6 +264,10 @@ export class MechanicExecutor {
           ? { ...base, shape: 'donut', innerRadius: resolved.innerRadius ?? 0 }
           : { ...base, shape: 'circle' };
     this.state.effects.push(effect);
+  }
+
+  private setShotcall(text: string, duration?: number): void {
+    this.state.shotcall = { text, createdAt: this.state.time, expiresAt: duration === undefined ? undefined : this.state.time + Math.max(0, duration) };
   }
 
   private showGraphicEvent(event: ShowGraphicEvent): void {
