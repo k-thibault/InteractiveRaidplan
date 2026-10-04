@@ -31,6 +31,8 @@ export interface PolarPosition {
 }
 
 /** A point offset toward a live entity's current position. */
+export interface CastTargetPosition { type: 'cast_target'; }
+
 export interface TowardsPosition {
   type: 'towards';
   from: PositionValue;
@@ -38,7 +40,7 @@ export interface TowardsPosition {
   distance: number | string;
 }
 
-export type PositionValue = Vector2 | PolarPosition | TowardsPosition;
+export type PositionValue = Vector2 | PolarPosition | TowardsPosition | CastTargetPosition;
 
 export function isPolarPosition(value: unknown): value is PolarPosition {
   return typeof value === 'object' && value !== null && (value as { type?: unknown }).type === 'polar';
