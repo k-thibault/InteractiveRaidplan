@@ -7,6 +7,20 @@
     "radius": 10,
     "edge": "deadly"
   },
+  "background": "bg-dmup3",
+  "resources": {
+    "graphics": [
+      "bg-dmup3",
+      "icon-magic-vulnerability",
+      "icon-beta",
+      "icon-alpha",
+      "icon-entropy",
+      "icon-dynamic-fluid",
+      "icon-headwind",
+      "icon-tailwind",
+      "icon-damage-down"
+    ]
+  },
   "randomGroups": {
     "windDiagonal": {
       "mode": "choice",
@@ -64,8 +78,8 @@
           "windFlex": 1.5,
           "chaosStep": 1.5,
           "edgeInset": 0.3,
-          "longWaterDistance": 2.5,
-          "longFireDistance": 4.2
+          "longWaterDistance": 2.1,
+          "longFireDistance": 4.3
         }
       ]
     }
@@ -210,7 +224,7 @@
   "areas": {
     "fire-circle": {
       "shape": "circle",
-      "radius": 3,
+      "radius": 2.5,
       "label": "fire-circle",
       "telegraphDuration": 0,
       "duration": 500,
@@ -237,7 +251,7 @@
     },
     "fire-donut": {
       "shape": "donut",
-      "radius": 6,
+      "radius": 5.5,
       "label": "fire-donut",
       "telegraphDuration": 0,
       "duration": 500,
@@ -285,11 +299,11 @@
         }
       ],
       "element": "fire",
-      "innerRadius": 3
+      "innerRadius": 2.5
     },
     "water-donut": {
       "shape": "donut",
-      "radius": 6,
+      "radius": 5.5,
       "label": "water-donut",
       "telegraphDuration": 0,
       "duration": 500,
@@ -313,11 +327,11 @@
         }
       ],
       "element": "ice",
-      "innerRadius": 3
+      "innerRadius": 2.5
     },
     "water-circle": {
       "shape": "circle",
-      "radius": 3,
+      "radius": 2.5,
       "label": "water-circle",
       "telegraphDuration": 0,
       "duration": 500,
@@ -428,7 +442,7 @@
               "type": "damage",
               "target": "inside",
               "damage": {
-                "amount": 70,
+                "amount": 150,
                 "type": "magical"
               }
             }
@@ -455,7 +469,7 @@
               "type": "damage",
               "target": "inside",
               "damage": {
-                "amount": 150,
+                "amount": 90,
                 "type": "magical"
               }
             }
@@ -574,20 +588,17 @@
     {
       "id": "debuff-a",
       "name": "Epic Hero",
-      "character": "A",
-      "color": "#c78bd6"
+      "icon": "icon-alpha"
     },
     {
       "id": "debuff-b",
       "name": "Fated Hero",
-      "character": "B",
-      "color": "#6fb7c9"
+      "icon": "icon-beta"
     },
     {
       "id": "fire",
       "name": "Entropy",
-      "character": "F",
-      "color": "#e8503a",
+      "icon": "icon-entropy",
       "deathRemovalTrigger": "remove",
       "reassignIfDead": true,
       "onRemove": [
@@ -604,8 +615,7 @@
     {
       "id": "water",
       "name": "Dynamic Fluid",
-      "character": "W",
-      "color": "#4d8fd6",
+      "icon": "icon-dynamic-fluid",
       "deathRemovalTrigger": "remove",
       "reassignIfDead": true,
       "onRemove": [
@@ -622,8 +632,7 @@
     {
       "id": "front",
       "name": "Tailwind",
-      "character": "Fr",
-      "color": "#4cc66d",
+      "icon": "icon-tailwind",
       "deathRemovalTrigger": "early_remove",
       "onExpire": [
         {
@@ -646,8 +655,7 @@
     {
       "id": "back",
       "name": "Headwind",
-      "character": "Bk",
-      "color": "#4cc66d",
+      "icon": "icon-headwind",
       "deathRemovalTrigger": "early_remove",
       "onExpire": [
         {
@@ -666,6 +674,28 @@
           "batch": "wind"
         }
       ]
+    },
+    {
+      "id": "magic-vulnerability",
+      "name": "Magic Vulnerability",
+      "tags": [
+        "vulnerability"
+      ],
+      "damageTaken": [
+        {
+          "damageType": "magical",
+          "fatal": true
+        }
+      ],
+      "icon": "icon-magic-vulnerability"
+    },
+    {
+      "id": "damage-down",
+      "name": "Damage Down",
+      "tags": [
+        "debuff"
+      ],
+      "icon": "icon-damage-down"
     }
   ],
   "casts": {
@@ -802,7 +832,7 @@
           "position": {
             "type": "polar",
             "angle": "$windDiagonal",
-            "radius": 7
+            "radius": 7.3
           }
         },
         {
@@ -815,7 +845,7 @@
             "angleOffset": {
               "$neg": "$fireRotation"
             },
-            "radius": 7
+            "radius": 7.3
           }
         },
         {
@@ -826,7 +856,7 @@
             "type": "polar",
             "angle": "$windDiagonal",
             "angleOffset": "$fireRotation",
-            "radius": 7
+            "radius": 7.3
           }
         },
         {
@@ -1932,7 +1962,7 @@
         "when": [
           {
             "type": "mechanical_role",
-            "role": "wind_support_flex"
+            "role": "wind_support"
           }
         ],
         "target": {
@@ -1948,16 +1978,39 @@
         "when": [
           {
             "type": "mechanical_role",
-            "role": "wind_support"
+            "role": "wind_damage_flex"
           }
         ],
         "target": {
-          "type": "edge",
+          "type": "polar",
+            "angleFrom": {
+              "type": "id",
+              "id": "wind-crystal"
+            },
+            "angleTowards": {
+              "entity": {
+                "type": "id",
+                "id": "${debuffTiming.longElement}-crystal"
+              },
+              "by": -25
+            },
+            "radius": 4.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "wind_damage"
+          }
+        ],
+        "target": {
+          "type": "polar",
           "angleFrom": {
-            "type": "id",
-            "id": "wind-crystal"
-          },
-          "inset": "$spacing.edgeInset"
+             "type": "id",
+             "id": "wind-crystal"
+           },
+          "radius": 5.5
         }
       },
       {
@@ -1990,6 +2043,44 @@
             "id": "${debuffTiming.longElement}-crystal"
           },
           "inset": "$spacing.edgeInset"
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "or",
+            "conditions": [
+              { "type": "mechanical_role", "role": "short_water_damage" },
+              { "type": "mechanical_role", "role": "short_water_support" }           
+            ]
+          }
+        ],
+       "target": {
+          "type": "polar",
+          "angleFrom": {
+             "type": "id",
+             "id": "${debuffTiming.longElement}-crystal"
+           },
+          "radius": 0.1
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "or",
+            "conditions": [
+              { "type": "mechanical_role", "role": "short_fire_damage" },
+              { "type": "mechanical_role", "role": "short_fire_support" }           
+            ]
+          }
+        ],
+       "target": {
+          "type": "polar",
+          "angleFrom": {
+             "type": "id",
+             "id": "${debuffTiming.longElement}-crystal"
+           },
+          "radius": 2
         }
       }
     ],
@@ -2319,7 +2410,7 @@
   "players": [
     {
       "id": "mt",
-      "name": "MT",
+      "name": "Omni",
       "type": "player",
       "role": "tank",
       "team": "red",
@@ -2338,7 +2429,7 @@
     },
     {
       "id": "ot",
-      "name": "OT",
+      "name": "Corn",
       "type": "player",
       "role": "tank",
       "team": "purple",
@@ -2357,7 +2448,7 @@
     },
     {
       "id": "h1",
-      "name": "H1",
+      "name": "Helmut",
       "type": "player",
       "role": "healer",
       "team": "purple",
@@ -2374,7 +2465,7 @@
     },
     {
       "id": "h2",
-      "name": "H2",
+      "name": "Xqk",
       "type": "player",
       "role": "healer",
       "team": "red",
@@ -2391,7 +2482,7 @@
     },
     {
       "id": "m1",
-      "name": "M1",
+      "name": "Mike",
       "type": "player",
       "role": "damage",
       "team": "blue",
@@ -2409,7 +2500,7 @@
     },
     {
       "id": "m2",
-      "name": "M2",
+      "name": "Aaragon",
       "type": "player",
       "role": "damage",
       "team": "yellow",
@@ -2427,7 +2518,7 @@
     },
     {
       "id": "r1",
-      "name": "R1",
+      "name": "Lynfel",
       "type": "player",
       "role": "damage",
       "team": "blue",
@@ -2445,7 +2536,7 @@
     },
     {
       "id": "r2",
-      "name": "R2",
+      "name": "L'leilah",
       "type": "player",
       "role": "damage",
       "team": "yellow",
@@ -2610,6 +2701,16 @@
       "source": "boss-large",
       "cast": "$chaosCast.cast",
       "mechanic": "chaos-cast"
+    },
+    {
+      "id": "chaos-heal",
+      "after": "chaos-cast",
+      "delay": 4000,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
     },
     {
       "id": "cast-chaos-stops",

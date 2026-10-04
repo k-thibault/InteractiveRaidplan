@@ -35,4 +35,4 @@ export type PositionTarget =
       offset?: { x: number; y: number };
     };
 
-export interface PositionRule { when: import('./MechanicalRoleEvaluator').Condition; target: PositionTarget; live?: boolean; }
+export interface PositionRule { when: import('./MechanicalRoleEvaluator').Condition; target: PositionTarget; live?: boolean; clamp?: import('../geometry/DirectionClamp').DirectionClamp; }

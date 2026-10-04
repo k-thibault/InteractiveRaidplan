@@ -4,7 +4,7 @@ import type { StatusDefinition, StatusInstance } from '../entities/Status';
 import type { EncounterResources } from '../encounters/Encounter';
 import type { GraphicAnchor, WorldGraphicInstance } from '../mechanics/Graphic';
 import type { MarkerDefinition } from '../encounters/Encounter';
-import { formatStatusName } from '../util/format';
+import { statusDisplayName } from '../util/format';
 import { DEFAULT_FACING } from '../geometry/Facing';
 import type { Arena } from '../geometry/Arena';
 
@@ -35,6 +35,8 @@ export class ArenaRenderer {
   private statusHitAreas: StatusHitArea[] = [];
   private readonly statusDefinitions = new Map<string, StatusDefinition>();
   private readonly images = new Map<string, HTMLImageElement>();
+  private shotcallVisible = true;
+  private readonly shotcallElement: HTMLDivElement;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -42,9 +44,16 @@ export class ArenaRenderer {
     this.tooltip = document.createElement('div');
     this.tooltip.className = 'status-tooltip';
     document.body.append(this.tooltip);
+    this.shotcallElement = document.createElement('div');
+    this.shotcallElement.className = 'shotcall-display';
+    this.shotcallElement.setAttribute('aria-live', 'polite');
+    this.shotcallElement.hidden = true;
+    canvas.parentElement?.insertBefore(this.shotcallElement, canvas);
     canvas.addEventListener('mousemove', (event) => this.updateTooltip(event));
     canvas.addEventListener('mouseleave', () => this.hideTooltip());
   }
+
+  setShotcallVisible(visible: boolean): void { this.shotcallVisible = visible; }
 
   setStatusDefinitions(statuses: StatusDefinition[]): void {
     this.statusDefinitions.clear();
@@ -145,6 +154,13 @@ export class ArenaRenderer {
     for (const player of state.players) this.drawUnit(player, !player.alive ? DEAD_COLOR : player.controlled ? CONTROLLED_PLAYER_COLOR : PLAYER_COLOR, scale, toCanvas, false);
     for (const graphic of state.worldGraphics) this.drawWorldGraphic(graphic, state, scale, toCanvas);
     this.drawControlledStatuses(state, scale);
+    this.updateShotcall(state);
+  }
+
+  private updateShotcall(state: GameState): void {
+    const visible = this.shotcallVisible && state.shotcall !== undefined;
+    this.shotcallElement.hidden = !visible;
+    this.shotcallElement.textContent = visible ? state.shotcall!.text : '';
   }
 
   /** Traces the arena outline as the current path, in canvas pixels. */
@@ -398,7 +414,7 @@ export class ArenaRenderer {
     const y = (event.clientY - bounds.top) * scaleY;
     const hit = this.statusHitAreas.find((area) => Math.hypot(area.x - x, area.y - y) <= 14);
     if (!hit) { this.hideTooltip(); return; }
-    this.tooltip.textContent = formatStatusName(hit.status.definitionId);
+    this.tooltip.textContent = statusDisplayName(hit.status.definitionId, this.statusDefinitions);
     this.tooltip.style.left = `${event.clientX + 12}px`;
     this.tooltip.style.top = `${event.clientY - 34}px`;
     this.tooltip.classList.add('visible');

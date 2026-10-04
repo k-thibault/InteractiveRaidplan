@@ -4,6 +4,7 @@ import { canMove, canTurn } from '../entities/Control';
 import type { GameState } from '../simulation/GameState';
 import type { Vector2 } from '../geometry/Vector2';
 import { BOT_DEADLY_EDGE_INSET, clampToArena, constrainToArena } from '../geometry/Arena';
+import { clampDirection } from '../geometry/DirectionClamp';
 
 /** Default heading target for bots without a facing rule. */
 export function defaultBossFacing(state: GameState, from: Vector2): number {
@@ -24,8 +25,10 @@ export class BotManager {
         // Bots never aim past a deadly border, however their position rule was written.
         const destination = { x: player.desiredPosition.x, y: player.desiredPosition.y };
         if (state.arena.edge === 'deadly') clampToArena(destination, state.arena, BOT_DEADLY_EDGE_INSET);
-        const direction = normalize({ x: destination.x - player.position.x, y: destination.y - player.position.y });
-        const step = Math.min(distance(player.position, destination), player.moveSpeed * state.deltaTime / 1000);
+        const remaining = distance(player.position, destination);
+        let direction = normalize({ x: destination.x - player.position.x, y: destination.y - player.position.y });
+        const step = Math.min(remaining, player.moveSpeed * state.deltaTime / 1000);
+        if (player.movementClamp && remaining > step) direction = clampDirection(direction, player.movementClamp);
         if (step > MOVING_EPSILON) {
           if (canMove(player)) {
             player.position.x += direction.x * step;

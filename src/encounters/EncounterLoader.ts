@@ -1,5 +1,6 @@
 import type { Encounter } from './Encounter';
 import { resolvePositionValue } from '../geometry/Vector2';
+import { isValidDirectionClamp } from '../geometry/DirectionClamp';
 import { validateArenaDefinition } from '../geometry/Arena';
 
 export interface EncounterManifestEntry {
@@ -43,6 +44,7 @@ export function validateMarkerReferences(encounter: Encounter, markerIds: Set<st
       if (typeof record.query === 'string' && !queries[record.query]) throw new Error(`${where} references unknown marker query "${record.query}"`);
       if (record.marker === undefined && record.query === undefined) throw new Error(`${where} has a marker target with neither "marker" nor "query"`);
     }
+    if (record.clamp !== undefined && !(typeof record.clamp === 'string' && !isLiteral(record.clamp)) && !isValidDirectionClamp(record.clamp)) throw new Error(`${where} has an invalid direction clamp ${JSON.stringify(record.clamp)}`);
     if (Array.isArray(record.ids)) for (const id of record.ids) if (isLiteral(id) && !markerIds.has(id)) throw new Error(`${where} references unknown marker "${id}"`);
     if (Array.isArray(record.ranks) && !record.ranks.every((rank) => Number.isInteger(rank) && rank >= 0)) throw new Error(`${where} has marker query ranks that are not non-negative integers`);
     for (const child of Object.values(record)) visit(child, where);

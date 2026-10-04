@@ -135,6 +135,7 @@ export class Simulation {
       }
     }
     this.scheduler.update(this.state.time);
+    if (this.state.shotcall?.expiresAt !== undefined && this.state.shotcall.expiresAt <= this.state.time) this.state.shotcall = undefined;
     this.state.effects = this.state.effects.filter((effect) => effect.resolvedAt === undefined || this.state.time < effect.resolvedAt + effect.duration);
     this.state.worldGraphics = this.state.worldGraphics.filter((graphic) => this.state.time < graphic.createdAt + graphic.duration);
     advanceKnocks(this.state, this.state.deltaTime);

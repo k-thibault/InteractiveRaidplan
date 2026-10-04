@@ -11,6 +11,7 @@ import type { Vector2 } from '../geometry/Vector2';
 import { signedAngleDelta } from '../geometry/Facing';
 import { pickMarker } from './MarkerQuery';
 import type { MarkerQuery } from './MarkerQuery';
+import type { DirectionClamp } from '../geometry/DirectionClamp';
 
 /** Distance in world units under which a follower counts as standing on its drag goal. */
 const DRAG_ARRIVED = 0.05;
@@ -20,6 +21,7 @@ export interface PositionRule {
   target: PositionTarget;
   /** Re-resolve the target every tick instead of once, for targets that depend on moving entities. */
   live?: boolean;
+  clamp?: DirectionClamp;
 }
 /** Position rules are grouped and only the requested group is evaluated. */
 export type PositionDefinition = PositionRule[];
@@ -50,6 +52,7 @@ export class PositionEvaluator {
       if (player.controlled) continue;
       const rule = rules.find((candidate) => candidate.when === undefined || this.conditionEvaluator.evaluate(candidate.when, player, state));
       player.desiredPosition = rule ? this.resolve(rule.target, state, params, player) : undefined;
+      player.movementClamp = rule?.clamp === undefined ? undefined : this.resolveValue(rule.clamp);
       if (rule?.live) this.liveRules.set(player.id, { target: rule.target, params });
       else this.liveRules.delete(player.id);
     }

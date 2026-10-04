@@ -2,5 +2,5 @@
   { "id": "example", "name": "Alter Weakness", "file": "./example.json" },
   { "id": "forsaken", "name": "Forsaken", "file": "./forsaken.json" },
   { "id": "movement", "name": "Movement Effects", "file": "./movement.json" },
-  { "id": "crystals", "name": "Crystal Division (scaffold)", "file": "./crystals.json" }
+  { "id": "crystals", "name": "Bowels of Agony", "file": "./crystals.json" }
 ]
