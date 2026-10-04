@@ -15,6 +15,7 @@ export interface CastDefinition {
 /** Targeting resolves once at cast start. */
 export type CastFacing =
   | { type: 'nearest_player'; replayable?: boolean }
+  | { type: 'farthest_player'; replayable?: boolean }
   | { type: 'random_player'; replayable?: boolean }
   | { type: 'entity'; id: string; replayable?: boolean };
 
@@ -28,4 +29,5 @@ export interface ActiveCast {
   targetId?: string;
   /** Frozen angle from the caster to the target. */
   direction?: number;
+  targetPosition?: { x: number; y: number };
 }
