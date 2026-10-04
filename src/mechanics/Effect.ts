@@ -11,6 +11,7 @@ export interface DamageDefinition { amount: number; type: DamageType; fatal?: bo
 /** `source` targets the effect source; `inside_others` excludes an area's anchor. */
 export type EffectTarget = 'inside' | 'inside_others' | 'outside' | 'all' | 'source' | PlayerSelector;
 export interface HealEffect { type: 'heal'; target: EffectTarget; amount?: number; full?: boolean; }
+export interface MoveEntityEffect { type: 'move_entity'; target: string; position: PositionValue; }
 export interface DamageEffect { type: 'damage'; target: EffectTarget; damage: DamageDefinition; }
 export interface ApplyStatusEffect {
   type: 'apply_status'; target: EffectTarget; duration?: number; stacks?: number;
@@ -116,7 +117,7 @@ export interface SpawnEnemyEffect extends Partial<EnemyTemplate> {
 /** Removes a temporary enemy and cancels its active casts. */
 export interface RemoveEnemyEffect { type: 'remove_enemy'; id: string; }
 
-export type EffectDefinition = HealEffect | DamageEffect | ApplyStatusEffect | RemoveStatusEffect | KnockEffect | StartFollowEffect | StopFollowEffect | AddToBatchEffect | StartCastEffect | RecalculateRolesEffect | RecalculatePositionsEffect | RecalculateFacingEffect | SetMechanicEffect | SpawnAreaEffect | AssignDistributionEffect | DistributeStatusesEffect | ShowGraphicEffect | DelayedEffectsEffect | SelectGroupEffect | SelectGroupSubsetEffect | ForEachGroupEffect | SpawnEnemyEffect | RemoveEnemyEffect;
+export type EffectDefinition = HealEffect | MoveEntityEffect | DamageEffect | ApplyStatusEffect | RemoveStatusEffect | KnockEffect | StartFollowEffect | StopFollowEffect | AddToBatchEffect | StartCastEffect | RecalculateRolesEffect | RecalculatePositionsEffect | RecalculateFacingEffect | SetMechanicEffect | SpawnAreaEffect | AssignDistributionEffect | DistributeStatusesEffect | ShowGraphicEffect | DelayedEffectsEffect | SelectGroupEffect | SelectGroupSubsetEffect | ForEachGroupEffect | SpawnEnemyEffect | RemoveEnemyEffect;
 export interface AreaCondition { type: 'player_count'; min?: number; max?: number; }
 export interface AreaResolutionRule { condition: AreaCondition; effects: EffectDefinition[]; }
 export interface BaseAreaEffect {
