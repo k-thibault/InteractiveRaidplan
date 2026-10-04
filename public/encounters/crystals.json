@@ -544,6 +544,74 @@
           ]
         }
       ]
+    },
+    "vacuum-wave": {
+      "shape": "circle",
+      "radius": 30,
+      "label": "vacuum-wave",
+      "telegraphDuration": 0,
+      "duration": 500,
+      "executionColor": "#8d78ff",
+      "resolution": [
+        {
+          "condition": {
+            "type": "player_count",
+            "min": 0
+          },
+          "effects": [
+            {
+              "type": "knock",
+              "target": "inside",
+              "distance": 9,
+              "direction": {
+                "type": "radial"
+              },
+              "facingModifiers": [
+                {
+                  "status": "front",
+                  "towards": 0.5,
+                  "away": 2,
+                  "arc": 90,
+                  "consume": true
+                },
+                {
+                  "status": "back",
+                  "away": 0.5,
+                  "towards": 2,
+                  "arc": 90,
+                  "consume": true
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "umbra-smash": {
+      "shape": "circle",
+      "radius": 4.5,
+      "label": "umbra-smash",
+      "telegraphDuration": 0,
+      "duration": 500,
+      "executionColor": "#8d78ff",
+      "resolution": [
+        {
+          "condition": {
+            "type": "player_count",
+            "min": 0
+          },
+          "effects": [
+            {
+              "type": "damage",
+              "target": "inside",
+              "damage": {
+                "amount": 120,
+                "type": "magical"
+              }
+            }
+          ]
+        }
+      ]
     }
   },
   "batches": {
@@ -1146,6 +1214,48 @@
         {
           "type": "spawn_area",
           "area": "thunder"
+        }
+      ]
+    },
+    "vacuum-wave": {
+      "id": "vacuum-wave",
+      "name": "Vacuum Wave",
+      "castTime": 6000,
+      "visible": true,
+      "suspendFollow": {
+        "movement": true
+      },
+      "effects": [
+        {
+          "type": "spawn_area",
+          "area": "vacuum-wave",
+          "source": "boss-small"
+        }
+      ]
+    },
+    "umbra-smash": {
+      "id": "umbra-smash",
+      "name": "Umbra Smash",
+      "castTime": 2500,
+      "visible": true,
+      "suspendFollow": {
+        "movement": true
+      },
+      "facing": {
+        "type": "farthest_player"
+      },
+      "effects": [
+        {
+          "type": "move_entity",
+          "target": "boss-large",
+          "position": {
+            "type": "cast_target"
+          }
+        },
+        {
+          "type": "spawn_area",
+          "area": "umbra-smash",
+          "source": "boss-large"
         }
       ]
     }
@@ -2504,6 +2614,83 @@
           }
         }
       }
+    ],
+    "vacuum-initial": [
+      {
+        "when": {
+          "type": "mechanical_role",
+          "role": "small_tank"
+        },
+        "live": true,
+        "target": {
+          "type": "drag",
+          "entity": {
+            "type": "id",
+            "id": "boss-small"
+          },
+          "to": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "wind-crystal"
+            }
+          }
+        }
+      },
+      {
+        "when": {
+          "type": "damage_position",
+          "position": "ranged"
+        },
+        "target": {
+          "type": "polar",
+          "angleFrom": {
+            "type": "id",
+            "id": "wind-crystal"
+          },
+          "angleOffset": 180,
+          "radius": 9.2
+        }
+      }
+    ],
+    "vacuum-settle": [
+      {
+        "when": {
+          "type": "or",
+          "conditions": [
+            {
+              "type": "gameplay_role",
+              "role": "tank"
+            },
+            {
+              "type": "gameplay_role",
+              "role": "healer"
+            },
+            {
+              "type": "gameplay_role",
+              "role": "damage"
+            }
+          ]
+        },
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "boss-small"
+            }
+          },
+          "toward": {
+            "type": "fixed",
+            "position": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "distance": 4.5
+        }
+      }
     ]
   },
   "facing": {
@@ -2832,7 +3019,7 @@
       },
       "style": {
         "type": "ring",
-        "radius": 2.0
+        "radius": 2
       },
       "statuses": []
     }
@@ -3040,6 +3227,38 @@
       "delay": 11000,
       "type": "recalculate_facing",
       "group": "facing-release"
+    },
+    {
+      "id": "vacuum-initial",
+      "after": "chaos-short-facing-release",
+      "delay": 1000,
+      "type": "recalculate_positions",
+      "group": "vacuum-initial"
+    },
+    {
+      "id": "vacuum-settle",
+      "after": "vacuum-initial",
+      "delay": 3000,
+      "type": "recalculate_positions",
+      "group": "vacuum-settle"
+    },
+    {
+      "id": "vacuum-cast",
+      "after": "vacuum-settle",
+      "delay": 1000,
+      "type": "start_cast",
+      "source": "boss-small",
+      "cast": "vacuum-wave",
+      "mechanic": "vacuum-wave"
+    },
+    {
+      "id": "umbra-smash-cast",
+      "after": "vacuum-settle",
+      "delay": 1000,
+      "type": "start_cast",
+      "source": "boss-large",
+      "cast": "umbra-smash",
+      "mechanic": "umbra-smash"
     }
   ]
 }
