@@ -8,7 +8,7 @@ import type { StatusDefinition } from './entities/Status';
 import type { Player } from './entities/Player';
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
-app.innerHTML = `<main class="workbench"><header class="topbar"><div><p class="eyebrow">ENCOUNTER LAB / TIMELINES</p><h1 id="encounter-name">Loading encounter&hellip;</h1></div><div class="encounter-picker"><label for="encounter-select">Timeline</label><select id="encounter-select"></select></div><div class="readout"><span id="phase">READY</span><strong id="clock">00:00.0</strong></div></header><section class="arena-row"><aside id="roster" class="roster-panel" aria-label="Party health"></aside><div class="arena-panel"><canvas id="arena" width="1200" height="800" aria-label="Encounter arena"></canvas><div id="cast-bars" class="cast-bars" aria-live="polite"></div></div><aside class="event-log-panel"><h2>Event Log</h2><ul id="event-log"><li class="event-log__empty">No events yet.</li></ul></aside></section><footer class="controls"><div class="control-group"><button id="toggle" type="button">Start</button><button id="restart" type="button">Restart</button><label><input id="keep-rng" type="checkbox"> Keep previous RNG</label><label><input id="debug-mode" type="checkbox"> Debug log</label><label><input id="show-shotcalls" type="checkbox" checked> Show shotcalls</label><label for="controlled-player">Control</label><select id="controlled-player"></select><label><input id="face-cursor" type="checkbox"> Face cursor when still</label></div><div class="speed-group" role="group" aria-label="Simulation speed"><span>Speed</span><button data-speed="0.5" type="button">0.5x</button><button class="selected" data-speed="1" type="button">1x</button><button data-speed="2" type="button">2x</button><button data-speed="4" type="button">4x</button></div><p class="hint">Move with WASD or the arrow keys.</p></footer></main>`;
+app.innerHTML = `<main class="workbench"><header class="topbar"><div><p class="eyebrow">ENCOUNTER LAB / TIMELINES</p><h1 id="encounter-name">Loading encounter&hellip;</h1></div><div class="encounter-picker"><label for="encounter-select">Timeline</label><select id="encounter-select"></select></div><div class="readout"><span id="phase">READY</span><strong id="clock">00:00.0</strong></div></header><section class="arena-row"><aside id="roster" class="roster-panel" aria-label="Party health"></aside><div class="arena-panel"><canvas id="arena" width="1200" height="800" aria-label="Encounter arena"></canvas><div id="cast-bars" class="cast-bars" aria-live="polite"></div></div><aside class="event-log-panel"><h2>Event Log</h2><ul id="event-log"><li class="event-log__empty">No events yet.</li></ul></aside></section><footer class="controls"><div class="control-group"><button id="toggle" type="button">Start</button><button id="restart" type="button">Restart</button><label><input id="keep-rng" type="checkbox"> Keep previous RNG</label>${import.meta.env.DEV ? '<label><input id="debug-mode" type="checkbox"> Debug log</label>' : ''}<label><input id="show-shotcalls" type="checkbox" checked> Show shotcalls</label><label for="controlled-player">Control</label><select id="controlled-player"></select><label><input id="face-cursor" type="checkbox"> Face cursor when still</label></div><div class="speed-group" role="group" aria-label="Simulation speed"><span>Speed</span><button data-speed="0.5" type="button">0.5x</button><button class="selected" data-speed="1" type="button">1x</button><button data-speed="2" type="button">2x</button><button data-speed="4" type="button">4x</button></div><p class="hint">Move with WASD or the arrow keys.</p></footer></main>`;
 
 const canvas = document.querySelector<HTMLCanvasElement>('#arena')!;
 const renderer = new ArenaRenderer(canvas);
@@ -115,7 +115,8 @@ function resetLog(): void {
 function rebuild(): void {
   if (!encounter) return;
   if (!document.querySelector<HTMLInputElement>('#keep-rng')!.checked) { currentSeed = createAttemptSeed(); replayOutcomes = new Map(); }
-  const debug = document.querySelector<HTMLInputElement>('#debug-mode')!.checked;
+  // Debug logging is available only in development.
+  const debug = document.querySelector<HTMLInputElement>('#debug-mode')?.checked ?? false;
   simulation = new Simulation(encounter, { seed: currentSeed, controlledPlayerId: controlledPlayer.value || undefined, replayOutcomes, debug });
   controller = new PlayerController(simulation.state.players.find((player) => player.controlled), simulation.state.arena);
   controller.setFaceCursorWhenStill(faceCursor.checked);
@@ -134,7 +135,8 @@ async function selectEncounter(entry: EncounterManifestEntry): Promise<void> {
   rebuild();
 }
 
-const manifest = await loadEncounterManifest();
+// Production builds list only encounters marked prod-ready.
+const manifest = (await loadEncounterManifest()).filter((entry) => import.meta.env.DEV || entry.prodready === true);
 for (const entry of manifest) { const option = document.createElement('option'); option.value = entry.id; option.textContent = entry.name; option.dataset.file = entry.file; encounterSelect.append(option); }
 encounterSelect.addEventListener('change', async () => { const entry = manifest.find((candidate) => candidate.id === encounterSelect.value); if (entry) await selectEncounter(entry); });
 controlledPlayer.addEventListener('change', rebuild);
@@ -145,7 +147,11 @@ toggle.addEventListener('click', () => { if (simulation.state.running) { simulat
 document.querySelector<HTMLButtonElement>('#restart')!.addEventListener('click', rebuild);
 document.querySelectorAll<HTMLButtonElement>('[data-speed]').forEach((button) => button.addEventListener('click', () => { speed = Number(button.dataset.speed); document.querySelector('.selected')?.classList.remove('selected'); button.classList.add('selected'); }));
 
-await selectEncounter(manifest[0]);
+// Preselect `?encounter=<id>`; unknown or unavailable ids fall back to the first entry.
+const requestedId = new URLSearchParams(window.location.search).get('encounter');
+const initialEntry = manifest.find((entry) => entry.id === requestedId) ?? manifest[0];
+if (initialEntry) { encounterSelect.value = initialEntry.id; await selectEncounter(initialEntry); }
+else heading.textContent = 'No encounters available';
 
 function entityName(id: string): string | undefined {
   return simulation.state.players.find((player) => player.id === id)?.name ?? simulation.state.enemies.find((enemy) => enemy.id === id)?.name;

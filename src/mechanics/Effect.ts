@@ -6,7 +6,7 @@ import type { CastFacing } from './Cast';
 import type { KnockParams } from './Knock';
 import type { FollowSettings } from '../bots/FollowManager';
 
-export type DamageType = 'physical' | 'magical' | 'dark' | 'fire' | 'ice' | 'poison';
+export type DamageType = 'physical' | 'magical' | 'dark' | 'fire' | 'ice' | 'water' | 'wind' | 'poison';
 export interface DamageDefinition { amount: number; type: DamageType; fatal?: boolean; }
 /** `source` targets the effect source; `inside_others` excludes an area's anchor. */
 export type EffectTarget = 'inside' | 'inside_others' | 'outside' | 'all' | 'source' | PlayerSelector;

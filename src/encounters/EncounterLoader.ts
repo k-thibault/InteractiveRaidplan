@@ -4,9 +4,12 @@ import { isValidDirectionClamp } from '../geometry/DirectionClamp';
 import { validateArenaDefinition } from '../geometry/Arena';
 
 export interface EncounterManifestEntry {
+  /** Stable URL-safe identifier, also used by the `?encounter=` parameter. */
   id: string;
   name: string;
   file: string;
+  /** Include this encounter in the production timeline list. */
+  prodready?: boolean;
 }
 
 interface GraphicLibrary { [name: string]: string; }
@@ -17,6 +20,12 @@ export async function loadEncounterManifest(
   const response = await fetch(url);
   if (!response.ok) throw new Error(`Unable to load encounter list: ${response.status}`);
   const entries = await response.json() as EncounterManifestEntry[];
+  const ids = new Set<string>();
+  for (const entry of entries) {
+    if (!/^[a-z0-9][a-z0-9-_]*$/i.test(entry.id)) throw new Error(`Encounter manifest id "${entry.id}" must be URL-safe (letters, digits, - and _)`);
+    if (ids.has(entry.id)) throw new Error(`Encounter manifest contains duplicate id "${entry.id}"`);
+    ids.add(entry.id);
+  }
   return entries.map((entry) => ({
     ...entry,
     file: new URL(entry.file, response.url).href,

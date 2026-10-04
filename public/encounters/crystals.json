@@ -1,7 +1,7 @@
 {
   "version": 3,
   "name": "Bowels of Agony",
-  "duration": 62000,
+  "duration": 72000,
   "arena": {
     "shape": "circle",
     "radius": 10,
@@ -12,6 +12,7 @@
     "graphics": [
       "bg-dmup3",
       "icon-magic-vulnerability",
+      "icon-wind-vulnerability",
       "icon-beta",
       "icon-alpha",
       "icon-entropy",
@@ -243,6 +244,12 @@
                 "amount": 60,
                 "type": "fire"
               }
+            },
+            {
+              "type": "apply_status",
+              "status": "magic-vulnerability",
+              "target": "inside",
+              "duration": 4000
             }
           ]
         }
@@ -272,9 +279,15 @@
               }
             },
             {
+              "type": "apply_status",
+              "status": "magic-vulnerability",
+              "target": "inside",
+              "duration": 4000
+            },
+            {
               "type": "knock",
               "target": "inside_others",
-              "distance": 14,
+              "distance": 9,
               "direction": {
                 "type": "radial"
               },
@@ -320,13 +333,19 @@
               "target": "inside",
               "damage": {
                 "amount": 60,
-                "type": "ice"
+                "type": "water"
               }
+            },
+            {
+              "type": "apply_status",
+              "status": "magic-vulnerability",
+              "target": "inside",
+              "duration": 4000
             }
           ]
         }
       ],
-      "element": "ice",
+      "element": "water",
       "innerRadius": 2.5
     },
     "water-circle": {
@@ -348,13 +367,19 @@
               "target": "inside",
               "damage": {
                 "amount": 60,
-                "type": "ice"
+                "type": "water"
               }
+            },
+            {
+              "type": "apply_status",
+              "status": "magic-vulnerability",
+              "target": "inside",
+              "duration": 4000
             },
             {
               "type": "knock",
               "target": "inside_others",
-              "distance": 14,
+              "distance": 9,
               "direction": {
                 "type": "radial"
               },
@@ -378,7 +403,7 @@
           ]
         }
       ],
-      "element": "ice"
+      "element": "water"
     },
     "wind-stack": {
       "shape": "circle",
@@ -400,8 +425,14 @@
               "target": "inside",
               "damage": {
                 "amount": 60,
-                "type": "magical"
+                "type": "wind"
               }
+            },
+            {
+              "type": "apply_status",
+              "status": "wind-vulnerability",
+              "target": "inside",
+              "duration": 1000
             }
           ]
         },
@@ -416,13 +447,14 @@
               "target": "inside",
               "damage": {
                 "amount": 999,
-                "type": "magical",
+                "type": "wind",
                 "fatal": true
               }
             }
           ]
         }
-      ]
+      ],
+      "element": "wind"
     },
     "thunder-bait": {
       "shape": "circle",
@@ -472,6 +504,11 @@
                 "amount": 90,
                 "type": "magical"
               }
+            },
+            {
+              "type": "apply_status",
+              "status": "damage-down",
+              "target": "inside"
             }
           ]
         }
@@ -498,6 +535,11 @@
                 "amount": 150,
                 "type": "magical"
               }
+            },
+            {
+              "type": "apply_status",
+              "status": "damage-down",
+              "target": "inside"
             }
           ]
         }
@@ -685,9 +727,35 @@
         {
           "damageType": "magical",
           "fatal": true
+        },
+        {
+          "damageType": "fire",
+          "fatal": true
+        },
+        {
+          "damageType": "wind",
+          "fatal": true
+        },
+        {
+          "damageType": "water",
+          "fatal": true
         }
       ],
       "icon": "icon-magic-vulnerability"
+    },
+    {
+      "id": "wind-vulnerability",
+      "name": "Wind Vulnerability",
+      "tags": [
+        "vulnerability"
+      ],
+      "icon": "icon-wind-vulnerability",
+      "damageTaken": [
+        {
+          "damageType": "wind",
+          "fatal": true
+        }
+      ]
     },
     {
       "id": "damage-down",
@@ -870,10 +938,6 @@
         {
           "type": "recalculate_positions",
           "group": "crystal-setup"
-        },
-        {
-          "type": "recalculate_facing",
-          "group": "crystal-long"
         }
       ]
     },
@@ -967,6 +1031,16 @@
               "moveSpeed": 4
             }
           ]
+        },
+        {
+          "type": "delayed_effects",
+          "delay": 2500,
+          "effects": [
+            {
+              "type": "recalculate_positions",
+              "group": "thunder-bait-settle"
+            }
+          ]
         }
       ]
     },
@@ -997,20 +1071,20 @@
           "type": "delayed_effects",
           "delay": 1500,
           "effects": [
-          {
-            "type": "spawn_area",
-            "area": "chaos-cone",
-            "source": "boss-large",
-            "direction": "facing",
-            "rotationOffset": 90
-          },
-          {
-            "type": "spawn_area",
-            "area": "chaos-cone",
-            "source": "boss-large",
-            "direction": "facing",
-            "rotationOffset": 270
-          }
+            {
+              "type": "spawn_area",
+              "area": "chaos-cone",
+              "source": "boss-large",
+              "direction": "facing",
+              "rotationOffset": 90
+            },
+            {
+              "type": "spawn_area",
+              "area": "chaos-cone",
+              "source": "boss-large",
+              "direction": "facing",
+              "rotationOffset": 270
+            }
           ]
         }
       ]
@@ -1043,19 +1117,19 @@
           "type": "delayed_effects",
           "delay": 1500,
           "effects": [
-          {
-            "type": "spawn_area",
-            "area": "chaos-cone",
-            "source": "boss-large",
-            "direction": "facing"
-          },
-          {
-            "type": "spawn_area",
-            "area": "chaos-cone",
-            "source": "boss-large",
-            "direction": "facing",
-            "rotationOffset": 180
-          }
+            {
+              "type": "spawn_area",
+              "area": "chaos-cone",
+              "source": "boss-large",
+              "direction": "facing"
+            },
+            {
+              "type": "spawn_area",
+              "area": "chaos-cone",
+              "source": "boss-large",
+              "direction": "facing",
+              "rotationOffset": 180
+            }
           ]
         }
       ]
@@ -1326,6 +1400,50 @@
     }
   },
   "positions": {
+    "drag-bosses-mid": [
+      {
+        "when": {
+          "type": "mechanical_role",
+          "role": "small_tank"
+        },
+        "live": true,
+        "target": {
+          "type": "drag",
+          "entity": {
+            "type": "id",
+            "id": "boss-small"
+          },
+          "to": {
+            "type": "fixed",
+            "position": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        }
+      },
+      {
+        "when": {
+          "type": "mechanical_role",
+          "role": "large_tank"
+        },
+        "live": true,
+        "target": {
+          "type": "drag",
+          "entity": {
+            "type": "id",
+            "id": "boss-large"
+          },
+          "to": {
+            "type": "fixed",
+            "position": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        }
+      }
+    ],
     "crystal-setup": [
       {
         "when": {
@@ -1401,20 +1519,23 @@
           "type": "mechanical_role",
           "role": "large_tank"
         },
-        "live": true,
         "target": {
-          "type": "drag",
-          "entity": {
-            "type": "id",
-            "id": "boss-large"
-          },
-          "to": {
+          "type": "shift",
+          "from": {
             "type": "fixed",
             "position": {
               "x": 0,
               "y": 0
             }
-          }
+          },
+          "toward": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "boss-small"
+            }
+          },
+          "distance": 2
         }
       }
     ],
@@ -1438,19 +1559,11 @@
           "type": "mechanical_role",
           "role": "large_tank"
         },
-        "live": true,
         "target": {
-          "type": "drag",
-          "entity": {
-            "type": "id",
-            "id": "boss-large"
-          },
-          "to": {
-            "type": "fixed",
-            "position": {
-              "x": 0,
-              "y": 0
-            }
+          "type": "fixed",
+          "position": {
+            "x": 0,
+            "y": 0
           }
         }
       }
@@ -1463,10 +1576,21 @@
         },
         "live": true,
         "target": {
-          "type": "entity",
-          "player": {
+          "type": "drag",
+          "entity": {
             "type": "id",
             "id": "boss-small"
+          },
+          "to": {
+            "type": "between",
+            "a": {
+              "type": "id",
+              "id": "wind-crystal"
+            },
+            "b": {
+              "type": "id",
+              "id": "${debuffTiming.longElement}-crystal"
+            }
           }
         }
       },
@@ -1983,18 +2107,18 @@
         ],
         "target": {
           "type": "polar",
-            "angleFrom": {
+          "angleFrom": {
+            "type": "id",
+            "id": "wind-crystal"
+          },
+          "angleTowards": {
+            "entity": {
               "type": "id",
-              "id": "wind-crystal"
+              "id": "${debuffTiming.longElement}-crystal"
             },
-            "angleTowards": {
-              "entity": {
-                "type": "id",
-                "id": "${debuffTiming.longElement}-crystal"
-              },
-              "by": -25
-            },
-            "radius": 4.5
+            "by": -25
+          },
+          "radius": 4.5
         }
       },
       {
@@ -2007,9 +2131,9 @@
         "target": {
           "type": "polar",
           "angleFrom": {
-             "type": "id",
-             "id": "wind-crystal"
-           },
+            "type": "id",
+            "id": "wind-crystal"
+          },
           "radius": 5.5
         }
       },
@@ -2023,9 +2147,9 @@
         "target": {
           "type": "polar",
           "angleFrom": {
-             "type": "id",
-             "id": "${debuffTiming.longElement}-crystal"
-           },
+            "type": "id",
+            "id": "${debuffTiming.longElement}-crystal"
+          },
           "radius": 3
         }
       },
@@ -2050,17 +2174,23 @@
           {
             "type": "or",
             "conditions": [
-              { "type": "mechanical_role", "role": "short_water_damage" },
-              { "type": "mechanical_role", "role": "short_water_support" }           
+              {
+                "type": "mechanical_role",
+                "role": "short_water_damage"
+              },
+              {
+                "type": "mechanical_role",
+                "role": "short_water_support"
+              }
             ]
           }
         ],
-       "target": {
+        "target": {
           "type": "polar",
           "angleFrom": {
-             "type": "id",
-             "id": "${debuffTiming.longElement}-crystal"
-           },
+            "type": "id",
+            "id": "${debuffTiming.longElement}-crystal"
+          },
           "radius": 0.1
         }
       },
@@ -2069,17 +2199,23 @@
           {
             "type": "or",
             "conditions": [
-              { "type": "mechanical_role", "role": "short_fire_damage" },
-              { "type": "mechanical_role", "role": "short_fire_support" }           
+              {
+                "type": "mechanical_role",
+                "role": "short_fire_damage"
+              },
+              {
+                "type": "mechanical_role",
+                "role": "short_fire_support"
+              }
             ]
           }
         ],
-       "target": {
+        "target": {
           "type": "polar",
           "angleFrom": {
-             "type": "id",
-             "id": "${debuffTiming.longElement}-crystal"
-           },
+            "type": "id",
+            "id": "${debuffTiming.longElement}-crystal"
+          },
           "radius": 2
         }
       }
@@ -2162,7 +2298,8 @@
               "id": "${debuffTiming.shortElement}-crystal"
             }
           },
-          "distance": "$spacing.windFlex"
+          "distance": "$spacing.windFlex",
+          "clamp": "cardinal"
         }
       },
       {
@@ -2225,7 +2362,8 @@
               "id": "${debuffTiming.shortElement}-crystal"
             }
           },
-          "distance": "$spacing.windFlex"
+          "distance": "$spacing.windFlex",
+          "clamp": "cardinal"
         }
       },
       {
@@ -2318,6 +2456,54 @@
           "distance": "$spacing.longWaterDistance"
         }
       }
+    ],
+    "thunder-bait-settle": [
+      {
+        "when": {
+          "type": "mechanical_role",
+          "role": "small_tank"
+        },
+        "live": true,
+        "target": {
+          "type": "drag",
+          "entity": {
+            "type": "id",
+            "id": "boss-small"
+          },
+          "to": {
+            "type": "between",
+            "a": {
+              "type": "id",
+              "id": "wind-crystal"
+            },
+            "b": {
+              "type": "id",
+              "id": "${debuffTiming.longElement}-crystal"
+            }
+          }
+        }
+      },
+      {
+        "when": {
+          "type": "mechanical_role",
+          "role": "large_tank"
+        },
+        "live": true,
+        "target": {
+          "type": "drag",
+          "entity": {
+            "type": "id",
+            "id": "boss-large"
+          },
+          "to": {
+            "type": "fixed",
+            "position": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        }
+      }
     ]
   },
   "facing": {
@@ -2379,7 +2565,73 @@
           "offset": 180
         }
       }
-    ]
+    ],
+    "crystal-short": [
+      {
+        "when": [
+          {
+            "type": "or",
+            "conditions": [
+              {
+                "type": "mechanical_role",
+                "role": "short_damage"
+              },
+              {
+                "type": "mechanical_role",
+                "role": "short_support"
+              }
+            ]
+          },
+          {
+            "type": "has_status",
+            "status": "front"
+          }
+        ],
+        "target": {
+          "type": "bearing",
+          "of": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "${debuffTiming.longElement}-crystal"
+            }
+          }
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "or",
+            "conditions": [
+              {
+                "type": "mechanical_role",
+                "role": "short_damage"
+              },
+              {
+                "type": "mechanical_role",
+                "role": "short_support"
+              }
+            ]
+          },
+          {
+            "type": "has_status",
+            "status": "back"
+          }
+        ],
+        "target": {
+          "type": "bearing",
+          "of": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "${debuffTiming.longElement}-crystal"
+            }
+          },
+          "offset": 180
+        }
+      }
+    ],
+    "facing-release": []
   },
   "enemyTemplates": {
     "wind-crystal": {
@@ -2594,7 +2846,7 @@
     },
     {
       "id": "small-follows-mt",
-      "at": 0,
+      "at": 2000,
       "type": "start_follow",
       "source": "boss-small",
       "target": {
@@ -2606,7 +2858,7 @@
     },
     {
       "id": "large-follows-ot",
-      "at": 0,
+      "at": 2000,
       "type": "start_follow",
       "source": "boss-large",
       "target": {
@@ -2633,8 +2885,14 @@
       "mechanic": "division"
     },
     {
+      "id": "thunder-bait-positions",
+      "at": 7000,
+      "type": "recalculate_positions",
+      "group": "drag-bosses-mid"
+    },
+    {
       "id": "crystal-call",
-      "at": 8000,
+      "at": 15000,
       "type": "start_cast",
       "source": "boss-large",
       "cast": "crystal-call",
@@ -2650,6 +2908,24 @@
       "mechanic": "thunder"
     },
     {
+      "id": "thunder-remove-debuff-a",
+      "after": "thunder-cast",
+      "type": "remove_status",
+      "target": {
+        "type": "all"
+      },
+      "status": "debuff-a"
+    },
+    {
+      "id": "thunder-remove-debuff-b",
+      "after": "thunder-cast",
+      "type": "remove_status",
+      "target": {
+        "type": "all"
+      },
+      "status": "debuff-b"
+    },
+    {
       "id": "thunder-small-stops",
       "after": "thunder-cast",
       "type": "stop_follow",
@@ -2660,6 +2936,19 @@
       "after": "thunder-cast",
       "type": "recalculate_positions",
       "group": "crystal-thunder"
+    },
+    {
+      "id": "thunder-long-facing",
+      "after": "thunder-cast",
+      "type": "recalculate_facing",
+      "group": "crystal-long"
+    },
+    {
+      "id": "thunder-long-facing-release",
+      "after": "thunder-cast",
+      "delay": 9000,
+      "type": "recalculate_facing",
+      "group": "facing-release"
     },
     {
       "id": "thunder-heal",
@@ -2737,6 +3026,20 @@
       "delay": 6500,
       "type": "recalculate_positions",
       "group": "chaos-edge"
+    },
+    {
+      "id": "chaos-short-facing",
+      "after": "chaos-cast",
+      "delay": 6500,
+      "type": "recalculate_facing",
+      "group": "crystal-short"
+    },
+    {
+      "id": "chaos-short-facing-release",
+      "after": "chaos-cast",
+      "delay": 11000,
+      "type": "recalculate_facing",
+      "group": "facing-release"
     }
   ]
 }

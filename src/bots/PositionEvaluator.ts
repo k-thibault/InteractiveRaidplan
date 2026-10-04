@@ -11,7 +11,7 @@ import type { Vector2 } from '../geometry/Vector2';
 import { signedAngleDelta } from '../geometry/Facing';
 import { pickMarker } from './MarkerQuery';
 import type { MarkerQuery } from './MarkerQuery';
-import type { DirectionClamp } from '../geometry/DirectionClamp';
+import { clampDirection, type DirectionClamp } from '../geometry/DirectionClamp';
 
 /** Distance in world units under which a follower counts as standing on its drag goal. */
 const DRAG_ARRIVED = 0.05;
@@ -156,7 +156,9 @@ export class PositionEvaluator {
       const other = anchor ? this.resolve(anchor, state, params, player, from) : undefined;
       const distance = this.resolveValue(this.substituteParams(target.distance, params));
       if (!from || !other || typeof distance !== 'number') return undefined;
-      const heading = normalize(subtract(other, from));
+      let heading = normalize(subtract(other, from));
+      // Snap the shift heading so grouped players preserve spacing.
+      if (target.clamp !== undefined) heading = clampDirection(heading, this.resolveValue(target.clamp));
       const signed = target.toward ? distance : -distance;
       return { x: from.x + heading.x * signed, y: from.y + heading.y * signed };
     }
