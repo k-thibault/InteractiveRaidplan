@@ -900,7 +900,7 @@
           "position": {
             "type": "polar",
             "angle": "$windDiagonal",
-            "radius": 7.3
+            "radius": 7.5
           }
         },
         {
@@ -913,7 +913,7 @@
             "angleOffset": {
               "$neg": "$fireRotation"
             },
-            "radius": 7.3
+            "radius": 7.5
           }
         },
         {
@@ -924,7 +924,7 @@
             "type": "polar",
             "angle": "$windDiagonal",
             "angleOffset": "$fireRotation",
-            "radius": 7.3
+            "radius": 7.5
           }
         },
         {
@@ -2134,7 +2134,7 @@
             "type": "id",
             "id": "wind-crystal"
           },
-          "radius": 5.5
+          "radius": 5.7
         }
       },
       {
@@ -2282,7 +2282,7 @@
                 "id": "wind-crystal"
               }
             },
-            "toward": {
+            "awayFrom": {
               "type": "entity",
               "player": {
                 "type": "id",
@@ -2318,7 +2318,7 @@
               "id": "wind-crystal"
             }
           },
-          "toward": {
+          "awayFrom": {
             "type": "entity",
             "player": {
               "type": "id",
@@ -2346,7 +2346,7 @@
                 "id": "wind-crystal"
               }
             },
-            "awayFrom": {
+            "toward": {
               "type": "entity",
               "player": {
                 "type": "id",
@@ -2382,7 +2382,7 @@
               "id": "wind-crystal"
             }
           },
-          "awayFrom": {
+          "toward": {
             "type": "entity",
             "player": {
               "type": "id",
