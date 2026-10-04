@@ -144,6 +144,13 @@
         }
       ]
     },
+    "pastsFuture": {
+      "mode": "choice",
+      "values": [
+        { "cast": "pasts", "call": "between" },
+        { "cast": "futures", "call": "opposite" }
+      ]
+    },
     "soakAngles": {
       "mode": "chained_rotation",
       "start": [45, 135, 225, 315],
@@ -1513,7 +1520,15 @@
       "delay": 7000,
       "type": "start_cast",
       "source": "boss",
-      "castChoices": ["pasts", "futures"]
+      "cast": "$pastsFuture.cast"
+    },
+    {
+      "id": "tower-2-shotcall",
+      "after": "tower-2-soak-a",
+      "delay": 12000,
+      "type": "set_shotcall",
+      "text": "$pastsFuture.call",
+      "duration": 3000
     },
     {
       "id": "bait-1",
@@ -1628,7 +1643,15 @@
       "delay": 7000,
       "type": "start_cast",
       "source": "boss",
-      "castChoices": ["pasts", "futures"]
+      "cast": "$pastsFuture.cast"
+    },
+    {
+      "id": "tower-4-shotcall",
+      "after": "tower-4-soak-a",
+      "delay": 12000,
+      "type": "set_shotcall",
+      "text": "$pastsFuture.call",
+      "duration": 3000
     },
     {
       "id": "bait-2",
@@ -1736,7 +1759,15 @@
       "delay": 7000,
       "type": "start_cast",
       "source": "boss",
-      "castChoices": ["pasts", "futures"]
+      "cast": "$pastsFuture.cast"
+    },
+    {
+      "id": "tower-6-shotcall",
+      "after": "tower-6-soak-a",
+      "delay": 12000,
+      "type": "set_shotcall",
+      "text": "$pastsFuture.call",
+      "duration": 3000
     },
     {
       "id": "bait-3",
@@ -1851,7 +1882,7 @@
       "delay": 7000,
       "type": "start_cast",
       "source": "boss",
-      "castChoices": ["pasts", "futures"]
+      "cast": "$pastsFuture.cast"
     },
     {
       "id": "bait-4",
