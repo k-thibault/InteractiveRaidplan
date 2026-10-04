@@ -127,7 +127,9 @@ export class MechanicalRoleEvaluator {
           requiredRoles.every((role) => candidate.mechanicalRoles.includes(role)) &&
           candidate.statuses.some((status) => relevantStatuses.has(status.definitionId)));
         if (!partner) return false;
-        return (player.flexPriority ?? 0) < (partner.flexPriority ?? 0);
+        const playerPriority = player.flexPriority ?? 0;
+        const partnerPriority = partner.flexPriority ?? 0;
+        return playerPriority < partnerPriority || (playerPriority === partnerPriority && player.id > partner.id);
       }
     }
   }
