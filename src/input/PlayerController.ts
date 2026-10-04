@@ -2,16 +2,19 @@ import { normalize, toPolarAngle } from '../geometry/Vector2';
 import type { Vector2 } from '../geometry/Vector2';
 import type { Player } from '../entities/Player';
 import { canMove, canTurn } from '../entities/Control';
-import { clampToArena } from '../geometry/Arena';
+import { constrainToArena } from '../geometry/Arena';
+import type { Arena } from '../geometry/Arena';
 
 export class PlayerController {
   private readonly keys = new Set<string>();
   private readonly player: Player | undefined;
+  private readonly arena: Arena;
   private mouseWorldPosition: Vector2 | undefined;
   private faceCursorWhenStill = false;
 
-  constructor(player: Player | undefined) {
+  constructor(player: Player | undefined, arena: Arena) {
     this.player = player;
+    this.arena = arena;
     window.addEventListener('keydown', (event) => this.keys.add(event.key.toLowerCase()));
     window.addEventListener('keyup', (event) => this.keys.delete(event.key.toLowerCase()));
   }
@@ -38,6 +41,6 @@ export class PlayerController {
     } else if (this.faceCursorWhenStill && this.mouseWorldPosition && canTurn(this.player)) {
       this.player.facing = toPolarAngle(this.mouseWorldPosition, this.player.position);
     }
-    clampToArena(this.player.position);
+    constrainToArena(this.player.position, this.arena);
   }
 }

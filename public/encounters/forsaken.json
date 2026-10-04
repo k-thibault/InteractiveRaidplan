@@ -2,6 +2,7 @@
   "version": 5,
   "name": "Forsaken",
   "duration": 120000,
+  "arena": { "shape": "circle", "radius": 10, "edge": "deadly" },
   "background": "bg-default",
   "randomGroups": {
     "triggerAssignments": {

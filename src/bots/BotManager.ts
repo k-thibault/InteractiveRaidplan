@@ -3,6 +3,7 @@ import { DEFAULT_FACING } from '../geometry/Facing';
 import { canMove, canTurn } from '../entities/Control';
 import type { GameState } from '../simulation/GameState';
 import type { Vector2 } from '../geometry/Vector2';
+import { BOT_DEADLY_EDGE_INSET, clampToArena, constrainToArena } from '../geometry/Arena';
 
 /** Default heading target for bots without a facing rule. */
 export function defaultBossFacing(state: GameState, from: Vector2): number {
@@ -20,12 +21,16 @@ export class BotManager {
       // A bot that wants to move still turns toward its destination while rooted or knocked.
       let wantsToMove = false;
       if (player.desiredPosition) {
-        const direction = normalize({ x: player.desiredPosition.x - player.position.x, y: player.desiredPosition.y - player.position.y });
-        const step = Math.min(distance(player.position, player.desiredPosition), player.moveSpeed * state.deltaTime / 1000);
+        // Bots never aim past a deadly border, however their position rule was written.
+        const destination = { x: player.desiredPosition.x, y: player.desiredPosition.y };
+        if (state.arena.edge === 'deadly') clampToArena(destination, state.arena, BOT_DEADLY_EDGE_INSET);
+        const direction = normalize({ x: destination.x - player.position.x, y: destination.y - player.position.y });
+        const step = Math.min(distance(player.position, destination), player.moveSpeed * state.deltaTime / 1000);
         if (step > MOVING_EPSILON) {
           if (canMove(player)) {
             player.position.x += direction.x * step;
             player.position.y += direction.y * step;
+            constrainToArena(player.position, state.arena);
           }
           if (!player.facingRuleActive && canTurn(player)) player.facing = toPolarAngle({ x: direction.x, y: direction.y }, { x: 0, y: 0 });
           wantsToMove = true;

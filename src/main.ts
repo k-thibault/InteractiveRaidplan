@@ -116,7 +116,7 @@ function rebuild(): void {
   if (!document.querySelector<HTMLInputElement>('#keep-rng')!.checked) { currentSeed = createAttemptSeed(); replayOutcomes = new Map(); }
   const debug = document.querySelector<HTMLInputElement>('#debug-mode')!.checked;
   simulation = new Simulation(encounter, { seed: currentSeed, controlledPlayerId: controlledPlayer.value || undefined, replayOutcomes, debug });
-  controller = new PlayerController(simulation.state.players.find((player) => player.controlled));
+  controller = new PlayerController(simulation.state.players.find((player) => player.controlled), simulation.state.arena);
   controller.setFaceCursorWhenStill(faceCursor.checked);
   buildRoster(simulation.state.players); accumulator = 0; previous = performance.now(); toggle.textContent = 'Start'; phase.textContent = 'READY'; resetLog();
   castBars.replaceChildren(); castBarRows.clear();

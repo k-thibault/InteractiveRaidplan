@@ -7,9 +7,12 @@ import type { ActiveCast } from '../mechanics/Cast';
 import type { GroupEntry } from '../mechanics/Group';
 import type { MarkerDefinition } from '../encounters/Encounter';
 import type { Vector2 } from '../geometry/Vector2';
+import type { Arena } from '../geometry/Arena';
 
 export interface GameState {
   time: number;
+  /** Playable area and its border rule. */
+  arena: Arena;
   deltaTime: number;
   currentMechanic?: string;
   players: Player[];

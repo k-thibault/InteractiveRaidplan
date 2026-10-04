@@ -1,4 +1,4 @@
-import type { EntityReference } from './PositionTarget';
+import type { EntityReference, PositionTarget } from './PositionTarget';
 
 /** Facing targets use compass degrees, matching polar positions. */
 export type FacingTarget =
@@ -9,4 +9,6 @@ export type FacingTarget =
   /** Faces the direction from this entity towards another entity, plus an offset. */
   | { type: 'entity'; entity: EntityReference; offset?: number }
   /** Faces the direction from this entity towards a fixed point, plus an offset. */
-  | { type: 'position'; position: { x: number; y: number } | string; offset?: number };
+  | { type: 'position'; position: { x: number; y: number } | string; offset?: number }
+  /** Compass bearing of a position target, with an optional offset. */
+  | { type: 'bearing'; of: PositionTarget; origin?: { x: number; y: number }; offset?: number };

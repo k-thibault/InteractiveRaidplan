@@ -5,10 +5,12 @@ import type { EncounterEvent } from '../mechanics/Event';
 import type { DistributionDefinition, RandomGroup, SequenceDefinition } from '../simulation/RandomContext';
 import type { MechanicalRoleDefinitions } from '../bots/MechanicalRoleEvaluator';
 import type { PositionDefinition } from '../bots/PositionEvaluator';
+import type { MarkerQuery } from '../bots/MarkerQuery';
 import type { FacingDefinition } from '../bots/FacingEvaluator';
 import type { CastDefinition } from '../mechanics/Cast';
 import type { AreaDefinition, BatchDefinition, EffectDefinition } from '../mechanics/Effect';
 import type { PolarPosition, Vector2 } from '../geometry/Vector2';
+import type { ArenaDefinition } from '../geometry/Arena';
 
 export interface MarkerDefinition {
   /** Stable marker id used by positioning rules. */
@@ -40,6 +42,8 @@ export interface Encounter {
   enemies: Enemy[];
   statuses: StatusDefinition[];
   resources?: EncounterResources;
+  /** Arena shape, size and border behaviour. Omit for the legacy 28x18 walled rectangle. */
+  arena?: ArenaDefinition;
   /** Resource key for the current arena background. */
   background?: string;
   randomGroups?: Record<string, RandomGroup>;
@@ -49,6 +53,8 @@ export interface Encounter {
   positions?: Record<string, PositionDefinition>;
   /** Static arena markers that can also be used as position targets. */
   markers?: MarkerDefinition[];
+  /** Named marker queries for position and facing rules. */
+  markerQueries?: Record<string, MarkerQuery>;
   /** Facing rules, grouped like `positions`. Applies to both players and enemies. */
   facing?: Record<string, FacingDefinition>;
   casts?: Record<string, CastDefinition>;

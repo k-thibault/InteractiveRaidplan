@@ -19,6 +19,7 @@ import { DEFAULT_KNOCK_DURATION, facingKnockScale } from './Knock';
 import type { KnockDirection, KnockParams } from './Knock';
 import type { FollowSettings } from '../bots/FollowManager';
 import type { Player } from '../entities/Player';
+import { isInsideArena } from '../geometry/Arena';
 
 /** Grace period in ms for batches that don't set `window`. */
 const DEFAULT_BATCH_WINDOW = 500;
@@ -177,6 +178,15 @@ export class MechanicExecutor {
         this.state.groups[name] = members.filter((entry) => !ids.has(entry.id));
       }
     }
+  }
+
+  /** Kills every living player standing past a deadly arena border. A `wall` border never kills. */
+  resolveArenaEdge(): void {
+    const arena = this.state.arena;
+    if (arena.edge !== 'deadly') return;
+    const outside = new Set(this.state.players.filter((player) => player.alive && !isInsideArena(arena, player.position)).map((player) => player.id));
+    if (outside.size === 0) return;
+    this.executeEffect({ type: 'damage', target: 'inside', damage: { amount: 0, type: 'physical', fatal: true } }, outside, 'boss', 'the arena edge');
   }
 
   /** Resolves positions, including live `towards` targets. */

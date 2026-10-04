@@ -1,5 +1,5 @@
 import type { Entity } from '../entities/Entity';
-import { clampToArena } from '../geometry/Arena';
+import { constrainToArena } from '../geometry/Arena';
 import { angleDelta } from '../geometry/Facing';
 import { toPolarAngle } from '../geometry/Vector2';
 import type { PositionValue, Vector2 } from '../geometry/Vector2';
@@ -64,7 +64,7 @@ export function advanceKnocks(state: GameState, deltaMs: number): void {
     const step = Math.min(deltaMs, knock.remaining);
     entity.position.x += (knock.direction.x * knock.speed * step) / 1000;
     entity.position.y += (knock.direction.y * knock.speed * step) / 1000;
-    clampToArena(entity.position);
+    constrainToArena(entity.position, state.arena);
     knock.remaining -= step;
     if (knock.remaining <= 0) entity.knock = undefined;
   }
