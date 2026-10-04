@@ -15,6 +15,7 @@ import { PositionEvaluator } from '../bots/PositionEvaluator';
 import { FacingEvaluator } from '../bots/FacingEvaluator';
 import type { StatusInstance } from '../entities/Status';
 import { resolvePositionValue } from '../geometry/Vector2';
+import { resolveArena } from '../geometry/Arena';
 
 export interface SimulationOptions { seed: number; controlledPlayerId?: string; replayOutcomes?: Map<string, Record<string, unknown>>; debug?: boolean; }
 
@@ -53,10 +54,10 @@ export class Simulation {
       ...structuredClone(marker),
       resolvedPosition: resolvePositionValue(marker.position),
     }));
-    this.state = { time: 0, deltaTime: 0, currentMechanic: undefined, players, enemies, effects: [], worldGraphics: [], background: encounter.background, casts: [], running: false, completed: false, log: [], groups: {}, markers };
+    this.state = { time: 0, arena: resolveArena(encounter.arena), deltaTime: 0, currentMechanic: undefined, players, enemies, effects: [], worldGraphics: [], background: encounter.background, casts: [], running: false, completed: false, log: [], groups: {}, markers };
     this.roleEvaluator = new MechanicalRoleEvaluator(encounter.mechanicalRoles, <T>(value: T) => randomContext.resolve(value));
-    this.positionEvaluator = new PositionEvaluator(encounter.positions, <T>(value: T) => randomContext.resolve(value));
-    this.facingEvaluator = new FacingEvaluator(encounter.facing, <T>(value: T) => randomContext.resolve(value));
+    this.positionEvaluator = new PositionEvaluator(encounter.positions, <T>(value: T) => randomContext.resolve(value), encounter.markerQueries);
+    this.facingEvaluator = new FacingEvaluator(encounter.facing, <T>(value: T) => randomContext.resolve(value), (target, state, self) => this.positionEvaluator.resolveTarget(target, state, self));
     const recalculateRoles = (group?: string) => this.logRoleChanges(this.roleEvaluator.recalculate(this.state, group));
     const recalculateFacing = (group?: string) => this.facingEvaluator.recalculate(this.state, group);
     this.executor = new MechanicExecutor(this.state, this.random, encounter.statuses, encounter.casts, randomContext, encounter.areas, recalculateRoles, (group, params) => this.positionEvaluator.recalculate(this.state, group, params), encounter.enemyTemplates, options.replayOutcomes, options.debug, recalculateFacing, encounter.batches);
@@ -134,12 +135,14 @@ export class Simulation {
       }
     }
     this.scheduler.update(this.state.time);
+    if (this.state.shotcall?.expiresAt !== undefined && this.state.shotcall.expiresAt <= this.state.time) this.state.shotcall = undefined;
     this.state.effects = this.state.effects.filter((effect) => effect.resolvedAt === undefined || this.state.time < effect.resolvedAt + effect.duration);
     this.state.worldGraphics = this.state.worldGraphics.filter((graphic) => this.state.time < graphic.createdAt + graphic.duration);
     advanceKnocks(this.state, this.state.deltaTime);
     this.positionEvaluator.update(this.state);
     this.botManager.update(this.state);
     this.followManager.update(this.state);
+    this.executor.resolveArenaEdge();
     if (this.state.time >= this.encounterDuration) { this.state.completed = true; this.state.running = false; }
   }
 }

@@ -4,8 +4,9 @@ import type { StatusDefinition, StatusInstance } from '../entities/Status';
 import type { EncounterResources } from '../encounters/Encounter';
 import type { GraphicAnchor, WorldGraphicInstance } from '../mechanics/Graphic';
 import type { MarkerDefinition } from '../encounters/Encounter';
-import { formatStatusName } from '../util/format';
+import { statusDisplayName } from '../util/format';
 import { DEFAULT_FACING } from '../geometry/Facing';
+import type { Arena } from '../geometry/Arena';
 
 interface StatusHitArea {
   x: number;
@@ -34,6 +35,8 @@ export class ArenaRenderer {
   private statusHitAreas: StatusHitArea[] = [];
   private readonly statusDefinitions = new Map<string, StatusDefinition>();
   private readonly images = new Map<string, HTMLImageElement>();
+  private shotcallVisible = true;
+  private readonly shotcallElement: HTMLDivElement;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -41,9 +44,16 @@ export class ArenaRenderer {
     this.tooltip = document.createElement('div');
     this.tooltip.className = 'status-tooltip';
     document.body.append(this.tooltip);
+    this.shotcallElement = document.createElement('div');
+    this.shotcallElement.className = 'shotcall-display';
+    this.shotcallElement.setAttribute('aria-live', 'polite');
+    this.shotcallElement.hidden = true;
+    canvas.parentElement?.insertBefore(this.shotcallElement, canvas);
     canvas.addEventListener('mousemove', (event) => this.updateTooltip(event));
     canvas.addEventListener('mouseleave', () => this.hideTooltip());
   }
+
+  setShotcallVisible(visible: boolean): void { this.shotcallVisible = visible; }
 
   setStatusDefinitions(statuses: StatusDefinition[]): void {
     this.statusDefinitions.clear();
@@ -102,12 +112,18 @@ export class ArenaRenderer {
     const toCanvas = (x: number, y: number) => ({ x: canvas.width / 2 + x * scale, y: canvas.height / 2 + y * scale });
     this.statusHitAreas = [];
     context.clearRect(0, 0, canvas.width, canvas.height);
+    // Everything beyond the border is void: dark, hatched, and clearly not floor.
+    this.drawVoid(state.arena, scale);
+    // The floor (background, grid, markers, telegraphs) is clipped to the arena shape.
+    context.save();
+    this.traceArena(state.arena, toCanvas, scale);
+    context.clip();
     const background = this.resolvedImage(state.background);
     if (background) context.drawImage(background, 0, 0, canvas.width, canvas.height);
     else { context.fillStyle = '#121821'; context.fillRect(0, 0, canvas.width, canvas.height); }
     context.strokeStyle = '#273443'; context.lineWidth = 1;
-    for (let x = -14; x <= 14; x += 1) { const point = toCanvas(x, -9); context.beginPath(); context.moveTo(point.x, 0); context.lineTo(point.x, canvas.height); context.stroke(); }
-    for (let y = -9; y <= 9; y += 1) { const point = toCanvas(-14, y); context.beginPath(); context.moveTo(0, point.y); context.lineTo(canvas.width, point.y); context.stroke(); }
+    for (let x = -15; x <= 15; x += 1) { const point = toCanvas(x, -10); context.beginPath(); context.moveTo(point.x, 0); context.lineTo(point.x, canvas.height); context.stroke(); }
+    for (let y = -10; y <= 10; y += 1) { const point = toCanvas(-15, y); context.beginPath(); context.moveTo(0, point.y); context.lineTo(canvas.width, point.y); context.stroke(); }
     // Encounter markers sit above the arena background/grid but below telegraphs and units.
     for (const marker of state.markers) this.drawMarker(marker, scale, toCanvas);
     for (const effect of state.effects) {
@@ -122,20 +138,67 @@ export class ArenaRenderer {
         context.moveTo(point.x + effect.innerRadius * scale, point.y);
         context.arc(point.x, point.y, effect.innerRadius * scale, 0, Math.PI * 2, true);
       } else if (effect.shape === 'half_room') {
-        const left = toCanvas(-14, 0).x;
-        const right = toCanvas(14, 0).x;
-        const top = toCanvas(0, -9).y;
-        const bottom = toCanvas(0, 9).y;
+        const left = toCanvas(-state.arena.halfWidth, 0).x;
+        const right = toCanvas(state.arena.halfWidth, 0).x;
+        const top = toCanvas(0, -state.arena.halfHeight).y;
+        const bottom = toCanvas(0, state.arena.halfHeight).y;
         const split = point.y;
         if (effect.side === 'north') context.rect(left, top, right - left, split - top);
         else context.rect(left, split, right - left, bottom - split);
       } else { context.moveTo(point.x, point.y); context.arc(point.x, point.y, effect.radius * scale, effect.rotation - effect.angle * Math.PI / 360, effect.rotation + effect.angle * Math.PI / 360); context.closePath(); }
       context.fill();
     }
+    context.restore();
+    this.drawBorder(state.arena, toCanvas, scale);
     for (const enemy of state.enemies) this.drawUnit(enemy, '#ff7757', scale, toCanvas, true);
     for (const player of state.players) this.drawUnit(player, !player.alive ? DEAD_COLOR : player.controlled ? CONTROLLED_PLAYER_COLOR : PLAYER_COLOR, scale, toCanvas, false);
     for (const graphic of state.worldGraphics) this.drawWorldGraphic(graphic, state, scale, toCanvas);
     this.drawControlledStatuses(state, scale);
+    this.updateShotcall(state);
+  }
+
+  private updateShotcall(state: GameState): void {
+    const visible = this.shotcallVisible && state.shotcall !== undefined;
+    this.shotcallElement.hidden = !visible;
+    this.shotcallElement.textContent = visible ? state.shotcall!.text : '';
+  }
+
+  /** Traces the arena outline as the current path, in canvas pixels. */
+  private traceArena(arena: Arena, toCanvas: (x: number, y: number) => { x: number; y: number }, scale: number): void {
+    const centre = toCanvas(0, 0);
+    this.context.beginPath();
+    if (arena.shape === 'circle') this.context.arc(centre.x, centre.y, arena.radius * scale, 0, Math.PI * 2);
+    else this.context.rect(centre.x - arena.halfWidth * scale, centre.y - arena.halfHeight * scale, arena.halfWidth * 2 * scale, arena.halfHeight * 2 * scale);
+  }
+
+  /** Fills the whole canvas with the dark hatched void that the arena floor is later drawn over. */
+  private drawVoid(arena: Arena, scale: number): void {
+    const { context, canvas } = this;
+    const deadly = arena.edge === 'deadly';
+    context.fillStyle = deadly ? '#0b0709' : '#07090d';
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.save();
+    context.strokeStyle = deadly ? 'rgba(217, 87, 87, 0.16)' : 'rgba(120, 140, 160, 0.12)';
+    context.lineWidth = 1;
+    const spacing = Math.max(10, scale * 0.45);
+    context.beginPath();
+    for (let offset = -canvas.height; offset < canvas.width; offset += spacing) { context.moveTo(offset, canvas.height); context.lineTo(offset + canvas.height, 0); }
+    context.stroke();
+    context.restore();
+  }
+
+  /** Strokes the arena border: red and glowing when it kills, muted when it is only a wall. */
+  private drawBorder(arena: Arena, toCanvas: (x: number, y: number) => { x: number; y: number }, scale: number): void {
+    const { context } = this;
+    const deadly = arena.edge === 'deadly';
+    context.save();
+    this.traceArena(arena, toCanvas, scale);
+    context.lineJoin = 'round';
+    if (deadly) { context.shadowColor = 'rgba(255, 70, 70, 0.85)'; context.shadowBlur = Math.max(8, scale * 0.35); }
+    context.strokeStyle = deadly ? '#ff5252' : '#7d93a8';
+    context.lineWidth = Math.max(2, scale * (deadly ? 0.1 : 0.07));
+    context.stroke();
+    context.restore();
   }
 
   private resolveAnchorPosition(anchor: GraphicAnchor, state: GameState): { x: number; y: number } | undefined {
@@ -351,7 +414,7 @@ export class ArenaRenderer {
     const y = (event.clientY - bounds.top) * scaleY;
     const hit = this.statusHitAreas.find((area) => Math.hypot(area.x - x, area.y - y) <= 14);
     if (!hit) { this.hideTooltip(); return; }
-    this.tooltip.textContent = formatStatusName(hit.status.definitionId);
+    this.tooltip.textContent = statusDisplayName(hit.status.definitionId, this.statusDefinitions);
     this.tooltip.style.left = `${event.clientX + 12}px`;
     this.tooltip.style.top = `${event.clientY - 34}px`;
     this.tooltip.classList.add('visible');

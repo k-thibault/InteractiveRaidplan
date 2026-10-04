@@ -1,8 +1,10 @@
 {
   "bg-default": "/resources/graphics/bg-default.svg",
   "bg-overloaded": "/resources/graphics/bg-overloaded.svg",
+  "bg-dmup3": "/resources/graphics/bg-dmup3.svg",
   "icon-fire-vulnerability": "/resources/graphics/icon-fire-vulnerability.svg",
   "icon-frost-vulnerability": "/resources/graphics/icon-frost-vulnerability.svg",
+  "icon-wind-vulnerability": "/resources/graphics/icon-wind-vulnerability.svg",
   "signal-incoming-strike": "/resources/graphics/signal-incoming-strike.svg",
   "icon-magic-vulnerability": "/resources/graphics/icon-magic-vulnerability.svg",
   "icon-physical-vulnerability": "/resources/graphics/icon-physical-vulnerability.svg",
@@ -12,5 +14,11 @@
   "icon-forsaken-stack": "/resources/graphics/icon-forsaken-stack.svg",
   "icon-forsaken-spread": "/resources/graphics/icon-forsaken-spread.svg",
   "icon-spells-trouble": "/resources/graphics/icon-spells-trouble.svg",
-  "icon-forsaken-cone": "/resources/graphics/icon-forsaken-cone.svg"
+  "icon-forsaken-cone": "/resources/graphics/icon-forsaken-cone.svg",
+  "icon-beta": "/resources/graphics/icon-beta.svg",
+  "icon-alpha": "/resources/graphics/icon-alpha.svg",
+  "icon-entropy": "/resources/graphics/icon-entropy.svg",
+  "icon-dynamic-fluid": "/resources/graphics/icon-dynamic-fluid.svg",
+  "icon-headwind": "/resources/graphics/icon-headwind.svg",
+  "icon-tailwind": "/resources/graphics/icon-tailwind.svg"
 }

@@ -2,6 +2,7 @@
   "version": 5,
   "name": "Forsaken",
   "duration": 120000,
+  "arena": { "shape": "circle", "radius": 10, "edge": "deadly" },
   "background": "bg-default",
   "randomGroups": {
     "triggerAssignments": {
@@ -587,7 +588,7 @@
   "players": [
     {
       "id": "mt",
-      "name": "MT",
+      "name": "Omni",
       "type": "player",
       "role": "tank",
       "team": "red",
@@ -604,7 +605,7 @@
     },
     {
       "id": "ot",
-      "name": "OT",
+      "name": "Corn",
       "type": "player",
       "role": "tank",
       "team": "purple",
@@ -621,7 +622,7 @@
     },
     {
       "id": "h1",
-      "name": "H1",
+      "name": "Helmut",
       "type": "player",
       "role": "healer",
       "team": "purple",
@@ -638,7 +639,7 @@
     },
     {
       "id": "h2",
-      "name": "H2",
+      "name": "Xqk",
       "type": "player",
       "role": "healer",
       "team": "red",
@@ -655,7 +656,7 @@
     },
     {
       "id": "m1",
-      "name": "M1",
+      "name": "Mike",
       "type": "player",
       "role": "damage",
       "team": "blue",
@@ -673,7 +674,7 @@
     },
     {
       "id": "m2",
-      "name": "M2",
+      "name": "Aaragon",
       "type": "player",
       "role": "damage",
       "team": "yellow",
@@ -691,7 +692,7 @@
     },
     {
       "id": "r1",
-      "name": "R1",
+      "name": "Lynfel",
       "type": "player",
       "role": "damage",
       "team": "blue",
@@ -709,7 +710,7 @@
     },
     {
       "id": "r2",
-      "name": "R2",
+      "name": "L'leilah",
       "type": "player",
       "role": "damage",
       "team": "yellow",
@@ -729,7 +730,7 @@
   "enemies": [
     {
       "id": "boss",
-      "name": "Boss",
+      "name": "Kefka",
       "type": "enemy",
       "alive": true,
       "position": {

@@ -10,7 +10,7 @@ import type { Enemy, EnemyTemplate } from '../entities/Enemy';
 import type { RandomContext } from '../simulation/RandomContext';
 import type { ApplyStatusAssignment, DistributeStatusesEffect } from './Effect';
 import type { GraphicAnchor } from './Graphic';
-import { formatStatusName } from '../util/format';
+import { statusDisplayName } from '../util/format';
 import type { CastDefinition, CastFacing } from './Cast';
 import { resolvePositionValue, isTowardsPosition, fromPolar, normalize, subtract, toPolarAngle } from '../geometry/Vector2';
 import type { PositionValue, Vector2 } from '../geometry/Vector2';
@@ -19,6 +19,7 @@ import { DEFAULT_KNOCK_DURATION, facingKnockScale } from './Knock';
 import type { KnockDirection, KnockParams } from './Knock';
 import type { FollowSettings } from '../bots/FollowManager';
 import type { Player } from '../entities/Player';
+import { isInsideArena } from '../geometry/Arena';
 
 /** Grace period in ms for batches that don't set `window`. */
 const DEFAULT_BATCH_WINDOW = 500;
@@ -94,7 +95,9 @@ export class MechanicExecutor {
   }
 
   execute(event: EncounterEvent): void {
-    if (event.type === 'set_mechanic') this.state.currentMechanic = event.mechanic;
+    if (event.type === 'set_shotcall') this.setShotcall(event.text, event.duration);
+    else if (event.type === 'clear_shotcall') this.state.shotcall = undefined;
+    else if (event.type === 'set_mechanic') this.state.currentMechanic = event.mechanic;
     else if (event.type === 'apply_status') for (const player of selectPlayers(event.target, this.state, this.random)) this.applyStatus(player, event.status, event.duration, event.stacks ?? 1);
     else if (event.type === 'distribute_statuses') this.distributeStatuses(event, selectPlayers(event.target, this.state, this.random), event.replayId);
     else if (event.type === 'damage') this.applyDamage(selectPlayers(event.target, this.state, this.random), event.damage);
@@ -118,6 +121,10 @@ export class MechanicExecutor {
     else if (event.type === 'knock') this.applyKnock(selectPlayers(event.target, this.state, this.random), event, event.source ?? 'boss');
     else if (event.type === 'start_follow') this.startFollow(event.source ?? 'boss', event);
     else if (event.type === 'stop_follow') this.stopFollow(event.source ?? 'boss');
+  }
+
+  private setShotcall(text: string, duration?: number): void {
+    this.state.shotcall = { text, createdAt: this.state.time, expiresAt: duration === undefined ? undefined : this.state.time + Math.max(0, duration) };
   }
 
   update(): void {
@@ -177,6 +184,15 @@ export class MechanicExecutor {
         this.state.groups[name] = members.filter((entry) => !ids.has(entry.id));
       }
     }
+  }
+
+  /** Kills every living player standing past a deadly arena border. A `wall` border never kills. */
+  resolveArenaEdge(): void {
+    const arena = this.state.arena;
+    if (arena.edge !== 'deadly') return;
+    const outside = new Set(this.state.players.filter((player) => player.alive && !isInsideArena(arena, player.position)).map((player) => player.id));
+    if (outside.size === 0) return;
+    this.executeEffect({ type: 'damage', target: 'inside', damage: { amount: 0, type: 'physical', fatal: true } }, outside, 'boss', 'the arena edge');
   }
 
   /** Resolves positions, including live `towards` targets. */
@@ -548,8 +564,8 @@ export class MechanicExecutor {
     }
     player.statuses.push({ definitionId: statusId, appliedAt: this.state.time, expiresAt: newExpiresAt, stacks });
     this.refreshControl(player);
-    if (player.controlled && !definition?.hidden) this.logEvent(`You were affected by ${formatStatusName(statusId)}.`);
-    else if (this.debug) this.logEvent(`${player.name} gained ${formatStatusName(statusId)}${definition?.hidden ? ' (hidden)' : ''}.`, 'debug');
+    if (player.controlled && !definition?.hidden) this.logEvent(`You were affected by ${statusDisplayName(statusId, this.statusDefinitions)}.`);
+    else if (this.debug) this.logEvent(`${player.name} gained ${statusDisplayName(statusId, this.statusDefinitions)}${definition?.hidden ? ' (hidden)' : ''}.`, 'debug');
     for (const effect of definition?.onApply ?? []) this.executeEffect(effect, new Set(), player.id);
   }
 
@@ -597,8 +613,8 @@ export class MechanicExecutor {
       const holder = player.alive || !definition?.reassignIfDead ? player : (selectPlayers({ type: 'random', count: 1 }, this.state, this.random)[0] ?? player);
       for (const effect of definition?.onRemove ?? []) this.executeEffect(effect, new Set(), holder.id);
     }
-    if (player.controlled && !definition?.hidden) this.logEvent(`Your ${formatStatusName(statusId)} status ended.`);
-    else if (this.debug) this.logEvent(`${player.name}'s ${formatStatusName(statusId)}${definition?.hidden ? ' (hidden)' : ''} status ended.`, 'debug');
+    if (player.controlled && !definition?.hidden) this.logEvent(`Your ${statusDisplayName(statusId, this.statusDefinitions)} status ended.`);
+    else if (this.debug) this.logEvent(`${player.name}'s ${statusDisplayName(statusId, this.statusDefinitions)}${definition?.hidden ? ' (hidden)' : ''} status ended.`, 'debug');
   }
 
   /** Recomputes root/stun from the statuses currently on the player. */

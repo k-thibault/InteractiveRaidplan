@@ -1,4 +1,5 @@
 import { canMove, canTurn } from '../entities/Control';
+import { clampToArena } from '../geometry/Arena';
 import { distance, normalize, subtract, toPolarAngle } from '../geometry/Vector2';
 import type { CastDefinition } from '../mechanics/Cast';
 import { resolveEntityReference } from '../mechanics/Selector';
@@ -37,6 +38,8 @@ export class FollowManager {
         const direction = normalize(subtract(target.position, enemy.position));
         enemy.position.x += direction.x * step;
         enemy.position.y += direction.y * step;
+        // Bosses never leave the arena, even one with a deadly border.
+        clampToArena(enemy.position, state.arena);
       }
       // An explicit facing rule takes priority over following.
       const overlapping = target.position.x === enemy.position.x && target.position.y === enemy.position.y;

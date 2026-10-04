@@ -26,6 +26,8 @@ export interface PolarPosition {
   angle: number | string;
   radius: number | string;
   origin?: Vector2;
+  /** Degrees added to `angle`, e.g. to place something 90 degrees round from another anchor. */
+  angleOffset?: number | string;
 }
 
 /** A point offset toward a live entity's current position. */
@@ -70,7 +72,7 @@ export function circularMeanAngle(anglesDegrees: number[]): number {
 
 export function resolvePositionValue(value: Vector2 | PolarPosition): Vector2 {
   if (!isPolarPosition(value)) return value;
-  const angle = Number(value.angle);
+  const angle = Number(value.angle) + Number(value.angleOffset ?? 0);
   const radius = Number(value.radius);
   return fromPolar(angle, radius, value.origin);
 }

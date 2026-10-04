@@ -20,6 +20,17 @@ export interface SequenceDefinition {
   step: number | RandomExpression;
 }
 
+/** Single-key objects such as `{ "$neg": "$fireRotation" }` evaluate to a number once every operand is numeric. */
+const EXPRESSIONS: Record<string, (operands: number[]) => number> = {
+  $add: (operands) => operands.reduce((sum, operand) => sum + operand, 0),
+  $sub: ([first, ...rest]) => rest.reduce((total, operand) => total - operand, first),
+  $mul: (operands) => operands.reduce((product, operand) => product * operand, 1),
+  $neg: ([operand]) => -operand,
+};
+/** Names that are filled in later (per member / per batch / per cast) and must survive `resolve`. */
+const DEFERRED_REFERENCES = ['assignedValue', 'groupMember', 'batchCount', 'castTarget'];
+const REFERENCE_PATH = /(?:\.([\w-]+)|\[(\d+)\])/g;
+
 interface SequenceState { definition: SequenceDefinition; currentIndex: number; step: number; }
 
 export class RandomContext {
@@ -48,23 +59,51 @@ export class RandomContext {
     for (const [name, definition] of Object.entries(distributions)) this.distributions.set(name, definition);
   }
 
+  /**
+   * Expands random-group references. `"$group.field"` replaces the whole string with the (typed) value;
+   * `"${group.field}"` does the same, and inside a longer string is spliced in as text, e.g.
+   * `"${debuffTiming.shortElement}-crystal"`. Single-key `$add`/`$sub`/`$mul`/`$neg` objects are evaluated.
+   * Unknown names resolve to `undefined` (or stay as written inside a longer string).
+   */
   resolve<T>(value: T): T {
     if (typeof value === 'string') {
-      const match = /^\$([\w-]+)((?:\.[\w-]+|\[\d+\])*)$/.exec(value);
-      if (!match) return value;
-      if (value.startsWith('$assignedValue') || value.startsWith('$groupMember') || value.startsWith('$batchCount') || value === '$castTarget') return value;
-      if (!match[2] && this.sequences.has(match[1])) return this.nextSequenceValue(match[1]) as T;
-      let resolved: unknown = this.values.get(match[1]);
-      const path = match[2].match(/(?:\.([\w-]+)|\[(\d+)\])/g) ?? [];
-      for (const segment of path) {
-        const key = segment.startsWith('.') ? segment.slice(1) : Number(segment.slice(1, -1));
-        resolved = resolved == null ? undefined : (resolved as Record<string | number, unknown>)[key];
+      const whole = /^\$([\w-]+)((?:\.[\w-]+|\[\d+\])*)$/.exec(value) ?? /^\$\{([\w-]+)((?:\.[\w-]+|\[\d+\])*)\}$/.exec(value);
+      if (whole) {
+        if (DEFERRED_REFERENCES.some((name) => whole[1] === name)) return value;
+        return this.lookup(whole[1], whole[2]) as T;
       }
-      return resolved as T;
+      if (!value.includes('${')) return value;
+      return value.replace(/\$\{([\w-]+)((?:\.[\w-]+|\[\d+\])*)\}/g, (text, name: string, path: string) => {
+        if (DEFERRED_REFERENCES.includes(name)) return text;
+        const resolved = this.lookup(name, path);
+        return typeof resolved === 'string' || typeof resolved === 'number' ? String(resolved) : text;
+      }) as T;
     }
     if (Array.isArray(value)) return value.map((item) => this.resolve(item)) as T;
-    if (value !== null && typeof value === 'object') return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, key === 'distribution' ? item : this.resolve(item)])) as T;
+    if (value !== null && typeof value === 'object') {
+      const entries = Object.entries(value);
+      const expression = entries.length === 1 ? EXPRESSIONS[entries[0][0]] : undefined;
+      if (expression) {
+        const raw = entries[0][1];
+        const operands = (Array.isArray(raw) ? raw : [raw]).map((operand) => this.resolve(operand));
+        // Operands that are not numbers yet (deferred references) leave the expression for a later pass.
+        if (operands.every((operand) => typeof operand === 'number' && Number.isFinite(operand))) return expression(operands as number[]) as T;
+        return { [entries[0][0]]: Array.isArray(raw) ? operands : operands[0] } as T;
+      }
+      return Object.fromEntries(entries.map(([key, item]) => [key, key === 'distribution' ? item : this.resolve(item)])) as T;
+    }
     return value;
+  }
+
+  /** Looks up a group/sequence value by name and `.field` / `[index]` path; unknown names give `undefined`. */
+  private lookup(name: string, path: string): unknown {
+    if (!path && this.sequences.has(name)) return this.nextSequenceValue(name);
+    let resolved: unknown = this.values.get(name);
+    for (const segment of path.match(REFERENCE_PATH) ?? []) {
+      const key = segment.startsWith('.') ? segment.slice(1) : Number(segment.slice(1, -1));
+      resolved = resolved == null ? undefined : (resolved as Record<string | number, unknown>)[key];
+    }
+    return resolved;
   }
 
   rollDistribution(reference: string): unknown[] {

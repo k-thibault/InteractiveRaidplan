@@ -1,27 +1,74 @@
 {
   "version": 3,
-  "name": "Crystal Division (scaffold)",
-  "duration": 62000,
+  "name": "Bowels of Agony",
+  "duration": 72000,
+  "arena": {
+    "shape": "circle",
+    "radius": 10,
+    "edge": "deadly"
+  },
+  "background": "bg-dmup3",
+  "resources": {
+    "graphics": [
+      "bg-dmup3",
+      "icon-magic-vulnerability",
+      "icon-wind-vulnerability",
+      "icon-beta",
+      "icon-alpha",
+      "icon-entropy",
+      "icon-dynamic-fluid",
+      "icon-headwind",
+      "icon-tailwind",
+      "icon-damage-down"
+    ]
+  },
   "randomGroups": {
-    "layout": {
+    "windDiagonal": {
       "mode": "choice",
       "values": [
-        { "windAngle": 45, "waterAngle": 135, "fireAngle": 315, "shortElement": "fire", "longElement": "water", "fireDuration": 18000, "waterDuration": 45000, "shortCrystal": "fire-crystal", "longCrystal": "water-crystal", "shortAngle": 315, "shortNumber": "4", "letterAngle": 270, "shortLetter": "D", "longDistance": 1.5, "longAngle": 135, "bossAngle": 145 },
-        { "windAngle": 45, "waterAngle": 135, "fireAngle": 315, "shortElement": "water", "longElement": "fire", "fireDuration": 45000, "waterDuration": 18000, "shortCrystal": "water-crystal", "longCrystal": "fire-crystal", "shortAngle": 135, "shortNumber": "2", "letterAngle": 180, "shortLetter": "C", "longDistance": 4, "longAngle": 315, "bossAngle": 305 },
-        { "windAngle": 45, "waterAngle": 315, "fireAngle": 135, "shortElement": "fire", "longElement": "water", "fireDuration": 18000, "waterDuration": 45000, "shortCrystal": "fire-crystal", "longCrystal": "water-crystal", "shortAngle": 135, "shortNumber": "2", "letterAngle": 180, "shortLetter": "C", "longDistance": 1.5, "longAngle": 315, "bossAngle": 305 },
-        { "windAngle": 45, "waterAngle": 315, "fireAngle": 135, "shortElement": "water", "longElement": "fire", "fireDuration": 45000, "waterDuration": 18000, "shortCrystal": "water-crystal", "longCrystal": "fire-crystal", "shortAngle": 315, "shortNumber": "4", "letterAngle": 270, "shortLetter": "D", "longDistance": 4, "longAngle": 135, "bossAngle": 145 },
-        { "windAngle": 135, "waterAngle": 225, "fireAngle": 45, "shortElement": "fire", "longElement": "water", "fireDuration": 18000, "waterDuration": 45000, "shortCrystal": "fire-crystal", "longCrystal": "water-crystal", "shortAngle": 45, "shortNumber": "1", "letterAngle": 0, "shortLetter": "A", "longDistance": 1.5, "longAngle": 225, "bossAngle": 235 },
-        { "windAngle": 135, "waterAngle": 225, "fireAngle": 45, "shortElement": "water", "longElement": "fire", "fireDuration": 45000, "waterDuration": 18000, "shortCrystal": "water-crystal", "longCrystal": "fire-crystal", "shortAngle": 225, "shortNumber": "3", "letterAngle": 270, "shortLetter": "D", "longDistance": 4, "longAngle": 45, "bossAngle": 35 },
-        { "windAngle": 135, "waterAngle": 45, "fireAngle": 225, "shortElement": "fire", "longElement": "water", "fireDuration": 18000, "waterDuration": 45000, "shortCrystal": "fire-crystal", "longCrystal": "water-crystal", "shortAngle": 225, "shortNumber": "3", "letterAngle": 270, "shortLetter": "D", "longDistance": 1.5, "longAngle": 45, "bossAngle": 35 },
-        { "windAngle": 135, "waterAngle": 45, "fireAngle": 225, "shortElement": "water", "longElement": "fire", "fireDuration": 45000, "waterDuration": 18000, "shortCrystal": "water-crystal", "longCrystal": "fire-crystal", "shortAngle": 45, "shortNumber": "1", "letterAngle": 0, "shortLetter": "A", "longDistance": 4, "longAngle": 225, "bossAngle": 235 },
-        { "windAngle": 225, "waterAngle": 315, "fireAngle": 135, "shortElement": "fire", "longElement": "water", "fireDuration": 18000, "waterDuration": 45000, "shortCrystal": "fire-crystal", "longCrystal": "water-crystal", "shortAngle": 135, "shortNumber": "2", "letterAngle": 90, "shortLetter": "B", "longDistance": 1.5, "longAngle": 315, "bossAngle": 325 },
-        { "windAngle": 225, "waterAngle": 315, "fireAngle": 135, "shortElement": "water", "longElement": "fire", "fireDuration": 45000, "waterDuration": 18000, "shortCrystal": "water-crystal", "longCrystal": "fire-crystal", "shortAngle": 315, "shortNumber": "4", "letterAngle": 0, "shortLetter": "A", "longDistance": 4, "longAngle": 135, "bossAngle": 125 },
-        { "windAngle": 225, "waterAngle": 135, "fireAngle": 315, "shortElement": "fire", "longElement": "water", "fireDuration": 18000, "waterDuration": 45000, "shortCrystal": "fire-crystal", "longCrystal": "water-crystal", "shortAngle": 315, "shortNumber": "4", "letterAngle": 0, "shortLetter": "A", "longDistance": 1.5, "longAngle": 135, "bossAngle": 125 },
-        { "windAngle": 225, "waterAngle": 135, "fireAngle": 315, "shortElement": "water", "longElement": "fire", "fireDuration": 45000, "waterDuration": 18000, "shortCrystal": "water-crystal", "longCrystal": "fire-crystal", "shortAngle": 135, "shortNumber": "2", "letterAngle": 90, "shortLetter": "B", "longDistance": 4, "longAngle": 315, "bossAngle": 325 },
-        { "windAngle": 315, "waterAngle": 45, "fireAngle": 225, "shortElement": "fire", "longElement": "water", "fireDuration": 18000, "waterDuration": 45000, "shortCrystal": "fire-crystal", "longCrystal": "water-crystal", "shortAngle": 225, "shortNumber": "3", "letterAngle": 180, "shortLetter": "C", "longDistance": 1.5, "longAngle": 45, "bossAngle": 55 },
-        { "windAngle": 315, "waterAngle": 45, "fireAngle": 225, "shortElement": "water", "longElement": "fire", "fireDuration": 45000, "waterDuration": 18000, "shortCrystal": "water-crystal", "longCrystal": "fire-crystal", "shortAngle": 45, "shortNumber": "1", "letterAngle": 90, "shortLetter": "B", "longDistance": 4, "longAngle": 225, "bossAngle": 215 },
-        { "windAngle": 315, "waterAngle": 225, "fireAngle": 45, "shortElement": "fire", "longElement": "water", "fireDuration": 18000, "waterDuration": 45000, "shortCrystal": "fire-crystal", "longCrystal": "water-crystal", "shortAngle": 45, "shortNumber": "1", "letterAngle": 90, "shortLetter": "B", "longDistance": 1.5, "longAngle": 225, "bossAngle": 215 },
-        { "windAngle": 315, "waterAngle": 225, "fireAngle": 45, "shortElement": "water", "longElement": "fire", "fireDuration": 45000, "waterDuration": 18000, "shortCrystal": "water-crystal", "longCrystal": "fire-crystal", "shortAngle": 225, "shortNumber": "3", "letterAngle": 180, "shortLetter": "C", "longDistance": 4, "longAngle": 45, "bossAngle": 55 }
+        45,
+        135,
+        225,
+        315
+      ]
+    },
+    "fireRotation": {
+      "mode": "choice",
+      "values": [
+        90,
+        -90
+      ]
+    },
+    "debuffTiming": {
+      "mode": "choice",
+      "values": [
+        {
+          "shortElement": "fire",
+          "longElement": "water",
+          "fireDuration": 18000,
+          "waterDuration": 45000
+        },
+        {
+          "shortElement": "water",
+          "longElement": "fire",
+          "fireDuration": 45000,
+          "waterDuration": 18000
+        }
+      ]
+    },
+    "chaosCast": {
+      "mode": "choice",
+      "values": [
+        {
+          "cast": "chaos-frontback",
+          "first": "chaos-shift-bd",
+          "second": "chaos-shift-ac"
+        },
+        {
+          "cast": "chaos-sides",
+          "first": "chaos-shift-ac",
+          "second": "chaos-shift-bd"
+        }
       ]
     },
     "spacing": {
@@ -29,25 +76,156 @@
       "values": [
         {
           "windSpread": 2,
-          "windFlex": 1.5
+          "windFlex": 1.5,
+          "chaosStep": 1.5,
+          "edgeInset": 0.3,
+          "longWaterDistance": 2.1,
+          "longFireDistance": 4.3
         }
       ]
     }
   },
   "markers": [
-    { "id": "A", "position": { "x": 0, "y": -7 }, "character": "A", "border": { "shape": "circle", "radius": 0.6 }, "color": "#ff0000" },
-    { "id": "1", "position": { "x": 7, "y": -7 }, "character": "1", "border": { "shape": "square", "radius": 0.6 }, "color": "#ff0000" },
-    { "id": "B", "position": { "x": 7, "y": 0 }, "character": "B", "border": { "shape": "circle", "radius": 0.6 }, "color": "#ffff00" },
-    { "id": "2", "position": { "x": 7, "y": 7 }, "character": "2", "border": { "shape": "square", "radius": 0.6 }, "color": "#ffff00" },
-    { "id": "C", "position": { "x": 0, "y": 7 }, "character": "C", "border": { "shape": "circle", "radius": 0.6 }, "color": "#4444ff" },
-    { "id": "3", "position": { "x": -7, "y": 7 }, "character": "3", "border": { "shape": "square", "radius": 0.6 }, "color": "#4444ff" },
-    { "id": "D", "position": { "x": -7, "y": 0 }, "character": "D", "border": { "shape": "circle", "radius": 0.6 }, "color": "#ff00ff" },
-    { "id": "4", "position": { "x": -7, "y": -7 }, "character": "4", "border": { "shape": "square", "radius": 0.6 }, "color": "#ff00ff" }
+    {
+      "id": "A",
+      "position": {
+        "x": 0,
+        "y": -6.5
+      },
+      "character": "A",
+      "border": {
+        "shape": "circle",
+        "radius": 0.6
+      },
+      "color": "#f13b66"
+    },
+    {
+      "id": "1",
+      "position": {
+        "x": 6.5,
+        "y": -6.5
+      },
+      "character": "1",
+      "border": {
+        "shape": "square",
+        "radius": 0.6
+      },
+      "color": "#f13b66"
+    },
+    {
+      "id": "B",
+      "position": {
+        "x": 6.5,
+        "y": 0
+      },
+      "character": "B",
+      "border": {
+        "shape": "circle",
+        "radius": 0.6
+      },
+      "color": "#e1dc5d"
+    },
+    {
+      "id": "2",
+      "position": {
+        "x": 6.5,
+        "y": 6.5
+      },
+      "character": "2",
+      "border": {
+        "shape": "square",
+        "radius": 0.6
+      },
+      "color": "#e1dc5d"
+    },
+    {
+      "id": "C",
+      "position": {
+        "x": 0,
+        "y": 6.5
+      },
+      "character": "C",
+      "border": {
+        "shape": "circle",
+        "radius": 0.6
+      },
+      "color": "#65b3ea"
+    },
+    {
+      "id": "3",
+      "position": {
+        "x": -6.5,
+        "y": 6.5
+      },
+      "character": "3",
+      "border": {
+        "shape": "square",
+        "radius": 0.6
+      },
+      "color": "#65b3ea"
+    },
+    {
+      "id": "D",
+      "position": {
+        "x": -6.5,
+        "y": 0
+      },
+      "character": "D",
+      "border": {
+        "shape": "circle",
+        "radius": 0.6
+      },
+      "color": "#e291e6"
+    },
+    {
+      "id": "4",
+      "position": {
+        "x": -6.5,
+        "y": -6.5
+      },
+      "character": "4",
+      "border": {
+        "shape": "square",
+        "radius": 0.6
+      },
+      "color": "#e291e6"
+    }
   ],
+  "markerQueries": {
+    "shortNumber": {
+      "from": {
+        "type": "entity",
+        "player": {
+          "type": "id",
+          "id": "${debuffTiming.shortElement}-crystal"
+        }
+      }
+    },
+    "shortLetter": {
+      "from": {
+        "type": "entity",
+        "player": {
+          "type": "id",
+          "id": "${debuffTiming.shortElement}-crystal"
+        }
+      },
+      "ranks": [
+        1,
+        2
+      ],
+      "farthestFrom": {
+        "type": "entity",
+        "player": {
+          "type": "id",
+          "id": "wind-crystal"
+        }
+      }
+    }
+  },
   "areas": {
     "fire-circle": {
       "shape": "circle",
-      "radius": 3,
+      "radius": 2.5,
       "label": "fire-circle",
       "telegraphDuration": 0,
       "duration": 500,
@@ -66,6 +244,12 @@
                 "amount": 60,
                 "type": "fire"
               }
+            },
+            {
+              "type": "apply_status",
+              "status": "magic-vulnerability",
+              "target": "inside",
+              "duration": 4000
             }
           ]
         }
@@ -74,7 +258,7 @@
     },
     "fire-donut": {
       "shape": "donut",
-      "radius": 6.5,
+      "radius": 5.5,
       "label": "fire-donut",
       "telegraphDuration": 0,
       "duration": 500,
@@ -95,9 +279,15 @@
               }
             },
             {
+              "type": "apply_status",
+              "status": "magic-vulnerability",
+              "target": "inside",
+              "duration": 4000
+            },
+            {
               "type": "knock",
               "target": "inside_others",
-              "distance": 14,
+              "distance": 9,
               "direction": {
                 "type": "radial"
               },
@@ -122,11 +312,11 @@
         }
       ],
       "element": "fire",
-      "innerRadius": 3
+      "innerRadius": 2.5
     },
     "water-donut": {
       "shape": "donut",
-      "radius": 6.5,
+      "radius": 5.5,
       "label": "water-donut",
       "telegraphDuration": 0,
       "duration": 500,
@@ -143,18 +333,24 @@
               "target": "inside",
               "damage": {
                 "amount": 60,
-                "type": "ice"
+                "type": "water"
               }
+            },
+            {
+              "type": "apply_status",
+              "status": "magic-vulnerability",
+              "target": "inside",
+              "duration": 4000
             }
           ]
         }
       ],
-      "element": "ice",
-      "innerRadius": 3
+      "element": "water",
+      "innerRadius": 2.5
     },
     "water-circle": {
       "shape": "circle",
-      "radius": 3,
+      "radius": 2.5,
       "label": "water-circle",
       "telegraphDuration": 0,
       "duration": 500,
@@ -171,13 +367,19 @@
               "target": "inside",
               "damage": {
                 "amount": 60,
-                "type": "ice"
+                "type": "water"
               }
+            },
+            {
+              "type": "apply_status",
+              "status": "magic-vulnerability",
+              "target": "inside",
+              "duration": 4000
             },
             {
               "type": "knock",
               "target": "inside_others",
-              "distance": 14,
+              "distance": 9,
               "direction": {
                 "type": "radial"
               },
@@ -201,7 +403,7 @@
           ]
         }
       ],
-      "element": "ice"
+      "element": "water"
     },
     "wind-stack": {
       "shape": "circle",
@@ -223,8 +425,14 @@
               "target": "inside",
               "damage": {
                 "amount": 60,
-                "type": "magical"
+                "type": "wind"
               }
+            },
+            {
+              "type": "apply_status",
+              "status": "wind-vulnerability",
+              "target": "inside",
+              "duration": 1000
             }
           ]
         },
@@ -239,9 +447,68 @@
               "target": "inside",
               "damage": {
                 "amount": 999,
-                "type": "magical",
+                "type": "wind",
                 "fatal": true
               }
+            }
+          ]
+        }
+      ],
+      "element": "wind"
+    },
+    "thunder-bait": {
+      "shape": "circle",
+      "radius": 3,
+      "label": "thunder-bait",
+      "telegraphDuration": 0,
+      "duration": 500,
+      "executionColor": "#2244ff",
+      "resolution": [
+        {
+          "condition": {
+            "type": "player_count",
+            "min": 0
+          },
+          "effects": [
+            {
+              "type": "damage",
+              "target": "inside",
+              "damage": {
+                "amount": 150,
+                "type": "magical"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "chaos-cone": {
+      "shape": "cone",
+      "radius": 30,
+      "angle": 90,
+      "label": "chaos-cone",
+      "telegraphDuration": 0,
+      "duration": 500,
+      "executionColor": "#d95757",
+      "resolution": [
+        {
+          "condition": {
+            "type": "player_count",
+            "min": 0
+          },
+          "effects": [
+            {
+              "type": "damage",
+              "target": "inside",
+              "damage": {
+                "amount": 90,
+                "type": "magical"
+              }
+            },
+            {
+              "type": "apply_status",
+              "status": "damage-down",
+              "target": "inside"
             }
           ]
         }
@@ -249,7 +516,7 @@
     },
     "thunder": {
       "shape": "circle",
-      "radius": 8,
+      "radius": 6.5,
       "label": "thunder",
       "telegraphDuration": 0,
       "duration": 500,
@@ -268,6 +535,11 @@
                 "amount": 150,
                 "type": "magical"
               }
+            },
+            {
+              "type": "apply_status",
+              "status": "damage-down",
+              "target": "inside"
             }
           ]
         }
@@ -357,21 +629,18 @@
   "statuses": [
     {
       "id": "debuff-a",
-      "name": "Debuff A",
-      "character": "A",
-      "color": "#c78bd6"
+      "name": "Epic Hero",
+      "icon": "icon-alpha"
     },
     {
       "id": "debuff-b",
-      "name": "Debuff B",
-      "character": "B",
-      "color": "#6fb7c9"
+      "name": "Fated Hero",
+      "icon": "icon-beta"
     },
     {
       "id": "fire",
       "name": "Entropy",
-      "character": "F",
-      "color": "#e8503a",
+      "icon": "icon-entropy",
       "deathRemovalTrigger": "remove",
       "reassignIfDead": true,
       "onRemove": [
@@ -388,8 +657,7 @@
     {
       "id": "water",
       "name": "Dynamic Fluid",
-      "character": "W",
-      "color": "#4d8fd6",
+      "icon": "icon-dynamic-fluid",
       "deathRemovalTrigger": "remove",
       "reassignIfDead": true,
       "onRemove": [
@@ -406,8 +674,7 @@
     {
       "id": "front",
       "name": "Tailwind",
-      "character": "Fr",
-      "color": "#4cc66d",
+      "icon": "icon-tailwind",
       "deathRemovalTrigger": "early_remove",
       "onExpire": [
         {
@@ -430,8 +697,7 @@
     {
       "id": "back",
       "name": "Headwind",
-      "character": "Bk",
-      "color": "#4cc66d",
+      "icon": "icon-headwind",
       "deathRemovalTrigger": "early_remove",
       "onExpire": [
         {
@@ -450,6 +716,54 @@
           "batch": "wind"
         }
       ]
+    },
+    {
+      "id": "magic-vulnerability",
+      "name": "Magic Vulnerability",
+      "tags": [
+        "vulnerability"
+      ],
+      "damageTaken": [
+        {
+          "damageType": "magical",
+          "fatal": true
+        },
+        {
+          "damageType": "fire",
+          "fatal": true
+        },
+        {
+          "damageType": "wind",
+          "fatal": true
+        },
+        {
+          "damageType": "water",
+          "fatal": true
+        }
+      ],
+      "icon": "icon-magic-vulnerability"
+    },
+    {
+      "id": "wind-vulnerability",
+      "name": "Wind Vulnerability",
+      "tags": [
+        "vulnerability"
+      ],
+      "icon": "icon-wind-vulnerability",
+      "damageTaken": [
+        {
+          "damageType": "wind",
+          "fatal": true
+        }
+      ]
+    },
+    {
+      "id": "damage-down",
+      "name": "Damage Down",
+      "tags": [
+        "debuff"
+      ],
+      "icon": "icon-damage-down"
     }
   ],
   "casts": {
@@ -519,7 +833,7 @@
         {
           "type": "apply_status",
           "status": "fire",
-          "duration": "$layout.fireDuration",
+          "duration": "$debuffTiming.fireDuration",
           "target": {
             "type": "random",
             "count": 1,
@@ -529,7 +843,7 @@
         {
           "type": "apply_status",
           "status": "fire",
-          "duration": "$layout.fireDuration",
+          "duration": "$debuffTiming.fireDuration",
           "target": {
             "type": "random",
             "count": 1,
@@ -542,7 +856,7 @@
         {
           "type": "apply_status",
           "status": "water",
-          "duration": "$layout.waterDuration",
+          "duration": "$debuffTiming.waterDuration",
           "target": {
             "type": "random",
             "count": 1,
@@ -556,7 +870,7 @@
         {
           "type": "apply_status",
           "status": "water",
-          "duration": "$layout.waterDuration",
+          "duration": "$debuffTiming.waterDuration",
           "target": {
             "type": "random",
             "count": 1,
@@ -585,8 +899,8 @@
           "enemyId": "wind-crystal",
           "position": {
             "type": "polar",
-            "angle": "$layout.windAngle",
-            "radius": 8
+            "angle": "$windDiagonal",
+            "radius": 7.3
           }
         },
         {
@@ -595,8 +909,11 @@
           "enemyId": "water-crystal",
           "position": {
             "type": "polar",
-            "angle": "$layout.waterAngle",
-            "radius": 8
+            "angle": "$windDiagonal",
+            "angleOffset": {
+              "$neg": "$fireRotation"
+            },
+            "radius": 7.3
           }
         },
         {
@@ -605,8 +922,9 @@
           "enemyId": "fire-crystal",
           "position": {
             "type": "polar",
-            "angle": "$layout.fireAngle",
-            "radius": 8
+            "angle": "$windDiagonal",
+            "angleOffset": "$fireRotation",
+            "radius": 7.3
           }
         },
         {
@@ -620,10 +938,199 @@
         {
           "type": "recalculate_positions",
           "group": "crystal-setup"
+        }
+      ]
+    },
+    "thunder-bait": {
+      "id": "thunder-bait",
+      "name": "Thunder III",
+      "castTime": 5000,
+      "visible": true,
+      "suspendFollow": {
+        "movement": true
+      },
+      "effects": [
+        {
+          "type": "select_group",
+          "name": "thunder-bait-1",
+          "selector": {
+            "type": "nearest",
+            "source": "boss-small",
+            "count": 1
+          }
         },
         {
-          "type": "recalculate_facing",
-          "group": "crystal-long"
+          "type": "for_each_group",
+          "group": "thunder-bait-1",
+          "effects": [
+            {
+              "type": "spawn_area",
+              "area": "thunder-bait",
+              "source": "$groupMember.id",
+              "position": "$groupMember.position"
+            }
+          ]
+        },
+        {
+          "type": "delayed_effects",
+          "delay": 500,
+          "effects": [
+            {
+              "type": "recalculate_roles",
+              "group": "tank-swap"
+            },
+            {
+              "type": "start_follow",
+              "source": "boss-large",
+              "target": {
+                "type": "mechanical_role",
+                "role": "large_tank"
+              },
+              "distance": 4.4,
+              "moveSpeed": 4
+            },
+            {
+              "type": "recalculate_positions",
+              "group": "thunder-bait-swap"
+            }
+          ]
+        },
+        {
+          "type": "delayed_effects",
+          "delay": 2000,
+          "effects": [
+            {
+              "type": "select_group",
+              "name": "thunder-bait-2",
+              "selector": {
+                "type": "nearest",
+                "source": "boss-small",
+                "count": 1
+              }
+            },
+            {
+              "type": "for_each_group",
+              "group": "thunder-bait-2",
+              "effects": [
+                {
+                  "type": "spawn_area",
+                  "area": "thunder-bait",
+                  "source": "$groupMember.id",
+                  "position": "$groupMember.position"
+                }
+              ]
+            },
+            {
+              "type": "start_follow",
+              "source": "boss-small",
+              "target": {
+                "type": "mechanical_role",
+                "role": "small_tank"
+              },
+              "distance": 3.6,
+              "moveSpeed": 4
+            }
+          ]
+        },
+        {
+          "type": "delayed_effects",
+          "delay": 2500,
+          "effects": [
+            {
+              "type": "recalculate_positions",
+              "group": "thunder-bait-settle"
+            }
+          ]
+        }
+      ]
+    },
+    "chaos-frontback": {
+      "id": "chaos-frontback",
+      "name": "Longitudinal Implosion",
+      "castTime": 5000,
+      "visible": true,
+      "suspendFollow": {
+        "movement": true,
+        "facing": true
+      },
+      "effects": [
+        {
+          "type": "spawn_area",
+          "area": "chaos-cone",
+          "source": "boss-large",
+          "direction": "facing"
+        },
+        {
+          "type": "spawn_area",
+          "area": "chaos-cone",
+          "source": "boss-large",
+          "direction": "facing",
+          "rotationOffset": 180
+        },
+        {
+          "type": "delayed_effects",
+          "delay": 1500,
+          "effects": [
+            {
+              "type": "spawn_area",
+              "area": "chaos-cone",
+              "source": "boss-large",
+              "direction": "facing",
+              "rotationOffset": 90
+            },
+            {
+              "type": "spawn_area",
+              "area": "chaos-cone",
+              "source": "boss-large",
+              "direction": "facing",
+              "rotationOffset": 270
+            }
+          ]
+        }
+      ]
+    },
+    "chaos-sides": {
+      "id": "chaos-sides",
+      "name": "Latitudinal Implosion",
+      "castTime": 5000,
+      "visible": true,
+      "suspendFollow": {
+        "movement": true,
+        "facing": true
+      },
+      "effects": [
+        {
+          "type": "spawn_area",
+          "area": "chaos-cone",
+          "source": "boss-large",
+          "direction": "facing",
+          "rotationOffset": 90
+        },
+        {
+          "type": "spawn_area",
+          "area": "chaos-cone",
+          "source": "boss-large",
+          "direction": "facing",
+          "rotationOffset": 270
+        },
+        {
+          "type": "delayed_effects",
+          "delay": 1500,
+          "effects": [
+            {
+              "type": "spawn_area",
+              "area": "chaos-cone",
+              "source": "boss-large",
+              "direction": "facing"
+            },
+            {
+              "type": "spawn_area",
+              "area": "chaos-cone",
+              "source": "boss-large",
+              "direction": "facing",
+              "rotationOffset": 180
+            }
+          ]
         }
       ]
     },
@@ -656,7 +1163,7 @@
         },
         {
           "type": "has_status",
-          "status": "$layout.shortElement"
+          "status": "$debuffTiming.shortElement"
         }
       ],
       "short_water_damage": [
@@ -670,7 +1177,7 @@
         },
         {
           "type": "has_status",
-          "status": "$layout.shortElement"
+          "status": "$debuffTiming.shortElement"
         }
       ],
       "short_fire_support": [
@@ -687,7 +1194,7 @@
         },
         {
           "type": "has_status",
-          "status": "$layout.shortElement"
+          "status": "$debuffTiming.shortElement"
         }
       ],
       "short_water_support": [
@@ -704,7 +1211,7 @@
         },
         {
           "type": "has_status",
-          "status": "$layout.shortElement"
+          "status": "$debuffTiming.shortElement"
         }
       ],
       "long_fire_damage": [
@@ -718,7 +1225,7 @@
         },
         {
           "type": "has_status",
-          "status": "$layout.longElement"
+          "status": "$debuffTiming.longElement"
         }
       ],
       "long_water_damage": [
@@ -732,7 +1239,7 @@
         },
         {
           "type": "has_status",
-          "status": "$layout.longElement"
+          "status": "$debuffTiming.longElement"
         }
       ],
       "long_fire_support": [
@@ -749,7 +1256,7 @@
         },
         {
           "type": "has_status",
-          "status": "$layout.longElement"
+          "status": "$debuffTiming.longElement"
         }
       ],
       "long_water_support": [
@@ -766,7 +1273,7 @@
         },
         {
           "type": "has_status",
-          "status": "$layout.longElement"
+          "status": "$debuffTiming.longElement"
         }
       ],
       "wind_damage": [
@@ -807,7 +1314,7 @@
         },
         {
           "type": "has_status",
-          "status": "$layout.shortElement"
+          "status": "$debuffTiming.shortElement"
         }
       ],
       "short_support": [
@@ -820,7 +1327,7 @@
         },
         {
           "type": "has_status",
-          "status": "$layout.shortElement"
+          "status": "$debuffTiming.shortElement"
         }
       ],
       "long_damage": [
@@ -830,7 +1337,7 @@
         },
         {
           "type": "has_status",
-          "status": "$layout.longElement"
+          "status": "$debuffTiming.longElement"
         }
       ],
       "long_support": [
@@ -843,7 +1350,29 @@
         },
         {
           "type": "has_status",
-          "status": "$layout.longElement"
+          "status": "$debuffTiming.longElement"
+        }
+      ]
+    },
+    "tank-swap": {
+      "large_tank": [
+        {
+          "type": "gameplay_role",
+          "role": "tank"
+        },
+        {
+          "type": "mechanical_role",
+          "role": "small_tank"
+        }
+      ],
+      "small_tank": [
+        {
+          "type": "gameplay_role",
+          "role": "tank"
+        },
+        {
+          "type": "mechanical_role",
+          "role": "large_tank"
         }
       ]
     },
@@ -871,6 +1400,50 @@
     }
   },
   "positions": {
+    "drag-bosses-mid": [
+      {
+        "when": {
+          "type": "mechanical_role",
+          "role": "small_tank"
+        },
+        "live": true,
+        "target": {
+          "type": "drag",
+          "entity": {
+            "type": "id",
+            "id": "boss-small"
+          },
+          "to": {
+            "type": "fixed",
+            "position": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        }
+      },
+      {
+        "when": {
+          "type": "mechanical_role",
+          "role": "large_tank"
+        },
+        "live": true,
+        "target": {
+          "type": "drag",
+          "entity": {
+            "type": "id",
+            "id": "boss-large"
+          },
+          "to": {
+            "type": "fixed",
+            "position": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        }
+      }
+    ],
     "crystal-setup": [
       {
         "when": {
@@ -886,7 +1459,17 @@
           },
           "to": {
             "type": "polar",
-            "angle": "$layout.bossAngle",
+            "angleFrom": {
+              "type": "id",
+              "id": "${debuffTiming.longElement}-crystal"
+            },
+            "angleTowards": {
+              "entity": {
+                "type": "id",
+                "id": "wind-crystal"
+              },
+              "by": -20
+            },
             "radius": 8
           }
         }
@@ -911,9 +1494,729 @@
             },
             "b": {
               "type": "id",
-              "id": "$layout.shortCrystal"
+              "id": "${debuffTiming.shortElement}-crystal"
             }
           }
+        }
+      }
+    ],
+    "thunder-bait-start": [
+      {
+        "when": {
+          "type": "mechanical_role",
+          "role": "small_tank"
+        },
+        "target": {
+          "type": "entity",
+          "player": {
+            "type": "id",
+            "id": "boss-small"
+          }
+        }
+      },
+      {
+        "when": {
+          "type": "mechanical_role",
+          "role": "large_tank"
+        },
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "fixed",
+            "position": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "toward": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "boss-small"
+            }
+          },
+          "distance": 2
+        }
+      }
+    ],
+    "thunder-bait-swap": [
+      {
+        "when": {
+          "type": "mechanical_role",
+          "role": "small_tank"
+        },
+        "live": true,
+        "target": {
+          "type": "entity",
+          "player": {
+            "type": "id",
+            "id": "boss-small"
+          }
+        }
+      },
+      {
+        "when": {
+          "type": "mechanical_role",
+          "role": "large_tank"
+        },
+        "target": {
+          "type": "fixed",
+          "position": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      }
+    ],
+    "thunder-bait-face": [
+      {
+        "when": {
+          "type": "mechanical_role",
+          "role": "small_tank"
+        },
+        "live": true,
+        "target": {
+          "type": "drag",
+          "entity": {
+            "type": "id",
+            "id": "boss-small"
+          },
+          "to": {
+            "type": "between",
+            "a": {
+              "type": "id",
+              "id": "wind-crystal"
+            },
+            "b": {
+              "type": "id",
+              "id": "${debuffTiming.longElement}-crystal"
+            }
+          }
+        }
+      },
+      {
+        "when": {
+          "type": "mechanical_role",
+          "role": "large_tank"
+        },
+        "live": true,
+        "target": {
+          "type": "entity",
+          "player": {
+            "type": "id",
+            "id": "boss-large"
+          },
+          "offset": {
+            "x": 0,
+            "y": -4.4
+          }
+        }
+      }
+    ],
+    "chaos-shift-bd": [
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "wind_damage_flex"
+          }
+        ],
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "polar",
+            "angleFrom": {
+              "type": "id",
+              "id": "wind-crystal"
+            },
+            "radius": 4.5
+          },
+          "toward": {
+            "type": "marker",
+            "query": {
+              "ids": [
+                "B",
+                "D"
+              ]
+            }
+          },
+          "distance": "$spacing.chaosStep"
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "wind_damage"
+          }
+        ],
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "polar",
+            "angleFrom": {
+              "type": "id",
+              "id": "wind-crystal"
+            },
+            "radius": 6
+          },
+          "toward": {
+            "type": "marker",
+            "query": {
+              "ids": [
+                "B",
+                "D"
+              ]
+            }
+          },
+          "distance": "$spacing.chaosStep"
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "wind_support_flex"
+          }
+        ],
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "polar",
+            "angleFrom": {
+              "type": "id",
+              "id": "wind-crystal"
+            },
+            "radius": 7.5
+          },
+          "toward": {
+            "type": "marker",
+            "query": {
+              "ids": [
+                "B",
+                "D"
+              ]
+            }
+          },
+          "distance": "$spacing.chaosStep"
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "wind_support"
+          }
+        ],
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "polar",
+            "angleFrom": {
+              "type": "id",
+              "id": "wind-crystal"
+            },
+            "radius": 9
+          },
+          "toward": {
+            "type": "marker",
+            "query": {
+              "ids": [
+                "B",
+                "D"
+              ]
+            }
+          },
+          "distance": "$spacing.chaosStep"
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "short_damage"
+          }
+        ],
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "polar",
+            "angleFrom": {
+              "type": "id",
+              "id": "${debuffTiming.longElement}-crystal"
+            },
+            "radius": 4.5
+          },
+          "toward": {
+            "type": "marker",
+            "query": {
+              "ids": [
+                "B",
+                "D"
+              ]
+            }
+          },
+          "distance": "$spacing.chaosStep"
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "short_support"
+          }
+        ],
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "polar",
+            "angleFrom": {
+              "type": "id",
+              "id": "${debuffTiming.longElement}-crystal"
+            },
+            "radius": 6
+          },
+          "toward": {
+            "type": "marker",
+            "query": {
+              "ids": [
+                "B",
+                "D"
+              ]
+            }
+          },
+          "distance": "$spacing.chaosStep"
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "long_damage"
+          }
+        ],
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "polar",
+            "angleFrom": {
+              "type": "id",
+              "id": "${debuffTiming.longElement}-crystal"
+            },
+            "radius": 7.5
+          },
+          "toward": {
+            "type": "marker",
+            "query": {
+              "ids": [
+                "B",
+                "D"
+              ]
+            }
+          },
+          "distance": "$spacing.chaosStep"
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "long_support"
+          }
+        ],
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "polar",
+            "angleFrom": {
+              "type": "id",
+              "id": "${debuffTiming.longElement}-crystal"
+            },
+            "radius": 9
+          },
+          "toward": {
+            "type": "marker",
+            "query": {
+              "ids": [
+                "B",
+                "D"
+              ]
+            }
+          },
+          "distance": "$spacing.chaosStep"
+        }
+      }
+    ],
+    "chaos-shift-ac": [
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "wind_damage_flex"
+          }
+        ],
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "polar",
+            "angleFrom": {
+              "type": "id",
+              "id": "wind-crystal"
+            },
+            "radius": 4.5
+          },
+          "toward": {
+            "type": "marker",
+            "query": {
+              "ids": [
+                "A",
+                "C"
+              ]
+            }
+          },
+          "distance": "$spacing.chaosStep"
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "wind_damage"
+          }
+        ],
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "polar",
+            "angleFrom": {
+              "type": "id",
+              "id": "wind-crystal"
+            },
+            "radius": 6
+          },
+          "toward": {
+            "type": "marker",
+            "query": {
+              "ids": [
+                "A",
+                "C"
+              ]
+            }
+          },
+          "distance": "$spacing.chaosStep"
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "wind_support_flex"
+          }
+        ],
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "polar",
+            "angleFrom": {
+              "type": "id",
+              "id": "wind-crystal"
+            },
+            "radius": 7.5
+          },
+          "toward": {
+            "type": "marker",
+            "query": {
+              "ids": [
+                "A",
+                "C"
+              ]
+            }
+          },
+          "distance": "$spacing.chaosStep"
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "wind_support"
+          }
+        ],
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "polar",
+            "angleFrom": {
+              "type": "id",
+              "id": "wind-crystal"
+            },
+            "radius": 9
+          },
+          "toward": {
+            "type": "marker",
+            "query": {
+              "ids": [
+                "A",
+                "C"
+              ]
+            }
+          },
+          "distance": "$spacing.chaosStep"
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "short_damage"
+          }
+        ],
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "polar",
+            "angleFrom": {
+              "type": "id",
+              "id": "${debuffTiming.longElement}-crystal"
+            },
+            "radius": 4.5
+          },
+          "toward": {
+            "type": "marker",
+            "query": {
+              "ids": [
+                "A",
+                "C"
+              ]
+            }
+          },
+          "distance": "$spacing.chaosStep"
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "short_support"
+          }
+        ],
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "polar",
+            "angleFrom": {
+              "type": "id",
+              "id": "${debuffTiming.longElement}-crystal"
+            },
+            "radius": 6
+          },
+          "toward": {
+            "type": "marker",
+            "query": {
+              "ids": [
+                "A",
+                "C"
+              ]
+            }
+          },
+          "distance": "$spacing.chaosStep"
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "long_damage"
+          }
+        ],
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "polar",
+            "angleFrom": {
+              "type": "id",
+              "id": "${debuffTiming.longElement}-crystal"
+            },
+            "radius": 7.5
+          },
+          "toward": {
+            "type": "marker",
+            "query": {
+              "ids": [
+                "A",
+                "C"
+              ]
+            }
+          },
+          "distance": "$spacing.chaosStep"
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "long_support"
+          }
+        ],
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "polar",
+            "angleFrom": {
+              "type": "id",
+              "id": "${debuffTiming.longElement}-crystal"
+            },
+            "radius": 9
+          },
+          "toward": {
+            "type": "marker",
+            "query": {
+              "ids": [
+                "A",
+                "C"
+              ]
+            }
+          },
+          "distance": "$spacing.chaosStep"
+        }
+      }
+    ],
+    "chaos-edge": [
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "wind_support"
+          }
+        ],
+        "target": {
+          "type": "edge",
+          "angleFrom": {
+            "type": "id",
+            "id": "wind-crystal"
+          },
+          "inset": "$spacing.edgeInset"
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "wind_damage_flex"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angleFrom": {
+            "type": "id",
+            "id": "wind-crystal"
+          },
+          "angleTowards": {
+            "entity": {
+              "type": "id",
+              "id": "${debuffTiming.longElement}-crystal"
+            },
+            "by": -25
+          },
+          "radius": 4.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "wind_damage"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angleFrom": {
+            "type": "id",
+            "id": "wind-crystal"
+          },
+          "radius": 5.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "long_damage"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angleFrom": {
+            "type": "id",
+            "id": "${debuffTiming.longElement}-crystal"
+          },
+          "radius": 3
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "long_support"
+          }
+        ],
+        "target": {
+          "type": "edge",
+          "angleFrom": {
+            "type": "id",
+            "id": "${debuffTiming.longElement}-crystal"
+          },
+          "inset": "$spacing.edgeInset"
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "or",
+            "conditions": [
+              {
+                "type": "mechanical_role",
+                "role": "short_water_damage"
+              },
+              {
+                "type": "mechanical_role",
+                "role": "short_water_support"
+              }
+            ]
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angleFrom": {
+            "type": "id",
+            "id": "${debuffTiming.longElement}-crystal"
+          },
+          "radius": 0.1
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "or",
+            "conditions": [
+              {
+                "type": "mechanical_role",
+                "role": "short_fire_damage"
+              },
+              {
+                "type": "mechanical_role",
+                "role": "short_fire_support"
+              }
+            ]
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angleFrom": {
+            "type": "id",
+            "id": "${debuffTiming.longElement}-crystal"
+          },
+          "radius": 2
         }
       }
     ],
@@ -927,14 +2230,14 @@
         ],
         "target": {
           "type": "shift",
-           "from": {
-             "type": "marker",
-             "marker": "$layout.shortNumber"
-           },
-           "toward": {
-             "type": "marker",
-             "marker": "$layout.shortLetter"
-           },
+          "from": {
+            "type": "marker",
+            "query": "shortNumber"
+          },
+          "toward": {
+            "type": "marker",
+            "query": "shortLetter"
+          },
           "distance": -0.5
         }
       },
@@ -946,18 +2249,18 @@
           }
         ],
         "target": {
-           "type": "shift",
-           "from": {
-             "type": "marker",
-             "marker": "$layout.shortLetter"
-           },
-           "toward": {
-             "type": "entity",
-             "player": {
-               "type": "id",
-               "id": "$layout.shortCrystal"
+          "type": "shift",
+          "from": {
+            "type": "marker",
+            "query": "shortLetter"
+          },
+          "toward": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "${debuffTiming.shortElement}-crystal"
             }
-           },
+          },
           "distance": 0.5
         }
       },
@@ -983,7 +2286,7 @@
               "type": "entity",
               "player": {
                 "type": "id",
-                "id": "$layout.longCrystal"
+                "id": "${debuffTiming.longElement}-crystal"
               }
             },
             "distance": "$spacing.windSpread"
@@ -992,10 +2295,11 @@
             "type": "entity",
             "player": {
               "type": "id",
-              "id": "$layout.shortCrystal"
+              "id": "${debuffTiming.shortElement}-crystal"
             }
           },
-          "distance": "$spacing.windFlex"
+          "distance": "$spacing.windFlex",
+          "clamp": "cardinal"
         }
       },
       {
@@ -1018,7 +2322,7 @@
             "type": "entity",
             "player": {
               "type": "id",
-              "id": "$layout.longCrystal"
+              "id": "${debuffTiming.longElement}-crystal"
             }
           },
           "distance": "$spacing.windSpread"
@@ -1046,7 +2350,7 @@
               "type": "entity",
               "player": {
                 "type": "id",
-                "id": "$layout.longCrystal"
+                "id": "${debuffTiming.longElement}-crystal"
               }
             },
             "distance": "$spacing.windSpread"
@@ -1055,10 +2359,11 @@
             "type": "entity",
             "player": {
               "type": "id",
-              "id": "$layout.shortCrystal"
+              "id": "${debuffTiming.shortElement}-crystal"
             }
           },
-          "distance": "$spacing.windFlex"
+          "distance": "$spacing.windFlex",
+          "clamp": "cardinal"
         }
       },
       {
@@ -1081,10 +2386,154 @@
             "type": "entity",
             "player": {
               "type": "id",
-              "id": "$layout.longCrystal"
+              "id": "${debuffTiming.longElement}-crystal"
             }
           },
           "distance": "$spacing.windSpread"
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "or",
+            "conditions": [
+              {
+                "type": "mechanical_role",
+                "role": "long_fire_damage"
+              },
+              {
+                "type": "mechanical_role",
+                "role": "long_fire_support"
+              }
+            ]
+          }
+        ],
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "fixed",
+            "position": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "toward": {
+            "type": "marker",
+            "query": "shortLetter"
+          },
+          "distance": "$spacing.longFireDistance"
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "or",
+            "conditions": [
+              {
+                "type": "mechanical_role",
+                "role": "long_water_damage"
+              },
+              {
+                "type": "mechanical_role",
+                "role": "long_water_support"
+              }
+            ]
+          }
+        ],
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "fixed",
+            "position": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "toward": {
+            "type": "marker",
+            "query": "shortLetter"
+          },
+          "distance": "$spacing.longWaterDistance"
+        }
+      }
+    ],
+    "thunder-bait-settle": [
+      {
+        "when": {
+          "type": "mechanical_role",
+          "role": "small_tank"
+        },
+        "live": true,
+        "target": {
+          "type": "drag",
+          "entity": {
+            "type": "id",
+            "id": "boss-small"
+          },
+          "to": {
+            "type": "between",
+            "a": {
+              "type": "id",
+              "id": "wind-crystal"
+            },
+            "b": {
+              "type": "id",
+              "id": "${debuffTiming.longElement}-crystal"
+            }
+          }
+        }
+      },
+      {
+        "when": {
+          "type": "mechanical_role",
+          "role": "large_tank"
+        },
+        "live": true,
+        "target": {
+          "type": "drag",
+          "entity": {
+            "type": "id",
+            "id": "boss-large"
+          },
+          "to": {
+            "type": "fixed",
+            "position": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        }
+      }
+    ]
+  },
+  "facing": {
+    "crystal-long": [
+      {
+        "when": [
+          {
+            "type": "or",
+            "conditions": [
+              {
+                "type": "mechanical_role",
+                "role": "long_damage"
+              },
+              {
+                "type": "mechanical_role",
+                "role": "long_support"
+              }
+            ]
+          },
+          {
+            "type": "has_status",
+            "status": "front"
+          }
+        ],
+        "target": {
+          "type": "bearing",
+          "of": {
+            "type": "marker",
+            "query": "shortLetter"
+          }
         }
       },
       {
@@ -1101,95 +2550,88 @@
                 "role": "long_support"
               }
             ]
+          },
+          {
+            "type": "has_status",
+            "status": "back"
           }
         ],
         "target": {
-          "type": "shift",
-          "from": {
-            "type": "fixed",
-            "position": {
-              "x": 0,
-              "y": 0
+          "type": "bearing",
+          "of": {
+            "type": "marker",
+            "query": "shortLetter"
+          },
+          "offset": 180
+        }
+      }
+    ],
+    "crystal-short": [
+      {
+        "when": [
+          {
+            "type": "or",
+            "conditions": [
+              {
+                "type": "mechanical_role",
+                "role": "short_damage"
+              },
+              {
+                "type": "mechanical_role",
+                "role": "short_support"
+              }
+            ]
+          },
+          {
+            "type": "has_status",
+            "status": "front"
+          }
+        ],
+        "target": {
+          "type": "bearing",
+          "of": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "${debuffTiming.longElement}-crystal"
+            }
+          }
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "or",
+            "conditions": [
+              {
+                "type": "mechanical_role",
+                "role": "short_damage"
+              },
+              {
+                "type": "mechanical_role",
+                "role": "short_support"
+              }
+            ]
+          },
+          {
+            "type": "has_status",
+            "status": "back"
+          }
+        ],
+        "target": {
+          "type": "bearing",
+          "of": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "${debuffTiming.longElement}-crystal"
             }
           },
-          "toward": {
-            "type": "marker",
-            "marker": "$layout.shortLetter"
-          },
-          "distance": "$layout.longDistance"
-        }
-      }
-    ]
-  },
-  "facing": {
-    "crystal-long": [
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "long_damage"
-          },
-          {
-            "type": "has_status",
-            "status": "front"
-          }
-        ],
-        "target": {
-          "type": "absolute",
-          "angle": "$layout.letterAngle"
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "long_damage"
-          },
-          {
-            "type": "has_status",
-            "status": "back"
-          }
-        ],
-        "target": {
-          "type": "absolute",
-          "angle": "$layout.letterAngle",
-          "offset": 180
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "long_support"
-          },
-          {
-            "type": "has_status",
-            "status": "front"
-          }
-        ],
-        "target": {
-          "type": "absolute",
-          "angle": "$layout.letterAngle"
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "long_support"
-          },
-          {
-            "type": "has_status",
-            "status": "back"
-          }
-        ],
-        "target": {
-          "type": "absolute",
-          "angle": "$layout.letterAngle",
           "offset": 180
         }
       }
-    ]
+    ],
+    "facing-release": []
   },
   "enemyTemplates": {
     "wind-crystal": {
@@ -1220,7 +2662,7 @@
   "players": [
     {
       "id": "mt",
-      "name": "MT",
+      "name": "Omni",
       "type": "player",
       "role": "tank",
       "team": "red",
@@ -1229,17 +2671,17 @@
         "small_tank"
       ],
       "moveSpeed": 5,
-      "health": 100,
+      "health": 200,
       "alive": true,
       "position": {
-        "x": -6,
-        "y": 4
+        "x": 5,
+        "y": -3
       },
       "statuses": []
     },
     {
       "id": "ot",
-      "name": "OT",
+      "name": "Corn",
       "type": "player",
       "role": "tank",
       "team": "purple",
@@ -1248,17 +2690,17 @@
         "large_tank"
       ],
       "moveSpeed": 5,
-      "health": 100,
+      "health": 200,
       "alive": true,
       "position": {
-        "x": 6,
-        "y": 4
+        "x": -5,
+        "y": -4
       },
       "statuses": []
     },
     {
       "id": "h1",
-      "name": "H1",
+      "name": "Helmut",
       "type": "player",
       "role": "healer",
       "team": "purple",
@@ -1268,14 +2710,14 @@
       "health": 100,
       "alive": true,
       "position": {
-        "x": -9,
-        "y": 6
+        "x": -2,
+        "y": 4
       },
       "statuses": []
     },
     {
       "id": "h2",
-      "name": "H2",
+      "name": "Xqk",
       "type": "player",
       "role": "healer",
       "team": "red",
@@ -1285,14 +2727,14 @@
       "health": 100,
       "alive": true,
       "position": {
-        "x": 9,
-        "y": 6
+        "x": 2,
+        "y": 4
       },
       "statuses": []
     },
     {
       "id": "m1",
-      "name": "M1",
+      "name": "Mike",
       "type": "player",
       "role": "damage",
       "team": "blue",
@@ -1302,15 +2744,15 @@
       "health": 100,
       "alive": true,
       "position": {
-        "x": -8,
-        "y": 2.5
+        "x": -5,
+        "y": 4
       },
       "statuses": [],
       "damagePosition": "melee"
     },
     {
       "id": "m2",
-      "name": "M2",
+      "name": "Aaragon",
       "type": "player",
       "role": "damage",
       "team": "yellow",
@@ -1320,15 +2762,15 @@
       "health": 100,
       "alive": true,
       "position": {
-        "x": 8,
-        "y": 2.5
+        "x": -3.5,
+        "y": 3.5
       },
       "statuses": [],
       "damagePosition": "melee"
     },
     {
       "id": "r1",
-      "name": "R1",
+      "name": "Lynfel",
       "type": "player",
       "role": "damage",
       "team": "blue",
@@ -1338,15 +2780,15 @@
       "health": 100,
       "alive": true,
       "position": {
-        "x": -10,
-        "y": -3
+        "x": 3.5,
+        "y": 3.5
       },
       "statuses": [],
       "damagePosition": "ranged"
     },
     {
       "id": "r2",
-      "name": "R2",
+      "name": "L'leilah",
       "type": "player",
       "role": "damage",
       "team": "yellow",
@@ -1356,8 +2798,8 @@
       "health": 100,
       "alive": true,
       "position": {
-        "x": 10,
-        "y": -3
+        "x": 5,
+        "y": 4
       },
       "statuses": [],
       "damagePosition": "ranged"
@@ -1370,7 +2812,7 @@
       "type": "enemy",
       "alive": true,
       "position": {
-        "x": 6,
+        "x": -5,
         "y": 0
       },
       "style": {
@@ -1385,7 +2827,7 @@
       "type": "enemy",
       "alive": true,
       "position": {
-        "x": -6,
+        "x": 5,
         "y": 0
       },
       "style": {
@@ -1404,7 +2846,7 @@
     },
     {
       "id": "small-follows-mt",
-      "at": 0,
+      "at": 2000,
       "type": "start_follow",
       "source": "boss-small",
       "target": {
@@ -1416,7 +2858,7 @@
     },
     {
       "id": "large-follows-ot",
-      "at": 0,
+      "at": 2000,
       "type": "start_follow",
       "source": "boss-large",
       "target": {
@@ -1443,8 +2885,14 @@
       "mechanic": "division"
     },
     {
+      "id": "thunder-bait-positions",
+      "at": 7000,
+      "type": "recalculate_positions",
+      "group": "drag-bosses-mid"
+    },
+    {
       "id": "crystal-call",
-      "at": 8000,
+      "at": 15000,
       "type": "start_cast",
       "source": "boss-large",
       "cast": "crystal-call",
@@ -1460,6 +2908,24 @@
       "mechanic": "thunder"
     },
     {
+      "id": "thunder-remove-debuff-a",
+      "after": "thunder-cast",
+      "type": "remove_status",
+      "target": {
+        "type": "all"
+      },
+      "status": "debuff-a"
+    },
+    {
+      "id": "thunder-remove-debuff-b",
+      "after": "thunder-cast",
+      "type": "remove_status",
+      "target": {
+        "type": "all"
+      },
+      "status": "debuff-b"
+    },
+    {
       "id": "thunder-small-stops",
       "after": "thunder-cast",
       "type": "stop_follow",
@@ -1470,6 +2936,110 @@
       "after": "thunder-cast",
       "type": "recalculate_positions",
       "group": "crystal-thunder"
+    },
+    {
+      "id": "thunder-long-facing",
+      "after": "thunder-cast",
+      "type": "recalculate_facing",
+      "group": "crystal-long"
+    },
+    {
+      "id": "thunder-long-facing-release",
+      "after": "thunder-cast",
+      "delay": 9000,
+      "type": "recalculate_facing",
+      "group": "facing-release"
+    },
+    {
+      "id": "thunder-heal",
+      "after": "thunder-cast",
+      "delay": 10000,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "thunder-bait-cast",
+      "after": "thunder-cast",
+      "delay": 10000,
+      "type": "start_cast",
+      "source": "boss-small",
+      "cast": "thunder-bait",
+      "mechanic": "thunder-bait"
+    },
+    {
+      "id": "thunder-bait-positions",
+      "after": "thunder-bait-cast",
+      "type": "recalculate_positions",
+      "group": "thunder-bait-start"
+    },
+    {
+      "id": "thunder-bait-face",
+      "after": "thunder-bait-cast",
+      "delay": 10000,
+      "type": "recalculate_positions",
+      "group": "thunder-bait-face"
+    },
+    {
+      "id": "chaos-cast",
+      "after": "crystal-call",
+      "delay": 40000,
+      "type": "start_cast",
+      "source": "boss-large",
+      "cast": "$chaosCast.cast",
+      "mechanic": "chaos-cast"
+    },
+    {
+      "id": "chaos-heal",
+      "after": "chaos-cast",
+      "delay": 4000,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "cast-chaos-stops",
+      "after": "chaos-cast",
+      "type": "stop_follow",
+      "source": "boss-large"
+    },
+    {
+      "id": "chaos-first-dodge",
+      "after": "chaos-cast",
+      "type": "recalculate_positions",
+      "group": "$chaosCast.first"
+    },
+    {
+      "id": "chaos-second-dodge",
+      "after": "chaos-cast",
+      "delay": 5000,
+      "type": "recalculate_positions",
+      "group": "$chaosCast.second"
+    },
+    {
+      "id": "chaos-edge",
+      "after": "chaos-cast",
+      "delay": 6500,
+      "type": "recalculate_positions",
+      "group": "chaos-edge"
+    },
+    {
+      "id": "chaos-short-facing",
+      "after": "chaos-cast",
+      "delay": 6500,
+      "type": "recalculate_facing",
+      "group": "crystal-short"
+    },
+    {
+      "id": "chaos-short-facing-release",
+      "after": "chaos-cast",
+      "delay": 11000,
+      "type": "recalculate_facing",
+      "group": "facing-release"
     }
   ]
 }

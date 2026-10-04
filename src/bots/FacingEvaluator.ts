@@ -4,6 +4,9 @@ import type { FacingTarget } from './FacingTarget';
 import { resolveEntityReference } from '../mechanics/Selector';
 import { canTurn } from '../entities/Control';
 import { toPolarAngle } from '../geometry/Vector2';
+import type { Vector2 } from '../geometry/Vector2';
+import type { PositionTarget } from './PositionTarget';
+import type { Player } from '../entities/Player';
 
 /** Facing conditions use state shared by players and enemies. */
 export type FacingCondition =
@@ -28,10 +31,17 @@ export type FacingDefinitions = Record<string, FacingDefinition>;
 export class FacingEvaluator {
   private readonly definitions: FacingDefinitions;
   private readonly resolveValue: <T>(value: T) => T;
+  private readonly resolvePoint: (target: PositionTarget, state: GameState, self: Player | undefined) => Vector2 | undefined;
 
-  constructor(definitions: FacingDefinitions = {}, resolveValue: <T>(value: T) => T = (value) => value) {
+  /** `resolvePoint` lets `bearing` targets reuse the position evaluator (markers, marker queries, entities...). */
+  constructor(
+    definitions: FacingDefinitions = {},
+    resolveValue: <T>(value: T) => T = (value) => value,
+    resolvePoint: (target: PositionTarget, state: GameState, self: Player | undefined) => Vector2 | undefined = () => undefined,
+  ) {
     this.definitions = definitions;
     this.resolveValue = resolveValue;
+    this.resolvePoint = resolvePoint;
   }
 
   /** Applies matching facing rules to players and enemies. */
@@ -64,6 +74,11 @@ export class FacingEvaluator {
       const angle = this.resolveValue(target.angle);
       const resolved = typeof angle === 'number' ? angle : Number(angle);
       return Number.isFinite(resolved) ? (((resolved + (target.offset ?? 0)) % 360) + 360) % 360 : undefined;
+    }
+    if (target.type === 'bearing') {
+      const point = this.resolvePoint(target.of, state, 'mechanicalRoles' in self ? (self as Player) : undefined);
+      if (!point) return undefined;
+      return (((toPolarAngle(point, target.origin ?? { x: 0, y: 0 }) + (target.offset ?? 0)) % 360) + 360) % 360;
     }
     if (target.type === 'position') {
       const position = this.resolveValue(target.position);
