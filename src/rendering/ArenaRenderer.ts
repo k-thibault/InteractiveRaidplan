@@ -28,6 +28,13 @@ function hexToRgba(hex: string, alpha: number): string {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
+/** Blends a #rrggbb color toward white; `amount` 0 keeps it, 1 is pure white. */
+function lightenHex(hex: string, amount: number): string {
+  const value = hex.replace('#', '');
+  const mix = (offset: number) => Math.round(parseInt(value.substring(offset, offset + 2), 16) * (1 - amount) + 255 * amount);
+  return `rgb(${mix(0)}, ${mix(2)}, ${mix(4)})`;
+}
+
 export class ArenaRenderer {
   private readonly context: CanvasRenderingContext2D;
   private readonly canvas: HTMLCanvasElement;
@@ -207,36 +214,57 @@ export class ArenaRenderer {
     return entity?.position;
   }
 
+  /** Draws a marker with the same look as the deadly border: a bright core inside a soft outer glow of the marker's color. */
   private drawMarker(marker: MarkerDefinition & { resolvedPosition: { x: number; y: number } }, scale: number, toCanvas: (x: number, y: number) => { x: number; y: number }): void {
+    const { context } = this;
     const point = toCanvas(marker.resolvedPosition.x, marker.resolvedPosition.y);
     const radius = (marker.border?.radius ?? 0.55) * scale;
     const color = marker.color ?? '#dbe7f2';
-
-    this.context.save();
-    this.context.globalAlpha = 0.6;
-    if (marker.border) {
-      this.context.strokeStyle = marker.border.color ?? color;
-      this.context.lineWidth = Math.max(1, scale * 0.045);
-      this.context.beginPath();
-      if (marker.border.shape === 'circle') {
-        this.context.arc(point.x, point.y, radius, 0, Math.PI * 2);
-      } else {
-        this.context.rect(point.x - radius, point.y - radius, radius * 2, radius * 2);
-      }
-      this.context.stroke();
-    }
-
+    const borderColor = marker.border?.color ?? color;
+    const glowBlur = Math.max(6, scale * 0.3);
     const image = this.resolvedImage(marker.image);
-    if (image) {
-      this.context.drawImage(image, point.x - radius, point.y - radius, radius * 2, radius * 2);
-    } else if (marker.character) {
-      this.context.fillStyle = color;
-      this.context.font = `600 ${Math.max(12, radius * 1.35)}px sans-serif`;
-      this.context.textAlign = 'center';
-      this.context.textBaseline = 'middle';
-      this.context.fillText(marker.character, point.x, point.y);
+
+    const traceBorder = () => {
+      if (!marker.border) return;
+      context.beginPath();
+      if (marker.border.shape === 'circle') context.arc(point.x, point.y, radius, 0, Math.PI * 2);
+      else context.rect(point.x - radius, point.y - radius, radius * 2, radius * 2);
+    };
+    const drawGlyph = (fill: string) => {
+      if (image) { context.drawImage(image, point.x - radius, point.y - radius, radius * 2, radius * 2); return; }
+      if (!marker.character) return;
+      context.fillStyle = fill;
+      context.font = `600 ${Math.max(12, radius * 1.35)}px sans-serif`;
+      context.textAlign = 'center';
+      context.textBaseline = 'middle';
+      context.fillText(marker.character, point.x, point.y);
+    };
+
+    // Pass 1: the marker itself in its own color, throwing the outer glow.
+    context.save();
+    context.globalAlpha = 0.6;
+    context.shadowColor = hexToRgba(borderColor, 0.9);
+    context.shadowBlur = glowBlur;
+    if (marker.border) {
+      context.strokeStyle = borderColor;
+      context.lineWidth = Math.max(1.5, scale * 0.07);
+      traceBorder();
+      context.stroke();
     }
-    this.context.restore();
+    drawGlyph(color);
+    context.restore();
+
+    // Pass 2: a thinner, lighter pass on top with no shadow, giving the brighter center.
+    context.save();
+    context.globalAlpha = 0.85;
+    if (marker.border) {
+      context.strokeStyle = lightenHex(borderColor, 0.55);
+      context.lineWidth = Math.max(1, scale * 0.03);
+      traceBorder();
+      context.stroke();
+    }
+    drawGlyph(lightenHex(color, 0.55));
+    context.restore();
   }
 
   private drawWorldGraphic(graphic: WorldGraphicInstance, state: GameState, scale: number, toCanvas: (x: number, y: number) => { x: number; y: number }): void {

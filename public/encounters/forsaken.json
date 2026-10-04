@@ -4,6 +4,112 @@
   "duration": 120000,
   "arena": { "shape": "circle", "radius": 10, "edge": "deadly" },
   "background": "bg-default",
+  "markers": [
+    {
+      "id": "A",
+      "position": {
+        "x": 0,
+        "y": -6.5
+      },
+      "character": "A",
+      "border": {
+        "shape": "circle",
+        "radius": 0.6
+      },
+      "color": "#ff0000"
+    },
+    {
+      "id": "1",
+      "position": {
+        "x": 6.5,
+        "y": -6.5
+      },
+      "character": "1",
+      "border": {
+        "shape": "square",
+        "radius": 0.6
+      },
+      "color": "#ff0000"
+    },
+    {
+      "id": "B",
+      "position": {
+        "x": 6.5,
+        "y": 0
+      },
+      "character": "B",
+      "border": {
+        "shape": "circle",
+        "radius": 0.6
+      },
+      "color": "#dddd00"
+    },
+    {
+      "id": "2",
+      "position": {
+        "x": 6.5,
+        "y": 6.5
+      },
+      "character": "2",
+      "border": {
+        "shape": "square",
+        "radius": 0.6
+      },
+      "color": "#dddd00"
+    },
+    {
+      "id": "C",
+      "position": {
+        "x": 0,
+        "y": 6.5
+      },
+      "character": "C",
+      "border": {
+        "shape": "circle",
+        "radius": 0.6
+      },
+      "color": "#1155ff"
+    },
+    {
+      "id": "3",
+      "position": {
+        "x": -6.5,
+        "y": 6.5
+      },
+      "character": "3",
+      "border": {
+        "shape": "square",
+        "radius": 0.6
+      },
+      "color": "#1155ff"
+    },
+    {
+      "id": "D",
+      "position": {
+        "x": -6.5,
+        "y": 0
+      },
+      "character": "D",
+      "border": {
+        "shape": "circle",
+        "radius": 0.6
+      },
+      "color": "#8800ee"
+    },
+    {
+      "id": "4",
+      "position": {
+        "x": -6.5,
+        "y": -6.5
+      },
+      "character": "4",
+      "border": {
+        "shape": "square",
+        "radius": 0.6
+      },
+      "color": "#8800ee"
+    }
+  ],
   "randomGroups": {
     "triggerAssignments": {
       "mode": "choice",
