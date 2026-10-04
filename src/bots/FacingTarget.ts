@@ -4,8 +4,8 @@ import type { EntityReference } from './PositionTarget';
 export type FacingTarget =
   /** Faces the closest living player when resolved. */
   | { type: 'nearest_player' }
-  /** A fixed heading, independent of where the entity is standing. */
-  | { type: 'absolute'; angle: number | string }
+  /** A fixed compass heading with an optional degree offset. */
+  | { type: 'absolute'; angle: number | string; offset?: number }
   /** Faces the direction from this entity towards another entity, plus an offset. */
   | { type: 'entity'; entity: EntityReference; offset?: number }
   /** Faces the direction from this entity towards a fixed point, plus an offset. */

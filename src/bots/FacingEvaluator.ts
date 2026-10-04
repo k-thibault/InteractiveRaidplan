@@ -13,6 +13,8 @@ export type FacingCondition =
   | { type: 'active_cast'; cast: string; source?: string }
   | { type: 'active_area'; mechanic?: string; element?: string }
   | { type: 'entity_id'; id: string }
+  /** Players only: holds this mechanical role. */
+  | { type: 'mechanical_role'; role: string }
   | { type: 'and'; conditions: FacingConditionExpression[] }
   | { type: 'or'; conditions: FacingConditionExpression[] }
   | { type: 'not'; condition: FacingConditionExpression };
@@ -37,8 +39,8 @@ export class FacingEvaluator {
     void params; // Reserved for API parity with position recalculation.
     const rules = group ? (this.definitions[group] ?? []) : Object.values(this.definitions).flat();
     for (const entity of [...state.players, ...state.enemies] as Entity[]) {
-      // A stunned entity keeps its current facing and rule state.
-      if (!canTurn(entity)) continue;
+      // A stunned entity keeps its current facing and rule state; a human-controlled player turns themselves.
+      if (!canTurn(entity) || (entity as { controlled?: boolean }).controlled) continue;
       const rule = rules.find((candidate) => candidate.when === undefined || this.matches(candidate.when, entity, state));
       if (rule) {
         const angle = this.resolve(rule.target, state, entity);
@@ -61,7 +63,7 @@ export class FacingEvaluator {
     if (target.type === 'absolute') {
       const angle = this.resolveValue(target.angle);
       const resolved = typeof angle === 'number' ? angle : Number(angle);
-      return Number.isFinite(resolved) ? resolved : undefined;
+      return Number.isFinite(resolved) ? (((resolved + (target.offset ?? 0)) % 360) + 360) % 360 : undefined;
     }
     if (target.type === 'position') {
       const position = this.resolveValue(target.position);
@@ -81,6 +83,7 @@ export class FacingEvaluator {
       case 'not_has_status': return !statuses.some((status) => status.definitionId === condition.status);
       case 'mechanic': return state.currentMechanic === condition.mechanic;
       case 'entity_id': return entity.id === condition.id;
+      case 'mechanical_role': return ((entity as { mechanicalRoles?: string[] }).mechanicalRoles ?? []).includes(condition.role);
       case 'active_cast': return state.casts.some((cast) => cast.definitionId === condition.cast && (!condition.source || cast.sourceId === condition.source));
       case 'active_area': return state.effects.some((effect) =>
         effect.resolvedAt === undefined &&
