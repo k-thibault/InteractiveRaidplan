@@ -97,7 +97,7 @@
         "shape": "circle",
         "radius": 0.6
       },
-      "color": "#f13b66"
+      "color": "#ff0000"
     },
     {
       "id": "1",
@@ -110,7 +110,7 @@
         "shape": "square",
         "radius": 0.6
       },
-      "color": "#f13b66"
+      "color": "#ff0000"
     },
     {
       "id": "B",
@@ -123,7 +123,7 @@
         "shape": "circle",
         "radius": 0.6
       },
-      "color": "#e1dc5d"
+      "color": "#dddd00"
     },
     {
       "id": "2",
@@ -136,7 +136,7 @@
         "shape": "square",
         "radius": 0.6
       },
-      "color": "#e1dc5d"
+      "color": "#dddd00"
     },
     {
       "id": "C",
@@ -149,7 +149,7 @@
         "shape": "circle",
         "radius": 0.6
       },
-      "color": "#65b3ea"
+      "color": "#1155ff"
     },
     {
       "id": "3",
@@ -162,7 +162,7 @@
         "shape": "square",
         "radius": 0.6
       },
-      "color": "#65b3ea"
+      "color": "#1155ff"
     },
     {
       "id": "D",
@@ -175,7 +175,7 @@
         "shape": "circle",
         "radius": 0.6
       },
-      "color": "#e291e6"
+      "color": "#8800ee"
     },
     {
       "id": "4",
@@ -188,7 +188,7 @@
         "shape": "square",
         "radius": 0.6
       },
-      "color": "#e291e6"
+      "color": "#8800ee"
     }
   ],
   "markerQueries": {
