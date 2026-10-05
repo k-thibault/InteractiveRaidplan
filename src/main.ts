@@ -9,7 +9,7 @@ import type { StatusDefinition } from './entities/Status';
 import type { Player } from './entities/Player';
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
-app.innerHTML = `<main class="workbench"><header class="topbar"><div><h1 id="encounter-name">Loading encounter&hellip;</h1></div><div class="encounter-picker"><label for="encounter-select">Timeline</label><select id="encounter-select"></select></div><div class="readout"><span id="phase">READY</span><strong id="clock">00:00.0</strong></div></header><section class="arena-row"><aside id="roster" class="roster-panel" aria-label="Party health"></aside><div class="arena-panel"><canvas id="arena" width="1200" height="800" aria-label="Encounter arena"></canvas><div id="cast-bars" class="cast-bars" aria-live="polite"></div></div><aside class="event-log-panel"><h2>Event Log</h2><ul id="event-log"><li class="event-log__empty">No events yet.</li></ul></aside></section><footer class="controls"><div class="control-group"><button id="toggle" type="button">Start</button><button id="restart" type="button">Restart</button><label for="controlled-player">Control</label><select id="controlled-player"></select>${import.meta.env.DEV ? '<button id="batch-open" type="button">Batch simulate</button>' : ''}</div><div class="speed-group" role="group" aria-label="Simulation speed"><span>Speed</span><button data-speed="0.25" type="button">0.25x</button><button data-speed="0.5" type="button">0.5x</button><button class="selected" data-speed="1" type="button">1x</button></div><div class="control-group"><label><input id="keep-rng" type="checkbox"> Keep previous RNG</label>${import.meta.env.DEV ? '<label><input id="debug-mode" type="checkbox"> Debug log</label>' : ''}<span class="control-group__label">Shotcalls:</span><label><input id="shotcall-text" type="checkbox" checked> Text</label><label><input id="shotcall-tts" type="checkbox"> TTS</label><label><input id="face-cursor" type="checkbox" checked> Face cursor when still</label></div><p class="hint">Move with WASD or the arrow keys.</p></footer></main>`;
+app.innerHTML = `<main class="workbench"><header class="topbar"><div><h1 id="encounter-name">Loading encounter&hellip;</h1></div><div class="encounter-picker"><label for="encounter-select">Timeline</label><select id="encounter-select"></select></div><div class="readout"><span id="phase">READY</span><strong id="clock">00:00.0</strong></div></header><section class="arena-row"><aside id="roster" class="roster-panel" aria-label="Party health"></aside><div class="arena-panel"><canvas id="arena" width="1200" height="800" aria-label="Encounter arena"></canvas><div id="cast-bars" class="cast-bars" aria-live="polite"></div></div><aside class="event-log-panel"><h2>Event Log</h2><ul id="event-log"><li class="event-log__empty">No events yet.</li></ul></aside></section><footer class="controls"><div class="control-group"><button id="toggle" type="button">Start</button><button id="restart" type="button">Restart</button><label for="controlled-player">Control</label><select id="controlled-player"></select>${import.meta.env.DEV ? '<button id="batch-open" type="button">Batch simulate</button>' : ''}</div><div class="speed-group" role="group" aria-label="Simulation speed"><span>Speed</span><button data-speed="0.25" type="button">0.25x</button><button data-speed="0.5" type="button">0.5x</button><button class="selected" data-speed="1" type="button">1x</button></div><div class="control-group"><label><input id="keep-rng" type="checkbox"> Keep previous RNG</label>${import.meta.env.DEV ? '<label><input id="debug-mode" type="checkbox"> Debug log</label>' : ''}<span class="control-group__label">Shotcalls:</span><label><input id="shotcall-text" type="checkbox" checked> Text</label><label><input id="shotcall-tts" type="checkbox"> TTS</label><label><input id="face-cursor" type="checkbox" checked> Face cursor when still</label><label><input id="hide-bots" type="checkbox"> Hide bots</label></div><p class="hint">Move with WASD or the arrow keys.</p></footer></main>`;
 
 const canvas = document.querySelector<HTMLCanvasElement>('#arena')!;
 const renderer = new ArenaRenderer(canvas);
@@ -23,6 +23,7 @@ const castBarRows = new Map<string, { root: HTMLDivElement; name: HTMLSpanElemen
 const logList = document.querySelector<HTMLUListElement>('#event-log')!;
 const controlledPlayer = document.querySelector<HTMLSelectElement>('#controlled-player')!;
 const faceCursor = document.querySelector<HTMLInputElement>('#face-cursor')!;
+const hideBots = document.querySelector<HTMLInputElement>('#hide-bots')!;
 const shotcallText = document.querySelector<HTMLInputElement>('#shotcall-text')!;
 const shotcallTts = document.querySelector<HTMLInputElement>('#shotcall-tts')!;
 const speaker = new ShotcallSpeaker();
@@ -124,6 +125,8 @@ function rebuild(): void {
   simulation = new Simulation(encounter, { seed: currentSeed, controlledPlayerId: controlledPlayer.value || undefined, replayOutcomes, debug });
   controller = new PlayerController(simulation.state.players.find((player) => player.controlled), simulation.state.arena);
   controller.setFaceCursorWhenStill(faceCursor.checked);
+  // Hiding bots only makes sense while a specific player is controlled.
+  hideBots.disabled = !controlledPlayer.value; hideBots.title = hideBots.disabled ? 'Select a player to control to hide the bots' : '';
   speaker.reset(); buildRoster(simulation.state.players); accumulator = 0; previous = performance.now(); toggle.textContent = 'Start'; phase.textContent = 'READY'; resetLog();
   castBars.replaceChildren(); castBarRows.clear();
 }
@@ -149,6 +152,7 @@ encounterSelect.addEventListener('change', async () => { const entry = manifest.
 controlledPlayer.addEventListener('change', rebuild);
 faceCursor.addEventListener('change', () => controller?.setFaceCursorWhenStill(faceCursor.checked));
 shotcallText.addEventListener('change', () => renderer.setShotcallVisible(shotcallText.checked));
+hideBots.addEventListener('change', () => renderer.setHideBots(hideBots.checked));
 shotcallTts.addEventListener('change', () => speaker.setEnabled(shotcallTts.checked));
 canvas.addEventListener('mousemove', (event) => controller?.setMouseWorldPosition(renderer.screenToWorld(event)));
 toggle.addEventListener('click', () => { if (simulation.state.running) { simulation.pause(); speaker.pause(); toggle.textContent = 'Resume'; } else { simulation.start(); speaker.resume(); toggle.textContent = 'Pause'; } });
