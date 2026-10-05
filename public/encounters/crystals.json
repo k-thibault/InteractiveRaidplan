@@ -1,7 +1,7 @@
 {
   "version": 3,
   "name": "Bowels of Agony",
-  "duration": 72000,
+  "duration": 90000,
   "arena": {
     "shape": "circle",
     "radius": 10,
@@ -80,7 +80,12 @@
           "chaosStep": 1.5,
           "edgeInset": 0.3,
           "longWaterDistance": 2.1,
-          "longFireDistance": 4.3
+          "longFireDistance": 4.3,
+          "vacuumDistance": 3,
+          "vacuumAngle": 20,
+          "smashJumpGap": 3,
+          "smashJumpSpeed": 40,
+          "vacuumDragAngle": 45
         }
       ]
     }
@@ -544,6 +549,102 @@
           ]
         }
       ]
+    },
+    "vacuum-wave": {
+      "shape": "circle",
+      "radius": 30,
+      "label": "vacuum-wave",
+      "telegraphDuration": 0,
+      "duration": 500,
+      "executionColor": "#b58cf2",
+      "resolution": [
+        {
+          "condition": {
+            "type": "player_count",
+            "min": 0
+          },
+          "effects": [
+            {
+              "type": "knock",
+              "target": "inside",
+              "distance": 9,
+              "direction": {
+                "type": "radial"
+              },
+              "facingModifiers": [
+                {
+                  "status": "front",
+                  "towards": 0.5,
+                  "away": 2,
+                  "arc": 90,
+                  "consume": true
+                },
+                {
+                  "status": "back",
+                  "away": 0.5,
+                  "towards": 2,
+                  "arc": 90,
+                  "consume": true
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "smash-circle": {
+      "shape": "circle",
+      "radius": 7.5,
+      "label": "smash-circle",
+      "telegraphDuration": 0,
+      "duration": 500,
+      "executionColor": "#d95757",
+      "resolution": [
+        {
+          "condition": {
+            "type": "player_count",
+            "min": 0
+          },
+          "effects": [
+            {
+              "type": "damage",
+              "target": "inside",
+              "damage": {
+                "amount": 999,
+                "type": "magical",
+                "fatal": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "smash-donut": {
+      "shape": "donut",
+      "radius": 30,
+      "innerRadius": 7.5,
+      "label": "smash-donut",
+      "telegraphDuration": 0,
+      "duration": 500,
+      "executionColor": "#d9d957",
+      "resolution": [
+        {
+          "condition": {
+            "type": "player_count",
+            "min": 0
+          },
+          "effects": [
+            {
+              "type": "damage",
+              "target": "inside",
+              "damage": {
+                "amount": 90,
+                "type": "magical"
+              }
+            }
+          ]
+        }
+      ]
     }
   },
   "batches": {
@@ -764,6 +865,13 @@
         "debuff"
       ],
       "icon": "icon-damage-down"
+    },
+    {
+      "id": "knock-immunity",
+      "name": "Knockback Immunity",
+      "character": "K",
+      "color": "#7fd1ff",
+      "knockImmune": true
     }
   ],
   "casts": {
@@ -890,7 +998,7 @@
             "front",
             "back"
           ],
-          "duration": 600000,
+          "duration": 67000,
           "target": "all"
         },
         {
@@ -900,7 +1008,7 @@
           "position": {
             "type": "polar",
             "angle": "$windDiagonal",
-            "radius": 7.3
+            "radius": 7.5
           }
         },
         {
@@ -913,7 +1021,13 @@
             "angleOffset": {
               "$neg": "$fireRotation"
             },
-            "radius": 7.3
+            "radius": 7.5
+          },
+          "expiresAfter": {
+            "$add": [
+              "$debuffTiming.waterDuration",
+              5000
+            ]
           }
         },
         {
@@ -924,7 +1038,13 @@
             "type": "polar",
             "angle": "$windDiagonal",
             "angleOffset": "$fireRotation",
-            "radius": 7.3
+            "radius": 7.5
+          },
+          "expiresAfter": {
+            "$add": [
+              "$debuffTiming.fireDuration",
+              5000
+            ]
           }
         },
         {
@@ -978,6 +1098,22 @@
             {
               "type": "recalculate_roles",
               "group": "tank-swap"
+            },
+            {
+              "type": "set_focus",
+              "target": {
+                "type": "mechanical_role",
+                "role": "large_tank"
+              },
+              "enemy": "boss-large"
+            },
+            {
+              "type": "set_focus",
+              "target": {
+                "type": "mechanical_role",
+                "role": "small_tank"
+              },
+              "enemy": "boss-small"
             },
             {
               "type": "start_follow",
@@ -1146,6 +1282,56 @@
         {
           "type": "spawn_area",
           "area": "thunder"
+        }
+      ]
+    },
+    "vacuum": {
+      "id": "vacuum",
+      "name": "Vacuum Wave",
+      "castTime": 8000,
+      "visible": true,
+      "suspendFollow": {
+        "movement": true
+      },
+      "effects": [
+        {
+          "type": "spawn_area",
+          "area": "vacuum-wave"
+        }
+      ]
+    },
+    "smash": {
+      "id": "smash",
+      "name": "Umbra Smash",
+      "castTime": 5000,
+      "visible": true,
+      "suspendFollow": {
+        "movement": true,
+        "facing": true
+      },
+      "effects": [
+        {
+          "type": "start_follow",
+          "position": "cast_target_position",
+          "distance": "$spacing.smashJumpGap",
+          "moveSpeed": "$spacing.smashJumpSpeed"
+        },
+        {
+          "type": "delayed_effects",
+          "delay": 600,
+          "effects": [
+            {
+              "type": "stop_follow"
+            },
+            {
+              "type": "spawn_area",
+              "area": "smash-circle"
+            },
+            {
+              "type": "spawn_area",
+              "area": "smash-donut"
+            }
+          ]
         }
       ]
     }
@@ -2134,7 +2320,7 @@
             "type": "id",
             "id": "wind-crystal"
           },
-          "radius": 5.5
+          "radius": 5.7
         }
       },
       {
@@ -2261,7 +2447,8 @@
               "id": "${debuffTiming.shortElement}-crystal"
             }
           },
-          "distance": 0.5
+          "distance": 0.5,
+          "clamp": "intercardinal"
         }
       },
       {
@@ -2269,70 +2456,6 @@
           {
             "type": "mechanical_role",
             "role": "wind_damage_flex"
-          }
-        ],
-        "target": {
-          "type": "shift",
-          "from": {
-            "type": "shift",
-            "from": {
-              "type": "entity",
-              "player": {
-                "type": "id",
-                "id": "wind-crystal"
-              }
-            },
-            "toward": {
-              "type": "entity",
-              "player": {
-                "type": "id",
-                "id": "${debuffTiming.longElement}-crystal"
-              }
-            },
-            "distance": "$spacing.windSpread"
-          },
-          "toward": {
-            "type": "entity",
-            "player": {
-              "type": "id",
-              "id": "${debuffTiming.shortElement}-crystal"
-            }
-          },
-          "distance": "$spacing.windFlex",
-          "clamp": "cardinal"
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "wind_damage"
-          }
-        ],
-        "target": {
-          "type": "shift",
-          "from": {
-            "type": "entity",
-            "player": {
-              "type": "id",
-              "id": "wind-crystal"
-            }
-          },
-          "toward": {
-            "type": "entity",
-            "player": {
-              "type": "id",
-              "id": "${debuffTiming.longElement}-crystal"
-            }
-          },
-          "distance": "$spacing.windSpread"
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "wind_support_flex"
           }
         ],
         "target": {
@@ -2370,7 +2493,7 @@
         "when": [
           {
             "type": "mechanical_role",
-            "role": "wind_support"
+            "role": "wind_damage"
           }
         ],
         "target": {
@@ -2383,6 +2506,70 @@
             }
           },
           "awayFrom": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "${debuffTiming.longElement}-crystal"
+            }
+          },
+          "distance": "$spacing.windSpread"
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "wind_support_flex"
+          }
+        ],
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "shift",
+            "from": {
+              "type": "entity",
+              "player": {
+                "type": "id",
+                "id": "wind-crystal"
+              }
+            },
+            "toward": {
+              "type": "entity",
+              "player": {
+                "type": "id",
+                "id": "${debuffTiming.longElement}-crystal"
+              }
+            },
+            "distance": "$spacing.windSpread"
+          },
+          "toward": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "${debuffTiming.shortElement}-crystal"
+            }
+          },
+          "distance": "$spacing.windFlex",
+          "clamp": "cardinal"
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "wind_support"
+          }
+        ],
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "wind-crystal"
+            }
+          },
+          "toward": {
             "type": "entity",
             "player": {
               "type": "id",
@@ -2502,6 +2689,382 @@
               "y": 0
             }
           }
+        }
+      }
+    ],
+    "vacuum-drag": [
+      {
+        "when": {
+          "type": "player_id",
+          "id": "r1"
+        },
+        "target": {
+          "type": "edge",
+          "angleFrom": {
+            "type": "id",
+            "id": "wind-crystal"
+          },
+          "angleOffset": 180,
+          "inset": "$spacing.edgeInset"
+        }
+      },
+      {
+        "when": {
+          "type": "mechanical_role",
+          "role": "small_tank"
+        },
+        "target": {
+          "type": "edge",
+          "angleFrom": {
+            "type": "id",
+            "id": "wind-crystal"
+          },
+          "angleOffset": "$spacing.vacuumDragAngle",
+          "inset": "$spacing.edgeInset"
+        }
+      },
+      {
+        "live": true,
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "boss-small"
+            }
+          },
+          "toward": {
+            "type": "fixed",
+            "position": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "distance": "$spacing.vacuumDistance"
+        }
+      }
+    ],
+    "vacuum-stack": [
+      {
+        "when": {
+          "type": "player_id",
+          "id": "r1"
+        },
+        "target": {
+          "type": "edge",
+          "angleFrom": {
+            "type": "id",
+            "id": "wind-crystal"
+          },
+          "angleOffset": 180,
+          "inset": "$spacing.edgeInset"
+        }
+      },
+      {
+        "live": true,
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "boss-small"
+            }
+          },
+          "toward": {
+            "type": "fixed",
+            "position": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "distance": "$spacing.vacuumDistance"
+        }
+      }
+    ],
+    "vacuum-spread": [
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "wind_damage_flex"
+          }
+        ],
+        "live": true,
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "boss-small"
+            }
+          },
+          "toward": {
+            "type": "fixed",
+            "position": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "distance": 4.2,
+          "angleOffset": -55
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "wind_damage"
+          }
+        ],
+        "live": true,
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "boss-small"
+            }
+          },
+          "toward": {
+            "type": "fixed",
+            "position": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "distance": 4.2,
+          "angleOffset": -22
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "wind_support_flex"
+          }
+        ],
+        "live": true,
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "boss-small"
+            }
+          },
+          "toward": {
+            "type": "fixed",
+            "position": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "distance": 4.2,
+          "angleOffset": 55
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "wind_support"
+          }
+        ],
+        "live": true,
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "boss-small"
+            }
+          },
+          "toward": {
+            "type": "fixed",
+            "position": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "distance": 4.2,
+          "angleOffset": 22
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "short_damage"
+          }
+        ],
+        "live": true,
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "boss-small"
+            }
+          },
+          "toward": {
+            "type": "fixed",
+            "position": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "distance": 1.8,
+          "angleOffset": -22
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "short_support"
+          }
+        ],
+        "live": true,
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "boss-small"
+            }
+          },
+          "toward": {
+            "type": "fixed",
+            "position": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "distance": 1.8,
+          "angleOffset": 22
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "long_damage"
+          }
+        ],
+        "live": true,
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "boss-small"
+            }
+          },
+          "toward": {
+            "type": "fixed",
+            "position": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "distance": 1.8,
+          "angleOffset": -55
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "long_support"
+          }
+        ],
+        "live": true,
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "boss-small"
+            }
+          },
+          "toward": {
+            "type": "fixed",
+            "position": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "distance": 1.8,
+          "angleOffset": 55
+        }
+      }
+    ],
+    "vacuum-pull": [
+      {
+        "when": {
+          "type": "player_id",
+          "id": "r1"
+        },
+        "target": {
+          "type": "edge",
+          "angleFrom": {
+            "type": "id",
+            "id": "wind-crystal"
+          },
+          "angleOffset": 180,
+          "inset": "$spacing.edgeInset"
+        }
+      },
+      {
+        "when": {
+          "type": "mechanical_role",
+          "role": "small_tank"
+        },
+        "live": true,
+        "target": {
+          "type": "drag",
+          "entity": {
+            "type": "id",
+            "id": "boss-small"
+          },
+          "to": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "wind-crystal"
+            }
+          }
+        }
+      },
+      {
+        "live": true,
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "boss-small"
+            }
+          },
+          "toward": {
+            "type": "fixed",
+            "position": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "distance": "$spacing.vacuumDistance"
         }
       }
     ]
@@ -2631,7 +3194,40 @@
         }
       }
     ],
-    "facing-release": []
+    "facing-release": [],
+    "vacuum-facing": [
+      {
+        "when": [
+          {
+            "type": "has_status",
+            "status": "front"
+          }
+        ],
+        "target": {
+          "type": "entity",
+          "entity": {
+            "type": "id",
+            "id": "boss-small"
+          }
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "has_status",
+            "status": "back"
+          }
+        ],
+        "target": {
+          "type": "entity",
+          "entity": {
+            "type": "id",
+            "id": "boss-small"
+          },
+          "offset": 180
+        }
+      }
+    ]
   },
   "enemyTemplates": {
     "wind-crystal": {
@@ -2665,6 +3261,7 @@
       "name": "Omni",
       "type": "player",
       "role": "tank",
+      "color": "#4d8dff",
       "team": "red",
       "flexPriority": 1,
       "mechanicalRoles": [
@@ -2677,13 +3274,15 @@
         "x": 5,
         "y": -3
       },
-      "statuses": []
+      "statuses": [],
+      "focus": "boss-small"
     },
     {
       "id": "ot",
       "name": "Corn",
       "type": "player",
       "role": "tank",
+      "color": "#4d8dff",
       "team": "purple",
       "flexPriority": 1,
       "mechanicalRoles": [
@@ -2696,13 +3295,15 @@
         "x": -5,
         "y": -4
       },
-      "statuses": []
+      "statuses": [],
+      "focus": "boss-large"
     },
     {
       "id": "h1",
       "name": "Helmut",
       "type": "player",
       "role": "healer",
+      "color": "#4cd97b",
       "team": "purple",
       "flexPriority": 4,
       "mechanicalRoles": [],
@@ -2713,13 +3314,15 @@
         "x": -2,
         "y": 4
       },
-      "statuses": []
+      "statuses": [],
+      "focus": "boss-large"
     },
     {
       "id": "h2",
       "name": "Xqk",
       "type": "player",
       "role": "healer",
+      "color": "#4cd97b",
       "team": "red",
       "flexPriority": 4,
       "mechanicalRoles": [],
@@ -2730,13 +3333,15 @@
         "x": 2,
         "y": 4
       },
-      "statuses": []
+      "statuses": [],
+      "focus": "boss-small"
     },
     {
       "id": "m1",
       "name": "Mike",
       "type": "player",
       "role": "damage",
+      "color": "#ff5a4f",
       "team": "blue",
       "flexPriority": 2,
       "mechanicalRoles": [],
@@ -2748,13 +3353,16 @@
         "y": 4
       },
       "statuses": [],
-      "damagePosition": "melee"
+      "damagePosition": "melee",
+      "focus": "boss-large",
+      "followFocus": true
     },
     {
       "id": "m2",
       "name": "Aaragon",
       "type": "player",
       "role": "damage",
+      "color": "#ff5a4f",
       "team": "yellow",
       "flexPriority": 2,
       "mechanicalRoles": [],
@@ -2766,13 +3374,16 @@
         "y": 3.5
       },
       "statuses": [],
-      "damagePosition": "melee"
+      "damagePosition": "melee",
+      "focus": "boss-large",
+      "followFocus": true
     },
     {
       "id": "r1",
       "name": "Lynfel",
       "type": "player",
       "role": "damage",
+      "color": "#ff5a4f",
       "team": "blue",
       "flexPriority": 3,
       "mechanicalRoles": [],
@@ -2784,13 +3395,15 @@
         "y": 3.5
       },
       "statuses": [],
-      "damagePosition": "ranged"
+      "damagePosition": "ranged",
+      "focus": "boss-small"
     },
     {
       "id": "r2",
       "name": "L'leilah",
       "type": "player",
       "role": "damage",
+      "color": "#ff5a4f",
       "team": "yellow",
       "flexPriority": 3,
       "mechanicalRoles": [],
@@ -2802,7 +3415,8 @@
         "y": 4
       },
       "statuses": [],
-      "damagePosition": "ranged"
+      "damagePosition": "ranged",
+      "focus": "boss-small"
     }
   ],
   "enemies": [
@@ -2951,6 +3565,19 @@
       "group": "facing-release"
     },
     {
+      "id": "thunder-melee-release",
+      "after": "thunder-cast",
+      "delay": 10000,
+      "type": "release_positions",
+      "target": {
+        "type": "players",
+        "ids": [
+          "m1",
+          "m2"
+        ]
+      }
+    },
+    {
       "id": "thunder-heal",
       "after": "thunder-cast",
       "delay": 10000,
@@ -2970,10 +3597,26 @@
       "mechanic": "thunder-bait"
     },
     {
+      "id": "tb-shotcall",
+      "after": "thunder-bait-cast",
+      "delay": 0,
+      "type": "set_shotcall",
+      "text": "Tankbusters",
+      "duration": 3000
+    },
+    {
       "id": "thunder-bait-positions",
       "after": "thunder-bait-cast",
       "type": "recalculate_positions",
       "group": "thunder-bait-start"
+    },
+    {
+      "id": "lat-long-shotcall",
+      "after": "thunder-bait-cast",
+      "delay": 9000,
+      "type": "set_shotcall",
+      "text": "Chaos middle, get to your crystal",
+      "duration": 5000
     },
     {
       "id": "thunder-bait-face",
@@ -3038,6 +3681,172 @@
       "id": "chaos-short-facing-release",
       "after": "chaos-cast",
       "delay": 11000,
+      "type": "recalculate_facing",
+      "group": "facing-release"
+    },
+    {
+      "id": "chaos-melee-release",
+      "after": "chaos-cast",
+      "delay": 12000,
+      "type": "release_positions",
+      "target": {
+        "type": "players",
+        "ids": [
+          "m1",
+          "m2"
+        ]
+      }
+    },
+    {
+      "id": "bowels-shotcall",
+      "after": "crystal-call",
+      "delay": 5000,
+      "type": "set_shotcall",
+      "text": "Short ${debuffTiming.shortElement}",
+      "duration": 3000
+    },
+    {
+      "id": "smash-heal",
+      "after": "crystal-call",
+      "delay": 54000,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "vacuum-drag",
+      "after": "crystal-call",
+      "delay": 53000,
+      "type": "recalculate_positions",
+      "group": "vacuum-drag"
+    },
+    {
+      "id": "vacuum-shotcall",
+      "after": "vacuum-drag",
+      "delay": 0,
+      "type": "set_shotcall",
+      "text": "Shan out, get to wind",
+      "duration": 5000
+    },
+    {
+      "id": "vacuum-pull",
+      "after": "crystal-call",
+      "delay": 56000,
+      "type": "recalculate_positions",
+      "group": "vacuum-pull"
+    },
+    {
+      "id": "vacuum-small-stops",
+      "after": "crystal-call",
+      "delay": 58500,
+      "type": "stop_follow",
+      "source": "boss-small"
+    },
+    {
+      "id": "vacuum-stack",
+      "after": "crystal-call",
+      "delay": 58500,
+      "type": "recalculate_positions",
+      "group": "vacuum-stack"
+    },
+    {
+      "id": "vacuum-cast",
+      "after": "crystal-call",
+      "delay": 59000,
+      "type": "start_cast",
+      "source": "boss-small",
+      "cast": "vacuum",
+      "mechanic": "vacuum"
+    },
+    {
+      "id": "smash-cast",
+      "after": "crystal-call",
+      "delay": 59000,
+      "type": "start_cast",
+      "source": "boss-large",
+      "cast": "smash",
+      "facing": {
+        "type": "farthest_player"
+      }
+    },
+    {
+      "id": "vacuum-heal",
+      "after": "vacuum-cast",
+      "delay": 8000,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "vacuum-spread",
+      "after": "vacuum-cast",
+      "delay": 500,
+      "type": "recalculate_positions",
+      "group": "vacuum-spread"
+    },
+    {
+      "id": "vacuum-knock-immunity",
+      "after": "vacuum-cast",
+      "delay": 500,
+      "type": "apply_status",
+      "target": {
+        "type": "and",
+        "selectors": [
+          {
+            "type": "players",
+            "ids": [
+              "r12",
+              "h12",
+              "h22"
+            ]
+          },
+          {
+            "type": "without_status",
+            "status": "front"
+          },
+          {
+            "type": "without_status",
+            "status": "back"
+          }
+        ]
+      },
+      "status": "knock-immunity",
+      "duration": 10000
+    },
+    {
+      "id": "vacuum-facing",
+      "after": "vacuum-spread",
+      "delay": 4000,
+      "type": "recalculate_facing",
+      "group": "vacuum-facing"
+    },
+    {
+      "id": "vacuum-hold-positions",
+      "after": "vacuum-cast",
+      "delay": 7500,
+      "type": "release_positions",
+      "target": {
+        "type": "all"
+      }
+    },
+    {
+      "id": "vacuum-hold-follow",
+      "after": "vacuum-cast",
+      "delay": 7500,
+      "type": "set_focus",
+      "target": {
+        "type": "all"
+      },
+      "follow": false
+    },
+    {
+      "id": "vacuum-facing-release",
+      "after": "vacuum-cast",
+      "delay": 10000,
       "type": "recalculate_facing",
       "group": "facing-release"
     }

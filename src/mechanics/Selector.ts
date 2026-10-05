@@ -20,6 +20,8 @@ export type PlayerSelector =
   | { type: 'with_status'; status: string }
   | { type: 'without_status'; status: string }
   | { type: 'mechanical_role'; role: string }
+  /** Specific players by id. */
+  | { type: 'players'; ids: string[] }
   /** Players captured into a named runtime group. */
   | { type: 'from_group'; group: string }
   /** Players facing towards or away from a source within the given tolerance. */
@@ -46,6 +48,7 @@ export function selectPlayers(selector: PlayerSelector, state: GameState, random
   if (selector.type === 'with_status') return players.filter((player) => player.statuses.some((status) => status.definitionId === selector.status));
   if (selector.type === 'without_status') return players.filter((player) => !player.statuses.some((status) => status.definitionId === selector.status));
   if (selector.type === 'mechanical_role') return players.filter((player) => player.mechanicalRoles.includes(selector.role));
+  if (selector.type === 'players') return players.filter((player) => selector.ids.includes(player.id));
   if (selector.type === 'from_group') {
     const ids = new Set((state.groups?.[selector.group] ?? []).map((entry) => entry.id));
     return players.filter((player) => ids.has(player.id));

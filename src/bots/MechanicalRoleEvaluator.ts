@@ -8,6 +8,8 @@ export type Condition =
   | { type: 'has_status'; status: string }
   | { type: 'not_has_status'; status: string }
   | { type: 'gameplay_role'; role: Player['role'] }
+  /** This exact player, for one-off assignments (e.g. a designated bait). */
+  | { type: 'player_id'; id: string }
   | { type: 'damage_position'; position: NonNullable<Player['damagePosition']> }
   | { type: 'team'; team: NonNullable<Player['team']> }
   | { type: 'mechanical_role'; role: string }
@@ -84,6 +86,7 @@ export class MechanicalRoleEvaluator {
       case 'has_status': return player.statuses.some((status) => status.definitionId === this.resolveValue(condition.status));
       case 'not_has_status': return !player.statuses.some((status) => status.definitionId === this.resolveValue(condition.status));
       case 'gameplay_role': return player.role === condition.role;
+      case 'player_id': return player.id === condition.id;
       case 'damage_position': return player.damagePosition === condition.position;
       case 'team': return player.team === condition.team;
       case 'mechanical_role': return player.mechanicalRoles.includes(condition.role);

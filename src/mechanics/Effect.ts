@@ -43,6 +43,8 @@ export interface RecalculateRolesEffect { type: 'recalculate_roles'; group?: str
 export interface RecalculatePositionsEffect { type: 'recalculate_positions'; group?: string; params?: Record<string, number>; }
 /** Re-matches facing rules for every player and enemy against the `facing` definitions. */
 export interface RecalculateFacingEffect { type: 'recalculate_facing'; group?: string; }
+/** Changes which enemy the targeted players focus, and/or whether they follow it when they have no position rule. */
+export interface SetFocusEffect { type: 'set_focus'; target: EffectTarget; /** Enemy id to focus. Omit to keep the current focus. */ enemy?: string; /** Turns following of the focused enemy on or off. Omit to keep it. */ follow?: boolean; }
 export interface SetMechanicEffect { type: 'set_mechanic'; mechanic: string; }
 export interface AreaDefinition {
   shape: 'circle' | 'cone' | 'half_room' | 'donut';
@@ -116,7 +118,7 @@ export interface SpawnEnemyEffect extends Partial<EnemyTemplate> {
 /** Removes a temporary enemy and cancels its active casts. */
 export interface RemoveEnemyEffect { type: 'remove_enemy'; id: string; }
 
-export type EffectDefinition = HealEffect | DamageEffect | ApplyStatusEffect | RemoveStatusEffect | KnockEffect | StartFollowEffect | StopFollowEffect | AddToBatchEffect | StartCastEffect | RecalculateRolesEffect | RecalculatePositionsEffect | RecalculateFacingEffect | SetMechanicEffect | SpawnAreaEffect | AssignDistributionEffect | DistributeStatusesEffect | ShowGraphicEffect | DelayedEffectsEffect | SelectGroupEffect | SelectGroupSubsetEffect | ForEachGroupEffect | SpawnEnemyEffect | RemoveEnemyEffect;
+export type EffectDefinition = HealEffect | DamageEffect | ApplyStatusEffect | RemoveStatusEffect | KnockEffect | StartFollowEffect | StopFollowEffect | AddToBatchEffect | StartCastEffect | RecalculateRolesEffect | RecalculatePositionsEffect | RecalculateFacingEffect | SetFocusEffect | SetMechanicEffect | SpawnAreaEffect | AssignDistributionEffect | DistributeStatusesEffect | ShowGraphicEffect | DelayedEffectsEffect | SelectGroupEffect | SelectGroupSubsetEffect | ForEachGroupEffect | SpawnEnemyEffect | RemoveEnemyEffect;
 export interface AreaCondition { type: 'player_count'; min?: number; max?: number; }
 export interface AreaResolutionRule { condition: AreaCondition; effects: EffectDefinition[]; }
 export interface BaseAreaEffect {

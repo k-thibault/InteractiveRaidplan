@@ -26,3 +26,13 @@ export interface Entity {
   /** Forced movement in progress. Blocks regular movement. */
   knock?: ActiveKnock;
 }
+
+/** Default radius of an entity drawn without an explicit style radius. */
+export const DEFAULT_ENTITY_RADIUS = 0.38;
+
+/** Radius of an entity's drawn indicator in world units. */
+export function entityRadius(entity: Entity): number {
+  const style = entity.style;
+  if (!style) return DEFAULT_ENTITY_RADIUS;
+  return style.radius ?? DEFAULT_ENTITY_RADIUS;
+}

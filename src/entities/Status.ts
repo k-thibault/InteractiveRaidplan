@@ -15,6 +15,11 @@ export interface StatusDefinition {
   icon?: string;
   /** Hidden from HUD status lists but still active mechanically. */
   hidden?: boolean;
+  /**
+   * While active, knock effects are ignored entirely: the carrier is not moved, and the knock's facing modifiers
+   * (including any `consume` removal of front/back-style statuses) do not trigger. A knock already in progress finishes.
+   */
+  knockImmune?: boolean;
   /** While active, a root blocks movement and a stun blocks movement and facing changes. */
   control?: 'root' | 'stun';
   /** Runs on any removal, including expiry. */

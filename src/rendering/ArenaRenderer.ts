@@ -16,9 +16,10 @@ interface StatusHitArea {
 
 const DEFAULT_TELEGRAPH_COLOR = '#ffbe49';
 const DEFAULT_EXECUTION_COLOR = '#d95757';
-const CONTROLLED_PLAYER_COLOR = '#4da6ff';
+const CONTROLLED_PLAYER_COLOR = '#b57bff';
 const PLAYER_COLOR = '#74d4a0';
 const DEAD_COLOR = '#68727d';
+const PLAYER_BORDER_COLOR = 'rgba(8, 12, 17, 0.9)';
 
 function hexToRgba(hex: string, alpha: number): string {
   const value = hex.replace('#', '');
@@ -54,13 +55,20 @@ export class ArenaRenderer {
     this.shotcallElement = document.createElement('div');
     this.shotcallElement.className = 'shotcall-display';
     this.shotcallElement.setAttribute('aria-live', 'polite');
-    this.shotcallElement.hidden = true;
+    this.shotcallElement.hidden = !this.shotcallVisible;
     canvas.parentElement?.insertBefore(this.shotcallElement, canvas);
+    this.applyShotcallLayout();
     canvas.addEventListener('mousemove', (event) => this.updateTooltip(event));
     canvas.addEventListener('mouseleave', () => this.hideTooltip());
   }
 
-  setShotcallVisible(visible: boolean): void { this.shotcallVisible = visible; }
+  setShotcallVisible(visible: boolean): void { this.shotcallVisible = visible; this.shotcallElement.hidden = !visible; this.applyShotcallLayout(); }
+
+  /** Marks the panel and page so CSS can offset the shotcall bar's height from the page's top spacing. */
+  private applyShotcallLayout(): void {
+    this.canvas.parentElement?.classList.toggle('arena-panel--shotcalls', this.shotcallVisible);
+    document.body.classList.toggle('shotcalls-active', this.shotcallVisible);
+  }
 
   setStatusDefinitions(statuses: StatusDefinition[]): void {
     this.statusDefinitions.clear();
@@ -158,16 +166,16 @@ export class ArenaRenderer {
     context.restore();
     this.drawBorder(state.arena, toCanvas, scale);
     for (const enemy of state.enemies) this.drawUnit(enemy, '#ff7757', scale, toCanvas, true);
-    for (const player of state.players) this.drawUnit(player, !player.alive ? DEAD_COLOR : player.controlled ? CONTROLLED_PLAYER_COLOR : PLAYER_COLOR, scale, toCanvas, false);
+    for (const player of state.players) this.drawUnit(player, !player.alive ? DEAD_COLOR : player.controlled ? CONTROLLED_PLAYER_COLOR : (player.color ?? PLAYER_COLOR), scale, toCanvas, false);
     for (const graphic of state.worldGraphics) this.drawWorldGraphic(graphic, state, scale, toCanvas);
     this.drawControlledStatuses(state, scale);
     this.updateShotcall(state);
   }
 
   private updateShotcall(state: GameState): void {
-    const visible = this.shotcallVisible && state.shotcall !== undefined;
-    this.shotcallElement.hidden = !visible;
-    this.shotcallElement.textContent = visible ? state.shotcall!.text : '';
+    // The bar stays in the layout whenever shotcalls are enabled and is simply empty between calls, so the page never shifts.
+    this.shotcallElement.hidden = !this.shotcallVisible;
+    this.shotcallElement.textContent = this.shotcallVisible ? (state.shotcall?.text ?? '') : '';
   }
 
   /** Traces the arena outline as the current path, in canvas pixels. */
@@ -306,6 +314,12 @@ export class ArenaRenderer {
       this.context.fillStyle = fill;
       this.context.arc(point.x, point.y, radius, 0, Math.PI * 2);
       this.context.fill();
+      // Thin dark outline keeps player dots readable against telegraphs and each other.
+      if ('role' in entity) {
+        this.context.strokeStyle = PLAYER_BORDER_COLOR;
+        this.context.lineWidth = Math.max(1, scale * 0.04);
+        this.context.stroke();
+      }
     } else {
       this.tracePolygon(style.type, point, radius);
       this.context.fillStyle = fill;
