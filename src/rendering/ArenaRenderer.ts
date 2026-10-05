@@ -44,6 +44,7 @@ export class ArenaRenderer {
   private readonly statusDefinitions = new Map<string, StatusDefinition>();
   private readonly images = new Map<string, HTMLImageElement>();
   private shotcallVisible = true;
+  private hideBots = false;
   private readonly shotcallElement: HTMLDivElement;
 
   constructor(canvas: HTMLCanvasElement) {
@@ -61,6 +62,9 @@ export class ArenaRenderer {
     canvas.addEventListener('mousemove', (event) => this.updateTooltip(event));
     canvas.addEventListener('mouseleave', () => this.hideTooltip());
   }
+
+  /** When on, players other than the controlled one are not drawn. They still exist and act in the simulation. Has no effect while no player is controlled, since that would leave an empty arena. */
+  setHideBots(hide: boolean): void { this.hideBots = hide; }
 
   setShotcallVisible(visible: boolean): void { this.shotcallVisible = visible; this.shotcallElement.hidden = !visible; this.applyShotcallLayout(); }
 
@@ -166,7 +170,11 @@ export class ArenaRenderer {
     context.restore();
     this.drawBorder(state.arena, toCanvas, scale);
     for (const enemy of state.enemies) this.drawUnit(enemy, '#ff7757', scale, toCanvas, true);
-    for (const player of state.players) this.drawUnit(player, !player.alive ? DEAD_COLOR : player.controlled ? CONTROLLED_PLAYER_COLOR : (player.color ?? PLAYER_COLOR), scale, toCanvas, false);
+    const hideUncontrolled = this.hideBots && state.players.some((candidate) => candidate.controlled);
+    for (const player of state.players) {
+      if (hideUncontrolled && !player.controlled) continue;
+      this.drawUnit(player, !player.alive ? DEAD_COLOR : player.controlled ? CONTROLLED_PLAYER_COLOR : (player.color ?? PLAYER_COLOR), scale, toCanvas, false);
+    }
     for (const graphic of state.worldGraphics) this.drawWorldGraphic(graphic, state, scale, toCanvas);
     this.drawControlledStatuses(state, scale);
     this.updateShotcall(state);
