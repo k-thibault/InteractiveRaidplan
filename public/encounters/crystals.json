@@ -84,7 +84,8 @@
           "vacuumDistance": 3,
           "vacuumAngle": 20,
           "smashJumpGap": 3,
-          "smashJumpSpeed": 40
+          "smashJumpSpeed": 40,
+          "vacuumDragAngle": 45
         }
       ]
     }
@@ -864,6 +865,13 @@
         "debuff"
       ],
       "icon": "icon-damage-down"
+    },
+    {
+      "id": "knock-immunity",
+      "name": "Knockback Immunity",
+      "character": "K",
+      "color": "#7fd1ff",
+      "knockImmune": true
     }
   ],
   "casts": {
@@ -1294,7 +1302,7 @@
     },
     "smash": {
       "id": "smash",
-      "name": "Umbral Smash",
+      "name": "Umbra Smash",
       "castTime": 5000,
       "visible": true,
       "suspendFollow": {
@@ -2705,20 +2713,14 @@
           "type": "mechanical_role",
           "role": "small_tank"
         },
-        "live": true,
         "target": {
-          "type": "drag",
-          "entity": {
+          "type": "edge",
+          "angleFrom": {
             "type": "id",
-            "id": "boss-small"
+            "id": "wind-crystal"
           },
-          "to": {
-            "type": "entity",
-            "player": {
-              "type": "id",
-              "id": "wind-crystal"
-            }
-          }
+          "angleOffset": "$spacing.vacuumDragAngle",
+          "inset": "$spacing.edgeInset"
         }
       },
       {
@@ -3004,6 +3006,65 @@
           },
           "distance": 1.8,
           "angleOffset": 55
+        }
+      }
+    ],
+    "vacuum-pull": [
+      {
+        "when": {
+          "type": "player_id",
+          "id": "r1"
+        },
+        "target": {
+          "type": "edge",
+          "angleFrom": {
+            "type": "id",
+            "id": "wind-crystal"
+          },
+          "angleOffset": 180,
+          "inset": "$spacing.edgeInset"
+        }
+      },
+      {
+        "when": {
+          "type": "mechanical_role",
+          "role": "small_tank"
+        },
+        "live": true,
+        "target": {
+          "type": "drag",
+          "entity": {
+            "type": "id",
+            "id": "boss-small"
+          },
+          "to": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "wind-crystal"
+            }
+          }
+        }
+      },
+      {
+        "live": true,
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "boss-small"
+            }
+          },
+          "toward": {
+            "type": "fixed",
+            "position": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "distance": "$spacing.vacuumDistance"
         }
       }
     ]
@@ -3536,10 +3597,26 @@
       "mechanic": "thunder-bait"
     },
     {
+      "id": "tb-shotcall",
+      "after": "thunder-bait-cast",
+      "delay": 0,
+      "type": "set_shotcall",
+      "text": "Tankbusters",
+      "duration": 3000
+    },
+    {
       "id": "thunder-bait-positions",
       "after": "thunder-bait-cast",
       "type": "recalculate_positions",
       "group": "thunder-bait-start"
+    },
+    {
+      "id": "lat-long-shotcall",
+      "after": "thunder-bait-cast",
+      "delay": 9000,
+      "type": "set_shotcall",
+      "text": "Chaos middle, get to your crystal",
+      "duration": 5000
     },
     {
       "id": "thunder-bait-face",
@@ -3625,7 +3702,7 @@
       "after": "crystal-call",
       "delay": 5000,
       "type": "set_shotcall",
-      "text": "short ${debuffTiming.shortElement}",
+      "text": "Short ${debuffTiming.shortElement}",
       "duration": 3000
     },
     {
@@ -3641,21 +3718,36 @@
     {
       "id": "vacuum-drag",
       "after": "crystal-call",
-      "delay": 54000,
+      "delay": 53000,
       "type": "recalculate_positions",
       "group": "vacuum-drag"
     },
     {
+      "id": "vacuum-shotcall",
+      "after": "vacuum-drag",
+      "delay": 0,
+      "type": "set_shotcall",
+      "text": "Shan out, get to wind",
+      "duration": 5000
+    },
+    {
+      "id": "vacuum-pull",
+      "after": "crystal-call",
+      "delay": 56000,
+      "type": "recalculate_positions",
+      "group": "vacuum-pull"
+    },
+    {
       "id": "vacuum-small-stops",
       "after": "crystal-call",
-      "delay": 57500,
+      "delay": 58500,
       "type": "stop_follow",
       "source": "boss-small"
     },
     {
       "id": "vacuum-stack",
       "after": "crystal-call",
-      "delay": 57500,
+      "delay": 58500,
       "type": "recalculate_positions",
       "group": "vacuum-stack"
     },
@@ -3697,6 +3789,35 @@
       "group": "vacuum-spread"
     },
     {
+      "id": "vacuum-knock-immunity",
+      "after": "vacuum-cast",
+      "delay": 500,
+      "type": "apply_status",
+      "target": {
+        "type": "and",
+        "selectors": [
+          {
+            "type": "players",
+            "ids": [
+              "r12",
+              "h12",
+              "h22"
+            ]
+          },
+          {
+            "type": "without_status",
+            "status": "front"
+          },
+          {
+            "type": "without_status",
+            "status": "back"
+          }
+        ]
+      },
+      "status": "knock-immunity",
+      "duration": 10000
+    },
+    {
       "id": "vacuum-facing",
       "after": "vacuum-spread",
       "delay": 4000,
@@ -3704,20 +3825,30 @@
       "group": "vacuum-facing"
     },
     {
+      "id": "vacuum-hold-positions",
+      "after": "vacuum-cast",
+      "delay": 7500,
+      "type": "release_positions",
+      "target": {
+        "type": "all"
+      }
+    },
+    {
+      "id": "vacuum-hold-follow",
+      "after": "vacuum-cast",
+      "delay": 7500,
+      "type": "set_focus",
+      "target": {
+        "type": "all"
+      },
+      "follow": false
+    },
+    {
       "id": "vacuum-facing-release",
       "after": "vacuum-cast",
       "delay": 10000,
       "type": "recalculate_facing",
       "group": "facing-release"
-    },
-    {
-      "id": "vacuum-release",
-      "after": "vacuum-facing-release",
-      "delay": 500,
-      "type": "release_positions",
-      "target": {
-        "type": "all"
-      }
     }
   ]
 }

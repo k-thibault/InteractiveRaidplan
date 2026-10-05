@@ -469,6 +469,8 @@ export class MechanicExecutor {
     if (!(duration > 0)) return;
     for (const player of players) {
       if (!player.alive) continue;
+      // Immune players are skipped before anything else so facing modifiers can't consume their statuses either.
+      if (this.isKnockImmune(player)) continue;
       const direction = this.knockHeading(player, knock.direction, sourceId, context);
       if (!direction) continue;
       let distance = knock.distance;
@@ -481,6 +483,11 @@ export class MechanicExecutor {
       }
       player.knock = { direction, speed: distance / (duration / 1000), remaining: duration };
     }
+  }
+
+  /** Whether any status on the player is flagged `knockImmune`. */
+  private isKnockImmune(player: Player): boolean {
+    return player.statuses.some((status) => this.statusDefinitions.get(status.definitionId)?.knockImmune === true);
   }
 
   /** Unit vector for the knock, or undefined when its origin can't be resolved. */
