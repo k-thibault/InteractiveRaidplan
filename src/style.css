@@ -59,3 +59,5 @@ body.shotcalls-active .arena-row { margin-top: 10px; }
 .batch-dialog td:not(:first-child), .batch-dialog th:not(:first-child) { text-align: right; width: 110px; }
 .batch-seeds { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
 .batch-seeds button { padding: 4px 8px; font-size: 11px; }
+
+.control-group__label { margin-left: 8px; }
