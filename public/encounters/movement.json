@@ -45,9 +45,9 @@
     }
   },
   "players": [
-    { "id": "player", "name": "Ranged", "type": "player", "role": "damage", "mechanicalRoles": [], "moveSpeed": 5, "health": 100, "alive": true, "position": { "x": 0, "y": 5 }, "statuses": [] },
-    { "id": "tank", "name": "Tank", "type": "player", "role": "tank", "mechanicalRoles": [], "moveSpeed": 5, "health": 100, "alive": true, "position": { "x": -2, "y": -3 }, "statuses": [] },
-    { "id": "healer", "name": "Healer", "type": "player", "role": "healer", "mechanicalRoles": [], "moveSpeed": 5, "health": 100, "alive": true, "position": { "x": 3, "y": 4 }, "statuses": [] }
+    { "id": "player", "name": "Ranged", "type": "player", "role": "damage", "color": "#ff5a4f", "mechanicalRoles": [], "moveSpeed": 5, "health": 100, "alive": true, "position": { "x": 0, "y": 5 }, "statuses": [] },
+    { "id": "tank", "name": "Tank", "type": "player", "role": "tank", "color": "#4d8dff", "mechanicalRoles": [], "moveSpeed": 5, "health": 100, "alive": true, "position": { "x": -2, "y": -3 }, "statuses": [] },
+    { "id": "healer", "name": "Healer", "type": "player", "role": "healer", "color": "#4cd97b", "mechanicalRoles": [], "moveSpeed": 5, "health": 100, "alive": true, "position": { "x": 3, "y": 4 }, "statuses": [] }
   ],
   "enemies": [
     { "id": "boss", "name": "Boss", "type": "enemy", "alive": true, "position": { "x": 0, "y": -7 }, "statuses": [] }

@@ -2806,8 +2806,8 @@
               "y": 0
             }
           },
-          "distance": "4.2",
-          "angleOffset": 45
+          "distance": 4.2,
+          "angleOffset": -55
         }
       },
       {
@@ -2834,8 +2834,8 @@
               "y": 0
             }
           },
-          "distance": "4.2",
-          "angleOffset": 20
+          "distance": 4.2,
+          "angleOffset": -22
         }
       },
       {
@@ -2862,8 +2862,8 @@
               "y": 0
             }
           },
-          "distance": "4.2",
-          "angleOffset": -45
+          "distance": 4.2,
+          "angleOffset": 55
         }
       },
       {
@@ -2890,8 +2890,8 @@
               "y": 0
             }
           },
-          "distance": "4.2",
-          "angleOffset": -20
+          "distance": 4.2,
+          "angleOffset": 22
         }
       },
       {
@@ -2918,8 +2918,8 @@
               "y": 0
             }
           },
-          "distance": "2.8",
-          "angleOffset": 20
+          "distance": 1.8,
+          "angleOffset": -22
         }
       },
       {
@@ -2946,8 +2946,8 @@
               "y": 0
             }
           },
-          "distance": "2.8",
-          "angleOffset": -20
+          "distance": 1.8,
+          "angleOffset": 22
         }
       },
       {
@@ -2974,8 +2974,8 @@
               "y": 0
             }
           },
-          "distance": "2.8",
-          "angleOffset": 45
+          "distance": 1.8,
+          "angleOffset": -55
         }
       },
       {
@@ -3002,8 +3002,8 @@
               "y": 0
             }
           },
-          "distance": "2.8",
-          "angleOffset": -45
+          "distance": 1.8,
+          "angleOffset": 55
         }
       }
     ]
@@ -3143,13 +3143,10 @@
           }
         ],
         "target": {
-          "type": "bearing",
-          "of": {
-            "type": "entity",
-            "player": {
-              "type": "id",
-              "id": "boss-small"
-            }
+          "type": "entity",
+          "entity": {
+            "type": "id",
+            "id": "boss-small"
           }
         }
       },
@@ -3161,13 +3158,10 @@
           }
         ],
         "target": {
-          "type": "bearing",
-          "of": {
-            "type": "entity",
-            "player": {
-              "type": "id",
-              "id": "boss-small"
-            }
+          "type": "entity",
+          "entity": {
+            "type": "id",
+            "id": "boss-small"
           },
           "offset": 180
         }
@@ -3206,6 +3200,7 @@
       "name": "Omni",
       "type": "player",
       "role": "tank",
+      "color": "#4d8dff",
       "team": "red",
       "flexPriority": 1,
       "mechanicalRoles": [
@@ -3226,6 +3221,7 @@
       "name": "Corn",
       "type": "player",
       "role": "tank",
+      "color": "#4d8dff",
       "team": "purple",
       "flexPriority": 1,
       "mechanicalRoles": [
@@ -3246,6 +3242,7 @@
       "name": "Helmut",
       "type": "player",
       "role": "healer",
+      "color": "#4cd97b",
       "team": "purple",
       "flexPriority": 4,
       "mechanicalRoles": [],
@@ -3264,6 +3261,7 @@
       "name": "Xqk",
       "type": "player",
       "role": "healer",
+      "color": "#4cd97b",
       "team": "red",
       "flexPriority": 4,
       "mechanicalRoles": [],
@@ -3282,6 +3280,7 @@
       "name": "Mike",
       "type": "player",
       "role": "damage",
+      "color": "#ff5a4f",
       "team": "blue",
       "flexPriority": 2,
       "mechanicalRoles": [],
@@ -3302,6 +3301,7 @@
       "name": "Aaragon",
       "type": "player",
       "role": "damage",
+      "color": "#ff5a4f",
       "team": "yellow",
       "flexPriority": 2,
       "mechanicalRoles": [],
@@ -3322,6 +3322,7 @@
       "name": "Lynfel",
       "type": "player",
       "role": "damage",
+      "color": "#ff5a4f",
       "team": "blue",
       "flexPriority": 3,
       "mechanicalRoles": [],
@@ -3341,6 +3342,7 @@
       "name": "L'leilah",
       "type": "player",
       "role": "damage",
+      "color": "#ff5a4f",
       "team": "yellow",
       "flexPriority": 3,
       "mechanicalRoles": [],
@@ -3697,7 +3699,7 @@
     {
       "id": "vacuum-facing",
       "after": "vacuum-spread",
-      "delay": 500,
+      "delay": 4000,
       "type": "recalculate_facing",
       "group": "vacuum-facing"
     },

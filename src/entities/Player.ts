@@ -11,6 +11,8 @@ export interface Player extends Entity {
   health: number;
   maxHealth?: number;
   role: PlayerRole;
+  /** Optional #rrggbb color of the player's arena indicator. The controlled player is always drawn in the controlled color. */
+  color?: string;
   /** Optional mechanical team for paired mechanics. */
   team?: string;
   damagePosition?: DamagePosition;

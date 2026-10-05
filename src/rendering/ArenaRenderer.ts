@@ -16,7 +16,7 @@ interface StatusHitArea {
 
 const DEFAULT_TELEGRAPH_COLOR = '#ffbe49';
 const DEFAULT_EXECUTION_COLOR = '#d95757';
-const CONTROLLED_PLAYER_COLOR = '#4da6ff';
+const CONTROLLED_PLAYER_COLOR = '#b57bff';
 const PLAYER_COLOR = '#74d4a0';
 const DEAD_COLOR = '#68727d';
 
@@ -54,13 +54,14 @@ export class ArenaRenderer {
     this.shotcallElement = document.createElement('div');
     this.shotcallElement.className = 'shotcall-display';
     this.shotcallElement.setAttribute('aria-live', 'polite');
-    this.shotcallElement.hidden = true;
+    this.shotcallElement.hidden = !this.shotcallVisible;
+    canvas.parentElement?.classList.toggle('arena-panel--shotcalls', this.shotcallVisible);
     canvas.parentElement?.insertBefore(this.shotcallElement, canvas);
     canvas.addEventListener('mousemove', (event) => this.updateTooltip(event));
     canvas.addEventListener('mouseleave', () => this.hideTooltip());
   }
 
-  setShotcallVisible(visible: boolean): void { this.shotcallVisible = visible; }
+  setShotcallVisible(visible: boolean): void { this.shotcallVisible = visible; this.shotcallElement.hidden = !visible; this.canvas.parentElement?.classList.toggle('arena-panel--shotcalls', visible); }
 
   setStatusDefinitions(statuses: StatusDefinition[]): void {
     this.statusDefinitions.clear();
@@ -158,16 +159,16 @@ export class ArenaRenderer {
     context.restore();
     this.drawBorder(state.arena, toCanvas, scale);
     for (const enemy of state.enemies) this.drawUnit(enemy, '#ff7757', scale, toCanvas, true);
-    for (const player of state.players) this.drawUnit(player, !player.alive ? DEAD_COLOR : player.controlled ? CONTROLLED_PLAYER_COLOR : PLAYER_COLOR, scale, toCanvas, false);
+    for (const player of state.players) this.drawUnit(player, !player.alive ? DEAD_COLOR : player.controlled ? CONTROLLED_PLAYER_COLOR : (player.color ?? PLAYER_COLOR), scale, toCanvas, false);
     for (const graphic of state.worldGraphics) this.drawWorldGraphic(graphic, state, scale, toCanvas);
     this.drawControlledStatuses(state, scale);
     this.updateShotcall(state);
   }
 
   private updateShotcall(state: GameState): void {
-    const visible = this.shotcallVisible && state.shotcall !== undefined;
-    this.shotcallElement.hidden = !visible;
-    this.shotcallElement.textContent = visible ? state.shotcall!.text : '';
+    // The bar stays in the layout whenever shotcalls are enabled and is simply empty between calls, so the page never shifts.
+    this.shotcallElement.hidden = !this.shotcallVisible;
+    this.shotcallElement.textContent = this.shotcallVisible ? (state.shotcall?.text ?? '') : '';
   }
 
   /** Traces the arena outline as the current path, in canvas pixels. */
