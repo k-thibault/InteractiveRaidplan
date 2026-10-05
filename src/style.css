@@ -39,3 +39,23 @@ body.shotcalls-active .arena-row { margin-top: 10px; }
 @media (max-width: 650px) { .workbench { padding: 22px 14px; }.topbar { align-items: start; }.controls { gap: 12px; } .hint { flex-basis: 100%; margin: 2px 0 0; } .arena-row { flex-direction: column; } .event-log-panel { width: auto; max-height: 220px; } .roster-panel { width: auto; flex-direction: row; flex-wrap: wrap; } .roster-entry { flex: 1 1 260px; } }
 .control-group input[type="checkbox"] { margin-left: 8px; }
 .control-group label[for="keep-rng"] { margin-left: 0; }
+/* Development-only batch simulation dialog. */
+.batch-dialog { width: min(900px, 94vw); max-height: 88vh; overflow: auto; border: 1px solid #3b4e61; background: #0f161e; color: #dbe7f2; padding: 22px 26px; font: 12px 'DM Mono', monospace; }
+.batch-dialog::backdrop { background: rgba(5, 8, 12, .72); }
+.batch-dialog h2 { margin: 0 0 14px; font-size: 20px; font-weight: 500; color: #f0f5f8; }
+.batch-dialog h3 { margin: 0 0 6px; font-size: 13px; font-weight: 500; color: #74d4a0; }
+.batch-form { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
+.batch-form label { display: flex; align-items: center; gap: 8px; color: #8394a4; }
+.batch-form input[type="number"] { width: 90px; border: 1px solid #3b4e61; border-radius: 3px; background: #18232e; color: #dbe7f2; font: 12px 'DM Mono', monospace; padding: 7px 8px; }
+.batch-status, .batch-note { color: #8394a4; margin: 10px 0; }
+.batch-note { margin: 0 0 6px; color: #637585; }
+.batch-dialog progress { width: 100%; height: 6px; accent-color: #74d4a0; }
+.batch-summary { margin: 14px 0 6px; font-size: 14px; color: #dbe7f2; }
+.batch-summary strong { color: #f0f5f8; font-weight: 500; }
+.batch-section { margin-top: 18px; }
+.batch-dialog table { width: 100%; border-collapse: collapse; }
+.batch-dialog th, .batch-dialog td { text-align: left; padding: 5px 10px 5px 0; border-bottom: 1px solid #1d2a37; }
+.batch-dialog th { color: #637585; font-weight: 400; }
+.batch-dialog td:not(:first-child), .batch-dialog th:not(:first-child) { text-align: right; width: 110px; }
+.batch-seeds { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.batch-seeds button { padding: 4px 8px; font-size: 11px; }

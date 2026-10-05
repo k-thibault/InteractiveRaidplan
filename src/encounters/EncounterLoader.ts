@@ -63,6 +63,18 @@ export function validateMarkerReferences(encounter: Encounter, markerIds: Set<st
   visit(encounter.markerQueries, 'Encounter markerQueries');
 }
 
+/** Names of the library graphics used by entity `graphic` blocks anywhere in the encounter (players, enemies, templates, spawn events and effects). */
+export function collectEntityGraphics(node: unknown, found = new Set<string>()): Set<string> {
+  if (Array.isArray(node)) { node.forEach((child) => collectEntityGraphics(child, found)); return found; }
+  if (node === null || typeof node !== 'object') return found;
+  for (const [key, value] of Object.entries(node as Record<string, unknown>)) {
+    const image = (value as { image?: unknown } | null)?.image;
+    if (key === 'graphic' && typeof image === 'string' && !image.includes('$')) found.add(image);
+    else collectEntityGraphics(value, found);
+  }
+  return found;
+}
+
 /** Loads an encounter and resolves any shared resource-backed graphics. */
 export async function loadEncounter(url: string): Promise<Encounter> {
   const response = await fetch(url);
@@ -87,6 +99,7 @@ export async function loadEncounter(url: string): Promise<Encounter> {
   const graphics = [...new Set([
     ...(encounter.resources?.graphics ?? []),
     ...(encounter.markers?.flatMap((marker) => marker.image ? [marker.image] : []) ?? []),
+    ...collectEntityGraphics([encounter.players, encounter.enemies, encounter.enemyTemplates, encounter.events, encounter.casts]),
   ])];
   if (graphics.length === 0) return encounter;
 

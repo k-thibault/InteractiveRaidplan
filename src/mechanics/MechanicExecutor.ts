@@ -31,10 +31,12 @@ interface EffectContext {
   /** Where the cast's target stood when the cast began. */
   targetPosition?: Vector2;
   /** Set while an area's resolution effects run: its center and the entity it is anchored to. */
-  area?: { position: Vector2; sourceId?: string };
+  area?: { position: Vector2; sourceId?: string; /** Name used to attribute deaths caused by this area. */ label?: string };
 }
 
 export class MechanicExecutor {
+  /** Names the status whose effects are running, so damage dealt by a status can be attributed to it. */
+  private causeOverride?: string;
   private readonly state: GameState;
   private readonly random: Random;
   private readonly damageResolver: DamageResolver;
@@ -102,10 +104,11 @@ export class MechanicExecutor {
     else if (event.type === 'set_mechanic') this.state.currentMechanic = event.mechanic;
     else if (event.type === 'apply_status') for (const player of selectPlayers(event.target, this.state, this.random)) this.applyStatus(player, event.status, event.duration, event.stacks ?? 1);
     else if (event.type === 'distribute_statuses') this.distributeStatuses(event, selectPlayers(event.target, this.state, this.random), event.replayId);
-    else if (event.type === 'damage') this.applyDamage(selectPlayers(event.target, this.state, this.random), event.damage);
+    else if (event.type === 'damage') this.applyDamage(selectPlayers(event.target, this.state, this.random), event.damage, undefined, `event ${event.id}`);
     else if (event.type === 'heal') this.healPlayers(selectPlayers(event.target, this.state, this.random), event.amount, event.full);
     else if (event.type === 'start_cast') {
       const cast = this.resolveCastChoice(event.cast, event.castChoices);
+      if (event.castChoices && event.castChoices.length > 1) this.state.rolls[event.id] = cast;
       // When the cast was rolled from `castChoices` and no `mechanic` was given, default the mechanic flag to
       // whichever cast got picked, so `{"type":"mechanic"}` position/role rules can react to the outcome.
       this.startCast(cast, event.source, event.mechanic ?? (event.castChoices ? cast : undefined), event.facing, event.replayId);
@@ -369,7 +372,7 @@ export class MechanicExecutor {
     const id = resolved.enemyId ?? `enemy-${this.state.enemies.length + 1}-${this.state.time}`;
     const enemy: Enemy = {
       id, type: 'enemy', name: resolved.name ?? 'Enemy', position: { ...position }, alive: true,
-      style: resolved.style, statuses: [],
+      style: resolved.style, graphic: resolved.graphic, statuses: [],
       expiresAt: resolved.expiresAfter !== undefined ? this.state.time + resolved.expiresAfter : undefined
     };
     const nearestPlayer = this.state.players
@@ -417,6 +420,7 @@ export class MechanicExecutor {
     }
     if (resolvedEffect.type === 'start_cast') {
       const cast = this.resolveCastChoice(resolvedEffect.cast, resolvedEffect.castChoices);
+      if (resolvedEffect.castChoices && resolvedEffect.castChoices.length > 1) this.state.rolls[`${sourceName ?? sourceId} cast`] = cast;
       const mechanic = resolvedEffect.mechanic ?? (resolvedEffect.castChoices ? cast : undefined);
       this.startCast(cast, resolvedEffect.source ?? sourceId, mechanic, resolvedEffect.facing, resolvedEffect.replayId);
       return;
@@ -441,7 +445,7 @@ export class MechanicExecutor {
     }
     if (resolvedEffect.type === 'show_graphic') { this.spawnGraphic(resolvedEffect.image, resolvedEffect.anchor ?? { type: 'entity', entity: sourceId }, resolvedEffect.radius, resolvedEffect.duration); return; }
     const targets = this.effectTargets(resolvedEffect.target, inside, sourceId, cast);
-    if (resolvedEffect.type === 'damage') this.applyDamage(targets, resolvedEffect.damage, sourceName);
+    if (resolvedEffect.type === 'damage') this.applyDamage(targets, resolvedEffect.damage, sourceName, cast?.area?.label);
     else if (resolvedEffect.type === 'heal') this.healPlayers(targets, resolvedEffect.amount, resolvedEffect.full);
     else if (resolvedEffect.type === 'knock') this.applyKnock(targets, resolvedEffect, sourceId, cast);
     else {
@@ -538,11 +542,21 @@ export class MechanicExecutor {
     }
   }
 
-  private applyDamage(players: typeof this.state.players, damage: DamageDefinition, sourceName?: string): void {
+  /**
+   * `sourceName` is what the player sees in the log; `cause` is only for statistics and names whatever else
+   * produced the damage (an area, a status, a timeline event) when there is no source name.
+   */
+  private applyDamage(players: typeof this.state.players, damage: DamageDefinition, sourceName?: string, cause?: string): void {
     for (const player of players) {
       const wasAlive = player.alive;
       const result = this.damageResolver.resolve(player, damage);
-      if (result.killed && wasAlive) this.removeStatusesOnDeath(player);
+      if (result.killed && wasAlive) {
+        this.state.deaths.push({
+          time: this.state.time, playerId: player.id, playerName: player.name, roles: [...player.mechanicalRoles],
+          source: sourceName ?? cause ?? this.causeOverride ?? 'unattributed damage', damageType: damage.type, fatal: result.fatal,
+        });
+        this.removeStatusesOnDeath(player);
+      }
       if (player.controlled) {
         if (result.fatal) this.logEvent(`You took fatal ${damage.type} damage${sourceName ? ` from ${sourceName}` : ''}.`);
         else this.logEvent(`${sourceName ? `You were hit by ${sourceName} for` : 'You were hit for'} ${Math.round(result.amount)} ${damage.type} damage.`);
@@ -630,15 +644,24 @@ export class MechanicExecutor {
       const holder = deathTrigger === 'remove' && definition?.reassignIfDead
         ? selectPlayers({ type: 'random', count: 1 }, this.state, this.random)[0] ?? player
         : player;
-      for (const effect of effects ?? []) this.executeEffect(effect, new Set(), holder.id);
+      this.runStatusEffects(effects, holder.id, statusId, definition?.name);
     } else {
       const reasonEffects = reason === 'expired' ? definition?.onExpire : definition?.onEarlyRemove;
-      for (const effect of reasonEffects ?? []) this.executeEffect(effect, new Set(), player.id);
+      this.runStatusEffects(reasonEffects, player.id, statusId, definition?.name);
       const holder = player.alive || !definition?.reassignIfDead ? player : (selectPlayers({ type: 'random', count: 1 }, this.state, this.random)[0] ?? player);
-      for (const effect of definition?.onRemove ?? []) this.executeEffect(effect, new Set(), holder.id);
+      this.runStatusEffects(definition?.onRemove, holder.id, statusId, definition?.name);
     }
     if (player.controlled && !definition?.hidden) this.logEvent(`Your ${statusDisplayName(statusId, this.statusDefinitions)} status ended.`);
     else if (this.debug) this.logEvent(`${player.name}'s ${statusDisplayName(statusId, this.statusDefinitions)}${definition?.hidden ? ' (hidden)' : ''} status ended.`, 'debug');
+  }
+
+  /** Runs a status hook's effects with the status named as the cause of any damage they deal. */
+  private runStatusEffects(effects: EffectDefinition[] | undefined, holderId: string, statusId: string, statusName?: string): void {
+    if (!effects?.length) return;
+    const previous = this.causeOverride;
+    this.causeOverride = `status: ${statusName ?? statusId}`;
+    try { for (const effect of effects) this.executeEffect(effect, new Set(), holderId); }
+    finally { this.causeOverride = previous; }
   }
 
   /** Recomputes root/stun from the statuses currently on the player. */

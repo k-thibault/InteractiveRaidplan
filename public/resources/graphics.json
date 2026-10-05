@@ -2,10 +2,11 @@
   "bg-default": "/resources/graphics/bg-default.svg",
   "bg-overloaded": "/resources/graphics/bg-overloaded.svg",
   "bg-dmup3": "/resources/graphics/bg-dmup3.svg",
+  "boss-chaos": "/resources/graphics/boss-chaos.svg",
+  "boss-exdeath": "/resources/graphics/boss-exdeath.svg",
   "icon-fire-vulnerability": "/resources/graphics/icon-fire-vulnerability.svg",
   "icon-frost-vulnerability": "/resources/graphics/icon-frost-vulnerability.svg",
   "icon-wind-vulnerability": "/resources/graphics/icon-wind-vulnerability.svg",
-  "signal-incoming-strike": "/resources/graphics/signal-incoming-strike.svg",
   "icon-magic-vulnerability": "/resources/graphics/icon-magic-vulnerability.svg",
   "icon-physical-vulnerability": "/resources/graphics/icon-physical-vulnerability.svg",
   "icon-damage-down": "/resources/graphics/icon-damage-down.svg",
@@ -22,5 +23,9 @@
   "icon-headwind": "/resources/graphics/icon-headwind.svg",
   "icon-tailwind": "/resources/graphics/icon-tailwind.svg",
   "icon-surecast": "/resources/graphics/icon-surecast.svg",
-  "icon-arms-length": "/resources/graphics/icon-arms-length.svg"
+  "icon-arms-length": "/resources/graphics/icon-arms-length.svg",
+  "object-wind-crystal": "/resources/graphics/object-wind-crystal.svg",
+  "object-fire-crystal": "/resources/graphics/object-fire-crystal.svg",
+  "object-water-crystal": "/resources/graphics/object-water-crystal.svg",
+  "signal-incoming-strike": "/resources/graphics/signal-incoming-strike.svg"
 }

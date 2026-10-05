@@ -126,7 +126,8 @@
             "spread-trigger",
             "spread-trigger",
             "spread-trigger"
-          ]
+          ],
+          "supportPos" : "back"
         },
         {
           "damage": [
@@ -140,7 +141,8 @@
             "cone-trigger",
             "cone-trigger",
             "cone-trigger"
-          ]
+          ],
+          "supportPos" : "front"
         }
       ]
     },
@@ -601,24 +603,8 @@
                   "type": "start_cast",
                   "source": "$groupMember.id",
                   "cast": "back-sweep"
-                },
-                {
-                  "type": "set_shotcall",
-                  "text": "Tower 1",
-                  "duration": 3000
                 }
               ]
-            }
-          ]
-        },
-        {
-          "type": "delayed_effects",
-          "delay": 4500,
-          "effects": [
-            {
-              "type": "set_shotcall",
-              "text": "Between",
-              "duration": 4000
             }
           ]
         }
@@ -674,24 +660,8 @@
                   "type": "start_cast",
                   "source": "$groupMember.id",
                   "cast": "front-sweep"
-                },
-                {
-                  "type": "set_shotcall",
-                  "text": "Tower 1",
-                  "duration": 3000
                 }
               ]
-            }
-          ]
-        },
-        {
-          "type": "delayed_effects",
-          "delay": 4500,
-          "effects": [
-            {
-              "type": "set_shotcall",
-              "text": "Opposite",
-              "duration": 4000
             }
           ]
         }
@@ -1514,6 +1484,14 @@
       "full": true
     },
     {
+      "id": "call-tower2-1",
+      "after": "tower-1-soak-a",
+      "delay": 12000,
+      "type": "set_shotcall",
+      "text": "Tower 2",
+      "duration": 3000
+    },
+    {
       "id": "tower-2-soak-a",
       "after": "tower-1-soak-a",
       "delay": 12000,
@@ -1560,12 +1538,38 @@
       "full": true
     },
     {
-      "id": "pasts-future-cast",
+      "id": "pasts-future-cast-1",
       "after": "tower-2-soak-a",
       "delay": 7000,
       "type": "start_cast",
       "source": "boss",
       "castChoices": ["pasts", "futures"]
+    },
+    {
+      "id": "pasts-future-call-1-pasts",
+      "after": "tower-2-soak-a",
+      "delay": 12000,
+      "type": "set_shotcall",
+      "ifMechanic": "pasts",
+      "text": "Between",
+      "duration": 4000
+    },
+    {
+      "id": "pasts-future-call-1-futures",
+      "after": "tower-2-soak-a",
+      "delay": 12000,
+      "type": "set_shotcall",
+      "ifMechanic": "futures",
+      "text": "Opposite",
+      "duration": 4000
+    },
+    {
+      "id": "pasts-future-call-1-tower",
+      "after": "tower-2-soak-a",
+      "delay": 19000,
+      "type": "set_shotcall",
+      "text": "Tower 1",
+      "duration": 3000
     },
     {
       "id": "bait-1",
@@ -1622,6 +1626,14 @@
       "full": true
     },
     {
+      "id": "call-tower2-2",
+      "after": "tower-3-soak-a",
+      "delay": 12000,
+      "type": "set_shotcall",
+      "text": "Supports are in the ${triggerAssignments.supportPos}, swapping for tower 2",
+      "duration": 3000
+    },
+    {
       "id": "tower-4-soak-a",
       "after": "tower-3-soak-a",
       "delay": 12000,
@@ -1675,12 +1687,38 @@
       "full": true
     },
     {
-      "id": "pasts-future-cast",
+      "id": "pasts-future-cast-2",
       "after": "tower-4-soak-a",
       "delay": 7000,
       "type": "start_cast",
       "source": "boss",
       "castChoices": ["pasts", "futures"]
+    },
+    {
+      "id": "pasts-future-call-2-pasts",
+      "after": "tower-4-soak-a",
+      "delay": 12000,
+      "type": "set_shotcall",
+      "ifMechanic": "pasts",
+      "text": "Between",
+      "duration": 4000
+    },
+    {
+      "id": "pasts-future-call-2-futures",
+      "after": "tower-4-soak-a",
+      "delay": 12000,
+      "type": "set_shotcall",
+      "ifMechanic": "futures",
+      "text": "Opposite",
+      "duration": 4000
+    },
+    {
+      "id": "pasts-future-call-2-tower",
+      "after": "tower-4-soak-a",
+      "delay": 19000,
+      "type": "set_shotcall",
+      "text": "Tower 1",
+      "duration": 3000
     },
     {
       "id": "bait-2",
@@ -1737,6 +1775,14 @@
       "full": true
     },
     {
+      "id": "call-tower2-3",
+      "after": "tower-5-soak-a",
+      "delay": 12000,
+      "type": "set_shotcall",
+      "text": "Tower 2",
+      "duration": 3000
+    },
+    {
       "id": "tower-6-soak-a",
       "after": "tower-5-soak-a",
       "delay": 12000,
@@ -1783,12 +1829,38 @@
       "full": true
     },
     {
-      "id": "pasts-future-cast",
+      "id": "pasts-future-cast-3",
       "after": "tower-6-soak-a",
       "delay": 7000,
       "type": "start_cast",
       "source": "boss",
       "castChoices": ["pasts", "futures"]
+    },
+    {
+      "id": "pasts-future-call-3-pasts",
+      "after": "tower-6-soak-a",
+      "delay": 12000,
+      "type": "set_shotcall",
+      "ifMechanic": "pasts",
+      "text": "Between",
+      "duration": 4000
+    },
+    {
+      "id": "pasts-future-call-3-futures",
+      "after": "tower-6-soak-a",
+      "delay": 12000,
+      "type": "set_shotcall",
+      "ifMechanic": "futures",
+      "text": "Opposite",
+      "duration": 4000
+    },
+    {
+      "id": "pasts-future-call-3-tower",
+      "after": "tower-6-soak-a",
+      "delay": 19000,
+      "type": "set_shotcall",
+      "text": "Tower 1",
+      "duration": 3000
     },
     {
       "id": "bait-3",
@@ -1845,6 +1917,14 @@
       "full": true
     },
     {
+      "id": "call-tower2-4",
+      "after": "tower-7-soak-a",
+      "delay": 12000,
+      "type": "set_shotcall",
+      "text": "Remember what you had, swapping for the last tower 2",
+      "duration": 3000
+    },
+    {
       "id": "tower-8-soak-a",
       "after": "tower-7-soak-a",
       "delay": 12000,
@@ -1898,12 +1978,38 @@
       "full": true
     },
     {
-      "id": "pasts-future-cast",
+      "id": "pasts-future-cast-4",
       "after": "tower-8-soak-a",
       "delay": 7000,
       "type": "start_cast",
       "source": "boss",
       "castChoices": ["pasts", "futures"]
+    },
+    {
+      "id": "pasts-future-call-4-tower",
+      "after": "tower-8-soak-a",
+      "delay": 12000,
+      "type": "set_shotcall",
+      "text": "A side",
+      "duration": 3000
+    },
+    {
+      "id": "pasts-future-call-4-pasts",
+      "after": "tower-8-soak-a",
+      "delay": 19000,
+      "type": "set_shotcall",
+      "ifMechanic": "pasts",
+      "text": "Staying",
+      "duration": 4000
+    },
+    {
+      "id": "pasts-future-call-4-futures",
+      "after": "tower-8-soak-a",
+      "delay": 19000,
+      "type": "set_shotcall",
+      "ifMechanic": "futures",
+      "text": "Going through",
+      "duration": 4000
     },
     {
       "id": "bait-4",

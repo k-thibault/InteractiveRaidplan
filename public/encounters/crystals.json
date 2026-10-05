@@ -11,6 +11,8 @@
   "resources": {
     "graphics": [
       "bg-dmup3",
+      "boss-chaos",
+      "boss-exdeath",
       "icon-magic-vulnerability",
       "icon-wind-vulnerability",
       "icon-beta",
@@ -21,7 +23,10 @@
       "icon-tailwind",
       "icon-damage-down",
       "icon-surecast",
-      "icon-arms-length"
+      "icon-arms-length",
+      "object-wind-crystal",
+      "object-fire-crystal",
+      "object-water-crystal"
     ]
   },
   "randomGroups": {
@@ -86,8 +91,7 @@
           "vacuumDistance": 3,
           "vacuumAngle": 20,
           "smashJumpGap": 3,
-          "smashJumpSpeed": 40,
-          "vacuumDragAngle": 45
+          "smashJumpSpeed": 40
         }
       ]
     }
@@ -205,6 +209,26 @@
         "player": {
           "type": "id",
           "id": "${debuffTiming.shortElement}-crystal"
+        }
+      }
+    },
+    "windPullMarker": {
+      "from": {
+        "type": "entity",
+        "player": {
+          "type": "id",
+          "id": "wind-crystal"
+        }
+      },
+      "ranks": [
+        1,
+        2
+      ],
+      "nearestTo": {
+        "type": "entity",
+        "player": {
+          "type": "id",
+          "id": "boss-small"
         }
       }
     },
@@ -2722,11 +2746,10 @@
         },
         "target": {
           "type": "edge",
-          "angleFrom": {
-            "type": "id",
-            "id": "wind-crystal"
+          "angleTo": {
+            "type": "marker",
+            "query": "windPullMarker"
           },
-          "angleOffset": "$spacing.vacuumDragAngle",
           "inset": "$spacing.edgeInset"
         }
       },
@@ -3243,6 +3266,11 @@
         "type": "diamond",
         "radius": 0.7,
         "color": "#4cc66d"
+      },
+      "graphic": {
+        "image": "object-wind-crystal",
+        "replaceShape": true,
+        "rotate": false
       }
     },
     "water-crystal": {
@@ -3251,6 +3279,11 @@
         "type": "square",
         "radius": 0.7,
         "color": "#4d8fd6"
+      },
+      "graphic": {
+        "image": "object-water-crystal",
+        "replaceShape": true,
+        "rotate": false
       }
     },
     "fire-crystal": {
@@ -3259,6 +3292,11 @@
         "type": "triangle",
         "radius": 0.7,
         "color": "#d9483b"
+      },
+      "graphic": {
+        "image": "object-fire-crystal",
+        "replaceShape": true,
+        "rotate": false
       }
     }
   },
@@ -3440,6 +3478,11 @@
         "type": "ring",
         "radius": 2.8
       },
+      "graphic": {
+        "image": "boss-chaos",
+        "radius": 2.1,
+        "rotate": true
+      },
       "statuses": []
     },
     {
@@ -3454,6 +3497,11 @@
       "style": {
         "type": "ring",
         "radius": 2.0
+      },
+      "graphic": {
+        "image": "boss-exdeath",
+        "radius": 1.5,
+        "rotate": true
       },
       "statuses": []
     }

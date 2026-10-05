@@ -15,6 +15,20 @@ export interface ShotcallState {
   expiresAt?: number;
 }
 
+/** Recorded the moment a player dies, for statistics and debugging. */
+export interface DeathRecord {
+  time: number;
+  playerId: string;
+  playerName: string;
+  /** Mechanical roles held when the player died. */
+  roles: string[];
+  /** What dealt the killing damage: a cast name, an area label, a status, or the arena edge. */
+  source: string;
+  damageType: string;
+  /** Whether the damage was flagged fatal (or made fatal by a status) rather than simply large. */
+  fatal: boolean;
+}
+
 export interface GameState {
   time: number;
   /** Playable area and its border rule. */
@@ -31,6 +45,10 @@ export interface GameState {
   running: boolean;
   completed: boolean;
   log: LogEntry[];
+  /** Every player death so far, in order. */
+  deaths: DeathRecord[];
+  /** Outcomes rolled while running, keyed by what was rolled (event id for `castChoices`). Random groups are listed separately by the batch runner. */
+  rolls: Record<string, string>;
   /** Snapshot of entity ids/positions built by group-selection effects. */
   groups: Record<string, GroupEntry[]>;
   /** Static encounter markers, resolved to world positions at simulation creation. */

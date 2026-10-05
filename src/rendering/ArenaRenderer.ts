@@ -1,5 +1,5 @@
 import type { GameState } from '../simulation/GameState';
-import type { Entity } from '../entities/Entity';
+import { GRAPHIC_BASE_FACING, type Entity } from '../entities/Entity';
 import type { StatusDefinition, StatusInstance } from '../entities/Status';
 import type { EncounterResources } from '../encounters/Encounter';
 import type { GraphicAnchor, WorldGraphicInstance } from '../mechanics/Graphic';
@@ -304,8 +304,12 @@ export class ArenaRenderer {
     const radius = (style.type === 'ring' ? style.radius : style.radius ?? .38) * scale;
     // Dead units keep the dead color regardless of style.
     const fill = entity.alive ? (style.color ?? color) : color;
+    // A replacing graphic stands in for the shape once its image has loaded; until then the shape is drawn.
+    const replaced = entity.graphic?.replaceShape === true && this.resolvedImage(entity.graphic.image) !== undefined;
     this.context.beginPath();
-    if (style.type === 'ring') {
+    if (replaced) {
+      // Nothing to trace: drawEntityGraphic draws the entity below.
+    } else if (style.type === 'ring') {
       this.context.strokeStyle = fill;
       this.context.lineWidth = (style.thickness ?? .12) * scale;
       this.context.arc(point.x, point.y, radius, 0, Math.PI * 2);
@@ -328,10 +332,26 @@ export class ArenaRenderer {
       this.context.lineWidth = 2;
       this.context.stroke();
     }
+    const graphicDrawn = this.drawEntityGraphic(entity, point, radius, scale);
     // Polygon markers are stationary objects and have no heading.
-    if (style.type === 'circle' || style.type === 'ring') this.drawFacingWedge(entity, point, radius, scale);
+    if ((style.type === 'circle' || style.type === 'ring') && !(graphicDrawn && entity.graphic?.replaceShape)) this.drawFacingWedge(entity, point, radius, scale);
     this.context.fillStyle = '#dbe7f2'; this.context.font = '12px sans-serif'; this.context.textAlign = 'center'; this.context.fillText(entity.name, point.x, point.y - radius - 8);
     if (showInlineStatuses) entity.statuses.filter((status) => !this.statusDefinitions.get(status.definitionId)?.hidden).forEach((status, index) => this.drawStatusIcon(status, point.x + radius + scale * (.24 + index * .48), point.y - radius * .5, scale));
+  }
+
+  /** Draws the entity's optional graphic centered on it. Returns whether an image was drawn (false while still loading). */
+  private drawEntityGraphic(entity: Entity, point: { x: number; y: number }, shapeRadius: number, scale: number): boolean {
+    const graphic = entity.graphic;
+    const image = this.resolvedImage(graphic?.image);
+    if (!graphic || !image) return false;
+    const half = graphic.radius !== undefined ? graphic.radius * scale : shapeRadius;
+    this.context.save();
+    this.context.translate(point.x, point.y);
+    if (graphic.rotate) this.context.rotate(((entity.facing ?? DEFAULT_FACING) - GRAPHIC_BASE_FACING) * Math.PI / 180);
+    if (!entity.alive) this.context.globalAlpha = 0.5;
+    this.context.drawImage(image, -half, -half, half * 2, half * 2);
+    this.context.restore();
+    return true;
   }
 
   /** Traces a closed marker outline; the triangle points up and the square is axis-aligned. */
