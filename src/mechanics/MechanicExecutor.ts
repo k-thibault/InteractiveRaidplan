@@ -12,7 +12,7 @@ import type { ApplyStatusAssignment, DistributeStatusesEffect } from './Effect';
 import type { GraphicAnchor } from './Graphic';
 import { statusDisplayName } from '../util/format';
 import type { CastDefinition, CastFacing } from './Cast';
-import { resolvePositionValue, isTowardsPosition, fromPolar, normalize, subtract, toPolarAngle } from '../geometry/Vector2';
+import { distance as pointDistance, resolvePositionValue, isTowardsPosition, fromPolar, normalize, subtract, toPolarAngle } from '../geometry/Vector2';
 import type { PositionValue, Vector2 } from '../geometry/Vector2';
 import { DEFAULT_FACING } from '../geometry/Facing';
 import { DEFAULT_KNOCK_DURATION, facingKnockScale } from './Knock';
@@ -28,6 +28,8 @@ const DEFAULT_BATCH_WINDOW = 500;
 interface EffectContext {
   direction?: number;
   targetId?: string;
+  /** Where the cast's target stood when the cast began. */
+  targetPosition?: Vector2;
   /** Set while an area's resolution effects run: its center and the entity it is anchored to. */
   area?: { position: Vector2; sourceId?: string };
 }
@@ -137,7 +139,7 @@ export class MechanicExecutor {
       const source = findEntity(this.state, cast.sourceId);
       const hasFacingCast = this.state.casts.some((active) => active.sourceId === cast.sourceId && (active.targetId !== undefined || active.direction !== undefined));
       if (source && !hasFacingCast) source.facingRuleActive = false;
-      const context: EffectContext = { direction: cast.direction, targetId: cast.targetId };
+      const context: EffectContext = { direction: cast.direction, targetId: cast.targetId, targetPosition: cast.targetPosition };
       for (const rawEffect of definition.effects) this.executeEffect(this.randomContext.resolve(rawEffect), new Set(), cast.sourceId, definition.name, context);
     }
     for (const pending of [...this.pendingEffects]) {
@@ -301,10 +303,10 @@ export class MechanicExecutor {
       source.facing = toPolarAngle(target.position, source.position);
       source.facingRuleActive = true;
     }
-    this.state.casts.push({ id: `cast-${this.state.casts.length + 1}`, definitionId: castId, sourceId, startedAt: this.state.time, completesAt: this.state.time + definition.castTime, targetId: resolved?.targetId, direction: resolved?.direction });
+    this.state.casts.push({ id: `cast-${this.state.casts.length + 1}`, definitionId: castId, sourceId, startedAt: this.state.time, completesAt: this.state.time + definition.castTime, targetId: resolved?.targetId, direction: resolved?.direction, targetPosition: resolved?.targetPosition });
   }
 
-  private resolveFacing(facing: CastFacing, sourceId: string, replayId?: string): { targetId: string; direction: number } | undefined {
+  private resolveFacing(facing: CastFacing, sourceId: string, replayId?: string): { targetId: string; direction: number; targetPosition: Vector2 } | undefined {
     const source = findEntity(this.state, sourceId);
     if (!source) return undefined;
     // Reuse a recorded target only while it still exists. 
@@ -316,10 +318,12 @@ export class MechanicExecutor {
         ? findEntity(this.state, facing.id)
         : (facing.type === 'random_player'
           ? selectPlayers({ type: 'random', count: 1 }, this.state, this.random)
-          : selectPlayers({ type: 'nearest', source: sourceId, count: 1 }, this.state, this.random))[0]);
+          : (facing.type === 'farthest_player'
+            ? this.state.players.filter((player) => player.alive).sort((a, b) => pointDistance(b.position, source.position) - pointDistance(a.position, source.position))
+            : selectPlayers({ type: 'nearest', source: sourceId, count: 1 }, this.state, this.random)))[0]);
     if (!target) return undefined;
     this.setReplay(replayId, 'target', target.id);
-    return { targetId: target.id, direction: Math.atan2(target.position.y - source.position.y, target.position.x - source.position.x) };
+    return { targetId: target.id, direction: Math.atan2(target.position.y - source.position.y, target.position.x - source.position.x), targetPosition: { ...target.position } };
   }
 
   private selectGroup(event: SelectGroupEvent | { name: string; selector: SelectGroupEvent['selector']; replayId?: string }): void {
@@ -428,7 +432,7 @@ export class MechanicExecutor {
     if (resolvedEffect.type === 'for_each_group') { this.forEachGroup(resolvedEffect, inside, sourceId, sourceName, cast); return; }
     if (resolvedEffect.type === 'spawn_enemy') { this.spawnEnemy(resolvedEffect); return; }
     if (resolvedEffect.type === 'remove_enemy') { this.removeEnemy(resolvedEffect.id); return; }
-    if (resolvedEffect.type === 'start_follow') { this.startFollow(resolvedEffect.source ?? sourceId, resolvedEffect); return; }
+    if (resolvedEffect.type === 'start_follow') { this.startFollow(resolvedEffect.source ?? sourceId, resolvedEffect, cast); return; }
     if (resolvedEffect.type === 'stop_follow') { this.stopFollow(resolvedEffect.source ?? sourceId); return; }
     if (resolvedEffect.type === 'add_to_batch') { this.addToBatch(resolvedEffect.batch); return; }
     if (resolvedEffect.type === 'remove_status') {
@@ -501,9 +505,13 @@ export class MechanicExecutor {
     }
   }
 
-  private startFollow(enemyId: string, settings: FollowSettings): void {
+  private startFollow(enemyId: string, settings: FollowSettings, context?: EffectContext): void {
     const enemy = this.state.enemies.find((candidate) => candidate.id === enemyId);
-    if (enemy) enemy.follow = { target: settings.target, distance: settings.distance, moveSpeed: settings.moveSpeed };
+    if (!enemy) return;
+    // `cast_target_position` is frozen into a plain point now, so later movement of the target doesn't matter.
+    const position = settings.position === 'cast_target_position' ? context?.targetPosition : settings.position;
+    if (settings.position === 'cast_target_position' && !position) return;
+    enemy.follow = { target: settings.target, position: position ? { ...position } : undefined, distance: settings.distance, moveSpeed: settings.moveSpeed };
   }
 
   private stopFollow(enemyId: string): void {

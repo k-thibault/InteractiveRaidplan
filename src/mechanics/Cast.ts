@@ -16,6 +16,8 @@ export interface CastDefinition {
 export type CastFacing =
   | { type: 'nearest_player'; replayable?: boolean }
   | { type: 'random_player'; replayable?: boolean }
+  /** The living player furthest from the caster when the cast starts. */
+  | { type: 'farthest_player'; replayable?: boolean }
   | { type: 'entity'; id: string; replayable?: boolean };
 
 export interface ActiveCast {
@@ -28,4 +30,6 @@ export interface ActiveCast {
   targetId?: string;
   /** Frozen angle from the caster to the target. */
   direction?: number;
+  /** The target's position when the cast started; it does not follow the target afterwards. */
+  targetPosition?: { x: number; y: number };
 }

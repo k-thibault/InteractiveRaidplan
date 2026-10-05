@@ -11,7 +11,13 @@ export const DEFAULT_FOLLOW_SPEED = 5;
 
 /** Makes a non-player entity chase and face another entity until stopped. */
 export interface FollowSettings {
-  target: EntityReference;
+  /** Entity to chase. Omit when chasing a fixed `position` instead. */
+  target?: EntityReference;
+  /**
+   * Fixed point to chase instead of an entity. `cast_target_position` (cast effects only) is the position the
+   * triggering cast locked onto when it started; it is resolved to a point when the follow begins.
+   */
+  position?: { x: number; y: number } | 'cast_target_position';
   /** Gap kept between the two entities, in world units. */
   distance: number;
   moveSpeed?: number;
@@ -28,7 +34,8 @@ export class FollowManager {
     for (const enemy of state.enemies) {
       const follow = enemy.follow;
       if (!follow) continue;
-      const target = resolveEntityReference(follow.target, state);
+      const fixed = follow.position && follow.position !== 'cast_target_position' ? follow.position : undefined;
+      const target = fixed ? { id: '', alive: true, position: fixed } : (follow.target ? resolveEntityReference(follow.target, state) : undefined);
       if (!target?.alive || target.id === enemy.id) continue;
       const hold = this.activeHold(state, enemy.id);
       // Closing in only: an enemy already inside the gap stays put.

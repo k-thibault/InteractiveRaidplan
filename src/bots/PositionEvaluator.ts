@@ -145,7 +145,9 @@ export class PositionEvaluator {
         angle = this.resolveValue(this.substituteParams(target.angle, params));
       }
       const inset = this.resolveValue(this.substituteParams(target.inset ?? 0, params));
-      if (typeof angle !== 'number' || typeof inset !== 'number') return undefined;
+      const edgeOffset = Number(this.resolveValue(this.substituteParams(target.angleOffset ?? 0, params)));
+      if (typeof angle !== 'number' || typeof inset !== 'number' || !Number.isFinite(edgeOffset)) return undefined;
+      angle += edgeOffset;
       const origin = target.origin ?? { x: 0, y: 0 };
       const heading = fromPolar(angle, 1);
       const unit = { x: heading.x, y: heading.y };
@@ -168,6 +170,9 @@ export class PositionEvaluator {
       let heading = normalize(subtract(other, from));
       // Snap the shift heading so grouped players preserve spacing.
       if (target.clamp !== undefined) heading = clampDirection(heading, this.resolveValue(target.clamp));
+      // Turn the heading clockwise (compass degrees) around `from`.
+      const turn = Number(this.resolveValue(this.substituteParams(target.angleOffset ?? 0, params)));
+      if (turn !== 0 && Number.isFinite(turn)) heading = fromPolar(toPolarAngle(heading, { x: 0, y: 0 }) + turn, 1);
       const signed = target.toward ? distance : -distance;
       return { x: from.x + heading.x * signed, y: from.y + heading.y * signed };
     }
