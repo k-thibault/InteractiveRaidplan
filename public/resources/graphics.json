@@ -20,5 +20,7 @@
   "icon-entropy": "/resources/graphics/icon-entropy.svg",
   "icon-dynamic-fluid": "/resources/graphics/icon-dynamic-fluid.svg",
   "icon-headwind": "/resources/graphics/icon-headwind.svg",
-  "icon-tailwind": "/resources/graphics/icon-tailwind.svg"
+  "icon-tailwind": "/resources/graphics/icon-tailwind.svg",
+  "icon-surecast": "/resources/graphics/icon-surecast.svg",
+  "icon-arms-length": "/resources/graphics/icon-arms-length.svg"
 }
