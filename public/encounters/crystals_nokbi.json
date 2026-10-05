@@ -19,9 +19,7 @@
       "icon-dynamic-fluid",
       "icon-headwind",
       "icon-tailwind",
-      "icon-damage-down",
-      "icon-surecast",
-      "icon-arms-length"
+      "icon-damage-down"
     ]
   },
   "randomGroups": {
@@ -869,15 +867,10 @@
       "icon": "icon-damage-down"
     },
     {
-      "id": "surecast",
-      "name": "Surecast",
-      "icon": "icon-surecast",
-      "knockImmune": true
-    },
-    {
-      "id": "arms-length",
-      "name": "Arm's Length",
-      "icon": "icon-arms-length",
+      "id": "knock-immunity",
+      "name": "Knockback Immunity",
+      "character": "K",
+      "color": "#7fd1ff",
       "knockImmune": true
     }
   ],
@@ -2815,8 +2808,8 @@
               "y": 0
             }
           },
-          "distance": 1.8,
-          "angleOffset": -80
+          "distance": 4.2,
+          "angleOffset": -55
         }
       },
       {
@@ -2843,8 +2836,8 @@
               "y": 0
             }
           },
-          "distance": 1.8,
-          "angleOffset": -40
+          "distance": 4.2,
+          "angleOffset": -22
         }
       },
       {
@@ -2871,8 +2864,8 @@
               "y": 0
             }
           },
-          "distance": 1.8,
-          "angleOffset": 80
+          "distance": 4.2,
+          "angleOffset": 55
         }
       },
       {
@@ -2899,8 +2892,8 @@
               "y": 0
             }
           },
-          "distance": 1.8,
-          "angleOffset": 40
+          "distance": 4.2,
+          "angleOffset": 22
         }
       },
       {
@@ -2927,8 +2920,8 @@
               "y": 0
             }
           },
-          "distance": 4.2,
-          "angleOffset": -40
+          "distance": 1.8,
+          "angleOffset": -22
         }
       },
       {
@@ -2955,8 +2948,8 @@
               "y": 0
             }
           },
-          "distance": 4.2,
-          "angleOffset": 40
+          "distance": 1.8,
+          "angleOffset": 22
         }
       },
       {
@@ -2983,8 +2976,8 @@
               "y": 0
             }
           },
-          "distance": 4.2,
-          "angleOffset": -95
+          "distance": 1.8,
+          "angleOffset": -55
         }
       },
       {
@@ -3011,8 +3004,8 @@
               "y": 0
             }
           },
-          "distance": 4.2,
-          "angleOffset": 95
+          "distance": 1.8,
+          "angleOffset": 55
         }
       }
     ],
@@ -3789,79 +3782,11 @@
       "full": true
     },
     {
-      "id": "kbi-shotcall",
-      "after": "vacuum-cast",
-      "delay": 2250,
-      "type": "set_shotcall",
-      "text": "Knockback immune except winds",
-      "duration": 3000
-    },
-    {
       "id": "vacuum-spread",
       "after": "vacuum-cast",
       "delay": 500,
       "type": "recalculate_positions",
       "group": "vacuum-spread"
-    },
-    {
-      "id": "vacuum-surecast",
-      "after": "vacuum-cast",
-      "delay": 2500,
-      "type": "apply_status",
-      "target": {
-        "type": "and",
-        "selectors": [
-          {
-            "type": "players",
-            "ids": [
-              "r2",
-              "h1",
-              "h2"
-            ]
-          },
-          {
-            "type": "without_status",
-            "status": "front"
-          },
-          {
-            "type": "without_status",
-            "status": "back"
-          }
-        ]
-      },
-      "status": "surecast",
-      "duration": 6000
-    },
-    {
-      "id": "vacuum-arms",
-      "after": "vacuum-surecast",
-      "delay": 0,
-      "type": "apply_status",
-      "target": {
-        "type": "and",
-        "selectors": [
-          {
-            "type": "players",
-            "ids": [
-              "r1",
-              "mt",
-              "ot",
-              "m1",
-              "m2"
-            ]
-          },
-          {
-            "type": "without_status",
-            "status": "front"
-          },
-          {
-            "type": "without_status",
-            "status": "back"
-          }
-        ]
-      },
-      "status": "arms-length",
-      "duration": 6000
     },
     {
       "id": "vacuum-facing",

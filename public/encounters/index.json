@@ -2,5 +2,6 @@
   { "id": "example", "name": "Alter Weakness", "file": "./example.json" },
   { "id": "forsaken", "name": "Forsaken", "file": "./forsaken.json", "prodready": true },
   { "id": "movement", "name": "Movement Effects", "file": "./movement.json" },
-  { "id": "dmu_p3", "name": "Bowels of Agony", "file": "./crystals.json", "prodready": true }
+  { "id": "dmu_p3", "name": "Bowels of Agony", "file": "./crystals.json", "prodready": true },
+  { "id": "dmu_p3_noimmune", "name": "Bowels of Agony (no immune)", "file": "./crystals_nokbi.json", "prodready": true }
 ]

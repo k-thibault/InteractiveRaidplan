@@ -601,8 +601,24 @@
                   "type": "start_cast",
                   "source": "$groupMember.id",
                   "cast": "back-sweep"
+                },
+                {
+                  "type": "set_shotcall",
+                  "text": "Tower 1",
+                  "duration": 3000
                 }
               ]
+            }
+          ]
+        },
+        {
+          "type": "delayed_effects",
+          "delay": 4500,
+          "effects": [
+            {
+              "type": "set_shotcall",
+              "text": "Between",
+              "duration": 4000
             }
           ]
         }
@@ -658,8 +674,24 @@
                   "type": "start_cast",
                   "source": "$groupMember.id",
                   "cast": "front-sweep"
+                },
+                {
+                  "type": "set_shotcall",
+                  "text": "Tower 1",
+                  "duration": 3000
                 }
               ]
+            }
+          ]
+        },
+        {
+          "type": "delayed_effects",
+          "delay": 4500,
+          "effects": [
+            {
+              "type": "set_shotcall",
+              "text": "Opposite",
+              "duration": 4000
             }
           ]
         }
