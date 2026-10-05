@@ -7,7 +7,14 @@ import type { KnockParams } from './Knock';
 import type { FollowSettings } from '../bots/FollowManager';
 
 
-interface BaseEvent { id: string; at?: number; after?: string; delay?: number; }
+interface BaseEvent {
+  id: string; at?: number; after?: string; delay?: number;
+  /**
+   * Only run if the current mechanic flag is one of these when the event fires, e.g. the cast a `castChoices` roll picked.
+   * Timing is unaffected: a skipped event still anchors the events scheduled `after` it.
+   */
+  ifMechanic?: string | string[];
+}
 export interface StartCastEvent extends BaseEvent {
   type: 'start_cast'; source: string; mechanic?: string; facing?: CastFacing; replayId?: string;
   /** Fixed cast id. Mutually exclusive with `castChoices`. */

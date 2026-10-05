@@ -13,7 +13,7 @@ export type PositionTarget =
   /** `angleFrom` uses an entity bearing; `angleTowards.by` offsets toward (or away when negative) another bearing. */
   | { type: 'polar'; angle?: number | string; angleFrom?: EntityReference; angleTowards?: { entity: EntityReference; by: number | string }; radius: number | string; origin?: { x: number; y: number }; angleOffset?: number }
   /** Where the ray from `origin` (default centre) at compass `angle` meets the arena border, pulled back by `inset`. */
-  | { type: 'edge'; angle?: number | string; angleFrom?: EntityReference; inset?: number | string; origin?: { x: number; y: number }; /** Degrees added to the bearing, e.g. 180 for the border directly opposite `angleFrom`. */ angleOffset?: number | string }
+  | { type: 'edge'; angle?: number | string; angleFrom?: EntityReference; /** Bearing from `origin` to this point, e.g. a marker picked by a query. */ angleTo?: PositionTarget; inset?: number | string; origin?: { x: number; y: number }; /** Degrees added to the bearing, e.g. 180 for the border directly opposite `angleFrom`. */ angleOffset?: number | string }
   /** A point on the line from `a` to `b`: `t` 0 is `a`, 1 is `b`, default 0.5. */
   | { type: 'between'; a: EntityReference; b: EntityReference; t?: number }
   /** Position that moves a following entity to `to`, optionally updating live. */

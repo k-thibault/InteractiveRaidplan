@@ -1,4 +1,4 @@
-import type { Entity, EntityStyle } from './Entity';
+import type { Entity, EntityGraphic, EntityStyle } from './Entity';
 import type { StatusInstance } from './Status';
 import type { FollowSettings } from '../bots/FollowManager';
 
@@ -15,4 +15,5 @@ export interface Enemy extends Entity {
 export interface EnemyTemplate {
   name?: string;
   style?: EntityStyle;
+  graphic?: EntityGraphic;
 }

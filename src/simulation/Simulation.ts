@@ -22,6 +22,8 @@ export interface SimulationOptions { seed: number; controlledPlayerId?: string; 
 
 export class Simulation {
   readonly state: GameState;
+  /** What each multi-valued `choice` random group rolled this run; see `RandomContext.rolledChoices`. */
+  readonly rolledChoices: Record<string, string>;
   private readonly scheduler = new Scheduler();
   private readonly random: Random;
   private readonly executor: MechanicExecutor;
@@ -44,6 +46,7 @@ export class Simulation {
     this.debug = options.debug ?? false;
     this.followManager = new FollowManager(encounter.casts);
     const randomContext = new RandomContext(encounter.randomGroups, encounter.sequences, encounter.distributions, this.random);
+    this.rolledChoices = randomContext.rolledChoices(encounter.randomGroups ?? {});
     const statusControls = new Map(encounter.statuses.map((status) => [status.id, status.control]));
     const getControlState = (statuses: StatusInstance[]) => ({
       rooted: statuses.some((status) => statusControls.get(status.definitionId) === 'root'),
@@ -55,7 +58,7 @@ export class Simulation {
       ...structuredClone(marker),
       resolvedPosition: resolvePositionValue(marker.position),
     }));
-    this.state = { time: 0, arena: resolveArena(encounter.arena), deltaTime: 0, currentMechanic: undefined, players, enemies, effects: [], worldGraphics: [], background: encounter.background, casts: [], running: false, completed: false, log: [], groups: {}, markers };
+    this.state = { time: 0, arena: resolveArena(encounter.arena), deltaTime: 0, currentMechanic: undefined, players, enemies, effects: [], worldGraphics: [], background: encounter.background, casts: [], running: false, completed: false, log: [], deaths: [], rolls: {}, groups: {}, markers };
     this.roleEvaluator = new MechanicalRoleEvaluator(encounter.mechanicalRoles, <T>(value: T) => randomContext.resolve(value));
     this.positionEvaluator = new PositionEvaluator(encounter.positions, <T>(value: T) => randomContext.resolve(value), encounter.markerQueries);
     this.facingEvaluator = new FacingEvaluator(encounter.facing, <T>(value: T) => randomContext.resolve(value), (target, state, self) => this.positionEvaluator.resolveTarget(target, state, self));
@@ -73,6 +76,7 @@ export class Simulation {
       eventTimes.set(event.id, executeAt);
       this.scheduler.schedule(event.id, executeAt, () => {
         const resolved = randomContext.resolve(event);
+        if (resolved.ifMechanic !== undefined && ![resolved.ifMechanic].flat().includes(this.state.currentMechanic ?? '')) return;
         if (resolved.type === 'recalculate_roles') recalculateRoles(resolved.group);
         else if (resolved.type === 'recalculate_positions') this.positionEvaluator.recalculate(this.state, resolved.group, resolved.params);
         else if (resolved.type === 'recalculate_facing') recalculateFacing(resolved.group);
@@ -119,7 +123,7 @@ export class Simulation {
         if (hit) inside.add(player.id);
       }
       effect.resolvedAt = this.state.time;
-      for (const resolution of this.areaResolver.resolve(effect, this.state.players.filter((player) => inside.has(player.id)))) this.executor.executeEffect(resolution, inside, undefined, undefined, { area: { position: effect.position, sourceId: effect.sourceId } });
+      for (const resolution of this.areaResolver.resolve(effect, this.state.players.filter((player) => inside.has(player.id)))) this.executor.executeEffect(resolution, inside, undefined, undefined, { area: { position: effect.position, sourceId: effect.sourceId, label: effect.label ?? effect.mechanic ?? 'unlabeled area' } });
       if (effect.areaGroup) {
         const group = this.areaGroups[effect.areaGroup];
         if (group) {

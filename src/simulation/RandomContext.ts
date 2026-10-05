@@ -106,6 +106,23 @@ export class RandomContext {
     return resolved;
   }
 
+  /**
+   * What each `choice` random group with more than one possible value rolled this run, as short labels
+   * (a primitive as is; an object as its first primitive field, e.g. `shortElement=fire`; anything else as its position in the group's values).
+   */
+  rolledChoices(groups: Record<string, RandomGroup>): Record<string, string> {
+    const result: Record<string, string> = {};
+    for (const [name, group] of Object.entries(groups)) {
+      if (group.mode !== 'choice' || group.values.length < 2) continue;
+      const value = this.values.get(name);
+      if (value !== null && typeof value === 'object') {
+        const field = Object.entries(value as Record<string, unknown>).find(([, item]) => typeof item === 'string' || typeof item === 'number');
+        result[name] = field ? `${field[0]}=${field[1]}` : `option ${group.values.indexOf(value) + 1} of ${group.values.length}`;
+      } else result[name] = String(value);
+    }
+    return result;
+  }
+
   rollDistribution(reference: string): unknown[] {
     const name = reference.startsWith('$') ? reference.slice(1) : reference;
     return this.distributions.has(name) ? this.shuffle(this.distributions.get(name)!.values) : [];

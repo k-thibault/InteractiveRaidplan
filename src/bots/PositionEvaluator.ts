@@ -137,7 +137,11 @@ export class PositionEvaluator {
     }
     if (target.type === 'edge') {
       let angle: number | string | undefined;
-      if (target.angleFrom) {
+      if (target.angleTo) {
+        const point = this.resolve(target.angleTo, state, params, player, target.origin);
+        if (!point) return undefined;
+        angle = toPolarAngle(point, target.origin ?? { x: 0, y: 0 });
+      } else if (target.angleFrom) {
         const entity = resolveEntityReference(this.resolveValue(target.angleFrom), state);
         if (!entity) return undefined;
         angle = toPolarAngle(entity.position, target.origin ?? { x: 0, y: 0 });

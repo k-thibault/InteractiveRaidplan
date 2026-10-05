@@ -24,10 +24,15 @@ The arena displays players, enemies, markers, attack areas, and active cast bars
 
 - Selectable encounter timelines with scripted phases and timed mechanics.
 - Circle, cone, and donut attacks, casts, markers, arena boundaries, and visual resources.
+- Entities (players, enemies, spawned enemy templates) can carry a `graphic` from the shared library, drawn instead of or on top of their shape. `rotate` turns it with the entity's facing; its base orientation is facing straight down.
 - Player health, status effects and stacks, damage, control effects, and forced movement.
 - Bot movement and role-based positioning to simulate the rest of the party.
 - Randomized mechanics with repeatable runs through the seed control.
 - Responsive layout for the arena, party roster, and event log.
+
+## Batch simulation (development builds only)
+
+**Batch simulate** in the footer runs the open timeline headlessly with all bots across many seeds, spread over web workers, and reports how many attempts ended with everyone alive. For the failed attempts it shows time to first death, who died first by player and mechanical role, the fatal damage source (a cast, an area label, a status, or the arena edge), and the failure rate for each rolled outcome. Failed seeds are listed; click one to replay it in the arena. The same batch seed always repeats the same attempts.
 
 ## Encounter library
 
