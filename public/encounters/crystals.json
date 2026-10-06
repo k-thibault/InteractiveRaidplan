@@ -1,7 +1,8 @@
 {
-  "version": 3,
+  "version": 4,
   "name": "Bowels of Agony",
-  "duration": 90000,
+  "duration": 86000,
+  "failStatuses": ["damage-down"],
   "arena": {
     "shape": "circle",
     "radius": 10,
@@ -69,12 +70,14 @@
         {
           "cast": "chaos-frontback",
           "first": "chaos-shift-bd",
-          "second": "chaos-shift-ac"
+          "second": "chaos-shift-ac",
+          "call": "B-D first"
         },
         {
           "cast": "chaos-sides",
           "first": "chaos-shift-ac",
-          "second": "chaos-shift-bd"
+          "second": "chaos-shift-bd",
+          "call": "A-C first"
         }
       ]
     },
@@ -3666,7 +3669,7 @@
       "group": "thunder-bait-start"
     },
     {
-      "id": "lat-long-shotcall",
+      "id": "diags-shotcall",
       "after": "thunder-bait-cast",
       "delay": 9000,
       "type": "set_shotcall",
@@ -3710,6 +3713,14 @@
       "after": "chaos-cast",
       "type": "recalculate_positions",
       "group": "$chaosCast.first"
+    },
+    {
+      "id": "latlong-shotcall",
+      "after": "chaos-cast",
+      "delay": 500,
+      "type": "set_shotcall",
+      "text": "${chaosCast.call}",
+      "duration": 3000
     },
     {
       "id": "chaos-second-dodge",
@@ -3841,7 +3852,7 @@
       "after": "vacuum-cast",
       "delay": 2250,
       "type": "set_shotcall",
-      "text": "Knockback immune except winds",
+      "text": "Knockback immune if no debuff",
       "duration": 3000
     },
     {
