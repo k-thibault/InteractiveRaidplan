@@ -1,5 +1,6 @@
 import { ShotcallSpeaker } from './audio/ShotcallSpeaker';
 import { StreakTracker } from './streak/StreakTracker';
+import type { RunFlags } from './streak/StreakTypes';
 import './style.css';
 import { loadEncounter, loadEncounterManifest, type EncounterManifestEntry } from './encounters/EncounterLoader';
 import { PlayerController } from './input/PlayerController';
@@ -132,7 +133,7 @@ function rebuild(): void {
   // Hiding bots only makes sense while a specific player is controlled.
   hideBots.disabled = !controlledPlayer.value; hideBots.title = hideBots.disabled ? 'Select a player to control to hide the bots' : '';
   // Ignore RNG replays; capture hidden-bot state at run setup.
-  streak.beginRun(hideBots.checked && !hideBots.disabled, !document.querySelector<HTMLInputElement>('#keep-rng')!.checked); renderStreak();
+  streak.beginRun(currentRunFlags(), !document.querySelector<HTMLInputElement>('#keep-rng')!.checked); renderStreak();
   speaker.reset(); buildRoster(simulation.state.players); accumulator = 0; previous = performance.now(); toggle.textContent = 'Start'; phase.textContent = 'READY'; resetLog();
   castBars.replaceChildren(); castBarRows.clear();
 }
@@ -159,8 +160,8 @@ encounterSelect.addEventListener('change', async () => { encounterSelect.blur();
 // Blur so a focused dropdown does not swallow the arrow keys (they would change the controlled player mid-run).
 controlledPlayer.addEventListener('change', () => { controlledPlayer.blur(); rebuild(); });
 faceCursor.addEventListener('change', () => controller?.setFaceCursorWhenStill(faceCursor.checked));
-shotcallText.addEventListener('change', () => renderer.setShotcallVisible(shotcallText.checked));
-hideBots.addEventListener('change', () => { renderer.setHideBots(hideBots.checked); streak.setBotsHidden(hideBots.checked, simulation.state.time > 0); renderStreak(); });
+shotcallText.addEventListener('change', () => { renderer.setShotcallVisible(shotcallText.checked); syncStreakFlags(); });
+hideBots.addEventListener('change', () => { renderer.setHideBots(hideBots.checked); syncStreakFlags(); });
 // Arrow keys move the player, so they must never scroll the page. Dropdowns and text fields keep their own arrow-key behaviour.
 window.addEventListener('keydown', (event) => {
   if (!event.key.startsWith('Arrow')) return;
@@ -168,9 +169,9 @@ window.addEventListener('keydown', (event) => {
   if (target instanceof HTMLElement && (target.isContentEditable || target.closest('dialog') || target instanceof HTMLSelectElement || target instanceof HTMLTextAreaElement || (target instanceof HTMLInputElement && target.type !== 'checkbox'))) return;
   event.preventDefault();
 });
-shotcallTts.addEventListener('change', () => speaker.setEnabled(shotcallTts.checked));
+shotcallTts.addEventListener('change', () => { speaker.setEnabled(shotcallTts.checked); syncStreakFlags(); });
 canvas.addEventListener('mousemove', (event) => controller?.setMouseWorldPosition(renderer.screenToWorld(event)));
-toggle.addEventListener('click', () => { if (simulation.state.running) { simulation.pause(); speaker.pause(); toggle.textContent = 'Resume'; } else { if (simulation.state.time === 0 && streak.startRun(controlledPlayer.value)) renderStreak(); simulation.start(); speaker.resume(); toggle.textContent = 'Pause'; } });
+toggle.addEventListener('click', () => { if (simulation.state.running) { simulation.pause(); streak.pause(); speaker.pause(); toggle.textContent = 'Resume'; } else { if (simulation.state.time === 0 && streak.startRun(controlledPlayer.value)) renderStreak(); simulation.start(); speaker.resume(); toggle.textContent = 'Pause'; } });
 document.querySelector<HTMLButtonElement>('#restart')!.addEventListener('click', rebuild);
 document.querySelectorAll<HTMLButtonElement>('[data-speed]').forEach((button) => button.addEventListener('click', () => { speed = Number(button.dataset.speed); document.querySelector('.selected')?.classList.remove('selected'); button.classList.add('selected'); }));
 
@@ -224,20 +225,27 @@ function renderHud(): void {
   const entries = simulation.state.log; if (loggedCount === 0 && entries.length > 0) logList.replaceChildren();
   for (; loggedCount < entries.length; loggedCount++) { const entry = entries[loggedCount]; const item = document.createElement('li'); if (entry.channel === 'debug') item.classList.add('event-log__entry--debug'); const time = document.createElement('span'); time.className = 'event-log__time'; time.textContent = formatClock(entry.time); item.append(time, document.createTextNode(entry.message)); logList.prepend(item); }}
 
-/** Render the streak and hidden-bot counts. */
+/** Return the current streak eligibility flags. */
+function currentRunFlags(): RunFlags {
+  return {
+    botsHidden: hideBots.checked && !hideBots.disabled,
+    shotcallsOff: !shotcallText.checked && !(shotcallTts.checked && !shotcallTts.disabled),
+  };
+}
+
+/** Sync settings; active runs can only lose eligibility. */
+function syncStreakFlags(): void { streak.setFlags(currentRunFlags(), simulation.state.time > 0); }
+
+/** Render every non-redundant streak, strongest first. */
 function renderStreak(): void {
-  const view = streak.view();
-  streakElement.hidden = view.total === 0;
+  const rows = streak.view();
+  streakElement.hidden = rows.length === 0;
   streakElement.replaceChildren();
-  if (view.total === 0) return;
-  streakElement.classList.toggle('streak--glow', view.allHidden);
-  const main = document.createElement('span'); main.className = 'streak__main'; main.append('Streak ');
-  const count = document.createElement('b'); count.textContent = String(view.total); main.append(count);
-  streakElement.append(main);
-  if (view.hiddenBots > 0 && !view.allHidden) {
-    const special = document.createElement('span'); special.className = 'streak__hidden'; special.append('Streak ');
-    const specialCount = document.createElement('b'); specialCount.textContent = String(view.hiddenBots); special.append(specialCount);
-    streakElement.append(special);
+  for (const row of rows) {
+    const line = document.createElement('span'); line.className = 'streak__row'; line.dataset.streak = row.id; line.title = row.label;
+    line.style.setProperty('--streak-color', row.style.color); line.style.setProperty('--streak-intensity', String(row.style.intensity));
+    const count = document.createElement('b'); count.textContent = String(row.count);
+    line.append(row.label,' streak ', count); streakElement.append(line);
   }
 }
 
