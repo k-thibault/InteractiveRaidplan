@@ -33,10 +33,10 @@ body.shotcalls-active .arena-row { margin-top: 10px; }
 /* Keep the cast bars over the canvas, below the always-present shotcall bar (48px). */
 .arena-panel--shotcalls .cast-bars { top: 66px; }
 .cast-bars { position: absolute; left: 50%; top: 18px; display: flex; flex-direction: column; gap: 6px; width: min(360px, 60%); transform: translateX(-50%); }.cast-bar { display: flex; align-items: center; gap: 8px; color: #ffbe49; opacity: 0; transform: translateY(-5px); transition: opacity .15s ease, transform .15s ease; }.cast-bar--visible { opacity: 1; transform: translateY(0); }.cast-bar__name { flex-shrink: 0; font-weight: 600; -webkit-text-stroke: 3px #0a0f14; paint-order: stroke fill; text-shadow: 0 0 4px #0a0f14, 0 0 8px #0a0f14, 0 1px 2px #000; }.cast-bar__track { flex: 1; height: 8px; border: 1px solid #63502d; border-radius: 3px; background: #0b1016; overflow: hidden; }.cast-bar__fill { height: 100%; width: 0; background: #ffbe49; transition: width .05s linear; }
-.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 18px; color: #8394a4; }.control-group, .speed-group { display: flex; align-items: center; gap: 6px; }.speed-group span { margin-right: 5px; } .hint { margin: 0 0 0 auto; color: #637585; }
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 18px; color: #8394a4; }.control-group, .speed-group { display: flex; align-items: center; gap: 6px; }.speed-group span { margin-right: 5px; }
 .event-log-panel { width: 240px; flex-shrink: 0; display: flex; flex-direction: column; border: 1px solid #263442; background: #121821; padding: 14px 16px; max-height: 70vh; }.event-log-panel h2 { margin: 0 0 10px; flex-shrink: 0; color: #74d4a0; font: 500 11px 'DM Mono', monospace; text-transform: uppercase; letter-spacing: .04em; }#event-log { list-style: none; margin: 0; padding: 0; flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }#event-log li { padding-bottom: 8px; border-bottom: 1px solid #1c2731; color: #b7c4d1; line-height: 1.4; }#event-log li:last-child { border-bottom: none; padding-bottom: 0; }.event-log__time { display: block; color: #637585; font-size: 11px; margin-bottom: 2px; }.event-log__empty { color: #637585; }.event-log__entry--debug { color: #8a97a3; font-style: italic; }
 .status-tooltip { position: fixed; z-index: 10; pointer-events: none; padding: 6px 9px; border: 1px solid #53687b; border-radius: 3px; background: #18232e; color: #f0f5f8; font: 12px 'DM Mono', monospace; opacity: 0; transform: translateY(4px); transition: opacity .12s ease, transform .12s ease; }.status-tooltip.visible { opacity: 1; transform: translateY(0); }
-@media (max-width: 650px) { .workbench { padding: 22px 14px; }.topbar { align-items: start; }.controls { gap: 12px; } .hint { flex-basis: 100%; margin: 2px 0 0; } .arena-row { flex-direction: column; } .event-log-panel { width: auto; max-height: 220px; } .roster-panel { width: auto; flex-direction: row; flex-wrap: wrap; } .roster-entry { flex: 1 1 260px; } }
+@media (max-width: 650px) { .workbench { padding: 22px 14px; }.topbar { align-items: start; }.controls { gap: 12px; } .arena-row { flex-direction: column; } .event-log-panel { width: auto; max-height: 220px; } .roster-panel { width: auto; flex-direction: row; flex-wrap: wrap; } .roster-entry { flex: 1 1 260px; } }
 .control-group input[type="checkbox"] { margin-left: 8px; }
 .control-group label[for="keep-rng"] { margin-left: 0; }
 /* Development-only batch simulation dialog. */
@@ -61,3 +61,11 @@ body.shotcalls-active .arena-row { margin-top: 10px; }
 .batch-seeds button { padding: 4px 8px; font-size: 11px; }
 
 .control-group__label { margin-left: 8px; }
+/* Footer hint lives in the arena so the controls row stays a single line on wide screens. */
+.arena-hint { position: absolute; left: 12px; bottom: 10px; margin: 0; color: #8394a4; font: 11px 'DM Mono', monospace; opacity: .75; pointer-events: none; }
+.streak { position: absolute; right: 14px; bottom: 10px; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; color: #dbe7f2; font: 500 14px 'DM Mono', monospace; text-shadow: 0 1px 3px #05080c; pointer-events: none; }
+.streak[hidden] { display: none; }
+.streak b { font-size: 22px; font-weight: 700; }
+.streak__hidden { color: #ffd76a; font-size: 12px; text-shadow: 0 0 6px #ffc83d, 0 0 14px rgba(255, 159, 28, .7); }
+.streak__hidden b { font-size: 16px; }
+.streak--glow .streak__main { color: #ffd76a; text-shadow: 0 0 6px #ffc83d, 0 0 14px #ff9f1c, 0 0 26px rgba(255, 159, 28, .6); }

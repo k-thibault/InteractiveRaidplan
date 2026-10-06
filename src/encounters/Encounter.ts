@@ -42,6 +42,8 @@ export interface Encounter {
   enemies: Enemy[];
   statuses: StatusDefinition[];
   resources?: EncounterResources;
+  /** Status ids that mark a run as failed when any player gets one.*/
+  failStatuses?: string[];
   /** Arena shape, size and border behaviour. Omit for the legacy 28x18 walled rectangle. */
   arena?: ArenaDefinition;
   /** Resource key for the current arena background. */

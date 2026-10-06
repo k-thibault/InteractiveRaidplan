@@ -1,4 +1,5 @@
 import { ShotcallSpeaker } from './audio/ShotcallSpeaker';
+import { StreakTracker } from './streak/StreakTracker';
 import './style.css';
 import { loadEncounter, loadEncounterManifest, type EncounterManifestEntry } from './encounters/EncounterLoader';
 import { PlayerController } from './input/PlayerController';
@@ -9,7 +10,7 @@ import type { StatusDefinition } from './entities/Status';
 import type { Player } from './entities/Player';
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
-app.innerHTML = `<main class="workbench"><header class="topbar"><div><h1 id="encounter-name">Loading encounter&hellip;</h1></div><div class="encounter-picker"><label for="encounter-select">Timeline</label><select id="encounter-select"></select></div><div class="readout"><span id="phase">READY</span><strong id="clock">00:00.0</strong></div></header><section class="arena-row"><aside id="roster" class="roster-panel" aria-label="Party health"></aside><div class="arena-panel"><canvas id="arena" width="1200" height="800" aria-label="Encounter arena"></canvas><div id="cast-bars" class="cast-bars" aria-live="polite"></div></div><aside class="event-log-panel"><h2>Event Log</h2><ul id="event-log"><li class="event-log__empty">No events yet.</li></ul></aside></section><footer class="controls"><div class="control-group"><button id="toggle" type="button">Start</button><button id="restart" type="button">Restart</button><label for="controlled-player">Control</label><select id="controlled-player"></select>${import.meta.env.DEV ? '<button id="batch-open" type="button">Batch simulate</button>' : ''}</div><div class="speed-group" role="group" aria-label="Simulation speed"><span>Speed</span><button data-speed="0.25" type="button">0.25x</button><button data-speed="0.5" type="button">0.5x</button><button class="selected" data-speed="1" type="button">1x</button></div><div class="control-group"><label><input id="keep-rng" type="checkbox"> Keep previous RNG</label>${import.meta.env.DEV ? '<label><input id="debug-mode" type="checkbox"> Debug log</label>' : ''}<span class="control-group__label">Shotcalls:</span><label><input id="shotcall-text" type="checkbox" checked> Text</label><label><input id="shotcall-tts" type="checkbox"> TTS</label><label><input id="face-cursor" type="checkbox" checked> Face cursor when still</label><label><input id="hide-bots" type="checkbox"> Hide bots</label></div><p class="hint">Move with WASD or the arrow keys.</p></footer></main>`;
+app.innerHTML = `<main class="workbench"><header class="topbar"><div><h1 id="encounter-name">Loading encounter&hellip;</h1></div><div class="encounter-picker"><label for="encounter-select">Timeline</label><select id="encounter-select"></select></div><div class="readout"><span id="phase">READY</span><strong id="clock">00:00.0</strong></div></header><section class="arena-row"><aside id="roster" class="roster-panel" aria-label="Party health"></aside><div class="arena-panel"><canvas id="arena" width="1200" height="800" aria-label="Encounter arena"></canvas><div id="cast-bars" class="cast-bars" aria-live="polite"></div><p class="arena-hint">Move with WASD or the arrow keys.</p><div id="streak" class="streak" role="status" hidden></div></div><aside class="event-log-panel"><h2>Event Log</h2><ul id="event-log"><li class="event-log__empty">No events yet.</li></ul></aside></section><footer class="controls"><div class="control-group"><button id="toggle" type="button">Start</button><button id="restart" type="button">Restart</button><label for="controlled-player">Control</label><select id="controlled-player"></select>${import.meta.env.DEV ? '<button id="batch-open" type="button">Batch simulate</button>' : ''}</div><div class="speed-group" role="group" aria-label="Simulation speed"><span>Speed</span><button data-speed="0.25" type="button">0.25x</button><button data-speed="0.5" type="button">0.5x</button><button class="selected" data-speed="1" type="button">1x</button></div><div class="control-group"><label><input id="keep-rng" type="checkbox"> Keep previous RNG</label>${import.meta.env.DEV ? '<label><input id="debug-mode" type="checkbox"> Debug log</label>' : ''}<span class="control-group__label">Shotcalls:</span><label><input id="shotcall-text" type="checkbox" checked> Text</label><label><input id="shotcall-tts" type="checkbox" checked> TTS</label><label><input id="face-cursor" type="checkbox" checked> Face cursor when still</label><label><input id="hide-bots" type="checkbox"> Hide bots</label></div></footer></main>`;
 
 const canvas = document.querySelector<HTMLCanvasElement>('#arena')!;
 const renderer = new ArenaRenderer(canvas);
@@ -27,7 +28,10 @@ const hideBots = document.querySelector<HTMLInputElement>('#hide-bots')!;
 const shotcallText = document.querySelector<HTMLInputElement>('#shotcall-text')!;
 const shotcallTts = document.querySelector<HTMLInputElement>('#shotcall-tts')!;
 const speaker = new ShotcallSpeaker();
+const streakElement = document.querySelector<HTMLDivElement>('#streak')!;
+const streak = new StreakTracker();
 if (!speaker.supported) { shotcallTts.disabled = true; shotcallTts.title = 'Speech synthesis is not available in this browser'; }
+speaker.setEnabled(shotcallTts.checked);
 const encounterSelect = document.querySelector<HTMLSelectElement>('#encounter-select')!;
 const rosterTooltip = document.createElement('div');
 rosterTooltip.className = 'status-tooltip';
@@ -127,12 +131,15 @@ function rebuild(): void {
   controller.setFaceCursorWhenStill(faceCursor.checked);
   // Hiding bots only makes sense while a specific player is controlled.
   hideBots.disabled = !controlledPlayer.value; hideBots.title = hideBots.disabled ? 'Select a player to control to hide the bots' : '';
+  // Ignore RNG replays; capture hidden-bot state at run setup.
+  streak.beginRun(hideBots.checked && !hideBots.disabled, !document.querySelector<HTMLInputElement>('#keep-rng')!.checked); renderStreak();
   speaker.reset(); buildRoster(simulation.state.players); accumulator = 0; previous = performance.now(); toggle.textContent = 'Start'; phase.textContent = 'READY'; resetLog();
   castBars.replaceChildren(); castBarRows.clear();
 }
 
 async function selectEncounter(entry: EncounterManifestEntry, requestedPlayer?: string | null): Promise<void> {
   encounter = await loadEncounter(entry.file);
+  streak.reset();
   heading.textContent = encounter.name;
   renderer.setStatusDefinitions(encounter.statuses); renderer.setResources(encounter.resources); renderer.setShotcallVisible(shotcallText.checked); statusDefinitions = new Map(encounter.statuses.map((status) => [status.id, status])); imageResources = encounter.resources?.images ?? {};
   controlledPlayer.replaceChildren();
@@ -148,14 +155,22 @@ async function selectEncounter(entry: EncounterManifestEntry, requestedPlayer?: 
 // Production builds list only encounters marked prod-ready.
 const manifest = (await loadEncounterManifest()).filter((entry) => import.meta.env.DEV || entry.prodready === true);
 for (const entry of manifest) { const option = document.createElement('option'); option.value = entry.id; option.textContent = entry.name; option.dataset.file = entry.file; encounterSelect.append(option); }
-encounterSelect.addEventListener('change', async () => { const entry = manifest.find((candidate) => candidate.id === encounterSelect.value); if (entry) await selectEncounter(entry); });
-controlledPlayer.addEventListener('change', rebuild);
+encounterSelect.addEventListener('change', async () => { encounterSelect.blur(); streak.reset(); renderStreak(); const entry = manifest.find((candidate) => candidate.id === encounterSelect.value); if (entry) await selectEncounter(entry); });
+// Blur so a focused dropdown does not swallow the arrow keys (they would change the controlled player mid-run).
+controlledPlayer.addEventListener('change', () => { controlledPlayer.blur(); rebuild(); });
 faceCursor.addEventListener('change', () => controller?.setFaceCursorWhenStill(faceCursor.checked));
 shotcallText.addEventListener('change', () => renderer.setShotcallVisible(shotcallText.checked));
-hideBots.addEventListener('change', () => renderer.setHideBots(hideBots.checked));
+hideBots.addEventListener('change', () => { renderer.setHideBots(hideBots.checked); streak.setBotsHidden(hideBots.checked, simulation.state.time > 0); renderStreak(); });
+// Arrow keys move the player, so they must never scroll the page. Dropdowns and text fields keep their own arrow-key behaviour.
+window.addEventListener('keydown', (event) => {
+  if (!event.key.startsWith('Arrow')) return;
+  const target = event.target;
+  if (target instanceof HTMLElement && (target.isContentEditable || target.closest('dialog') || target instanceof HTMLSelectElement || target instanceof HTMLTextAreaElement || (target instanceof HTMLInputElement && target.type !== 'checkbox'))) return;
+  event.preventDefault();
+});
 shotcallTts.addEventListener('change', () => speaker.setEnabled(shotcallTts.checked));
 canvas.addEventListener('mousemove', (event) => controller?.setMouseWorldPosition(renderer.screenToWorld(event)));
-toggle.addEventListener('click', () => { if (simulation.state.running) { simulation.pause(); speaker.pause(); toggle.textContent = 'Resume'; } else { simulation.start(); speaker.resume(); toggle.textContent = 'Pause'; } });
+toggle.addEventListener('click', () => { if (simulation.state.running) { simulation.pause(); speaker.pause(); toggle.textContent = 'Resume'; } else { if (simulation.state.time === 0 && streak.startRun(controlledPlayer.value)) renderStreak(); simulation.start(); speaker.resume(); toggle.textContent = 'Pause'; } });
 document.querySelector<HTMLButtonElement>('#restart')!.addEventListener('click', rebuild);
 document.querySelectorAll<HTMLButtonElement>('[data-speed]').forEach((button) => button.addEventListener('click', () => { speed = Number(button.dataset.speed); document.querySelector('.selected')?.classList.remove('selected'); button.classList.add('selected'); }));
 
@@ -209,9 +224,36 @@ function renderHud(): void {
   const entries = simulation.state.log; if (loggedCount === 0 && entries.length > 0) logList.replaceChildren();
   for (; loggedCount < entries.length; loggedCount++) { const entry = entries[loggedCount]; const item = document.createElement('li'); if (entry.channel === 'debug') item.classList.add('event-log__entry--debug'); const time = document.createElement('span'); time.className = 'event-log__time'; time.textContent = formatClock(entry.time); item.append(time, document.createTextNode(entry.message)); logList.prepend(item); }}
 
+/** Render the streak and hidden-bot counts. */
+function renderStreak(): void {
+  const view = streak.view();
+  streakElement.hidden = view.total === 0;
+  streakElement.replaceChildren();
+  if (view.total === 0) return;
+  streakElement.classList.toggle('streak--glow', view.allHidden);
+  const main = document.createElement('span'); main.className = 'streak__main'; main.append('Streak ');
+  const count = document.createElement('b'); count.textContent = String(view.total); main.append(count);
+  streakElement.append(main);
+  if (view.hiddenBots > 0 && !view.allHidden) {
+    const special = document.createElement('span'); special.className = 'streak__hidden'; special.append('Streak ');
+    const specialCount = document.createElement('b'); specialCount.textContent = String(view.hiddenBots); special.append(specialCount);
+    streakElement.append(special);
+  }
+}
+
+/** Resolve the controlled run as failed or successful once. */
+function evaluateRun(): void {
+  if (!simulation || streak.resolved || !controlledPlayer.value) return;
+  const state = simulation.state;
+  const failStatuses = encounter.failStatuses ?? [];
+  const failed = state.players.some((player) => !player.alive || player.statuses.some((status) => failStatuses.includes(status.definitionId)));
+  if (failed) { if (streak.fail()) renderStreak(); return; }
+  if (state.completed && streak.succeed()) renderStreak();
+}
+
 function frame(now: number): void {
   const elapsed = Math.min(now - previous, 100); previous = now; controller?.update(elapsed / 1000 * speed); accumulator += elapsed * speed;
-  while (accumulator >= 1000 / 60) { simulation?.tick(1000 / 60); accumulator -= 1000 / 60; }
+  while (accumulator >= 1000 / 60) { simulation?.tick(1000 / 60); evaluateRun(); accumulator -= 1000 / 60; }
   if (simulation) { renderer.render(simulation.state); speaker.update(simulation.state.shotcall); renderHud(); clock.textContent = formatClock(simulation.state.time); const controlled = simulation.state.players.find((player) => player.controlled); if (simulation.state.completed) phase.textContent = 'COMPLETE'; else if (controlled && !controlled.alive) phase.textContent = 'DEFEATED'; else if (simulation.state.running) phase.textContent = 'RUNNING'; }
   requestAnimationFrame(frame);
 }
