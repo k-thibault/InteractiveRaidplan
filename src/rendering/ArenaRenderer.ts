@@ -162,8 +162,8 @@ export class ArenaRenderer {
       } else if (effect.shape === 'line') {
         // A rectangle starting at the anchor and running `radius` along the rotation.
         const cos = Math.cos(effect.rotation), sin = Math.sin(effect.rotation);
-        const half = (effect.width * scale) / 2, reach = effect.radius * scale;
-        [[0, -half], [reach, -half], [reach, half], [0, half]].forEach(([along, across], index) => {
+        const half = (effect.width * scale) / 2, reach = effect.radius * scale, near = effect.innerRadius * scale;
+        [[near, -half], [reach, -half], [reach, half], [near, half]].forEach(([along, across], index) => {
           const x = point.x + along * cos - across * sin, y = point.y + along * sin + across * cos;
           if (index === 0) context.moveTo(x, y); else context.lineTo(x, y);
         });

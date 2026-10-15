@@ -54,7 +54,7 @@ export interface AreaDefinition {
   radius: number;
   /** Full line width. */
   width?: number;
-  /** Donut hole radius. */
+  /** Donut hole radius, or for a line the distance from its anchor at which it starts. */
   innerRadius?: number;
   angle?: number;
   /** Anchor entity when `position` is unset; `$castTarget` is also valid. */
@@ -135,5 +135,5 @@ export interface ConeArea extends BaseAreaEffect { shape: 'cone'; angle: number;
 export interface HalfRoomArea extends BaseAreaEffect { shape: 'half_room'; side: 'north' | 'south'; }
 export interface DonutArea extends BaseAreaEffect { shape: 'donut'; innerRadius: number; }
 /** A rectangle starting at `position`, `radius` long along `rotation` and `width` wide. */
-export interface LineArea extends BaseAreaEffect { shape: 'line'; width: number; }
+export interface LineArea extends BaseAreaEffect { shape: 'line'; width: number; innerRadius: number; }
 export type AreaEffect = CircleArea | ConeArea | HalfRoomArea | DonutArea | LineArea;

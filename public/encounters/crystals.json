@@ -14,6 +14,7 @@
       "bg-dmup3",
       "boss-chaos",
       "boss-exdeath",
+      "boss-kefka-trance",
       "icon-magic-vulnerability",
       "icon-wind-vulnerability",
       "icon-beta",
@@ -28,14 +29,14 @@
       "object-wind-crystal",
       "object-fire-crystal",
       "object-water-crystal",
-      "icon-trigger-1",
-      "icon-trigger-2",
-      "icon-trigger-3",
-      "icon-trigger-4",
-      "icon-trigger-5",
-      "icon-trigger-6",
-      "icon-trigger-7",
-      "icon-trigger-8"
+      "icon-limitcut-1",
+      "icon-limitcut-2",
+      "icon-limitcut-3",
+      "icon-limitcut-4",
+      "icon-limitcut-5",
+      "icon-limitcut-6",
+      "icon-limitcut-7",
+      "icon-limitcut-8"
     ]
   },
   "randomGroups": {
@@ -112,21 +113,51 @@
     "chargeStart": {
       "mode": "choice",
       "values": [
-        0,
-        45,
-        90,
-        135,
-        180,
-        225,
-        270,
-        315
+        {
+          "angle": 0,
+          "opposite": "Charlie"
+        },
+        {
+          "angle": 45,
+          "opposite": "Three"
+        },
+        {
+          "angle": 90,
+          "opposite": "Delta"
+        },
+        {
+          "angle": 135,
+          "opposite": "Four"
+        },
+        {
+          "angle": 180,
+          "opposite": "Alpha"
+        },
+        {
+          "angle": 225,
+          "opposite": "One"
+        },
+        {
+          "angle": 270,
+          "opposite": "Bravo"
+        },
+        {
+          "angle": 315,
+          "opposite": "Two"
+        }
       ]
     },
     "chargeDirection": {
       "mode": "choice",
       "values": [
-        45,
-        -45
+        {
+          "step": 45,
+          "call": "counter"
+        },
+        {
+          "step": -45,
+          "call": "clockwise"
+        }
       ]
     }
   },
@@ -706,6 +737,35 @@
         }
       ]
     },
+    "trigger-line-fatal": {
+      "shape": "line",
+      "radius": 15,
+      "innerRadius": 0,
+      "width": 5,
+      "label": "trigger-line-fatal",
+      "telegraphDuration": 0,
+      "duration": 500,
+      "executionColor": "#d95757",
+      "resolution": [
+        {
+          "condition": {
+            "type": "player_count",
+            "min": 0
+          },
+          "effects": [
+            {
+              "type": "damage",
+              "target": "inside",
+              "damage": {
+                "amount": 999,
+                "type": "magical",
+                "fatal": true
+              }
+            }
+          ]
+        }
+      ]
+    },
     "trigger-line": {
       "shape": "line",
       "radius": 24,
@@ -777,7 +837,8 @@
             }
           ]
         }
-      ]
+      ],
+      "innerRadius": 15
     }
   },
   "batches": {
@@ -1018,7 +1079,7 @@
       "onApply": [
         {
           "type": "show_graphic",
-          "image": "icon-trigger-1",
+          "image": "icon-limitcut-1",
           "radius": 1.15,
           "duration": 3000
         }
@@ -1031,7 +1092,7 @@
       "onApply": [
         {
           "type": "show_graphic",
-          "image": "icon-trigger-2",
+          "image": "icon-limitcut-2",
           "radius": 1.15,
           "duration": 3000
         }
@@ -1044,7 +1105,7 @@
       "onApply": [
         {
           "type": "show_graphic",
-          "image": "icon-trigger-3",
+          "image": "icon-limitcut-3",
           "radius": 1.15,
           "duration": 3000
         }
@@ -1057,7 +1118,7 @@
       "onApply": [
         {
           "type": "show_graphic",
-          "image": "icon-trigger-4",
+          "image": "icon-limitcut-4",
           "radius": 1.15,
           "duration": 3000
         }
@@ -1070,7 +1131,7 @@
       "onApply": [
         {
           "type": "show_graphic",
-          "image": "icon-trigger-5",
+          "image": "icon-limitcut-5",
           "radius": 1.15,
           "duration": 3000
         }
@@ -1083,7 +1144,7 @@
       "onApply": [
         {
           "type": "show_graphic",
-          "image": "icon-trigger-6",
+          "image": "icon-limitcut-6",
           "radius": 1.15,
           "duration": 3000
         }
@@ -1096,7 +1157,7 @@
       "onApply": [
         {
           "type": "show_graphic",
-          "image": "icon-trigger-7",
+          "image": "icon-limitcut-7",
           "radius": 1.15,
           "duration": 3000
         }
@@ -1109,7 +1170,7 @@
       "onApply": [
         {
           "type": "show_graphic",
-          "image": "icon-trigger-8",
+          "image": "icon-limitcut-8",
           "radius": 1.15,
           "duration": 3000
         }
@@ -1585,8 +1646,21 @@
       "effects": [
         {
           "type": "spawn_area",
+          "area": "trigger-line-fatal",
+          "direction": "cast_target"
+        },
+        {
+          "type": "spawn_area",
           "area": "trigger-line",
           "direction": "cast_target"
+        },
+        {
+          "type": "start_follow",
+          "position": "cast_target_position",
+          "toEdge": true,
+          "distance": 0,
+          "moveSpeed": "$spacing.chargeSpeed",
+          "despawnOnArrival": true
         }
       ]
     }
@@ -3397,14 +3471,14 @@
             "$sub": [
               {
                 "$add": [
-                  "$chargeStart",
+                  "$chargeStart.angle",
                   180
                 ]
               },
               {
                 "$mul": [
                   0.5,
-                  "$chargeDirection"
+                  "$chargeDirection.step"
                 ]
               }
             ]
@@ -3425,14 +3499,14 @@
             "$sub": [
               {
                 "$add": [
-                  "$chargeStart",
+                  "$chargeStart.angle",
                   180
                 ]
               },
               {
                 "$mul": [
                   1.5,
-                  "$chargeDirection"
+                  "$chargeDirection.step"
                 ]
               }
             ]
@@ -3453,14 +3527,14 @@
             "$sub": [
               {
                 "$add": [
-                  "$chargeStart",
+                  "$chargeStart.angle",
                   180
                 ]
               },
               {
                 "$mul": [
                   2.5,
-                  "$chargeDirection"
+                  "$chargeDirection.step"
                 ]
               }
             ]
@@ -3481,14 +3555,14 @@
             "$sub": [
               {
                 "$add": [
-                  "$chargeStart",
+                  "$chargeStart.angle",
                   180
                 ]
               },
               {
                 "$mul": [
                   3.5,
-                  "$chargeDirection"
+                  "$chargeDirection.step"
                 ]
               }
             ]
@@ -3509,14 +3583,14 @@
             "$sub": [
               {
                 "$add": [
-                  "$chargeStart",
+                  "$chargeStart.angle",
                   180
                 ]
               },
               {
                 "$mul": [
                   4.5,
-                  "$chargeDirection"
+                  "$chargeDirection.step"
                 ]
               }
             ]
@@ -3537,14 +3611,14 @@
             "$sub": [
               {
                 "$add": [
-                  "$chargeStart",
+                  "$chargeStart.angle",
                   180
                 ]
               },
               {
                 "$mul": [
                   5.5,
-                  "$chargeDirection"
+                  "$chargeDirection.step"
                 ]
               }
             ]
@@ -3565,14 +3639,14 @@
             "$sub": [
               {
                 "$add": [
-                  "$chargeStart",
+                  "$chargeStart.angle",
                   180
                 ]
               },
               {
                 "$mul": [
                   6.5,
-                  "$chargeDirection"
+                  "$chargeDirection.step"
                 ]
               }
             ]
@@ -3593,14 +3667,14 @@
             "$sub": [
               {
                 "$add": [
-                  "$chargeStart",
+                  "$chargeStart.angle",
                   180
                 ]
               },
               {
                 "$mul": [
                   7.5,
-                  "$chargeDirection"
+                  "$chargeDirection.step"
                 ]
               }
             ]
@@ -3814,16 +3888,26 @@
       "name": "Kefka",
       "style": {
         "type": "circle",
-        "radius": 0.7,
+        "radius": 1,
         "color": "#e8a0ff"
+      },
+      "graphic": {
+        "image": "boss-kefka-trance",
+        "replaceShape": true,
+        "rotate": true
       }
     },
     "line-caster": {
       "name": "Kefka",
       "style": {
         "type": "circle",
-        "radius": 0.7,
+        "radius": 1.5,
         "color": "#b58cf2"
+      },
+      "graphic": {
+        "image": "boss-kefka-trance",
+        "replaceShape": true,
+        "rotate": true
       }
     }
   },
@@ -4480,6 +4564,38 @@
       "group": "facing-release"
     },
     {
+      "id": "wind-crystal",
+      "after": "vacuum-cast",
+      "delay": 12000,
+      "type": "remove_enemy"
+    },
+    {
+      "id": "small-resumes-follow",
+      "after": "vacuum-cast",
+      "delay": 8000,
+      "type": "start_follow",
+      "source": "boss-small",
+      "target": {
+        "type": "mechanical_role",
+        "role": "small_tank"
+      },
+      "distance": 3.6,
+      "moveSpeed": 4
+    },
+    {
+      "id": "large-resumes-follow",
+      "after": "vacuum-cast",
+      "delay": 8000,
+      "type": "start_follow",
+      "source": "boss-large",
+      "target": {
+        "type": "mechanical_role",
+        "role": "large_tank"
+      },
+      "distance": 4.4,
+      "moveSpeed": 4
+    },
+    {
       "id": "charge-1-spawn",
       "after": "vacuum-cast",
       "delay": 0,
@@ -4488,7 +4604,7 @@
       "enemy": "charger",
       "position": {
         "type": "polar",
-        "angle": "$chargeStart",
+        "angle": "$chargeStart.angle",
         "radius": "$spacing.chargeRadius"
       },
       "expiresAfter": "$spacing.chargeLifetime"
@@ -4502,7 +4618,7 @@
         "type": "polar",
         "angle": {
           "$add": [
-            "$chargeStart",
+            "$chargeStart.angle",
             180
           ]
         },
@@ -4522,11 +4638,11 @@
         "type": "polar",
         "angle": {
           "$add": [
-            "$chargeStart",
+            "$chargeStart.angle",
             {
               "$mul": [
                 1,
-                "$chargeDirection"
+                "$chargeDirection.step"
               ]
             }
           ]
@@ -4544,11 +4660,11 @@
         "type": "polar",
         "angle": {
           "$add": [
-            "$chargeStart",
+            "$chargeStart.angle",
             {
               "$mul": [
                 1,
-                "$chargeDirection"
+                "$chargeDirection.step"
               ]
             },
             180
@@ -4570,11 +4686,11 @@
         "type": "polar",
         "angle": {
           "$add": [
-            "$chargeStart",
+            "$chargeStart.angle",
             {
               "$mul": [
                 2,
-                "$chargeDirection"
+                "$chargeDirection.step"
               ]
             }
           ]
@@ -4592,11 +4708,11 @@
         "type": "polar",
         "angle": {
           "$add": [
-            "$chargeStart",
+            "$chargeStart.angle",
             {
               "$mul": [
                 2,
-                "$chargeDirection"
+                "$chargeDirection.step"
               ]
             },
             180
@@ -4618,11 +4734,11 @@
         "type": "polar",
         "angle": {
           "$add": [
-            "$chargeStart",
+            "$chargeStart.angle",
             {
               "$mul": [
                 3,
-                "$chargeDirection"
+                "$chargeDirection.step"
               ]
             }
           ]
@@ -4640,11 +4756,11 @@
         "type": "polar",
         "angle": {
           "$add": [
-            "$chargeStart",
+            "$chargeStart.angle",
             {
               "$mul": [
                 3,
-                "$chargeDirection"
+                "$chargeDirection.step"
               ]
             },
             180
@@ -4666,11 +4782,11 @@
         "type": "polar",
         "angle": {
           "$add": [
-            "$chargeStart",
+            "$chargeStart.angle",
             {
               "$mul": [
                 4,
-                "$chargeDirection"
+                "$chargeDirection.step"
               ]
             }
           ]
@@ -4688,11 +4804,11 @@
         "type": "polar",
         "angle": {
           "$add": [
-            "$chargeStart",
+            "$chargeStart.angle",
             {
               "$mul": [
                 4,
-                "$chargeDirection"
+                "$chargeDirection.step"
               ]
             },
             180
@@ -4714,11 +4830,11 @@
         "type": "polar",
         "angle": {
           "$add": [
-            "$chargeStart",
+            "$chargeStart.angle",
             {
               "$mul": [
                 5,
-                "$chargeDirection"
+                "$chargeDirection.step"
               ]
             }
           ]
@@ -4736,11 +4852,11 @@
         "type": "polar",
         "angle": {
           "$add": [
-            "$chargeStart",
+            "$chargeStart.angle",
             {
               "$mul": [
                 5,
-                "$chargeDirection"
+                "$chargeDirection.step"
               ]
             },
             180
@@ -4762,11 +4878,11 @@
         "type": "polar",
         "angle": {
           "$add": [
-            "$chargeStart",
+            "$chargeStart.angle",
             {
               "$mul": [
                 6,
-                "$chargeDirection"
+                "$chargeDirection.step"
               ]
             }
           ]
@@ -4784,11 +4900,11 @@
         "type": "polar",
         "angle": {
           "$add": [
-            "$chargeStart",
+            "$chargeStart.angle",
             {
               "$mul": [
                 6,
-                "$chargeDirection"
+                "$chargeDirection.step"
               ]
             },
             180
@@ -4810,11 +4926,11 @@
         "type": "polar",
         "angle": {
           "$add": [
-            "$chargeStart",
+            "$chargeStart.angle",
             {
               "$mul": [
                 7,
-                "$chargeDirection"
+                "$chargeDirection.step"
               ]
             }
           ]
@@ -4832,11 +4948,11 @@
         "type": "polar",
         "angle": {
           "$add": [
-            "$chargeStart",
+            "$chargeStart.angle",
             {
               "$mul": [
                 7,
-                "$chargeDirection"
+                "$chargeDirection.step"
               ]
             },
             180
@@ -4850,7 +4966,7 @@
     {
       "id": "trigger-heal",
       "after": "vacuum-cast",
-      "delay": 10000,
+      "delay": 12000,
       "type": "heal",
       "target": {
         "type": "all"
@@ -4890,6 +5006,14 @@
       "group": "drag-bosses-mid"
     },
     {
+      "id": "limit-cut-shotcall",
+      "after": "bosses-mid-lc",
+      "delay": 0,
+      "type": "set_shotcall",
+      "text": "${chargeStart.opposite}, ${chargeDirection.call}",
+      "duration": 4000
+    },
+    {
       "id": "everyone-mid-lc",
       "after": "trigger-assign",
       "delay": 3500,
@@ -4912,10 +5036,10 @@
       "enemy": "line-caster",
       "position": {
         "type": "polar",
-        "angle": "$chargeStart",
+        "angle": "$chargeStart.angle",
         "radius": "$spacing.chargeRadius"
       },
-      "expiresAfter": 6500
+      "expiresAfter": 2000
     },
     {
       "id": "line-1-cast",
@@ -4931,8 +5055,8 @@
     },
     {
       "id": "line-2-spawn",
-      "after": "trigger-assign",
-      "delay": 10000,
+      "after": "line-1-spawn",
+      "delay": 200,
       "type": "spawn_enemy",
       "enemyId": "line-2",
       "enemy": "line-caster",
@@ -4940,18 +5064,18 @@
         "type": "polar",
         "angle": {
           "$sub": [
-            "$chargeStart",
+            "$chargeStart.angle",
             {
               "$mul": [
                 1,
-                "$chargeDirection"
+                "$chargeDirection.step"
               ]
             }
           ]
         },
         "radius": "$spacing.chargeRadius"
       },
-      "expiresAfter": 6500
+      "expiresAfter": 2000
     },
     {
       "id": "line-2-cast",
@@ -4967,8 +5091,8 @@
     },
     {
       "id": "line-3-spawn",
-      "after": "trigger-assign",
-      "delay": 10000,
+      "after": "line-2-spawn",
+      "delay": 200,
       "type": "spawn_enemy",
       "enemyId": "line-3",
       "enemy": "line-caster",
@@ -4976,18 +5100,18 @@
         "type": "polar",
         "angle": {
           "$sub": [
-            "$chargeStart",
+            "$chargeStart.angle",
             {
               "$mul": [
                 2,
-                "$chargeDirection"
+                "$chargeDirection.step"
               ]
             }
           ]
         },
         "radius": "$spacing.chargeRadius"
       },
-      "expiresAfter": 6500
+      "expiresAfter": 2000
     },
     {
       "id": "line-3-cast",
@@ -5003,8 +5127,8 @@
     },
     {
       "id": "line-4-spawn",
-      "after": "trigger-assign",
-      "delay": 10000,
+      "after": "line-3-spawn",
+      "delay": 200,
       "type": "spawn_enemy",
       "enemyId": "line-4",
       "enemy": "line-caster",
@@ -5012,18 +5136,18 @@
         "type": "polar",
         "angle": {
           "$sub": [
-            "$chargeStart",
+            "$chargeStart.angle",
             {
               "$mul": [
                 3,
-                "$chargeDirection"
+                "$chargeDirection.step"
               ]
             }
           ]
         },
         "radius": "$spacing.chargeRadius"
       },
-      "expiresAfter": 6500
+      "expiresAfter": 2000
     },
     {
       "id": "line-4-cast",
@@ -5039,8 +5163,8 @@
     },
     {
       "id": "line-5-spawn",
-      "after": "trigger-assign",
-      "delay": 10000,
+      "after": "line-4-spawn",
+      "delay": 200,
       "type": "spawn_enemy",
       "enemyId": "line-5",
       "enemy": "line-caster",
@@ -5048,18 +5172,18 @@
         "type": "polar",
         "angle": {
           "$sub": [
-            "$chargeStart",
+            "$chargeStart.angle",
             {
               "$mul": [
                 4,
-                "$chargeDirection"
+                "$chargeDirection.step"
               ]
             }
           ]
         },
         "radius": "$spacing.chargeRadius"
       },
-      "expiresAfter": 6500
+      "expiresAfter": 2000
     },
     {
       "id": "line-5-cast",
@@ -5075,8 +5199,8 @@
     },
     {
       "id": "line-6-spawn",
-      "after": "trigger-assign",
-      "delay": 10000,
+      "after": "line-5-spawn",
+      "delay": 200,
       "type": "spawn_enemy",
       "enemyId": "line-6",
       "enemy": "line-caster",
@@ -5084,18 +5208,18 @@
         "type": "polar",
         "angle": {
           "$sub": [
-            "$chargeStart",
+            "$chargeStart.angle",
             {
               "$mul": [
                 5,
-                "$chargeDirection"
+                "$chargeDirection.step"
               ]
             }
           ]
         },
         "radius": "$spacing.chargeRadius"
       },
-      "expiresAfter": 6500
+      "expiresAfter": 2000
     },
     {
       "id": "line-6-cast",
@@ -5111,8 +5235,8 @@
     },
     {
       "id": "line-7-spawn",
-      "after": "trigger-assign",
-      "delay": 10000,
+      "after": "line-6-spawn",
+      "delay": 200,
       "type": "spawn_enemy",
       "enemyId": "line-7",
       "enemy": "line-caster",
@@ -5120,18 +5244,18 @@
         "type": "polar",
         "angle": {
           "$sub": [
-            "$chargeStart",
+            "$chargeStart.angle",
             {
               "$mul": [
                 6,
-                "$chargeDirection"
+                "$chargeDirection.step"
               ]
             }
           ]
         },
         "radius": "$spacing.chargeRadius"
       },
-      "expiresAfter": 6500
+      "expiresAfter": 2000
     },
     {
       "id": "line-7-cast",
@@ -5147,8 +5271,8 @@
     },
     {
       "id": "line-8-spawn",
-      "after": "trigger-assign",
-      "delay": 10000,
+      "after": "line-7-spawn",
+      "delay": 200,
       "type": "spawn_enemy",
       "enemyId": "line-8",
       "enemy": "line-caster",
@@ -5156,18 +5280,18 @@
         "type": "polar",
         "angle": {
           "$sub": [
-            "$chargeStart",
+            "$chargeStart.angle",
             {
               "$mul": [
                 7,
-                "$chargeDirection"
+                "$chargeDirection.step"
               ]
             }
           ]
         },
         "radius": "$spacing.chargeRadius"
       },
-      "expiresAfter": 6500
+      "expiresAfter": 2000
     },
     {
       "id": "line-8-cast",

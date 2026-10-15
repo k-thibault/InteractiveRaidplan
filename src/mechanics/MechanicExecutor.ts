@@ -20,7 +20,7 @@ import type { KnockDirection, KnockParams } from './Knock';
 import type { FollowInput } from '../bots/FollowManager';
 import type { Player } from '../entities/Player';
 import type { Entity } from '../entities/Entity';
-import { isInsideArena } from '../geometry/Arena';
+import { distanceToArenaEdge, isInsideArena } from '../geometry/Arena';
 import { TetherManager } from './TetherManager';
 import type { TetherDefinition, TetherSpawnOptions } from './Tether';
 
@@ -304,7 +304,7 @@ export class MechanicExecutor {
         : resolved.shape === 'donut'
           ? { ...base, shape: 'donut', innerRadius: resolved.innerRadius ?? 0 }
           : resolved.shape === 'line'
-            ? { ...base, shape: 'line', width: resolved.width ?? 4 }
+            ? { ...base, shape: 'line', width: resolved.width ?? 4, innerRadius: resolved.innerRadius ?? 0 }
             : { ...base, shape: 'circle' };
     this.state.effects.push(effect);
   }
@@ -570,11 +570,19 @@ export class MechanicExecutor {
   private startFollow(enemyId: string, settings: FollowInput, context?: EffectContext): void {
     const enemy = this.state.enemies.find((candidate) => candidate.id === enemyId);
     if (!enemy) return;
-    const position = settings.position === 'cast_target_position'
+    let position = settings.position === 'cast_target_position'
       ? context?.targetPosition
       : (settings.position ? this.resolvePosition(settings.position) : undefined);
     if (settings.position !== undefined && !position) return;
-    enemy.follow = { target: settings.target, position: position ? { ...position } : undefined, distance: settings.distance, moveSpeed: settings.moveSpeed };
+    if (position && settings.toEdge) {
+      const length = Math.hypot(position.x - enemy.position.x, position.y - enemy.position.y);
+      if (length > 0) {
+        const unit = { x: (position.x - enemy.position.x) / length, y: (position.y - enemy.position.y) / length };
+        const reach = distanceToArenaEdge(this.state.arena, enemy.position, unit);
+        position = { x: enemy.position.x + unit.x * reach, y: enemy.position.y + unit.y * reach };
+      }
+    }
+    enemy.follow = { target: settings.target, position: position ? { ...position } : undefined, distance: settings.distance, moveSpeed: settings.moveSpeed, despawnOnArrival: settings.despawnOnArrival };
   }
 
   private stopFollow(enemyId: string): void {

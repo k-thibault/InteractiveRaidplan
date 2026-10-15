@@ -120,7 +120,7 @@ export class Simulation {
             : effect.shape === 'donut'
               ? pointInDonut(player.position, effect.position, effect.innerRadius, effect.radius)
               : effect.shape === 'line'
-                ? pointInLine(player.position, effect.position, effect.rotation, effect.radius, effect.width)
+                ? pointInLine(player.position, effect.position, effect.rotation, effect.radius, effect.width, effect.innerRadius)
                 : (effect.side === 'north' ? player.position.y < effect.position.y : player.position.y >= effect.position.y);
         if (hit) inside.add(player.id);
       }
