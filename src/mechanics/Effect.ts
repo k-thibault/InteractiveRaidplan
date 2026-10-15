@@ -4,12 +4,14 @@ import type { GraphicAnchor } from './Graphic';
 import type { EnemyTemplate } from '../entities/Enemy';
 import type { CastFacing } from './Cast';
 import type { KnockParams } from './Knock';
-import type { FollowSettings } from '../bots/FollowManager';
+import type { FollowInput } from '../bots/FollowManager';
+import type { SpawnTetherEffect, RemoveTetherEffect } from './Tether';
 
 export type DamageType = 'physical' | 'magical' | 'dark' | 'fire' | 'ice' | 'water' | 'wind' | 'poison';
 export interface DamageDefinition { amount: number; type: DamageType; fatal?: boolean; }
 /** `source` targets the effect source; `inside_others` excludes an area's anchor. */
-export type EffectTarget = 'inside' | 'inside_others' | 'outside' | 'all' | 'source' | PlayerSelector;
+/** In tether hooks, `tethered` and `tether_source` target the current holder and source. */
+export type EffectTarget = 'inside' | 'inside_others' | 'outside' | 'all' | 'source' | 'tethered' | 'tether_source' | PlayerSelector;
 export interface HealEffect { type: 'heal'; target: EffectTarget; amount?: number; full?: boolean; }
 export interface DamageEffect { type: 'damage'; target: EffectTarget; damage: DamageDefinition; }
 export interface ApplyStatusEffect {
@@ -32,7 +34,7 @@ export interface StartCastEffect {
 /** Forced movement that suspends regular movement until it finishes. Ignores roots and stuns. */
 export interface KnockEffect extends KnockParams { type: 'knock'; target: EffectTarget; }
 /** Starts follow mode on `source` (the effect's source entity when unset). */
-export interface StartFollowEffect extends FollowSettings { type: 'start_follow'; source?: string; }
+export interface StartFollowEffect extends FollowInput { type: 'start_follow'; source?: string; }
 /** Ends follow mode on `source` (the effect's source entity when unset). */
 export interface StopFollowEffect { type: 'stop_follow'; source?: string; }
 /** Counts toward the named batch; see `BatchDefinition`. */
@@ -47,9 +49,11 @@ export interface RecalculateFacingEffect { type: 'recalculate_facing'; group?: s
 export interface SetFocusEffect { type: 'set_focus'; target: EffectTarget; /** Enemy id to focus. Omit to keep the current focus. */ enemy?: string; /** Turns following of the focused enemy on or off. Omit to keep it. */ follow?: boolean; }
 export interface SetMechanicEffect { type: 'set_mechanic'; mechanic: string; }
 export interface AreaDefinition {
-  shape: 'circle' | 'cone' | 'half_room' | 'donut';
-  /** Outer radius for donuts. */
+  shape: 'circle' | 'cone' | 'half_room' | 'donut' | 'line';
+  /** Outer donut radius or line length from its anchor. */
   radius: number;
+  /** Full line width. */
+  width?: number;
   /** Donut hole radius. */
   innerRadius?: number;
   angle?: number;
@@ -118,7 +122,7 @@ export interface SpawnEnemyEffect extends Partial<EnemyTemplate> {
 /** Removes a temporary enemy and cancels its active casts. */
 export interface RemoveEnemyEffect { type: 'remove_enemy'; id: string; }
 
-export type EffectDefinition = HealEffect | DamageEffect | ApplyStatusEffect | RemoveStatusEffect | KnockEffect | StartFollowEffect | StopFollowEffect | AddToBatchEffect | StartCastEffect | RecalculateRolesEffect | RecalculatePositionsEffect | RecalculateFacingEffect | SetFocusEffect | SetMechanicEffect | SpawnAreaEffect | AssignDistributionEffect | DistributeStatusesEffect | ShowGraphicEffect | DelayedEffectsEffect | SelectGroupEffect | SelectGroupSubsetEffect | ForEachGroupEffect | SpawnEnemyEffect | RemoveEnemyEffect;
+export type EffectDefinition = HealEffect | DamageEffect | ApplyStatusEffect | RemoveStatusEffect | KnockEffect | StartFollowEffect | StopFollowEffect | AddToBatchEffect | StartCastEffect | RecalculateRolesEffect | RecalculatePositionsEffect | RecalculateFacingEffect | SetFocusEffect | SetMechanicEffect | SpawnAreaEffect | AssignDistributionEffect | DistributeStatusesEffect | ShowGraphicEffect | DelayedEffectsEffect | SelectGroupEffect | SelectGroupSubsetEffect | ForEachGroupEffect | SpawnEnemyEffect | RemoveEnemyEffect | SpawnTetherEffect | RemoveTetherEffect;
 export interface AreaCondition { type: 'player_count'; min?: number; max?: number; }
 export interface AreaResolutionRule { condition: AreaCondition; effects: EffectDefinition[]; }
 export interface BaseAreaEffect {
@@ -130,4 +134,6 @@ export interface CircleArea extends BaseAreaEffect { shape: 'circle'; }
 export interface ConeArea extends BaseAreaEffect { shape: 'cone'; angle: number; }
 export interface HalfRoomArea extends BaseAreaEffect { shape: 'half_room'; side: 'north' | 'south'; }
 export interface DonutArea extends BaseAreaEffect { shape: 'donut'; innerRadius: number; }
-export type AreaEffect = CircleArea | ConeArea | HalfRoomArea | DonutArea;
+/** A rectangle starting at `position`, `radius` long along `rotation` and `width` wide. */
+export interface LineArea extends BaseAreaEffect { shape: 'line'; width: number; }
+export type AreaEffect = CircleArea | ConeArea | HalfRoomArea | DonutArea | LineArea;

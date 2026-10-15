@@ -1,7 +1,7 @@
 {
   "version": 4,
   "name": "Bowels of Agony",
-  "duration": 86000,
+  "duration": 102000,
   "failStatuses": ["damage-down"],
   "arena": {
     "shape": "circle",
@@ -27,7 +27,15 @@
       "icon-arms-length",
       "object-wind-crystal",
       "object-fire-crystal",
-      "object-water-crystal"
+      "object-water-crystal",
+      "icon-trigger-1",
+      "icon-trigger-2",
+      "icon-trigger-3",
+      "icon-trigger-4",
+      "icon-trigger-5",
+      "icon-trigger-6",
+      "icon-trigger-7",
+      "icon-trigger-8"
     ]
   },
   "randomGroups": {
@@ -94,8 +102,31 @@
           "vacuumDistance": 3,
           "vacuumAngle": 20,
           "smashJumpGap": 3,
-          "smashJumpSpeed": 40
+          "smashJumpSpeed": 40,
+          "chargeRadius": 10,
+          "chargeSpeed": 40,
+          "chargeLifetime": 600
         }
+      ]
+    },
+    "chargeStart": {
+      "mode": "choice",
+      "values": [
+        0,
+        45,
+        90,
+        135,
+        180,
+        225,
+        270,
+        315
+      ]
+    },
+    "chargeDirection": {
+      "mode": "choice",
+      "values": [
+        45,
+        -45
       ]
     }
   },
@@ -674,6 +705,79 @@
           ]
         }
       ]
+    },
+    "trigger-line": {
+      "shape": "line",
+      "radius": 24,
+      "width": 5,
+      "label": "trigger-line",
+      "telegraphDuration": 0,
+      "duration": 500,
+      "executionColor": "#c77dff",
+      "resolution": [
+        {
+          "condition": {
+            "type": "player_count",
+            "min": 0
+          },
+          "effects": [
+            {
+              "type": "damage",
+              "target": "inside",
+              "damage": {
+                "amount": 60,
+                "type": "magical"
+              }
+            },
+            {
+              "type": "apply_status",
+              "status": "magic-vulnerability",
+              "target": "inside",
+              "duration": 3000
+            },
+            {
+              "type": "remove_status",
+              "target": "inside",
+              "status": "lc-1"
+            },
+            {
+              "type": "remove_status",
+              "target": "inside",
+              "status": "lc-2"
+            },
+            {
+              "type": "remove_status",
+              "target": "inside",
+              "status": "lc-3"
+            },
+            {
+              "type": "remove_status",
+              "target": "inside",
+              "status": "lc-4"
+            },
+            {
+              "type": "remove_status",
+              "target": "inside",
+              "status": "lc-5"
+            },
+            {
+              "type": "remove_status",
+              "target": "inside",
+              "status": "lc-6"
+            },
+            {
+              "type": "remove_status",
+              "target": "inside",
+              "status": "lc-7"
+            },
+            {
+              "type": "remove_status",
+              "target": "inside",
+              "status": "lc-8"
+            }
+          ]
+        }
+      ]
     }
   },
   "batches": {
@@ -906,6 +1010,110 @@
       "name": "Arm's Length",
       "icon": "icon-arms-length",
       "knockImmune": true
+    },
+    {
+      "id": "lc-1",
+      "name": "Limit Cut 1",
+      "hidden": true,
+      "onApply": [
+        {
+          "type": "show_graphic",
+          "image": "icon-trigger-1",
+          "radius": 1.15,
+          "duration": 3000
+        }
+      ]
+    },
+    {
+      "id": "lc-2",
+      "name": "Limit Cut 2",
+      "hidden": true,
+      "onApply": [
+        {
+          "type": "show_graphic",
+          "image": "icon-trigger-2",
+          "radius": 1.15,
+          "duration": 3000
+        }
+      ]
+    },
+    {
+      "id": "lc-3",
+      "name": "Limit Cut 3",
+      "hidden": true,
+      "onApply": [
+        {
+          "type": "show_graphic",
+          "image": "icon-trigger-3",
+          "radius": 1.15,
+          "duration": 3000
+        }
+      ]
+    },
+    {
+      "id": "lc-4",
+      "name": "Limit Cut 4",
+      "hidden": true,
+      "onApply": [
+        {
+          "type": "show_graphic",
+          "image": "icon-trigger-4",
+          "radius": 1.15,
+          "duration": 3000
+        }
+      ]
+    },
+    {
+      "id": "lc-5",
+      "name": "Limit Cut 5",
+      "hidden": true,
+      "onApply": [
+        {
+          "type": "show_graphic",
+          "image": "icon-trigger-5",
+          "radius": 1.15,
+          "duration": 3000
+        }
+      ]
+    },
+    {
+      "id": "lc-6",
+      "name": "Limit Cut 6",
+      "hidden": true,
+      "onApply": [
+        {
+          "type": "show_graphic",
+          "image": "icon-trigger-6",
+          "radius": 1.15,
+          "duration": 3000
+        }
+      ]
+    },
+    {
+      "id": "lc-7",
+      "name": "Limit Cut 7",
+      "hidden": true,
+      "onApply": [
+        {
+          "type": "show_graphic",
+          "image": "icon-trigger-7",
+          "radius": 1.15,
+          "duration": 3000
+        }
+      ]
+    },
+    {
+      "id": "lc-8",
+      "name": "Limit Cut 8",
+      "hidden": true,
+      "onApply": [
+        {
+          "type": "show_graphic",
+          "image": "icon-trigger-8",
+          "radius": 1.15,
+          "duration": 3000
+        }
+      ]
     }
   ],
   "casts": {
@@ -1368,6 +1576,19 @@
           ]
         }
       ]
+    },
+    "trigger-line": {
+      "id": "trigger-line",
+      "name": "Trigger Line",
+      "castTime": 100,
+      "visible": false,
+      "effects": [
+        {
+          "type": "spawn_area",
+          "area": "trigger-line",
+          "direction": "cast_target"
+        }
+      ]
     }
   },
   "mechanicalRoles": {
@@ -1617,6 +1838,56 @@
           "r1"
         ]
       }
+    },
+    "trigger-numbers": {
+      "limit_cut_1": [
+        {
+          "type": "has_status",
+          "status": "lc-1"
+        }
+      ],
+      "limit_cut_2": [
+        {
+          "type": "has_status",
+          "status": "lc-2"
+        }
+      ],
+      "limit_cut_3": [
+        {
+          "type": "has_status",
+          "status": "lc-3"
+        }
+      ],
+      "limit_cut_4": [
+        {
+          "type": "has_status",
+          "status": "lc-4"
+        }
+      ],
+      "limit_cut_5": [
+        {
+          "type": "has_status",
+          "status": "lc-5"
+        }
+      ],
+      "limit_cut_6": [
+        {
+          "type": "has_status",
+          "status": "lc-6"
+        }
+      ],
+      "limit_cut_7": [
+        {
+          "type": "has_status",
+          "status": "lc-7"
+        }
+      ],
+      "limit_cut_8": [
+        {
+          "type": "has_status",
+          "status": "lc-8"
+        }
+      ]
     }
   },
   "positions": {
@@ -1660,6 +1931,17 @@
               "x": 0,
               "y": 0
             }
+          }
+        }
+      }
+    ],
+    "everyone-mid": [
+      {
+        "target": {
+          "type": "fixed",
+          "position": {
+            "x": 0,
+            "y": 0
           }
         }
       }
@@ -3100,6 +3382,232 @@
           "distance": "$spacing.vacuumDistance"
         }
       }
+    ],
+    "trigger-edge": [
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "limit_cut_1"
+          }
+        ],
+        "target": {
+          "type": "edge",
+          "angle": {
+            "$sub": [
+              {
+                "$add": [
+                  "$chargeStart",
+                  180
+                ]
+              },
+              {
+                "$mul": [
+                  0.5,
+                  "$chargeDirection"
+                ]
+              }
+            ]
+          },
+          "inset": "$spacing.edgeInset"
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "limit_cut_2"
+          }
+        ],
+        "target": {
+          "type": "edge",
+          "angle": {
+            "$sub": [
+              {
+                "$add": [
+                  "$chargeStart",
+                  180
+                ]
+              },
+              {
+                "$mul": [
+                  1.5,
+                  "$chargeDirection"
+                ]
+              }
+            ]
+          },
+          "inset": "$spacing.edgeInset"
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "limit_cut_3"
+          }
+        ],
+        "target": {
+          "type": "edge",
+          "angle": {
+            "$sub": [
+              {
+                "$add": [
+                  "$chargeStart",
+                  180
+                ]
+              },
+              {
+                "$mul": [
+                  2.5,
+                  "$chargeDirection"
+                ]
+              }
+            ]
+          },
+          "inset": "$spacing.edgeInset"
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "limit_cut_4"
+          }
+        ],
+        "target": {
+          "type": "edge",
+          "angle": {
+            "$sub": [
+              {
+                "$add": [
+                  "$chargeStart",
+                  180
+                ]
+              },
+              {
+                "$mul": [
+                  3.5,
+                  "$chargeDirection"
+                ]
+              }
+            ]
+          },
+          "inset": "$spacing.edgeInset"
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "limit_cut_5"
+          }
+        ],
+        "target": {
+          "type": "edge",
+          "angle": {
+            "$sub": [
+              {
+                "$add": [
+                  "$chargeStart",
+                  180
+                ]
+              },
+              {
+                "$mul": [
+                  4.5,
+                  "$chargeDirection"
+                ]
+              }
+            ]
+          },
+          "inset": "$spacing.edgeInset"
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "limit_cut_6"
+          }
+        ],
+        "target": {
+          "type": "edge",
+          "angle": {
+            "$sub": [
+              {
+                "$add": [
+                  "$chargeStart",
+                  180
+                ]
+              },
+              {
+                "$mul": [
+                  5.5,
+                  "$chargeDirection"
+                ]
+              }
+            ]
+          },
+          "inset": "$spacing.edgeInset"
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "limit_cut_7"
+          }
+        ],
+        "target": {
+          "type": "edge",
+          "angle": {
+            "$sub": [
+              {
+                "$add": [
+                  "$chargeStart",
+                  180
+                ]
+              },
+              {
+                "$mul": [
+                  6.5,
+                  "$chargeDirection"
+                ]
+              }
+            ]
+          },
+          "inset": "$spacing.edgeInset"
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "limit_cut_8"
+          }
+        ],
+        "target": {
+          "type": "edge",
+          "angle": {
+            "$sub": [
+              {
+                "$add": [
+                  "$chargeStart",
+                  180
+                ]
+              },
+              {
+                "$mul": [
+                  7.5,
+                  "$chargeDirection"
+                ]
+              }
+            ]
+          },
+          "inset": "$spacing.edgeInset"
+        }
+      }
     ]
   },
   "facing": {
@@ -3300,6 +3808,22 @@
         "image": "object-fire-crystal",
         "replaceShape": true,
         "rotate": false
+      }
+    },
+    "charger": {
+      "name": "Kefka",
+      "style": {
+        "type": "circle",
+        "radius": 0.7,
+        "color": "#e8a0ff"
+      }
+    },
+    "line-caster": {
+      "name": "Kefka",
+      "style": {
+        "type": "circle",
+        "radius": 0.7,
+        "color": "#b58cf2"
       }
     }
   },
@@ -3954,6 +4478,708 @@
       "delay": 10000,
       "type": "recalculate_facing",
       "group": "facing-release"
+    },
+    {
+      "id": "charge-1-spawn",
+      "after": "vacuum-cast",
+      "delay": 0,
+      "type": "spawn_enemy",
+      "enemyId": "charger-1",
+      "enemy": "charger",
+      "position": {
+        "type": "polar",
+        "angle": "$chargeStart",
+        "radius": "$spacing.chargeRadius"
+      },
+      "expiresAfter": "$spacing.chargeLifetime"
+    },
+    {
+      "id": "charge-1-move",
+      "after": "charge-1-spawn",
+      "type": "start_follow",
+      "source": "charger-1",
+      "position": {
+        "type": "polar",
+        "angle": {
+          "$add": [
+            "$chargeStart",
+            180
+          ]
+        },
+        "radius": "$spacing.chargeRadius"
+      },
+      "distance": 0,
+      "moveSpeed": "$spacing.chargeSpeed"
+    },
+    {
+      "id": "charge-2-spawn",
+      "after": "vacuum-cast",
+      "delay": 2000,
+      "type": "spawn_enemy",
+      "enemyId": "charger-2",
+      "enemy": "charger",
+      "position": {
+        "type": "polar",
+        "angle": {
+          "$add": [
+            "$chargeStart",
+            {
+              "$mul": [
+                1,
+                "$chargeDirection"
+              ]
+            }
+          ]
+        },
+        "radius": "$spacing.chargeRadius"
+      },
+      "expiresAfter": "$spacing.chargeLifetime"
+    },
+    {
+      "id": "charge-2-move",
+      "after": "charge-2-spawn",
+      "type": "start_follow",
+      "source": "charger-2",
+      "position": {
+        "type": "polar",
+        "angle": {
+          "$add": [
+            "$chargeStart",
+            {
+              "$mul": [
+                1,
+                "$chargeDirection"
+              ]
+            },
+            180
+          ]
+        },
+        "radius": "$spacing.chargeRadius"
+      },
+      "distance": 0,
+      "moveSpeed": "$spacing.chargeSpeed"
+    },
+    {
+      "id": "charge-3-spawn",
+      "after": "vacuum-cast",
+      "delay": 4000,
+      "type": "spawn_enemy",
+      "enemyId": "charger-3",
+      "enemy": "charger",
+      "position": {
+        "type": "polar",
+        "angle": {
+          "$add": [
+            "$chargeStart",
+            {
+              "$mul": [
+                2,
+                "$chargeDirection"
+              ]
+            }
+          ]
+        },
+        "radius": "$spacing.chargeRadius"
+      },
+      "expiresAfter": "$spacing.chargeLifetime"
+    },
+    {
+      "id": "charge-3-move",
+      "after": "charge-3-spawn",
+      "type": "start_follow",
+      "source": "charger-3",
+      "position": {
+        "type": "polar",
+        "angle": {
+          "$add": [
+            "$chargeStart",
+            {
+              "$mul": [
+                2,
+                "$chargeDirection"
+              ]
+            },
+            180
+          ]
+        },
+        "radius": "$spacing.chargeRadius"
+      },
+      "distance": 0,
+      "moveSpeed": "$spacing.chargeSpeed"
+    },
+    {
+      "id": "charge-4-spawn",
+      "after": "vacuum-cast",
+      "delay": 6000,
+      "type": "spawn_enemy",
+      "enemyId": "charger-4",
+      "enemy": "charger",
+      "position": {
+        "type": "polar",
+        "angle": {
+          "$add": [
+            "$chargeStart",
+            {
+              "$mul": [
+                3,
+                "$chargeDirection"
+              ]
+            }
+          ]
+        },
+        "radius": "$spacing.chargeRadius"
+      },
+      "expiresAfter": "$spacing.chargeLifetime"
+    },
+    {
+      "id": "charge-4-move",
+      "after": "charge-4-spawn",
+      "type": "start_follow",
+      "source": "charger-4",
+      "position": {
+        "type": "polar",
+        "angle": {
+          "$add": [
+            "$chargeStart",
+            {
+              "$mul": [
+                3,
+                "$chargeDirection"
+              ]
+            },
+            180
+          ]
+        },
+        "radius": "$spacing.chargeRadius"
+      },
+      "distance": 0,
+      "moveSpeed": "$spacing.chargeSpeed"
+    },
+    {
+      "id": "charge-5-spawn",
+      "after": "vacuum-cast",
+      "delay": 8000,
+      "type": "spawn_enemy",
+      "enemyId": "charger-5",
+      "enemy": "charger",
+      "position": {
+        "type": "polar",
+        "angle": {
+          "$add": [
+            "$chargeStart",
+            {
+              "$mul": [
+                4,
+                "$chargeDirection"
+              ]
+            }
+          ]
+        },
+        "radius": "$spacing.chargeRadius"
+      },
+      "expiresAfter": "$spacing.chargeLifetime"
+    },
+    {
+      "id": "charge-5-move",
+      "after": "charge-5-spawn",
+      "type": "start_follow",
+      "source": "charger-5",
+      "position": {
+        "type": "polar",
+        "angle": {
+          "$add": [
+            "$chargeStart",
+            {
+              "$mul": [
+                4,
+                "$chargeDirection"
+              ]
+            },
+            180
+          ]
+        },
+        "radius": "$spacing.chargeRadius"
+      },
+      "distance": 0,
+      "moveSpeed": "$spacing.chargeSpeed"
+    },
+    {
+      "id": "charge-6-spawn",
+      "after": "vacuum-cast",
+      "delay": 10000,
+      "type": "spawn_enemy",
+      "enemyId": "charger-6",
+      "enemy": "charger",
+      "position": {
+        "type": "polar",
+        "angle": {
+          "$add": [
+            "$chargeStart",
+            {
+              "$mul": [
+                5,
+                "$chargeDirection"
+              ]
+            }
+          ]
+        },
+        "radius": "$spacing.chargeRadius"
+      },
+      "expiresAfter": "$spacing.chargeLifetime"
+    },
+    {
+      "id": "charge-6-move",
+      "after": "charge-6-spawn",
+      "type": "start_follow",
+      "source": "charger-6",
+      "position": {
+        "type": "polar",
+        "angle": {
+          "$add": [
+            "$chargeStart",
+            {
+              "$mul": [
+                5,
+                "$chargeDirection"
+              ]
+            },
+            180
+          ]
+        },
+        "radius": "$spacing.chargeRadius"
+      },
+      "distance": 0,
+      "moveSpeed": "$spacing.chargeSpeed"
+    },
+    {
+      "id": "charge-7-spawn",
+      "after": "vacuum-cast",
+      "delay": 12000,
+      "type": "spawn_enemy",
+      "enemyId": "charger-7",
+      "enemy": "charger",
+      "position": {
+        "type": "polar",
+        "angle": {
+          "$add": [
+            "$chargeStart",
+            {
+              "$mul": [
+                6,
+                "$chargeDirection"
+              ]
+            }
+          ]
+        },
+        "radius": "$spacing.chargeRadius"
+      },
+      "expiresAfter": "$spacing.chargeLifetime"
+    },
+    {
+      "id": "charge-7-move",
+      "after": "charge-7-spawn",
+      "type": "start_follow",
+      "source": "charger-7",
+      "position": {
+        "type": "polar",
+        "angle": {
+          "$add": [
+            "$chargeStart",
+            {
+              "$mul": [
+                6,
+                "$chargeDirection"
+              ]
+            },
+            180
+          ]
+        },
+        "radius": "$spacing.chargeRadius"
+      },
+      "distance": 0,
+      "moveSpeed": "$spacing.chargeSpeed"
+    },
+    {
+      "id": "charge-8-spawn",
+      "after": "vacuum-cast",
+      "delay": 14000,
+      "type": "spawn_enemy",
+      "enemyId": "charger-8",
+      "enemy": "charger",
+      "position": {
+        "type": "polar",
+        "angle": {
+          "$add": [
+            "$chargeStart",
+            {
+              "$mul": [
+                7,
+                "$chargeDirection"
+              ]
+            }
+          ]
+        },
+        "radius": "$spacing.chargeRadius"
+      },
+      "expiresAfter": "$spacing.chargeLifetime"
+    },
+    {
+      "id": "charge-8-move",
+      "after": "charge-8-spawn",
+      "type": "start_follow",
+      "source": "charger-8",
+      "position": {
+        "type": "polar",
+        "angle": {
+          "$add": [
+            "$chargeStart",
+            {
+              "$mul": [
+                7,
+                "$chargeDirection"
+              ]
+            },
+            180
+          ]
+        },
+        "radius": "$spacing.chargeRadius"
+      },
+      "distance": 0,
+      "moveSpeed": "$spacing.chargeSpeed"
+    },
+    {
+      "id": "trigger-heal",
+      "after": "vacuum-cast",
+      "delay": 10000,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "trigger-assign",
+      "after": "vacuum-cast",
+      "delay": 10000,
+      "type": "distribute_statuses",
+      "target": {
+        "type": "all"
+      },
+      "statuses": [
+        "lc-1",
+        "lc-2",
+        "lc-3",
+        "lc-4",
+        "lc-5",
+        "lc-6",
+        "lc-7",
+        "lc-8"
+      ]
+    },
+    {
+      "id": "trigger-roles",
+      "after": "trigger-assign",
+      "type": "recalculate_roles",
+      "group": "trigger-numbers"
+    },
+    {
+      "id": "bosses-mid-lc",
+      "after": "trigger-assign",
+      "delay": 1000,
+      "type": "recalculate_positions",
+      "group": "drag-bosses-mid"
+    },
+    {
+      "id": "everyone-mid-lc",
+      "after": "trigger-assign",
+      "delay": 3500,
+      "type": "recalculate_positions",
+      "group": "everyone-mid"
+    },
+    {
+      "id": "trigger-positions",
+      "after": "trigger-assign",
+      "delay": 7000,
+      "type": "recalculate_positions",
+      "group": "trigger-edge"
+    },
+    {
+      "id": "line-1-spawn",
+      "after": "trigger-assign",
+      "delay": 10000,
+      "type": "spawn_enemy",
+      "enemyId": "line-1",
+      "enemy": "line-caster",
+      "position": {
+        "type": "polar",
+        "angle": "$chargeStart",
+        "radius": "$spacing.chargeRadius"
+      },
+      "expiresAfter": 6500
+    },
+    {
+      "id": "line-1-cast",
+      "after": "line-1-spawn",
+      "type": "start_cast",
+      "source": "line-1",
+      "cast": "trigger-line",
+      "facing": {
+        "type": "with_status",
+        "status": "lc-1",
+        "fallback": "random_player"
+      }
+    },
+    {
+      "id": "line-2-spawn",
+      "after": "trigger-assign",
+      "delay": 10000,
+      "type": "spawn_enemy",
+      "enemyId": "line-2",
+      "enemy": "line-caster",
+      "position": {
+        "type": "polar",
+        "angle": {
+          "$sub": [
+            "$chargeStart",
+            {
+              "$mul": [
+                1,
+                "$chargeDirection"
+              ]
+            }
+          ]
+        },
+        "radius": "$spacing.chargeRadius"
+      },
+      "expiresAfter": 6500
+    },
+    {
+      "id": "line-2-cast",
+      "after": "line-2-spawn",
+      "type": "start_cast",
+      "source": "line-2",
+      "cast": "trigger-line",
+      "facing": {
+        "type": "with_status",
+        "status": "lc-2",
+        "fallback": "random_player"
+      }
+    },
+    {
+      "id": "line-3-spawn",
+      "after": "trigger-assign",
+      "delay": 10000,
+      "type": "spawn_enemy",
+      "enemyId": "line-3",
+      "enemy": "line-caster",
+      "position": {
+        "type": "polar",
+        "angle": {
+          "$sub": [
+            "$chargeStart",
+            {
+              "$mul": [
+                2,
+                "$chargeDirection"
+              ]
+            }
+          ]
+        },
+        "radius": "$spacing.chargeRadius"
+      },
+      "expiresAfter": 6500
+    },
+    {
+      "id": "line-3-cast",
+      "after": "line-3-spawn",
+      "type": "start_cast",
+      "source": "line-3",
+      "cast": "trigger-line",
+      "facing": {
+        "type": "with_status",
+        "status": "lc-3",
+        "fallback": "random_player"
+      }
+    },
+    {
+      "id": "line-4-spawn",
+      "after": "trigger-assign",
+      "delay": 10000,
+      "type": "spawn_enemy",
+      "enemyId": "line-4",
+      "enemy": "line-caster",
+      "position": {
+        "type": "polar",
+        "angle": {
+          "$sub": [
+            "$chargeStart",
+            {
+              "$mul": [
+                3,
+                "$chargeDirection"
+              ]
+            }
+          ]
+        },
+        "radius": "$spacing.chargeRadius"
+      },
+      "expiresAfter": 6500
+    },
+    {
+      "id": "line-4-cast",
+      "after": "line-4-spawn",
+      "type": "start_cast",
+      "source": "line-4",
+      "cast": "trigger-line",
+      "facing": {
+        "type": "with_status",
+        "status": "lc-4",
+        "fallback": "random_player"
+      }
+    },
+    {
+      "id": "line-5-spawn",
+      "after": "trigger-assign",
+      "delay": 10000,
+      "type": "spawn_enemy",
+      "enemyId": "line-5",
+      "enemy": "line-caster",
+      "position": {
+        "type": "polar",
+        "angle": {
+          "$sub": [
+            "$chargeStart",
+            {
+              "$mul": [
+                4,
+                "$chargeDirection"
+              ]
+            }
+          ]
+        },
+        "radius": "$spacing.chargeRadius"
+      },
+      "expiresAfter": 6500
+    },
+    {
+      "id": "line-5-cast",
+      "after": "line-5-spawn",
+      "type": "start_cast",
+      "source": "line-5",
+      "cast": "trigger-line",
+      "facing": {
+        "type": "with_status",
+        "status": "lc-5",
+        "fallback": "random_player"
+      }
+    },
+    {
+      "id": "line-6-spawn",
+      "after": "trigger-assign",
+      "delay": 10000,
+      "type": "spawn_enemy",
+      "enemyId": "line-6",
+      "enemy": "line-caster",
+      "position": {
+        "type": "polar",
+        "angle": {
+          "$sub": [
+            "$chargeStart",
+            {
+              "$mul": [
+                5,
+                "$chargeDirection"
+              ]
+            }
+          ]
+        },
+        "radius": "$spacing.chargeRadius"
+      },
+      "expiresAfter": 6500
+    },
+    {
+      "id": "line-6-cast",
+      "after": "line-6-spawn",
+      "type": "start_cast",
+      "source": "line-6",
+      "cast": "trigger-line",
+      "facing": {
+        "type": "with_status",
+        "status": "lc-6",
+        "fallback": "random_player"
+      }
+    },
+    {
+      "id": "line-7-spawn",
+      "after": "trigger-assign",
+      "delay": 10000,
+      "type": "spawn_enemy",
+      "enemyId": "line-7",
+      "enemy": "line-caster",
+      "position": {
+        "type": "polar",
+        "angle": {
+          "$sub": [
+            "$chargeStart",
+            {
+              "$mul": [
+                6,
+                "$chargeDirection"
+              ]
+            }
+          ]
+        },
+        "radius": "$spacing.chargeRadius"
+      },
+      "expiresAfter": 6500
+    },
+    {
+      "id": "line-7-cast",
+      "after": "line-7-spawn",
+      "type": "start_cast",
+      "source": "line-7",
+      "cast": "trigger-line",
+      "facing": {
+        "type": "with_status",
+        "status": "lc-7",
+        "fallback": "random_player"
+      }
+    },
+    {
+      "id": "line-8-spawn",
+      "after": "trigger-assign",
+      "delay": 10000,
+      "type": "spawn_enemy",
+      "enemyId": "line-8",
+      "enemy": "line-caster",
+      "position": {
+        "type": "polar",
+        "angle": {
+          "$sub": [
+            "$chargeStart",
+            {
+              "$mul": [
+                7,
+                "$chargeDirection"
+              ]
+            }
+          ]
+        },
+        "radius": "$spacing.chargeRadius"
+      },
+      "expiresAfter": 6500
+    },
+    {
+      "id": "line-8-cast",
+      "after": "line-8-spawn",
+      "type": "start_cast",
+      "source": "line-8",
+      "cast": "trigger-line",
+      "facing": {
+        "type": "with_status",
+        "status": "lc-8",
+        "fallback": "random_player"
+      }
     }
   ]
 }

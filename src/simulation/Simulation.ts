@@ -1,5 +1,5 @@
 import type { Encounter } from '../encounters/Encounter';
-import { pointInCircle, pointInCone, pointInDonut } from '../geometry/Collision';
+import { pointInCircle, pointInCone, pointInDonut, pointInLine } from '../geometry/Collision';
 import { MechanicExecutor } from '../mechanics/MechanicExecutor';
 import { Scheduler } from './Scheduler';
 import type { GameState } from './GameState';
@@ -58,13 +58,13 @@ export class Simulation {
       ...structuredClone(marker),
       resolvedPosition: resolvePositionValue(marker.position),
     }));
-    this.state = { time: 0, arena: resolveArena(encounter.arena), deltaTime: 0, currentMechanic: undefined, players, enemies, effects: [], worldGraphics: [], background: encounter.background, casts: [], running: false, completed: false, log: [], deaths: [], rolls: {}, groups: {}, markers };
+    this.state = { time: 0, arena: resolveArena(encounter.arena), deltaTime: 0, currentMechanic: undefined, players, enemies, effects: [], worldGraphics: [], background: encounter.background, casts: [], tethers: [], running: false, completed: false, log: [], deaths: [], rolls: {}, groups: {}, markers };
     this.roleEvaluator = new MechanicalRoleEvaluator(encounter.mechanicalRoles, <T>(value: T) => randomContext.resolve(value));
     this.positionEvaluator = new PositionEvaluator(encounter.positions, <T>(value: T) => randomContext.resolve(value), encounter.markerQueries);
     this.facingEvaluator = new FacingEvaluator(encounter.facing, <T>(value: T) => randomContext.resolve(value), (target, state, self) => this.positionEvaluator.resolveTarget(target, state, self));
     const recalculateRoles = (group?: string) => this.logRoleChanges(this.roleEvaluator.recalculate(this.state, group));
     const recalculateFacing = (group?: string) => this.facingEvaluator.recalculate(this.state, group);
-    this.executor = new MechanicExecutor(this.state, this.random, encounter.statuses, encounter.casts, randomContext, encounter.areas, recalculateRoles, (group, params) => this.positionEvaluator.recalculate(this.state, group, params), encounter.enemyTemplates, options.replayOutcomes, options.debug, recalculateFacing, encounter.batches);
+    this.executor = new MechanicExecutor(this.state, this.random, encounter.statuses, encounter.casts, randomContext, encounter.areas, recalculateRoles, (group, params) => this.positionEvaluator.recalculate(this.state, group, params), encounter.enemyTemplates, options.replayOutcomes, options.debug, recalculateFacing, encounter.batches, encounter.tethers);
     // Apply initial facing rules, then point unconfigured bots toward the boss.
     recalculateFacing();
     for (const player of this.state.players) {
@@ -119,7 +119,9 @@ export class Simulation {
             ? pointInCone(player.position, effect.position, effect.rotation, effect.radius, effect.angle)
             : effect.shape === 'donut'
               ? pointInDonut(player.position, effect.position, effect.innerRadius, effect.radius)
-              : (effect.side === 'north' ? player.position.y < effect.position.y : player.position.y >= effect.position.y);
+              : effect.shape === 'line'
+                ? pointInLine(player.position, effect.position, effect.rotation, effect.radius, effect.width)
+                : (effect.side === 'north' ? player.position.y < effect.position.y : player.position.y >= effect.position.y);
         if (hit) inside.add(player.id);
       }
       effect.resolvedAt = this.state.time;
@@ -149,6 +151,8 @@ export class Simulation {
     this.botManager.update(this.state);
     this.followManager.update(this.state);
     this.executor.resolveArenaEdge();
+    // Last, so tethers see where everyone ended up this tick (and who just died).
+    this.executor.updateTethers();
     if (this.state.time >= this.encounterDuration) { this.state.completed = true; this.state.running = false; }
   }
 }

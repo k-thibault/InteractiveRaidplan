@@ -4,7 +4,8 @@ import type { PositionValue } from '../geometry/Vector2';
 import type { EnemyTemplate } from '../entities/Enemy';
 import type { CastFacing } from './Cast';
 import type { KnockParams } from './Knock';
-import type { FollowSettings } from '../bots/FollowManager';
+import type { FollowInput } from '../bots/FollowManager';
+import type { TetherSpawnOptions } from './Tether';
 
 
 interface BaseEvent {
@@ -26,7 +27,7 @@ export interface RemoveStatusEvent extends BaseEvent { type: 'remove_status'; ta
 /** See `KnockEffect`. */
 export interface KnockEvent extends BaseEvent, KnockParams { type: 'knock'; target: PlayerSelector; /** Origin for radial knocks without `from`. Defaults to the boss. */ source?: string; }
 /** See `StartFollowEffect`. Defaults to the boss. */
-export interface StartFollowEvent extends BaseEvent, FollowSettings { type: 'start_follow'; source?: string; }
+export interface StartFollowEvent extends BaseEvent, FollowInput { type: 'start_follow'; source?: string; }
 /** See `StopFollowEffect`. Defaults to the boss. */
 export interface StopFollowEvent extends BaseEvent { type: 'stop_follow'; source?: string; }
 export interface RecalculateRolesEvent extends BaseEvent { type: 'recalculate_roles'; group?: string; }
@@ -59,4 +60,8 @@ export interface ForEachGroupEvent extends BaseEvent { type: 'for_each_group'; g
 export interface SpawnEnemyEvent extends BaseEvent, Partial<EnemyTemplate> { type: 'spawn_enemy'; enemyId?: string; enemy?: string; position: PositionValue; expiresAfter?: number; addToGroup?: string; }
 /** See `RemoveEnemyEffect`. */
 export interface RemoveEnemyEvent extends BaseEvent { type: 'remove_enemy'; id: string; }
-export type EncounterEvent = KnockEvent | StartFollowEvent | StopFollowEvent | ApplyStatusEvent | DistributeStatusesEvent | HealEvent | DamageEvent | SpawnAreaEvent | StartCastEvent | RemoveStatusEvent | RecalculateRolesEvent | RecalculatePositionsEvent | RecalculateFacingEvent | ReleasePositionsEvent | SetFocusEvent | SetShotcallEvent | ClearShotcallEvent | SetMechanicEvent | ShowGraphicEvent | SetBackgroundEvent | SelectGroupEvent | SelectGroupSubsetEvent | ForEachGroupEvent | SpawnEnemyEvent | RemoveEnemyEvent;
+/** See `SpawnTetherEffect`. The source defaults to the boss. */
+export interface SpawnTetherEvent extends BaseEvent, TetherSpawnOptions { type: 'spawn_tether'; target?: PlayerSelector; }
+/** See `RemoveTetherEffect`. With no filters, every tether ends. */
+export interface RemoveTetherEvent extends BaseEvent { type: 'remove_tether'; tether?: string; source?: string; target?: PlayerSelector; targetEntity?: string; }
+export type EncounterEvent = KnockEvent | StartFollowEvent | StopFollowEvent | ApplyStatusEvent | DistributeStatusesEvent | HealEvent | DamageEvent | SpawnAreaEvent | StartCastEvent | RemoveStatusEvent | RecalculateRolesEvent | RecalculatePositionsEvent | RecalculateFacingEvent | ReleasePositionsEvent | SetFocusEvent | SetShotcallEvent | ClearShotcallEvent | SetMechanicEvent | ShowGraphicEvent | SetBackgroundEvent | SelectGroupEvent | SelectGroupSubsetEvent | ForEachGroupEvent | SpawnEnemyEvent | RemoveEnemyEvent | SpawnTetherEvent | RemoveTetherEvent;
