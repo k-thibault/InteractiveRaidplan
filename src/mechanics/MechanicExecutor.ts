@@ -17,9 +17,12 @@ import type { PositionValue, Vector2 } from '../geometry/Vector2';
 import { DEFAULT_FACING } from '../geometry/Facing';
 import { DEFAULT_KNOCK_DURATION, facingKnockScale } from './Knock';
 import type { KnockDirection, KnockParams } from './Knock';
-import type { FollowSettings } from '../bots/FollowManager';
+import type { FollowInput } from '../bots/FollowManager';
 import type { Player } from '../entities/Player';
-import { isInsideArena } from '../geometry/Arena';
+import type { Entity } from '../entities/Entity';
+import { distanceToArenaEdge, isInsideArena } from '../geometry/Arena';
+import { TetherManager } from './TetherManager';
+import type { TetherDefinition, TetherSpawnOptions } from './Tether';
 
 /** Grace period in ms for batches that don't set `window`. */
 const DEFAULT_BATCH_WINDOW = 500;
@@ -32,6 +35,8 @@ interface EffectContext {
   targetPosition?: Vector2;
   /** Set while an area's resolution effects run: its center and the entity it is anchored to. */
   area?: { position: Vector2; sourceId?: string; /** Name used to attribute deaths caused by this area. */ label?: string };
+  /** Set while a tether hook's effects run: the two ends, for the `tethered` / `tether_source` targets. */
+  tether?: { sourceId: string; targetId: string };
 }
 
 export class MechanicExecutor {
@@ -55,6 +60,7 @@ export class MechanicExecutor {
   /** Stores the outcomes of replayable rolls, keyed by `replayId`. */
   private readonly replayOutcomes: Map<string, Record<string, unknown>>;
   private readonly debug: boolean;
+  private readonly tethers: TetherManager;
 
   constructor(
     state: GameState,
@@ -69,7 +75,8 @@ export class MechanicExecutor {
     replayOutcomes: Map<string, Record<string, unknown>> = new Map(),
     debug = false,
     recalculateFacing: (group?: string) => void = () => undefined,
-    batches: Record<string, BatchDefinition> = {}
+    batches: Record<string, BatchDefinition> = {},
+    tetherDefinitions: Record<string, TetherDefinition> = {}
   ) {
     this.state = state;
     this.random = random;
@@ -85,6 +92,27 @@ export class MechanicExecutor {
     this.batchDefinitions = batches;
     this.replayOutcomes = replayOutcomes;
     this.debug = debug;
+    this.tethers = new TetherManager(
+      state,
+      tetherDefinitions,
+      (effects, sourceId, sourceName, context) => {
+        const cast: EffectContext = { targetId: context.targetId, targetPosition: context.targetPosition, tether: context.tether };
+        for (const effect of effects) this.executeEffect(effect, new Set(), sourceId, sourceName, cast);
+      },
+      (message, channel) => { if (channel === 'player' || this.debug) this.logEvent(message, channel); }
+    );
+  }
+
+  /** Advances tethers one tick; see `TetherManager.update`. */
+  updateTethers(): void { this.tethers.update(); }
+
+  private spawnTether(options: TetherSpawnOptions, sourceId: string, targets: Player[]): void {
+    this.tethers.spawn(options, options.source ?? sourceId, options.targetEntity !== undefined ? [options.targetEntity] : targets.map((player) => player.id));
+  }
+
+  private removeTether(filter: { tether?: string; source?: string; targetEntity?: string }, targets: Player[] | undefined): void {
+    const ids = filter.targetEntity !== undefined ? new Set([filter.targetEntity]) : targets ? new Set(targets.map((player) => player.id)) : undefined;
+    this.tethers.remove({ tag: filter.tether, sourceId: filter.source, targetIds: ids });
   }
 
   /** Reads a single recorded replay value for this `replayId`. */
@@ -122,6 +150,8 @@ export class MechanicExecutor {
     else if (event.type === 'for_each_group') this.forEachGroup(this.randomContext.resolve(event), new Set(), 'boss', undefined, undefined);
     else if (event.type === 'spawn_enemy') this.spawnEnemy(this.randomContext.resolve(event));
     else if (event.type === 'remove_enemy') this.removeEnemy(event.id);
+    else if (event.type === 'spawn_tether') this.spawnTether(event, 'boss', event.target ? selectPlayers(event.target, this.state, this.random) : []);
+    else if (event.type === 'remove_tether') this.removeTether(event, event.target ? selectPlayers(event.target, this.state, this.random) : undefined);
     else if (event.type === 'recalculate_facing') this.recalculateFacing(event.group);
     else if (event.type === 'set_focus') this.setFocus(selectPlayers(event.target, this.state, this.random), event.enemy, event.follow);
     else if (event.type === 'knock') this.applyKnock(selectPlayers(event.target, this.state, this.random), event, event.source ?? 'boss');
@@ -220,6 +250,7 @@ export class MechanicExecutor {
     const resolved = { ...(definition ?? {}), ...event };
     if (!resolved.shape || resolved.radius === undefined || resolved.telegraphDuration === undefined || resolved.duration === undefined || !resolved.resolution) return;
     // `$castTarget` resolves to the triggering cast's live target. 
+    if (resolved.direction === 'cast_target' && cast?.targetId === undefined) return;
     const anchorId = resolved.source === '$castTarget' ? cast?.targetId : resolved.source;
     const source = (resolved.position ? this.resolvePosition(resolved.position) : undefined) ?? findEntity(this.state, anchorId ?? '')?.position;
     if (!source) return;
@@ -272,7 +303,9 @@ export class MechanicExecutor {
         ? { ...base, shape: 'half_room', side: resolved.side ?? 'north' }
         : resolved.shape === 'donut'
           ? { ...base, shape: 'donut', innerRadius: resolved.innerRadius ?? 0 }
-          : { ...base, shape: 'circle' };
+          : resolved.shape === 'line'
+            ? { ...base, shape: 'line', width: resolved.width ?? 4, innerRadius: resolved.innerRadius ?? 0 }
+            : { ...base, shape: 'circle' };
     this.state.effects.push(effect);
   }
 
@@ -299,34 +332,48 @@ export class MechanicExecutor {
     // Instance facing overrides the default cast definition. 
     const effectiveFacing = facing ?? definition.facing;
     // Lock the target/direction once when the cast begins. 
-    const resolved = effectiveFacing ? this.resolveFacing(effectiveFacing, sourceId, effectiveFacing.replayable ? replayId : undefined) : undefined;
+    const resolved = effectiveFacing ? this.resolveFacing(effectiveFacing, sourceId, ('replayable' in effectiveFacing && effectiveFacing.replayable) ? replayId : undefined) : undefined;
     const source = findEntity(this.state, sourceId);
     const target = resolved ? findEntity(this.state, resolved.targetId) : undefined;
     if (source && target) {
       source.facing = toPolarAngle(target.position, source.position);
       source.facingRuleActive = true;
     }
-    this.state.casts.push({ id: `cast-${this.state.casts.length + 1}`, definitionId: castId, sourceId, startedAt: this.state.time, completesAt: this.state.time + definition.castTime, targetId: resolved?.targetId, direction: resolved?.direction, targetPosition: resolved?.targetPosition });
+    this.state.casts.push({ id: `cast-${this.state.casts.length + 1}`, definitionId: castId, sourceId, startedAt: this.state.time, completesAt: this.state.time + definition.castTime, targetId: resolved?.targetId, direction: resolved?.direction, targetPosition: resolved?.targetPosition, tetherId: resolved?.tetherId });
   }
 
-  private resolveFacing(facing: CastFacing, sourceId: string, replayId?: string): { targetId: string; direction: number; targetPosition: Vector2 } | undefined {
+  private resolveFacing(facing: CastFacing, sourceId: string, replayId?: string): { targetId: string; direction: number; targetPosition: Vector2; tetherId?: string } | undefined {
     const source = findEntity(this.state, sourceId);
     if (!source) return undefined;
+    if (facing.type === 'tether') {
+      const held = this.state.tethers.filter((tether) => tether.sourceId === sourceId && (facing.tether === undefined || tether.tag === facing.tether));
+      const gap = (tether: { targetId: string }) => { const end = findEntity(this.state, tether.targetId); return end ? pointDistance(end.position, source.position) : 0; };
+      const chosen = facing.pick === 'nearest' ? [...held].sort((a, b) => gap(a) - gap(b))[0] : facing.pick === 'farthest' ? [...held].sort((a, b) => gap(b) - gap(a))[0] : held[0];
+      const end = chosen ? findEntity(this.state, chosen.targetId) : undefined;
+      if (!chosen || !end) return undefined;
+      return { targetId: end.id, direction: Math.atan2(end.position.y - source.position.y, end.position.x - source.position.x), targetPosition: { ...end.position }, tetherId: chosen.id };
+    }
     // Reuse a recorded target only while it still exists. 
     const recordedId = this.getReplay<string>(replayId, 'target');
     const recordedTarget = recordedId ? findEntity(this.state, recordedId) : undefined;
-    const target = recordedTarget?.alive
-      ? recordedTarget
-      : (facing.type === 'entity'
-        ? findEntity(this.state, facing.id)
-        : (facing.type === 'random_player'
-          ? selectPlayers({ type: 'random', count: 1 }, this.state, this.random)
-          : (facing.type === 'farthest_player'
-            ? this.state.players.filter((player) => player.alive).sort((a, b) => pointDistance(b.position, source.position) - pointDistance(a.position, source.position))
-            : selectPlayers({ type: 'nearest', source: sourceId, count: 1 }, this.state, this.random)))[0]);
+    const target = recordedTarget?.alive ? recordedTarget : this.pickFacingTarget(facing, source);
     if (!target) return undefined;
     this.setReplay(replayId, 'target', target.id);
     return { targetId: target.id, direction: Math.atan2(target.position.y - source.position.y, target.position.x - source.position.x), targetPosition: { ...target.position } };
+  }
+
+  private pickFacingTarget(facing: CastFacing, source: Entity): Entity | undefined {
+    if (facing.type === 'entity') return findEntity(this.state, facing.id);
+    if (facing.type === 'random_player') return selectPlayers({ type: 'random', count: 1 }, this.state, this.random)[0];
+    if (facing.type === 'with_status') {
+      const holder = selectPlayers({ type: 'with_status', status: facing.status }, this.state, this.random)[0];
+      if (holder || facing.fallback !== 'random_player') return holder;
+      return selectPlayers({ type: 'random', count: 1 }, this.state, this.random)[0];
+    }
+    if (facing.type === 'farthest_player') {
+      return this.state.players.filter((player) => player.alive).sort((a, b) => pointDistance(b.position, source.position) - pointDistance(a.position, source.position))[0];
+    }
+    return selectPlayers({ type: 'nearest', source: source.id, count: 1 }, this.state, this.random)[0];
   }
 
   private selectGroup(event: SelectGroupEvent | { name: string; selector: SelectGroupEvent['selector']; replayId?: string }): void {
@@ -436,6 +483,8 @@ export class MechanicExecutor {
     if (resolvedEffect.type === 'for_each_group') { this.forEachGroup(resolvedEffect, inside, sourceId, sourceName, cast); return; }
     if (resolvedEffect.type === 'spawn_enemy') { this.spawnEnemy(resolvedEffect); return; }
     if (resolvedEffect.type === 'remove_enemy') { this.removeEnemy(resolvedEffect.id); return; }
+    if (resolvedEffect.type === 'spawn_tether') { this.spawnTether(resolvedEffect, sourceId, resolvedEffect.target ? this.effectTargets(resolvedEffect.target, inside, sourceId, cast) : []); return; }
+    if (resolvedEffect.type === 'remove_tether') { this.removeTether(resolvedEffect, resolvedEffect.target ? this.effectTargets(resolvedEffect.target, inside, sourceId, cast) : undefined); return; }
     if (resolvedEffect.type === 'start_follow') { this.startFollow(resolvedEffect.source ?? sourceId, resolvedEffect, cast); return; }
     if (resolvedEffect.type === 'stop_follow') { this.stopFollow(resolvedEffect.source ?? sourceId); return; }
     if (resolvedEffect.type === 'add_to_batch') { this.addToBatch(resolvedEffect.batch); return; }
@@ -462,6 +511,8 @@ export class MechanicExecutor {
       if (!player.alive) return false;
       if (target === 'all') return true;
       if (target === 'source') return player.id === sourceId;
+      if (target === 'tethered') return player.id === context?.tether?.targetId;
+      if (target === 'tether_source') return player.id === context?.tether?.sourceId;
       if (target === 'inside_others') return inside.has(player.id) && player.id !== context?.area?.sourceId;
       return target === 'inside' ? inside.has(player.id) : !inside.has(player.id);
     });
@@ -516,13 +567,22 @@ export class MechanicExecutor {
     }
   }
 
-  private startFollow(enemyId: string, settings: FollowSettings, context?: EffectContext): void {
+  private startFollow(enemyId: string, settings: FollowInput, context?: EffectContext): void {
     const enemy = this.state.enemies.find((candidate) => candidate.id === enemyId);
     if (!enemy) return;
-    // `cast_target_position` is frozen into a plain point now, so later movement of the target doesn't matter.
-    const position = settings.position === 'cast_target_position' ? context?.targetPosition : settings.position;
-    if (settings.position === 'cast_target_position' && !position) return;
-    enemy.follow = { target: settings.target, position: position ? { ...position } : undefined, distance: settings.distance, moveSpeed: settings.moveSpeed };
+    let position = settings.position === 'cast_target_position'
+      ? context?.targetPosition
+      : (settings.position ? this.resolvePosition(settings.position) : undefined);
+    if (settings.position !== undefined && !position) return;
+    if (position && settings.toEdge) {
+      const length = Math.hypot(position.x - enemy.position.x, position.y - enemy.position.y);
+      if (length > 0) {
+        const unit = { x: (position.x - enemy.position.x) / length, y: (position.y - enemy.position.y) / length };
+        const reach = distanceToArenaEdge(this.state.arena, enemy.position, unit);
+        position = { x: enemy.position.x + unit.x * reach, y: enemy.position.y + unit.y * reach };
+      }
+    }
+    enemy.follow = { target: settings.target, position: position ? { ...position } : undefined, distance: settings.distance, moveSpeed: settings.moveSpeed, despawnOnArrival: settings.despawnOnArrival };
   }
 
   private stopFollow(enemyId: string): void {

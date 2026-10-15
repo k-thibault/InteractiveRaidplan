@@ -2,6 +2,7 @@ import type { Encounter } from './Encounter';
 import { resolvePositionValue } from '../geometry/Vector2';
 import { isValidDirectionClamp } from '../geometry/DirectionClamp';
 import { validateArenaDefinition } from '../geometry/Arena';
+import type { TetherDefinition } from '../mechanics/Tether';
 
 export interface EncounterManifestEntry {
   /** Stable URL-safe identifier, also used by the `?encounter=` parameter. */
@@ -63,6 +64,37 @@ export function validateMarkerReferences(encounter: Encounter, markerIds: Set<st
   visit(encounter.markerQueries, 'Encounter markerQueries');
 }
 
+const finiteAtLeast = (value: unknown, min: number): boolean => typeof value === 'number' && Number.isFinite(value) && value >= min;
+
+function validateTetherDefinition(definition: TetherDefinition, where: string): void {
+  for (const condition of definition.breakWhen ?? []) {
+    const amount = condition.type === 'too_long' || condition.type === 'too_short' ? condition.length : (condition as { amount?: unknown }).amount;
+    if (!['too_long', 'too_short', 'stretched', 'shrunk'].includes(condition.type)) throw new Error(`${where} has unknown break condition "${(condition as { type: string }).type}"`);
+    if (!finiteAtLeast(amount, 0)) throw new Error(`${where} break condition "${condition.type}" needs a non-negative number`);
+  }
+  for (const stage of definition.lengthStages ?? []) if (!finiteAtLeast(stage.from, 0)) throw new Error(`${where} has a length stage without a non-negative "from"`);
+  if (definition.style?.width !== undefined && !finiteAtLeast(definition.style.width, 0)) throw new Error(`${where} style width must be a non-negative number`);
+  for (const field of ['graceDuration', 'duration', 'passTolerance'] as const) if (definition[field] !== undefined && !finiteAtLeast(definition[field], 0)) throw new Error(`${where} ${field} must be a non-negative number`);
+}
+
+/** Validates tether definitions and literal `spawn_tether` references. */
+export function validateTethers(encounter: Encounter): void {
+  const definitions = encounter.tethers ?? {};
+  for (const [name, definition] of Object.entries(definitions)) validateTetherDefinition(definition, `Tether "${name}"`);
+  const visit = (node: unknown): void => {
+    if (Array.isArray(node)) { node.forEach(visit); return; }
+    if (node === null || typeof node !== 'object') return;
+    const record = node as Record<string, unknown>;
+    if (record.type === 'spawn_tether') {
+      if (isLiteral(record.tether) && !definitions[record.tether]) throw new Error(`spawn_tether references unknown tether "${record.tether}"`);
+      if (record.target === undefined && record.targetEntity === undefined) throw new Error('spawn_tether needs a "target" or a "targetEntity"');
+      validateTetherDefinition(record as TetherDefinition, 'spawn_tether');
+    }
+    for (const child of Object.values(record)) visit(child);
+  };
+  visit([encounter.events, encounter.casts, encounter.statuses, encounter.areas, encounter.batches, encounter.tethers]);
+}
+
 /** Names of the library graphics used by entity `graphic` blocks anywhere in the encounter (players, enemies, templates, spawn events and effects). */
 export function collectEntityGraphics(node: unknown, found = new Set<string>()): Set<string> {
   if (Array.isArray(node)) { node.forEach((child) => collectEntityGraphics(child, found)); return found; }
@@ -96,6 +128,7 @@ export async function loadEncounter(url: string): Promise<Encounter> {
     markerIds.add(marker.id);
   }
   validateMarkerReferences(encounter, markerIds);
+  validateTethers(encounter);
   const graphics = [...new Set([
     ...(encounter.resources?.graphics ?? []),
     ...(encounter.markers?.flatMap((marker) => marker.image ? [marker.image] : []) ?? []),

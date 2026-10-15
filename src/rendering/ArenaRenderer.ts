@@ -7,6 +7,9 @@ import type { MarkerDefinition } from '../encounters/Encounter';
 import { statusDisplayName } from '../util/format';
 import { DEFAULT_FACING } from '../geometry/Facing';
 import type { Arena } from '../geometry/Arena';
+import { resolveTetherStyle } from '../mechanics/Tether';
+import { entityRadius } from '../entities/Entity';
+import { findEntity } from '../mechanics/Selector';
 
 interface StatusHitArea {
   x: number;
@@ -156,6 +159,15 @@ export class ArenaRenderer {
         context.arc(point.x, point.y, effect.radius * scale, 0, Math.PI * 2);
         context.moveTo(point.x + effect.innerRadius * scale, point.y);
         context.arc(point.x, point.y, effect.innerRadius * scale, 0, Math.PI * 2, true);
+      } else if (effect.shape === 'line') {
+        // A rectangle starting at the anchor and running `radius` along the rotation.
+        const cos = Math.cos(effect.rotation), sin = Math.sin(effect.rotation);
+        const half = (effect.width * scale) / 2, reach = effect.radius * scale, near = effect.innerRadius * scale;
+        [[near, -half], [reach, -half], [reach, half], [near, half]].forEach(([along, across], index) => {
+          const x = point.x + along * cos - across * sin, y = point.y + along * sin + across * cos;
+          if (index === 0) context.moveTo(x, y); else context.lineTo(x, y);
+        });
+        context.closePath();
       } else if (effect.shape === 'half_room') {
         const left = toCanvas(-state.arena.halfWidth, 0).x;
         const right = toCanvas(state.arena.halfWidth, 0).x;
@@ -169,8 +181,9 @@ export class ArenaRenderer {
     }
     context.restore();
     this.drawBorder(state.arena, toCanvas, scale);
-    for (const enemy of state.enemies) this.drawUnit(enemy, '#ff7757', scale, toCanvas, true);
     const hideUncontrolled = this.hideBots && state.players.some((candidate) => candidate.controlled);
+    this.drawTethers(state, hideUncontrolled, scale, toCanvas);
+    for (const enemy of state.enemies) this.drawUnit(enemy, '#ff7757', scale, toCanvas, true);
     for (const player of state.players) {
       if (hideUncontrolled && !player.controlled) continue;
       this.drawUnit(player, !player.alive ? DEAD_COLOR : player.controlled ? CONTROLLED_PLAYER_COLOR : (player.color ?? PLAYER_COLOR), scale, toCanvas, false);
@@ -178,6 +191,45 @@ export class ArenaRenderer {
     for (const graphic of state.worldGraphics) this.drawWorldGraphic(graphic, state, scale, toCanvas);
     this.drawControlledStatuses(state, scale);
     this.updateShotcall(state);
+  }
+
+  /** Draws tether lines under units, hiding links to hidden bots. */
+  private drawTethers(state: GameState, hideUncontrolled: boolean, scale: number, toCanvas: (x: number, y: number) => { x: number; y: number }): void {
+    const { context } = this;
+    for (const tether of state.tethers) {
+      const source = findEntity(state, tether.sourceId);
+      const target = findEntity(state, tether.targetId);
+      if (!source || !target) continue;
+      const hidden = (entity: Entity) => hideUncontrolled && 'controlled' in entity && !entity.controlled;
+      if (hidden(source) || hidden(target)) continue;
+      const from = toCanvas(source.position.x, source.position.y);
+      const to = toCanvas(target.position.x, target.position.y);
+      const length = Math.hypot(target.position.x - source.position.x, target.position.y - source.position.y);
+      const style = resolveTetherStyle(tether, length);
+      const color = style.color ?? '#7fd1ff';
+      context.save();
+      context.strokeStyle = color;
+      context.fillStyle = color;
+      context.lineCap = 'round';
+      context.lineWidth = Math.max(1.5, (style.width ?? .08) * scale);
+      if (style.glow) { context.shadowColor = color; context.shadowBlur = Math.max(6, scale * .4); }
+      if (style.dash) context.setLineDash(style.dash.map((part) => Math.max(1, part * scale)));
+      context.beginPath(); context.moveTo(from.x, from.y); context.lineTo(to.x, to.y); context.stroke();
+      if (style.arrow !== false && length > 0) {
+        // Arrowhead just outside the target's indicator, pointing along the line from source to target.
+        const angle = Math.atan2(to.y - from.y, to.x - from.x);
+        const size = Math.max(6, scale * .3);
+        const tip = { x: to.x - Math.cos(angle) * entityRadius(target) * scale * 1.15, y: to.y - Math.sin(angle) * entityRadius(target) * scale * 1.15 };
+        context.setLineDash([]);
+        context.beginPath();
+        context.moveTo(tip.x, tip.y);
+        context.lineTo(tip.x - Math.cos(angle - .45) * size, tip.y - Math.sin(angle - .45) * size);
+        context.lineTo(tip.x - Math.cos(angle + .45) * size, tip.y - Math.sin(angle + .45) * size);
+        context.closePath();
+        context.fill();
+      }
+      context.restore();
+    }
   }
 
   private updateShotcall(state: GameState): void {

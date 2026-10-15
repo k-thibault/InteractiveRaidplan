@@ -26,6 +26,8 @@ export type PlayerSelector =
   | { type: 'from_group'; group: string }
   /** Players facing towards or away from a source within the given tolerance. */
   | { type: 'facing'; source: FacingSource; mode: 'towards' | 'away'; tolerance?: number }
+  /** Players at a tether end; filters follow passes. */
+  | { type: 'tethered'; tether?: string; source?: string; end?: 'target' | 'source' | 'either' }
   | { type: 'and'; selectors: PlayerSelector[] }
   | { type: 'or'; selectors: PlayerSelector[] };
 
@@ -58,6 +60,16 @@ export function selectPlayers(selector: PlayerSelector, state: GameState, random
     if (!point) return [];
     const test = selector.mode === 'towards' ? isFacingTowards : isFacingAway;
     return players.filter((player) => test(player.position, player.facing ?? DEFAULT_FACING, point, selector.tolerance));
+  }
+  if (selector.type === 'tethered') {
+    const ends = new Set<string>();
+    for (const tether of state.tethers) {
+      if (selector.tether !== undefined && tether.tag !== selector.tether) continue;
+      if (selector.source !== undefined && tether.sourceId !== selector.source) continue;
+      if (selector.end !== 'source') ends.add(tether.targetId);
+      if (selector.end === 'source' || selector.end === 'either') ends.add(tether.sourceId);
+    }
+    return players.filter((player) => ends.has(player.id));
   }
   if (selector.type === 'and') {
     return players.filter((player) => selector.selectors.every((child) => selectPlayers(child, state, random).some((candidate) => candidate.id === player.id)));

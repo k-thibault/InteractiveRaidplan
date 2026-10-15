@@ -11,6 +11,7 @@ import type { CastDefinition } from '../mechanics/Cast';
 import type { AreaDefinition, BatchDefinition, EffectDefinition } from '../mechanics/Effect';
 import type { PolarPosition, Vector2 } from '../geometry/Vector2';
 import type { ArenaDefinition } from '../geometry/Arena';
+import type { TetherDefinition } from '../mechanics/Tether';
 
 export interface MarkerDefinition {
   /** Stable marker id used by positioning rules. */
@@ -64,6 +65,8 @@ export interface Encounter {
   areas?: Record<string, AreaDefinition>;
   /** Named batches that gather `add_to_batch` effects over a short window. */
   batches?: Record<string, BatchDefinition>;
+  /** Reusable tether behaviors referenced by `spawn_tether` effects/events. */
+  tethers?: Record<string, TetherDefinition>;
   /** Reusable enemy templates referenced by `spawn_enemy` events/effects. */
   enemyTemplates?: Record<string, EnemyTemplate>;
   /** Groups area hits and resolves shared effects when all members are done. */

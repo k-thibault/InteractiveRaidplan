@@ -1,0 +1,448 @@
+{
+  "version": 3,
+  "name": "Tether Lab",
+  "duration": 58000,
+  "statuses": [],
+  "tethers": {
+    "passable-red": {
+      "name": "Passable Tether",
+      "passable": true,
+      "style": {
+        "color": "#ff6a5c",
+        "width": 0.1,
+        "glow": true
+      }
+    },
+    "stretch": {
+      "name": "Stretch Tether",
+      "style": {
+        "color": "#6be08a",
+        "width": 0.1
+      },
+      "lengthStages": [
+        {
+          "from": 4,
+          "style": {
+            "color": "#ffd24a",
+            "dash": [
+              0.5,
+              0.3
+            ]
+          }
+        },
+        {
+          "from": 6,
+          "style": {
+            "color": "#ff4d4d",
+            "dash": [
+              0.25,
+              0.2
+            ],
+            "width": 0.14,
+            "glow": true
+          }
+        }
+      ],
+      "breakWhen": [
+        {
+          "type": "stretched",
+          "amount": 7
+        }
+      ],
+      "duration": 12000,
+      "onBreak": [
+        {
+          "type": "damage",
+          "target": "tethered",
+          "damage": {
+            "amount": 70,
+            "type": "physical"
+          }
+        }
+      ]
+    },
+    "keep-away": {
+      "name": "Too Close",
+      "style": {
+        "color": "#b57bff",
+        "width": 0.1,
+        "dash": [
+          0.6,
+          0.3
+        ]
+      },
+      "lengthStages": [
+        {
+          "from": 0,
+          "style": {
+            "color": "#ff4d4d",
+            "glow": true
+          }
+        },
+        {
+          "from": 6,
+          "style": {
+            "color": "#b57bff"
+          }
+        }
+      ],
+      "breakWhen": [
+        {
+          "type": "too_short",
+          "length": 4
+        },
+        {
+          "type": "too_long",
+          "length": 16
+        }
+      ],
+      "graceDuration": 2000,
+      "duration": 12000,
+      "onBreak": [
+        {
+          "type": "damage",
+          "target": "tethered",
+          "damage": {
+            "amount": 70,
+            "type": "physical"
+          }
+        }
+      ]
+    },
+    "plain": {
+      "name": "Plain Tether",
+      "style": {
+        "color": "#7fd1ff"
+      }
+    }
+  },
+  "casts": {
+    "cleave-tank": {
+      "id": "cleave-tank",
+      "name": "Tether Cleave",
+      "castTime": 2500,
+      "visible": true,
+      "facing": {
+        "type": "tether",
+        "tether": "tankLink"
+      },
+      "effects": [
+        {
+          "type": "spawn_area",
+          "shape": "cone",
+          "angle": 60,
+          "radius": 22,
+          "direction": "cast_direction",
+          "telegraphDuration": 1500,
+          "duration": 300,
+          "label": "Tether Cleave",
+          "resolution": [
+            {
+              "condition": {
+                "type": "player_count",
+                "min": 1
+              },
+              "effects": [
+                {
+                  "type": "damage",
+                  "target": "inside",
+                  "damage": {
+                    "amount": 60,
+                    "type": "physical"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "cleave-heal": {
+      "id": "cleave-heal",
+      "name": "Tether Cleave",
+      "castTime": 2500,
+      "visible": true,
+      "facing": {
+        "type": "tether",
+        "tether": "healLink"
+      },
+      "effects": [
+        {
+          "type": "spawn_area",
+          "shape": "cone",
+          "angle": 60,
+          "radius": 22,
+          "direction": "cast_direction",
+          "telegraphDuration": 1500,
+          "duration": 300,
+          "label": "Tether Cleave",
+          "resolution": [
+            {
+              "condition": {
+                "type": "player_count",
+                "min": 1
+              },
+              "effects": [
+                {
+                  "type": "damage",
+                  "target": "inside",
+                  "damage": {
+                    "amount": 60,
+                    "type": "physical"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "cleave-plain": {
+      "id": "cleave-plain",
+      "name": "Tether Cleave",
+      "castTime": 2500,
+      "visible": true,
+      "facing": {
+        "type": "tether",
+        "tether": "plain"
+      },
+      "effects": [
+        {
+          "type": "spawn_area",
+          "shape": "cone",
+          "angle": 60,
+          "radius": 22,
+          "direction": "cast_direction",
+          "telegraphDuration": 1500,
+          "duration": 300,
+          "label": "Tether Cleave",
+          "resolution": [
+            {
+              "condition": {
+                "type": "player_count",
+                "min": 1
+              },
+              "effects": [
+                {
+                  "type": "damage",
+                  "target": "inside",
+                  "damage": {
+                    "amount": 60,
+                    "type": "physical"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "players": [
+    {
+      "id": "tank",
+      "name": "Tank",
+      "type": "player",
+      "role": "tank",
+      "color": "#4d8dff",
+      "mechanicalRoles": [],
+      "moveSpeed": 5,
+      "health": 100,
+      "alive": true,
+      "position": {
+        "x": -3,
+        "y": -2
+      },
+      "statuses": []
+    },
+    {
+      "id": "healer",
+      "name": "Healer",
+      "type": "player",
+      "role": "healer",
+      "color": "#4cd97b",
+      "mechanicalRoles": [],
+      "moveSpeed": 5,
+      "health": 100,
+      "alive": true,
+      "position": {
+        "x": 3,
+        "y": -2
+      },
+      "statuses": []
+    },
+    {
+      "id": "melee",
+      "name": "Melee",
+      "type": "player",
+      "role": "damage",
+      "color": "#ff5a4f",
+      "mechanicalRoles": [],
+      "moveSpeed": 5,
+      "health": 100,
+      "alive": true,
+      "position": {
+        "x": -5,
+        "y": 3
+      },
+      "statuses": []
+    },
+    {
+      "id": "ranged",
+      "name": "Ranged",
+      "type": "player",
+      "role": "damage",
+      "color": "#ff5a4f",
+      "mechanicalRoles": [],
+      "moveSpeed": 5,
+      "health": 100,
+      "alive": true,
+      "position": {
+        "x": 5,
+        "y": 3
+      },
+      "statuses": []
+    }
+  ],
+  "enemies": [
+    {
+      "id": "boss",
+      "name": "Boss",
+      "type": "enemy",
+      "alive": true,
+      "position": {
+        "x": 0,
+        "y": -8
+      },
+      "statuses": [],
+      "style": {
+        "type": "ring",
+        "radius": 1.2
+      }
+    }
+  ],
+  "events": [
+    {
+      "id": "intro",
+      "at": 0,
+      "type": "set_shotcall",
+      "text": "Passable tethers: step onto the line to take one",
+      "duration": 6000
+    },
+    {
+      "id": "pass-tank",
+      "at": 1000,
+      "type": "spawn_tether",
+      "tether": "passable-red",
+      "label": "tankLink",
+      "target": {
+        "type": "players",
+        "ids": [
+          "tank"
+        ]
+      }
+    },
+    {
+      "id": "pass-heal",
+      "after": "pass-tank",
+      "delay": 0,
+      "type": "spawn_tether",
+      "tether": "passable-red",
+      "label": "healLink",
+      "target": {
+        "type": "players",
+        "ids": [
+          "healer"
+        ]
+      }
+    },
+    {
+      "id": "cleave-1",
+      "at": 6000,
+      "type": "start_cast",
+      "source": "boss",
+      "cast": "cleave-tank"
+    },
+    {
+      "id": "cleave-2",
+      "at": 11000,
+      "type": "start_cast",
+      "source": "boss",
+      "cast": "cleave-heal"
+    },
+    {
+      "id": "clear-1",
+      "at": 17000,
+      "type": "remove_tether"
+    },
+    {
+      "id": "call-2",
+      "at": 18000,
+      "type": "set_shotcall",
+      "text": "Stretch tether (Ranged): don't get dragged 7 further",
+      "duration": 5000
+    },
+    {
+      "id": "stretch",
+      "at": 18500,
+      "type": "spawn_tether",
+      "tether": "stretch",
+      "target": {
+        "type": "players",
+        "ids": [
+          "ranged"
+        ]
+      }
+    },
+    {
+      "id": "call-3",
+      "at": 31000,
+      "type": "set_shotcall",
+      "text": "Keep-away tether (Melee): stay 4 to 16 from the boss",
+      "duration": 5000
+    },
+    {
+      "id": "keepaway",
+      "at": 31500,
+      "type": "spawn_tether",
+      "tether": "keep-away",
+      "target": {
+        "type": "players",
+        "ids": [
+          "melee"
+        ]
+      }
+    },
+    {
+      "id": "call-4",
+      "at": 44000,
+      "type": "set_shotcall",
+      "text": "Plain tether (Healer): the cone is aimed along it",
+      "duration": 5000
+    },
+    {
+      "id": "plain",
+      "at": 44500,
+      "type": "spawn_tether",
+      "tether": "plain",
+      "target": {
+        "type": "players",
+        "ids": [
+          "healer"
+        ]
+      }
+    },
+    {
+      "id": "cleave-3",
+      "at": 47000,
+      "type": "start_cast",
+      "source": "boss",
+      "cast": "cleave-plain"
+    },
+    {
+      "id": "clear-2",
+      "at": 55000,
+      "type": "remove_tether"
+    }
+  ]
+}

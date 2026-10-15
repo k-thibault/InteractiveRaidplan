@@ -8,6 +8,7 @@ import type { GroupEntry } from '../mechanics/Group';
 import type { MarkerDefinition } from '../encounters/Encounter';
 import type { Vector2 } from '../geometry/Vector2';
 import type { Arena } from '../geometry/Arena';
+import type { ActiveTether } from '../mechanics/Tether';
 
 export interface ShotcallState {
   text: string;
@@ -42,6 +43,8 @@ export interface GameState {
   worldGraphics: WorldGraphicInstance[];
   background?: string;
   casts: ActiveCast[];
+  /** Links between two entities, oldest first. */
+  tethers: ActiveTether[];
   running: boolean;
   completed: boolean;
   log: LogEntry[];

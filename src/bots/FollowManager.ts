@@ -1,6 +1,7 @@
 import { canMove, canTurn } from '../entities/Control';
 import { clampToArena } from '../geometry/Arena';
 import { distance, normalize, subtract, toPolarAngle } from '../geometry/Vector2';
+import type { PositionValue } from '../geometry/Vector2';
 import type { CastDefinition } from '../mechanics/Cast';
 import { resolveEntityReference } from '../mechanics/Selector';
 import type { GameState } from '../simulation/GameState';
@@ -21,7 +22,16 @@ export interface FollowSettings {
   /** Gap kept between the two entities, in world units. */
   distance: number;
   moveSpeed?: number;
+  /** Removes the enemy once it reaches a fixed `position`. */
+  despawnOnArrival?: boolean;
 }
+
+/** Timeline positions may be polar or `towards`; runtime settings store resolved points. */
+export type FollowInput = Omit<FollowSettings, 'position'> & {
+  position?: PositionValue | 'cast_target_position';
+  /** Extends the line from the follower through `position` out to the arena edge and runs there instead. */
+  toEdge?: boolean;
+};
 
 export class FollowManager {
   private readonly casts: Record<string, CastDefinition>;
@@ -48,6 +58,7 @@ export class FollowManager {
         // Bosses never leave the arena, even one with a deadly border.
         clampToArena(enemy.position, state.arena);
       }
+      if (follow.despawnOnArrival && fixed && distance(enemy.position, fixed) - follow.distance <= 1e-6) enemy.expiresAt = state.time;
       // An explicit facing rule takes priority over following.
       const overlapping = target.position.x === enemy.position.x && target.position.y === enemy.position.y;
       if (!hold.facing && canTurn(enemy) && !enemy.facingRuleActive && !overlapping) enemy.facing = toPolarAngle(target.position, enemy.position);

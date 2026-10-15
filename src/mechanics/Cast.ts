@@ -18,7 +18,11 @@ export type CastFacing =
   | { type: 'random_player'; replayable?: boolean }
   /** The living player furthest from the caster when the cast starts. */
   | { type: 'farthest_player'; replayable?: boolean }
-  | { type: 'entity'; id: string; replayable?: boolean };
+  /** Targets a status holder, optionally falling back to a random player. */
+  | { type: 'with_status'; status: string; fallback?: 'random_player'; replayable?: boolean }
+  | { type: 'entity'; id: string; replayable?: boolean }
+  /** Follows a matching tether target; passes redirect the cast. */
+  | { type: 'tether'; tether?: string; pick?: 'oldest' | 'nearest' | 'farthest' };
 
 export interface ActiveCast {
   id: string;
@@ -32,4 +36,6 @@ export interface ActiveCast {
   direction?: number;
   /** The target's position when the cast started; it does not follow the target afterwards. */
   targetPosition?: { x: number; y: number };
+  /** Tether tracked by a tether-facing cast. */
+  tetherId?: string;
 }
