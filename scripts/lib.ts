@@ -73,3 +73,8 @@ export function ghostDriver(simulation: Simulation, playerId: string, track: Bot
   };
 }
 
+
+/** Ids of the encounters the production build lists (`"prodready": true`). */
+export function prodreadyEncounterIds(): string[] {
+  return (encounterIndex as Array<IndexEntry & { prodready?: boolean }>).filter((entry) => entry.prodready === true).map((entry) => entry.id);
+}

@@ -9,11 +9,11 @@ Encounters combine scripted events with reusable mechanics such as area telegrap
 ## Using the simulator
 
 1. Choose an encounter from **Timeline**.
-2. Choose a player from **Control**, or select **All bots**. Move the controlled player with **WASD** or the **arrow keys**. Enable **Face cursor when still** to aim toward the pointer while stationary.
+2. Choose a player from **Control**, or select **All bots**. Move the controlled player with **WASD** or the **arrow keys**. Enable **Face cursor when still** (in **Run options**) to aim toward the pointer while stationary.
 3. Select **Start** to begin. Use the same button to pause or resume.
-4. Use **Restart** to start a new attempt. By default, it uses a new random seed; enable **Keep previous RNG** to replay the current seed.
+4. Use **Restart** to start a new attempt. By default, it uses a new random seed; enable **Keep previous RNG** in **Run options** to replay the current seed.
 5. Choose a simulation speed from **0.5x** to **4x**.
-6. Choose which kind of shotcalls will be simulated for the chosen encounter: **Text**, **TTS**, or both.
+6. Choose which kind of shotcalls will be simulated for the chosen encounter in **Run options**: **Text**, **TTS**, or both.
 
 ## Reading the arena
 
@@ -43,6 +43,7 @@ useful for making sure a new timeline has reliable bot logic before release.
 Every attempt is recorded automatically. Playback reruns the same encounter using its seed, random outcomes, and your recorded movement and facing, so the party responds as it did in the original run.
 
 - Watch the latest attempt, seek through it, or retry with the same random outcomes. Replay controls do not affect your streak.
+- The **Replay** menu holds watching the last attempt, saving, loading and the history. While watching, the header shows the replay details and seek bar, and **Run options** switch to the app defaults (shotcalls on, bots visible) until you exit.
 - Save and load replay files. Playback warns if the encounter or simulator has changed and reports when the result diverges.
 - History keeps this session's attempts until cleared and removes older sessions after 24 hours. If browser storage is unavailable, history lasts until the tab closes.
 - In development builds, failed seeds from **Batch simulate** can be opened in the replay viewer.
@@ -55,7 +56,7 @@ Add a unique `replayId` to random mechanic draws that depend on attempt state. S
 
 ### Checks
 
-Replay checks can be run with `npx tsx`:
+`npm run check` runs every script below (`npm run check:quick` skips the slow replay and prodready ones). They can also be run one at a time with `npx tsx`:
 
 ```sh
 npx tsx scripts/check-foundation.ts   # deterministic scripted runs, bot-track parity
@@ -63,6 +64,11 @@ npx tsx scripts/check-replay.ts       # record, serialise, replay, tamper detect
 npx tsx scripts/check-viewer.ts       # attempt history, viewer, seeking, retry
 npx tsx scripts/check-history.ts      # history storage and purge rules
 npx tsx scripts/check-replay-ids.ts  # replay ID coverage and pinning
+npx tsx scripts/check-geometry.ts     # collision shapes, facing, quantization, arena borders
+npx tsx scripts/check-core.ts         # random stream, scheduler, damage, streaks, run options
+npx tsx scripts/check-simulation.ts   # timeline, statuses, casts, areas, knocks, bots
+npx tsx scripts/check-encounters.ts   # encounter data references and smoke runs
+npx tsx scripts/check-prodready.ts    # 500 all-bots attempts per prodready encounter must clear
 ```
 
 ## Encounter library

@@ -6,9 +6,13 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "check": "tsx scripts/check-all.ts",
+    "check:quick": "tsx scripts/check-all.ts --quick",
+    "check:prodready": "tsx scripts/check-prodready.ts"
   },
   "devDependencies": {
+    "tsx": "^4.23.15",
     "typescript": "~6.0.2",
     "vite": "^8.2.2"
   }

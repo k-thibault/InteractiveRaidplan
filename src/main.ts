@@ -1,4 +1,6 @@
 import { ShotcallSpeaker } from './audio/ShotcallSpeaker';
+import { setupMenus } from './ui/Menu';
+import { ViewOptionsHold, type ViewOptions } from './ui/ViewOptions';
 import { StreakTracker } from './streak/StreakTracker';
 import type { RunFlags } from './streak/StreakTypes';
 import './style.css';
@@ -21,7 +23,8 @@ import type { StatusDefinition } from './entities/Status';
 import type { Player } from './entities/Player';
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
-app.innerHTML = `<main class="workbench"><header class="topbar"><div><h1 id="encounter-name">Loading encounter&hellip;</h1></div><div class="encounter-picker"><label for="encounter-select">Timeline</label><select id="encounter-select"></select></div><div class="readout"><span id="phase">READY</span><strong id="clock">00:00.0</strong></div></header><div id="replay-banner" class="replay-banner" role="status" hidden><span class="replay-banner__tag">Replay</span><span id="replay-info" class="replay-banner__info"></span><span id="replay-warning" class="replay-banner__warning" hidden></span><span class="replay-banner__actions"><button id="replay-retry" type="button" title="Leave the replay and set up a new attempt with the same seed and random outcomes">Retry this RNG</button><button id="replay-exit" type="button">Exit replay</button></span></div><section class="arena-row"><aside id="roster" class="roster-panel" aria-label="Party health"></aside><div class="arena-panel"><canvas id="arena" width="1200" height="800" aria-label="Encounter arena"></canvas><div id="cast-bars" class="cast-bars" aria-live="polite"></div><p class="arena-hint">Move with WASD or the arrow keys.</p><div id="streak" class="streak" role="status" hidden></div></div><aside class="event-log-panel"><h2>Event Log</h2><ul id="event-log"><li class="event-log__empty">No events yet.</li></ul></aside></section><div id="replay-seekbar" class="replay-seekbar" hidden><span id="seek-time" class="replay-seekbar__time">00:00.0</span><input id="replay-seek" type="range" min="0" max="0" step="1" value="0" aria-label="Replay position"><span id="seek-end" class="replay-seekbar__time"></span></div><footer class="controls"><div class="control-group"><button id="toggle" type="button">Start</button><button id="restart" type="button">Restart</button><label for="controlled-player">Control</label><select id="controlled-player"></select><button id="watch-last" type="button" disabled title="Watch your last attempt">Watch last attempt</button><button id="save-replay" type="button" disabled title="Download this attempt as a replay file">Save replay</button><button id="load-replay" type="button" title="Open a saved replay file">Load replay</button><button id="history-open" type="button" title="Attempts from this session">History</button><input id="replay-file" type="file" accept=".json,application/json" hidden><span id="replay-notice" class="replay-notice" role="status"></span>${import.meta.env.DEV ? '<button id="batch-open" type="button">Batch simulate</button>' : ''}</div><div class="speed-group" role="group" aria-label="Simulation speed"><span>Speed</span><button data-speed="0.25" type="button">0.25x</button><button data-speed="0.5" type="button">0.5x</button><button class="selected" data-speed="1" type="button">1x</button><button class="replay-only" data-speed="2" type="button">2x</button><button class="replay-only" data-speed="4" type="button">4x</button></div><div class="control-group"><label><input id="keep-rng" type="checkbox"> Keep previous RNG</label>${import.meta.env.DEV ? '<label><input id="debug-mode" type="checkbox"> Debug log</label>' : ''}<span class="control-group__label">Shotcalls:</span><label><input id="shotcall-text" type="checkbox" checked> Text</label><label><input id="shotcall-tts" type="checkbox" checked> TTS</label><label><input id="face-cursor" type="checkbox" checked> Face cursor when still</label><label><input id="hide-bots" type="checkbox"> Hide bots</label></div></footer></main>`;
+app.innerHTML = `<main class="workbench"><header class="topbar"><div class="topbar__title"><h1 id="encounter-name">Loading encounter&hellip;</h1><div class="replay-meta" role="status"><span class="replay-meta__tag">Replay</span><span id="replay-info" class="replay-meta__info"></span><span id="replay-warning" class="replay-meta__warning" hidden></span></div></div><div class="topbar__pickers live-only"><div class="encounter-picker"><label for="encounter-select">Timeline</label><select id="encounter-select"></select></div><div class="encounter-picker"><label for="controlled-player">Control</label><select id="controlled-player"></select></div></div><div class="replay-seek"><span id="seek-time" class="replay-seek__time">00:00.0</span><input id="replay-seek" type="range" min="0" max="0" step="1" value="0" aria-label="Replay position"><span id="seek-end" class="replay-seek__time"></span></div><div class="replay-actions"><button id="replay-retry" type="button" title="Leave the replay and set up a new attempt with the same seed and random outcomes">Retry this RNG</button><button id="replay-exit" type="button">Exit replay</button></div><div class="readout live-only"><span id="phase">READY</span><strong id="clock">00:00.0</strong></div></header><section class="arena-row"><aside id="roster" class="roster-panel" aria-label="Party health"></aside><div class="arena-panel"><canvas id="arena" width="1200" height="800" aria-label="Encounter arena"></canvas><div id="cast-bars" class="cast-bars" aria-live="polite"></div><p class="arena-hint">Move with WASD or the arrow keys.</p><div id="streak" class="streak" role="status" hidden></div><span id="replay-notice" class="replay-notice" role="status"></span></div><aside class="event-log-panel"><h2>Event Log</h2><ul id="event-log"><li class="event-log__empty">No events yet.</li></ul></aside></section><footer class="controls"><div class="control-group"><button id="toggle" type="button">Start</button><button id="restart" type="button">Restart</button><div class="menu" data-menu><button id="replay-menu" class="menu__toggle" type="button">Replay</button><div class="menu__panel" role="menu" hidden><button id="watch-last" type="button" role="menuitem" data-menu-close disabled title="Watch your last attempt">Watch last attempt</button><button id="save-replay" type="button" role="menuitem" data-menu-close disabled title="Download this attempt as a replay file">Save replay</button><button id="load-replay" type="button" role="menuitem" data-menu-close title="Open a saved replay file">Load replay</button><button id="history-open" type="button" role="menuitem" data-menu-close title="Attempts from this session">History</button></div></div><div class="menu" data-menu><button id="run-options" class="menu__toggle" type="button">Run options</button><div class="menu__panel menu__panel--options" hidden><label class="live-only"><input id="keep-rng" type="checkbox"> Keep previous RNG</label>${import.meta.env.DEV ? '<label class="live-only"><input id="debug-mode" type="checkbox"> Debug log</label>' : ''}<div class="menu__row"><span>Shotcalls</span><label><input id="shotcall-text" type="checkbox" checked> Text</label><label><input id="shotcall-tts" type="checkbox" checked> TTS</label></div><label class="live-only"><input id="face-cursor" type="checkbox" checked> Face cursor when still</label><label><input id="hide-bots" type="checkbox"> Hide bots</label></div></div><input id="replay-file" type="file" accept=".json,application/json" hidden>${import.meta.env.DEV ? '<button id="batch-open" type="button">Batch simulate</button>' : ''}</div><div class="speed-group" role="group" aria-label="Simulation speed"><span>Speed</span><button data-speed="0.25" type="button">0.25x</button><button data-speed="0.5" type="button">0.5x</button><button class="selected" data-speed="1" type="button">1x</button><button class="replay-only" data-speed="2" type="button">2x</button><button class="replay-only" data-speed="4" type="button">4x</button></div></footer></main>`;
+setupMenus();
 
 const canvas = document.querySelector<HTMLCanvasElement>('#arena')!;
 const renderer = new ArenaRenderer(canvas);
@@ -50,12 +53,10 @@ const saveReplay = document.querySelector<HTMLButtonElement>('#save-replay')!;
 const loadReplay = document.querySelector<HTMLButtonElement>('#load-replay')!;
 const replayFile = document.querySelector<HTMLInputElement>('#replay-file')!;
 const replayNotice = document.querySelector<HTMLSpanElement>('#replay-notice')!;
-const replayBanner = document.querySelector<HTMLDivElement>('#replay-banner')!;
 const replayInfo = document.querySelector<HTMLSpanElement>('#replay-info')!;
 const replayWarning = document.querySelector<HTMLSpanElement>('#replay-warning')!;
 const replayRetry = document.querySelector<HTMLButtonElement>('#replay-retry')!;
 const replayExit = document.querySelector<HTMLButtonElement>('#replay-exit')!;
-const seekBar = document.querySelector<HTMLDivElement>('#replay-seekbar')!;
 const seekInput = document.querySelector<HTMLInputElement>('#replay-seek')!;
 const seekTime = document.querySelector<HTMLSpanElement>('#seek-time')!;
 const seekEnd = document.querySelector<HTMLSpanElement>('#seek-end')!;
@@ -85,6 +86,7 @@ const history = new AttemptHistory((replay) => { historyStore?.save(replay).catc
 let viewer: ReplayViewer | undefined;
 let currentEntryId = '';
 let savedControlled: string | undefined;
+const viewOptionsHold = new ViewOptionsHold();
 let hashedEncounter: { encounter: object; hash: number } | undefined;
 
 function createAttemptSeed(): number {
@@ -324,7 +326,12 @@ function selectSpeed(value: number): void {
   document.querySelectorAll<HTMLButtonElement>('[data-speed]').forEach((button) => button.classList.toggle('selected', Number(button.dataset.speed) === value));
 }
 
-function setReplayNotice(message: string): void { replayNotice.textContent = message; }
+let noticeTimer: ReturnType<typeof setTimeout> | undefined;
+/** Shown as a toast over the arena (so it never changes the page height) and cleared after a few seconds. */
+function setReplayNotice(message: string): void {
+  replayNotice.textContent = message; clearTimeout(noticeTimer);
+  if (message) noticeTimer = setTimeout(() => { replayNotice.textContent = ''; }, 8000);
+}
 
 /** Swap the arena, roster and log over to another simulation. */
 function showSimulation(next: Simulation): void {
@@ -333,9 +340,13 @@ function showSimulation(next: Simulation): void {
 }
 
 /** Replay mode keeps view options (hide bots, shotcalls, speed) and turns off everything that changes the run itself. */
+function showViewOptions(options: ViewOptions): void {
+  shotcallText.checked = options.shotcallText; shotcallTts.checked = options.shotcallTts; hideBots.checked = options.hideBots;
+  renderer.setShotcallVisible(shotcallText.checked); speaker.setEnabled(shotcallTts.checked); renderer.setHideBots(hideBots.checked);
+}
+
 function setReplayModeControls(active: boolean): void {
   document.body.classList.toggle('replay-mode', active);
-  replayBanner.hidden = !active; seekBar.hidden = !active;
   if (!active) selectSpeed(1);
   for (const control of [controlledPlayer, keepRng, faceCursor, encounterSelect]) control.disabled = active;
   hideBots.disabled = active ? !viewer?.replay.header.controlledPlayerId : !controlledPlayer.value;
@@ -347,6 +358,7 @@ async function enterReplay(replay: Replay): Promise<void> {
   if (!entry) { setReplayNotice(`That replay is for "${replay.header.encounterId}", which is not available here.`); return; }
   setReplayNotice('');
   if (!viewer) savedControlled = controlledPlayer.value;
+  showViewOptions(viewOptionsHold.hold({ shotcallText: shotcallText.checked, shotcallTts: shotcallTts.checked, hideBots: hideBots.checked }));
   viewer = undefined;
   history.abandon();
   if (entry.id !== currentEntryId) { encounterSelect.value = entry.id; await selectEncounter(entry, replay.header.controlledPlayerId ?? ''); }
@@ -376,6 +388,7 @@ function exitReplay(): void {
   viewer = undefined;
   renderer.setHideControlledFacing(false);
   if (savedControlled !== undefined) controlledPlayer.value = savedControlled;
+  const liveOptions = viewOptionsHold.release(); if (liveOptions) showViewOptions(liveOptions);
   setReplayModeControls(false);
   rebuild();
 }
@@ -404,11 +417,13 @@ function updateReplayUi(): void {
     const diverged = viewer.divergedAtMs;
     const warnings = [...viewer.warnings];
     if (diverged !== undefined) warnings.push(`Replay diverged at ${formatClock(diverged)}: what is shown from there on may not match the original attempt.`);
-    const info = `${player} · seed ${header.seed >>> 0} · ${formatClock(simulation.state.time)} / ${formatClock(header.endTick * header.tickMs)}${header.result.completed ? '' : ' · attempt abandoned here'}${viewer.finished ? ' · finished' : ''}`;
+    // The clock and the end of the replay live on the seek bar in the header, so the info line stays short and static.
+    const info = `${player} · seed ${header.seed >>> 0}${header.result.completed ? '' : ' · abandoned'}`;
     const text = `${info}|${warnings.join(' ')}`;
     if (text !== lastBannerText) {
       lastBannerText = text; replayInfo.textContent = info;
-      replayWarning.hidden = warnings.length === 0; replayWarning.textContent = warnings.join(' ');
+      const warning = warnings.join(' ');
+      replayWarning.hidden = warnings.length === 0; replayWarning.textContent = warning ? `⚠ ${warning}` : ''; replayWarning.title = warning;
     }
     if (!seekDragging && !viewer.seeking) seekInput.value = String(viewer.tick);
     seekTime.textContent = formatClock(viewer.tick * header.tickMs);
