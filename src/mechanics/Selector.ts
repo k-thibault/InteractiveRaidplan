@@ -1,5 +1,5 @@
 import { distance } from '../geometry/Vector2';
-import { isFacingTowards, isFacingAway, DEFAULT_FACING } from '../geometry/Facing';
+import { isFacingTowards, isFacingAway, readFacing } from '../geometry/Facing';
 import type { Entity } from '../entities/Entity';
 import type { Player, PlayerRole } from '../entities/Player';
 import type { Random } from '../simulation/Random';
@@ -59,7 +59,7 @@ export function selectPlayers(selector: PlayerSelector, state: GameState, random
     const point = typeof selector.source === 'string' ? findEntity(state, selector.source)?.position : selector.source;
     if (!point) return [];
     const test = selector.mode === 'towards' ? isFacingTowards : isFacingAway;
-    return players.filter((player) => test(player.position, player.facing ?? DEFAULT_FACING, point, selector.tolerance));
+    return players.filter((player) => test(player.position, readFacing(state, player), point, selector.tolerance));
   }
   if (selector.type === 'tethered') {
     const ends = new Set<string>();

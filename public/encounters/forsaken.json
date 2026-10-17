@@ -220,6 +220,7 @@
       "effects": [
         {
           "type": "distribute_statuses",
+          "replayId": "forsaken-soaks-odd",
           "target": "inside",
           "statuses": ["cone-trigger", "cone-trigger", "spread-trigger", "spread-trigger"]
         }
@@ -230,6 +231,7 @@
       "effects": [
         {
           "type": "distribute_statuses",
+          "replayId": "forsaken-soaks-even",
           "target": "inside",
           "statuses": ["cone-trigger", "stack-trigger", "stack-trigger", "spread-trigger"]
         }
@@ -454,6 +456,7 @@
         },
         {
           "type": "distribute_statuses",
+          "replayId": "forsaken-triggers-damage",
           "target": {
             "type": "role",
             "role": "damage"
@@ -462,6 +465,7 @@
         },
         {
           "type": "distribute_statuses",
+          "replayId": "forsaken-triggers-support",
           "target": {
             "type": "role_any",
             "roles": [
@@ -1543,6 +1547,7 @@
       "after": "tower-2-soak-a",
       "delay": 7000,
       "type": "start_cast",
+      "replayId": "pasts-future-cast-1",
       "source": "boss",
       "castChoices": ["pasts", "futures"]
     },
@@ -1692,6 +1697,7 @@
       "after": "tower-4-soak-a",
       "delay": 7000,
       "type": "start_cast",
+      "replayId": "pasts-future-cast-2",
       "source": "boss",
       "castChoices": ["pasts", "futures"]
     },
@@ -1834,6 +1840,7 @@
       "after": "tower-6-soak-a",
       "delay": 7000,
       "type": "start_cast",
+      "replayId": "pasts-future-cast-3",
       "source": "boss",
       "castChoices": ["pasts", "futures"]
     },
@@ -1983,6 +1990,7 @@
       "after": "tower-8-soak-a",
       "delay": 7000,
       "type": "start_cast",
+      "replayId": "pasts-future-cast-4",
       "source": "boss",
       "castChoices": ["pasts", "futures"]
     },

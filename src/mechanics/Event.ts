@@ -41,7 +41,7 @@ export interface SetFocusEvent extends BaseEvent { type: 'set_focus'; target: Pl
 export interface SetShotcallEvent extends BaseEvent { type: 'set_shotcall'; text: string; duration?: number; }
 export interface ClearShotcallEvent extends BaseEvent { type: 'clear_shotcall'; }
 export interface SetMechanicEvent extends BaseEvent { type: 'set_mechanic'; mechanic: string; }
-export interface ApplyStatusEvent extends BaseEvent { type: 'apply_status'; target: PlayerSelector; status: string; duration?: number; stacks?: number; }
+export interface ApplyStatusEvent extends BaseEvent { type: 'apply_status'; target: PlayerSelector; status: string; duration?: number; stacks?: number; replayId?: string; }
 export interface DistributeStatusesEvent extends BaseEvent { type: 'distribute_statuses'; target: PlayerSelector; statuses: string[]; duration?: number; replayId?: string; }
 export interface HealEvent extends BaseEvent { type: 'heal'; target: PlayerSelector; amount?: number; full?: boolean; }
 export interface DamageEvent extends BaseEvent { type: 'damage'; target: PlayerSelector; damage: DamageDefinition; }

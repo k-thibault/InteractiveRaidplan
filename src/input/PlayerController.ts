@@ -1,11 +1,11 @@
-import { normalize, toPolarAngle } from '../geometry/Vector2';
+import { normalize } from '../geometry/Vector2';
 import type { Vector2 } from '../geometry/Vector2';
 import type { Player } from '../entities/Player';
-import { canMove, canTurn } from '../entities/Control';
-import { constrainToArena } from '../geometry/Arena';
+import { stepControlledPlayer } from './ControlledMovement';
 import type { Arena } from '../geometry/Arena';
+import type { PlayerDriver } from '../simulation/PlayerDriver';
 
-export class PlayerController {
+export class PlayerController implements PlayerDriver {
   private readonly keys = new Set<string>();
   private readonly player: Player | undefined;
   private readonly arena: Arena;
@@ -15,8 +15,18 @@ export class PlayerController {
   constructor(player: Player | undefined, arena: Arena) {
     this.player = player;
     this.arena = arena;
-    window.addEventListener('keydown', (event) => this.keys.add(event.key.toLowerCase()));
-    window.addEventListener('keyup', (event) => this.keys.delete(event.key.toLowerCase()));
+    window.addEventListener('keydown', this.onKeyDown);
+    window.addEventListener('keyup', this.onKeyUp);
+  }
+
+  private readonly onKeyDown = (event: KeyboardEvent): void => { this.keys.add(event.key.toLowerCase()); };
+  private readonly onKeyUp = (event: KeyboardEvent): void => { this.keys.delete(event.key.toLowerCase()); };
+
+  /** Removes the keyboard listeners. */
+  dispose(): void {
+    window.removeEventListener('keydown', this.onKeyDown);
+    window.removeEventListener('keyup', this.onKeyUp);
+    this.keys.clear();
   }
 
   /** Stores the cursor's world position. */
@@ -29,18 +39,13 @@ export class PlayerController {
     this.faceCursorWhenStill = enabled;
   }
 
-  update(deltaSeconds: number): void {
-    if (!this.player || !this.player.alive) return;
+  /** Fixed-step live driver: called once per simulation tick. */
+  step(_tick: number, deltaSeconds: number): void {
+    if (!this.player) return;
     const direction = normalize({ x: Number(this.keys.has('d') || this.keys.has('arrowright')) - Number(this.keys.has('a') || this.keys.has('arrowleft')), y: Number(this.keys.has('s') || this.keys.has('arrowdown')) - Number(this.keys.has('w') || this.keys.has('arrowup')) });
-    if (direction.x !== 0 || direction.y !== 0) {
-      if (canMove(this.player)) {
-        this.player.position.x += direction.x * this.player.moveSpeed * deltaSeconds;
-        this.player.position.y += direction.y * this.player.moveSpeed * deltaSeconds;
-      }
-      if (canTurn(this.player)) this.player.facing = toPolarAngle(direction, { x: 0, y: 0 });
-    } else if (this.faceCursorWhenStill && this.mouseWorldPosition && canTurn(this.player)) {
-      this.player.facing = toPolarAngle(this.mouseWorldPosition, this.player.position);
-    }
-    constrainToArena(this.player.position, this.arena);
+    stepControlledPlayer(this.player, this.arena, { direction, faceTowards: this.faceCursorWhenStill ? this.mouseWorldPosition : undefined }, deltaSeconds);
   }
+
+  /** Walking before Start uses the same step. */
+  idle(deltaSeconds: number): void { this.step(-1, deltaSeconds); }
 }

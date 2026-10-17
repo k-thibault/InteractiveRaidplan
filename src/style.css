@@ -68,3 +68,39 @@ body.shotcalls-active .arena-row { margin-top: 10px; }
 .streak b { font-weight: 700; }
 .streak__row { color: var(--streak-color, #dbe7f2); font-size: calc(12px + 3px * var(--streak-intensity, 0)); text-shadow: 0 1px 3px #05080c, 0 0 calc(6px * var(--streak-intensity, 0)) var(--streak-color, transparent), 0 0 calc(14px * var(--streak-intensity, 0)) var(--streak-color, transparent), 0 0 calc(26px * var(--streak-intensity, 0)) color-mix(in srgb, var(--streak-color, transparent) 60%, transparent); }
 .streak__row b { font-size: 1.5em; }
+
+/* Replay mode: a distinct amber treatment so it is never mistaken for a live attempt. */
+.replay-banner { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin: 14px 0 0; padding: 10px 14px; border: 1px solid #c9a24a; border-radius: 3px; background: #2a2310; color: #e8d9a8; font: 500 13px 'DM Mono', monospace; }
+.replay-banner[hidden], .replay-banner__warning[hidden], .replay-banner__actions [hidden] { display: none; }
+.replay-banner__tag { padding: 2px 8px; border-radius: 2px; background: #c9a24a; color: #1d1707; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
+.replay-banner__info { flex: 1 1 auto; }
+.replay-banner__warning { flex: 1 1 100%; color: #ffb36b; }
+.replay-banner__actions { display: flex; gap: 8px; margin-left: auto; }
+body.replay-mode .arena-panel { outline: 2px solid #c9a24a; outline-offset: 2px; }
+body.replay-mode .arena-hint { display: none; }
+body.replay-mode #phase { color: #e0b84e; }
+.replay-notice { margin-left: 8px; color: #ffb36b; font-size: 12px; }
+button:disabled { opacity: 0.45; cursor: not-allowed; } button:disabled:hover { border-color: #3b4e61; color: #dbe7f2; background: #18232e; }
+
+/* Replay seek bar sits under the arena; 2x and 4x speeds exist only while watching a replay. */
+.replay-seekbar { display: flex; align-items: center; gap: 12px; margin: 12px 0 0; padding: 8px 14px; border: 1px solid #5b4a1e; border-radius: 3px; background: #1d180b; color: #e8d9a8; font: 500 13px 'DM Mono', monospace; }
+.replay-seekbar[hidden] { display: none; }
+.replay-seekbar input[type="range"] { flex: 1 1 auto; accent-color: #c9a24a; cursor: pointer; }
+.replay-seekbar__time { min-width: 66px; text-align: center; }
+.replay-only { display: none; }
+body.replay-mode .replay-only { display: inline-block; }
+
+/* Replay history dialog */
+.history-dialog { width: min(980px, 94vw); max-height: 88vh; overflow: auto; border: 1px solid #5b4a1e; background: #0f161e; color: #dbe7f2; padding: 22px 26px; font: 12px 'DM Mono', monospace; }
+.history-dialog::backdrop { background: rgba(5, 8, 12, .72); }
+.history-dialog h2 { margin: 0 0 10px; font-size: 20px; font-weight: 500; color: #f0f5f8; }
+.history-note, .history-empty { color: #8394a4; margin: 0 0 14px; }
+.history-message { color: #ffb36b; margin: 0 0 10px; }
+.history-message[hidden] { display: none; }
+.history-dialog table { width: 100%; border-collapse: collapse; }
+.history-dialog th, .history-dialog td { text-align: left; padding: 6px 12px 6px 0; border-bottom: 1px solid #1d2a37; vertical-align: middle; }
+.history-dialog th { color: #637585; font-weight: 400; }
+.history-tag { color: #637585; font-size: 11px; }
+.history-actions { display: flex; gap: 6px; justify-content: flex-end; white-space: nowrap; }
+.history-actions button, .history-footer button { padding: 4px 9px; font-size: 11px; }
+.history-footer { display: flex; justify-content: space-between; margin-top: 16px; }

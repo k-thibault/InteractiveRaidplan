@@ -17,6 +17,7 @@ import type { StatusInstance } from '../entities/Status';
 import { resolvePositionValue } from '../geometry/Vector2';
 import { resolveArena } from '../geometry/Arena';
 import { selectPlayers } from '../mechanics/Selector';
+import type { PlayerDriver } from './PlayerDriver';
 
 export interface SimulationOptions { seed: number; controlledPlayerId?: string; replayOutcomes?: Map<string, Record<string, unknown>>; debug?: boolean; }
 
@@ -38,6 +39,10 @@ export class Simulation {
   private positionEvaluator: PositionEvaluator;
   private readonly facingEvaluator: FacingEvaluator;
   private readonly debug: boolean;
+  /** Called after each running tick. */
+  onTickEnd?: (tickCount: number) => void;
+  private driver: PlayerDriver | undefined;
+  private ticks = 0;
 
   constructor(encounter: Encounter, options: SimulationOptions) {
     this.encounterDuration = encounter.duration;
@@ -95,11 +100,29 @@ export class Simulation {
     }
   }
 
+  /** Number of running ticks simulated so far (pre-start and paused steps do not count). */
+  get tickCount(): number { return this.ticks; }
+
+  /** Sets what moves the controlled player. Without a driver the controlled player stands still. */
+  setDriver(driver: PlayerDriver | undefined): void { this.driver = driver; }
+
+  /** True before Start: the run has not begun, so the player may still be walked to a start position. */
+  get isPreStart(): boolean { return !this.state.running && !this.state.completed && this.ticks === 0; }
+
+  /** A fixed step before Start. Only the driver runs; no mechanics, no time, no tick count. */
+  idleTick(deltaMs: number): void {
+    if (!this.isPreStart) return;
+    this.driver?.idle?.(deltaMs / 1000);
+  }
+
   start(): void { this.state.running = true; }
   pause(): void { this.state.running = false; }
 
   tick(deltaMs: number): void {
     if (!this.state.running || this.state.completed) return;
+    // The controlled player moves first so every mechanic this tick sees the same position in live play and in replay.
+    this.driver?.step(this.ticks, deltaMs / 1000);
+    this.ticks += 1;
     this.state.deltaTime = deltaMs;
     this.state.time += deltaMs;
     this.executor.expireStatuses();
@@ -154,5 +177,6 @@ export class Simulation {
     // Last, so tethers see where everyone ended up this tick (and who just died).
     this.executor.updateTethers();
     if (this.state.time >= this.encounterDuration) { this.state.completed = true; this.state.running = false; }
+    this.onTickEnd?.(this.ticks);
   }
 }

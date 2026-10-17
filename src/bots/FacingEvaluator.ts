@@ -49,13 +49,15 @@ export class FacingEvaluator {
     void params; // Reserved for API parity with position recalculation.
     const rules = group ? (this.definitions[group] ?? []) : Object.values(this.definitions).flat();
     for (const entity of [...state.players, ...state.enemies] as Entity[]) {
-      // A stunned entity keeps its current facing and rule state; a human-controlled player turns themselves.
-      if (!canTurn(entity) || (entity as { controlled?: boolean }).controlled) continue;
+      // A stunned entity keeps its current facing and rule state.
+      if (!canTurn(entity)) continue;
+      // Evaluate the rule for controlled players without changing their facing.
+      const controlled = (entity as { controlled?: boolean }).controlled === true;
       const rule = rules.find((candidate) => candidate.when === undefined || this.matches(candidate.when, entity, state));
       if (rule) {
         const angle = this.resolve(rule.target, state, entity);
         entity.facingRuleActive = angle !== undefined;
-        if (angle !== undefined) entity.facing = angle;
+        if (angle !== undefined && !controlled) entity.facing = angle;
       } else {
         entity.facingRuleActive = false;
       }

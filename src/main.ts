@@ -6,12 +6,22 @@ import { loadEncounter, loadEncounterManifest, type EncounterManifestEntry } fro
 import { PlayerController } from './input/PlayerController';
 import { ArenaRenderer } from './rendering/ArenaRenderer';
 import { Simulation } from './simulation/Simulation';
+import { AttemptHistory } from './replay/AttemptHistory';
+import { ReplayViewer } from './replay/ReplayViewer';
+import { compatibilityWarnings, hashEncounter, recordSeedReplay } from './replay/playback';
+import { downloadReplay, readReplayFile } from './replay/replayFiles';
+import { createHistoryPanel } from './replay/HistoryPanel';
+import { IndexedDbStorage } from './replay/IndexedDbStorage';
+import { MemoryStorage, ReplayHistoryStore } from './replay/ReplayStore';
+import type { ReplayStorage } from './replay/ReplayStore';
+import { TICK_MS } from './replay/format';
+import type { Replay } from './replay/format';
 import { formatClock, statusDisplayName } from './util/format';
 import type { StatusDefinition } from './entities/Status';
 import type { Player } from './entities/Player';
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
-app.innerHTML = `<main class="workbench"><header class="topbar"><div><h1 id="encounter-name">Loading encounter&hellip;</h1></div><div class="encounter-picker"><label for="encounter-select">Timeline</label><select id="encounter-select"></select></div><div class="readout"><span id="phase">READY</span><strong id="clock">00:00.0</strong></div></header><section class="arena-row"><aside id="roster" class="roster-panel" aria-label="Party health"></aside><div class="arena-panel"><canvas id="arena" width="1200" height="800" aria-label="Encounter arena"></canvas><div id="cast-bars" class="cast-bars" aria-live="polite"></div><p class="arena-hint">Move with WASD or the arrow keys.</p><div id="streak" class="streak" role="status" hidden></div></div><aside class="event-log-panel"><h2>Event Log</h2><ul id="event-log"><li class="event-log__empty">No events yet.</li></ul></aside></section><footer class="controls"><div class="control-group"><button id="toggle" type="button">Start</button><button id="restart" type="button">Restart</button><label for="controlled-player">Control</label><select id="controlled-player"></select>${import.meta.env.DEV ? '<button id="batch-open" type="button">Batch simulate</button>' : ''}</div><div class="speed-group" role="group" aria-label="Simulation speed"><span>Speed</span><button data-speed="0.25" type="button">0.25x</button><button data-speed="0.5" type="button">0.5x</button><button class="selected" data-speed="1" type="button">1x</button></div><div class="control-group"><label><input id="keep-rng" type="checkbox"> Keep previous RNG</label>${import.meta.env.DEV ? '<label><input id="debug-mode" type="checkbox"> Debug log</label>' : ''}<span class="control-group__label">Shotcalls:</span><label><input id="shotcall-text" type="checkbox" checked> Text</label><label><input id="shotcall-tts" type="checkbox" checked> TTS</label><label><input id="face-cursor" type="checkbox" checked> Face cursor when still</label><label><input id="hide-bots" type="checkbox"> Hide bots</label></div></footer></main>`;
+app.innerHTML = `<main class="workbench"><header class="topbar"><div><h1 id="encounter-name">Loading encounter&hellip;</h1></div><div class="encounter-picker"><label for="encounter-select">Timeline</label><select id="encounter-select"></select></div><div class="readout"><span id="phase">READY</span><strong id="clock">00:00.0</strong></div></header><div id="replay-banner" class="replay-banner" role="status" hidden><span class="replay-banner__tag">Replay</span><span id="replay-info" class="replay-banner__info"></span><span id="replay-warning" class="replay-banner__warning" hidden></span><span class="replay-banner__actions"><button id="replay-retry" type="button" title="Leave the replay and set up a new attempt with the same seed and random outcomes">Retry this RNG</button><button id="replay-exit" type="button">Exit replay</button></span></div><section class="arena-row"><aside id="roster" class="roster-panel" aria-label="Party health"></aside><div class="arena-panel"><canvas id="arena" width="1200" height="800" aria-label="Encounter arena"></canvas><div id="cast-bars" class="cast-bars" aria-live="polite"></div><p class="arena-hint">Move with WASD or the arrow keys.</p><div id="streak" class="streak" role="status" hidden></div></div><aside class="event-log-panel"><h2>Event Log</h2><ul id="event-log"><li class="event-log__empty">No events yet.</li></ul></aside></section><div id="replay-seekbar" class="replay-seekbar" hidden><span id="seek-time" class="replay-seekbar__time">00:00.0</span><input id="replay-seek" type="range" min="0" max="0" step="1" value="0" aria-label="Replay position"><span id="seek-end" class="replay-seekbar__time"></span></div><footer class="controls"><div class="control-group"><button id="toggle" type="button">Start</button><button id="restart" type="button">Restart</button><label for="controlled-player">Control</label><select id="controlled-player"></select><button id="watch-last" type="button" disabled title="Watch your last attempt">Watch last attempt</button><button id="save-replay" type="button" disabled title="Download this attempt as a replay file">Save replay</button><button id="load-replay" type="button" title="Open a saved replay file">Load replay</button><button id="history-open" type="button" title="Attempts from this session">History</button><input id="replay-file" type="file" accept=".json,application/json" hidden><span id="replay-notice" class="replay-notice" role="status"></span>${import.meta.env.DEV ? '<button id="batch-open" type="button">Batch simulate</button>' : ''}</div><div class="speed-group" role="group" aria-label="Simulation speed"><span>Speed</span><button data-speed="0.25" type="button">0.25x</button><button data-speed="0.5" type="button">0.5x</button><button class="selected" data-speed="1" type="button">1x</button><button class="replay-only" data-speed="2" type="button">2x</button><button class="replay-only" data-speed="4" type="button">4x</button></div><div class="control-group"><label><input id="keep-rng" type="checkbox"> Keep previous RNG</label>${import.meta.env.DEV ? '<label><input id="debug-mode" type="checkbox"> Debug log</label>' : ''}<span class="control-group__label">Shotcalls:</span><label><input id="shotcall-text" type="checkbox" checked> Text</label><label><input id="shotcall-tts" type="checkbox" checked> TTS</label><label><input id="face-cursor" type="checkbox" checked> Face cursor when still</label><label><input id="hide-bots" type="checkbox"> Hide bots</label></div></footer></main>`;
 
 const canvas = document.querySelector<HTMLCanvasElement>('#arena')!;
 const renderer = new ArenaRenderer(canvas);
@@ -34,6 +44,21 @@ const streak = new StreakTracker();
 if (!speaker.supported) { shotcallTts.disabled = true; shotcallTts.title = 'Speech synthesis is not available in this browser'; }
 speaker.setEnabled(shotcallTts.checked);
 const encounterSelect = document.querySelector<HTMLSelectElement>('#encounter-select')!;
+const keepRng = document.querySelector<HTMLInputElement>('#keep-rng')!;
+const watchLast = document.querySelector<HTMLButtonElement>('#watch-last')!;
+const saveReplay = document.querySelector<HTMLButtonElement>('#save-replay')!;
+const loadReplay = document.querySelector<HTMLButtonElement>('#load-replay')!;
+const replayFile = document.querySelector<HTMLInputElement>('#replay-file')!;
+const replayNotice = document.querySelector<HTMLSpanElement>('#replay-notice')!;
+const replayBanner = document.querySelector<HTMLDivElement>('#replay-banner')!;
+const replayInfo = document.querySelector<HTMLSpanElement>('#replay-info')!;
+const replayWarning = document.querySelector<HTMLSpanElement>('#replay-warning')!;
+const replayRetry = document.querySelector<HTMLButtonElement>('#replay-retry')!;
+const replayExit = document.querySelector<HTMLButtonElement>('#replay-exit')!;
+const seekBar = document.querySelector<HTMLDivElement>('#replay-seekbar')!;
+const seekInput = document.querySelector<HTMLInputElement>('#replay-seek')!;
+const seekTime = document.querySelector<HTMLSpanElement>('#seek-time')!;
+const seekEnd = document.querySelector<HTMLSpanElement>('#seek-end')!;
 const rosterTooltip = document.createElement('div');
 rosterTooltip.className = 'status-tooltip';
 document.body.append(rosterTooltip);
@@ -42,7 +67,7 @@ interface RosterRow { playerId: string; root: HTMLDivElement; fill: HTMLDivEleme
 let rosterRows: RosterRow[] = [];
 let encounter: Awaited<ReturnType<typeof loadEncounter>>;
 let simulation: Simulation;
-let controller: PlayerController;
+let controller: PlayerController | undefined;
 let statusDefinitions = new Map<string, StatusDefinition>();
 let imageResources: Record<string, string> = {};
 let currentSeed = createAttemptSeed();
@@ -52,6 +77,15 @@ let speed = 1;
 let previous = performance.now();
 let accumulator = 0;
 let loggedCount = 0;
+/** Records every started attempt; the last one stays watchable until the next attempt begins ticking. */
+/** The replay history (IndexedDB), ready before the first attempt can end. */
+let historyStore: ReplayHistoryStore | undefined;
+const history = new AttemptHistory((replay) => { historyStore?.save(replay).catch(() => setReplayNotice('This attempt could not be added to the replay history.')); });
+/** Set while a replay is being watched; the page then shows the viewer's simulation instead of a live one. */
+let viewer: ReplayViewer | undefined;
+let currentEntryId = '';
+let savedControlled: string | undefined;
+let hashedEncounter: { encounter: object; hash: number } | undefined;
 
 function createAttemptSeed(): number {
   if (globalThis.crypto?.getRandomValues) { const value = new Uint32Array(1); globalThis.crypto.getRandomValues(value); return value[0] | 0; }
@@ -124,12 +158,14 @@ function resetLog(): void {
 
 function rebuild(): void {
   if (!encounter) return;
+  history.abandon();
   if (!document.querySelector<HTMLInputElement>('#keep-rng')!.checked) { currentSeed = createAttemptSeed(); replayOutcomes = new Map(); }
   // Debug logging is available only in development.
   const debug = document.querySelector<HTMLInputElement>('#debug-mode')?.checked ?? false;
   simulation = new Simulation(encounter, { seed: currentSeed, controlledPlayerId: controlledPlayer.value || undefined, replayOutcomes, debug });
+  controller?.dispose();
   controller = new PlayerController(simulation.state.players.find((player) => player.controlled), simulation.state.arena);
-  controller.setFaceCursorWhenStill(faceCursor.checked);
+  controller.setFaceCursorWhenStill(faceCursor.checked); simulation.setDriver(controller);
   // Hiding bots only makes sense while a specific player is controlled.
   hideBots.disabled = !controlledPlayer.value; hideBots.title = hideBots.disabled ? 'Select a player to control to hide the bots' : '';
   // Ignore RNG replays; capture hidden-bot state at run setup.
@@ -139,7 +175,7 @@ function rebuild(): void {
 }
 
 async function selectEncounter(entry: EncounterManifestEntry, requestedPlayer?: string | null): Promise<void> {
-  encounter = await loadEncounter(entry.file);
+  encounter = await loadEncounter(entry.file); currentEntryId = entry.id;
   streak.reset();
   heading.textContent = encounter.name;
   renderer.setStatusDefinitions(encounter.statuses); renderer.setResources(encounter.resources); renderer.setShotcallVisible(shotcallText.checked); statusDefinitions = new Map(encounter.statuses.map((status) => [status.id, status])); imageResources = encounter.resources?.images ?? {};
@@ -171,9 +207,22 @@ window.addEventListener('keydown', (event) => {
 });
 shotcallTts.addEventListener('change', () => { speaker.setEnabled(shotcallTts.checked); syncStreakFlags(); });
 canvas.addEventListener('mousemove', (event) => controller?.setMouseWorldPosition(renderer.screenToWorld(event)));
-toggle.addEventListener('click', () => { if (simulation.state.running) { simulation.pause(); streak.pause(); speaker.pause(); toggle.textContent = 'Resume'; } else { if (simulation.state.time === 0 && streak.startRun(controlledPlayer.value)) renderStreak(); simulation.start(); speaker.resume(); toggle.textContent = 'Pause'; } });
-document.querySelector<HTMLButtonElement>('#restart')!.addEventListener('click', rebuild);
+toggle.addEventListener('click', () => { if (viewer) { toggleReplayPlayback(); return; } if (simulation.state.running) { simulation.pause(); streak.pause(); speaker.pause(); toggle.textContent = 'Resume'; } else { if (simulation.state.time === 0 && streak.startRun(controlledPlayer.value)) renderStreak(); beginRecording(); simulation.start(); speaker.resume(); toggle.textContent = 'Pause'; } });
+document.querySelector<HTMLButtonElement>('#restart')!.addEventListener('click', () => { if (viewer) restartReplay(); else rebuild(); });
 document.querySelectorAll<HTMLButtonElement>('[data-speed]').forEach((button) => button.addEventListener('click', () => { speed = Number(button.dataset.speed); document.querySelector('.selected')?.classList.remove('selected'); button.classList.add('selected'); }));
+
+// Replay history: one id per page load. Replays from earlier loads are purged once they are old enough.
+const sessionId = globalThis.crypto?.randomUUID?.() ?? `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+let historyNote: string | undefined;
+{
+  let storage: ReplayStorage;
+  // A blocked or hung database must not keep the page from loading, so give it two seconds.
+  try { storage = await Promise.race([IndexedDbStorage.open(), new Promise<never>((_, reject) => setTimeout(() => reject(new Error('IndexedDB timed out')), 2000))]); } catch { storage = new MemoryStorage(); historyNote = 'Browser storage is unavailable, so the history only lasts until this tab is closed.'; }
+  historyStore = new ReplayHistoryStore(storage, { sessionId });
+  await historyStore.heartbeat().catch(() => undefined);
+  await historyStore.purge().catch(() => undefined);
+  setInterval(() => { historyStore?.heartbeat().catch(() => undefined); }, 60_000);
+}
 
 // Preselect `?encounter=<id>`; unknown or unavailable ids fall back to the first entry.
 const urlParams = new URLSearchParams(window.location.search);
@@ -187,12 +236,7 @@ if (import.meta.env.DEV) {
   const { createBatchPanel } = await import('./dev/BatchPanel');
   const batchPanel = createBatchPanel({
     getEncounter: () => encounter,
-    onReplay: (seed) => {
-      currentSeed = seed; replayOutcomes = new Map();
-      document.querySelector<HTMLInputElement>('#keep-rng')!.checked = true;
-      controlledPlayer.value = '';
-      rebuild();
-    },
+    onReplay: (seed) => { void enterReplay(recordSeedReplay(encounter, currentEntryId, seed)); },
   });
   document.querySelector<HTMLButtonElement>('#batch-open')!.addEventListener('click', () => batchPanel.open());
 }
@@ -234,7 +278,7 @@ function currentRunFlags(): RunFlags {
 }
 
 /** Sync settings; active runs can only lose eligibility. */
-function syncStreakFlags(): void { streak.setFlags(currentRunFlags(), simulation.state.time > 0); }
+function syncStreakFlags(): void { if (viewer) return; streak.setFlags(currentRunFlags(), simulation.state.time > 0); }
 
 /** Render every non-redundant streak, strongest first. */
 function renderStreak(): void {
@@ -251,7 +295,7 @@ function renderStreak(): void {
 
 /** Resolve the controlled run as failed or successful once. */
 function evaluateRun(): void {
-  if (!simulation || streak.resolved || !controlledPlayer.value) return;
+  if (viewer || !simulation || streak.resolved || !controlledPlayer.value) return;
   const state = simulation.state;
   const failStatuses = encounter.failStatuses ?? [];
   const failed = state.players.some((player) => !player.alive || player.statuses.some((status) => failStatuses.includes(status.definitionId)));
@@ -259,10 +303,166 @@ function evaluateRun(): void {
   if (state.completed && streak.succeed()) renderStreak();
 }
 
+
+// ---------------------------------------------------------------------------------------------------------------------------------
+// Replays: always-on recording of live attempts, and a separate viewer mode for watching them.
+// ---------------------------------------------------------------------------------------------------------------------------------
+
+/** Called when an attempt is started; the recorder wraps the live driver so it sees exactly what the simulation saw. */
+function beginRecording(): void {
+  if (history.recording || simulation.tickCount > 0) return;
+  if (hashedEncounter?.encounter !== encounter) hashedEncounter = { encounter, hash: hashEncounter(encounter) };
+  history.begin(simulation, controller, {
+    encounterId: currentEntryId, encounterHash: hashedEncounter.hash, seed: currentSeed, outcomes: replayOutcomes, tickMs: TICK_MS,
+    warn: import.meta.env.DEV ? (message) => console.warn(message) : undefined,
+  });
+}
+
+/** Speeds above 1x exist only in replay mode, so leaving it puts the speed back to 1x. */
+function selectSpeed(value: number): void {
+  speed = value;
+  document.querySelectorAll<HTMLButtonElement>('[data-speed]').forEach((button) => button.classList.toggle('selected', Number(button.dataset.speed) === value));
+}
+
+function setReplayNotice(message: string): void { replayNotice.textContent = message; }
+
+/** Swap the arena, roster and log over to another simulation. */
+function showSimulation(next: Simulation): void {
+  simulation = next; speaker.reset(); buildRoster(next.state.players); accumulator = 0; previous = performance.now(); resetLog();
+  castBars.replaceChildren(); castBarRows.clear();
+}
+
+/** Replay mode keeps view options (hide bots, shotcalls, speed) and turns off everything that changes the run itself. */
+function setReplayModeControls(active: boolean): void {
+  document.body.classList.toggle('replay-mode', active);
+  replayBanner.hidden = !active; seekBar.hidden = !active;
+  if (!active) selectSpeed(1);
+  for (const control of [controlledPlayer, keepRng, faceCursor, encounterSelect]) control.disabled = active;
+  hideBots.disabled = active ? !viewer?.replay.header.controlledPlayerId : !controlledPlayer.value;
+  hideBots.title = hideBots.disabled ? 'Select a player to control to hide the bots' : '';
+}
+
+async function enterReplay(replay: Replay): Promise<void> {
+  const entry = manifest.find((candidate) => candidate.id === replay.header.encounterId);
+  if (!entry) { setReplayNotice(`That replay is for "${replay.header.encounterId}", which is not available here.`); return; }
+  setReplayNotice('');
+  if (!viewer) savedControlled = controlledPlayer.value;
+  viewer = undefined;
+  history.abandon();
+  if (entry.id !== currentEntryId) { encounterSelect.value = entry.id; await selectEncounter(entry, replay.header.controlledPlayerId ?? ''); }
+  viewer = new ReplayViewer(encounter, replay, compatibilityWarnings(replay, encounter, entry.id));
+  controller?.dispose(); controller = undefined;
+  controlledPlayer.value = replay.header.controlledPlayerId ?? '';
+  setReplayModeControls(true);
+  showSimulation(viewer.simulation); shownEpoch = viewer.epoch;
+  seekInput.max = String(viewer.endTick); seekInput.value = '0'; seekEnd.textContent = formatClock(viewer.endTick * viewer.replay.header.tickMs);
+  toggle.textContent = 'Pause'; phase.textContent = 'REPLAY'; lastBannerText = '';
+}
+
+function restartReplay(): void {
+  if (!viewer) return;
+  viewer.restart(); toggle.textContent = 'Pause'; lastBannerText = '';
+}
+
+function toggleReplayPlayback(): void {
+  if (!viewer) return;
+  if (viewer.finished) { restartReplay(); return; }
+  viewer.playing = !viewer.playing;
+  if (viewer.playing) speaker.resume(); else speaker.pause();
+}
+
+function exitReplay(): void {
+  if (!viewer) return;
+  viewer = undefined;
+  renderer.setHideControlledFacing(false);
+  if (savedControlled !== undefined) controlledPlayer.value = savedControlled;
+  setReplayModeControls(false);
+  rebuild();
+}
+
+/**
+ * Leave the replay and set up a fresh attempt with the replay's seed and every random outcome it resolved, controlling the same
+ * player (or all bots for an all-bots replay), exactly as if "Keep previous RNG" had been on after that attempt. Press Start to begin.
+ */
+function retryReplayRng(): void {
+  if (!viewer) return;
+  const { header } = viewer.replay;
+  replayOutcomes = viewer.retryOutcomes(); currentSeed = header.seed;
+  keepRng.checked = true; savedControlled = header.controlledPlayerId ?? '';
+  exitReplay();
+}
+
+let lastBannerText = '';
+/** The viewer simulation epoch the page currently shows; a change means the simulation was replaced (restart or rewind). */
+let shownEpoch = 0;
+let seekDragging = false;
+/** Per-frame replay UI: banner text, play button label, and the enabled state of the watch/save buttons. */
+function updateReplayUi(): void {
+  if (viewer) {
+    const { header } = viewer.replay;
+    const player = simulation.state.players.find((candidate) => candidate.controlled)?.name ?? 'All bots';
+    const diverged = viewer.divergedAtMs;
+    const warnings = [...viewer.warnings];
+    if (diverged !== undefined) warnings.push(`Replay diverged at ${formatClock(diverged)}: what is shown from there on may not match the original attempt.`);
+    const info = `${player} · seed ${header.seed >>> 0} · ${formatClock(simulation.state.time)} / ${formatClock(header.endTick * header.tickMs)}${header.result.completed ? '' : ' · attempt abandoned here'}${viewer.finished ? ' · finished' : ''}`;
+    const text = `${info}|${warnings.join(' ')}`;
+    if (text !== lastBannerText) {
+      lastBannerText = text; replayInfo.textContent = info;
+      replayWarning.hidden = warnings.length === 0; replayWarning.textContent = warnings.join(' ');
+    }
+    if (!seekDragging && !viewer.seeking) seekInput.value = String(viewer.tick);
+    seekTime.textContent = formatClock(viewer.tick * header.tickMs);
+    const label = viewer.finished ? 'Watch again' : viewer.playing ? 'Pause' : 'Play';
+    if (toggle.textContent !== label) toggle.textContent = label;
+    phase.textContent = viewer.finished ? 'REPLAY ENDED' : 'REPLAY';
+  }
+  watchLast.disabled = viewer !== undefined || history.available === undefined;
+  saveReplay.disabled = viewer === undefined && history.available === undefined;
+}
+
+watchLast.addEventListener('click', () => { const replay = history.available; if (replay) void enterReplay(replay); });
+saveReplay.addEventListener('click', () => { const replay = viewer?.replay ?? history.available; if (replay) downloadReplay(replay); });
+loadReplay.addEventListener('click', () => replayFile.click());
+replayFile.addEventListener('change', async () => {
+  const file = replayFile.files?.[0]; replayFile.value = ''; if (!file) return;
+  try { await enterReplay(await readReplayFile(file)); } catch (error) { setReplayNotice(error instanceof Error ? error.message : 'That file could not be read as a replay.'); }
+});
+// Dragging seeks live without pausing: playback carries on from wherever the handle is released.
+seekInput.addEventListener('input', () => viewer?.seekTo(Number(seekInput.value)));
+seekInput.addEventListener('pointerdown', () => { seekDragging = true; });
+for (const type of ['pointerup', 'pointercancel', 'blur']) seekInput.addEventListener(type, () => { seekDragging = false; });
+replayExit.addEventListener('click', exitReplay);
+const historyPanel = createHistoryPanel({
+  store: historyStore!, note: historyNote,
+  encounterName: (id) => manifest.find((entry) => entry.id === id)?.name ?? id,
+  onWatch: (replay) => { void enterReplay(replay); },
+  onSave: downloadReplay,
+});
+document.querySelector<HTMLButtonElement>('#history-open')!.addEventListener('click', () => {
+  // The simulation keeps running behind a modal dialog, so stop whatever is playing first.
+  if (viewer) viewer.playing = false;
+  else if (simulation?.state.running) { simulation.pause(); streak.pause(); speaker.pause(); toggle.textContent = 'Resume'; }
+  void historyPanel.open();
+});
+replayRetry.addEventListener('click', retryReplayRng);
+
 function frame(now: number): void {
-  const elapsed = Math.min(now - previous, 100); previous = now; controller?.update(elapsed / 1000 * speed); accumulator += elapsed * speed;
-  while (accumulator >= 1000 / 60) { simulation?.tick(1000 / 60); evaluateRun(); accumulator -= 1000 / 60; }
+  const elapsed = Math.min(now - previous, 100); previous = now;
+  // The controlled player moves inside the fixed step (the simulation's driver), so live play and replay share one movement path.
+  if (viewer) viewer.update(elapsed, speed);
+  else {
+    accumulator += elapsed * speed;
+    while (accumulator >= TICK_MS) { if (simulation?.state.running) { simulation.tick(TICK_MS); evaluateRun(); } else simulation?.idleTick(TICK_MS); accumulator -= TICK_MS; }
+    history.settle();
+  }
+  // A rewind or restart builds a new simulation; the roster, log and cast bars derived from the old one start over.
+  if (viewer && viewer.epoch !== shownEpoch) { shownEpoch = viewer.epoch; showSimulation(viewer.simulation); }
+  // Speech stays silent while scrubbing or faster than 1x; calls that pass meanwhile are not read late.
+  speaker.setMuted(viewer !== undefined && (viewer.seeking || speed > 1));
+  // Inside a recorded span the controlled player's facing was not recorded, so the arrow would be a guess.
+  renderer.setHideControlledFacing(viewer?.driver !== undefined && !viewer.driver.facingTracked);
   if (simulation) { renderer.render(simulation.state); speaker.update(simulation.state.shotcall); renderHud(); clock.textContent = formatClock(simulation.state.time); const controlled = simulation.state.players.find((player) => player.controlled); if (simulation.state.completed) phase.textContent = 'COMPLETE'; else if (controlled && !controlled.alive) phase.textContent = 'DEFEATED'; else if (simulation.state.running) phase.textContent = 'RUNNING'; }
+  updateReplayUi();
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);

@@ -242,6 +242,7 @@
       "effects": [
         {
           "type": "distribute_statuses",
+          "replayId": "alter-weakness-damage",
           "target": {
             "type": "role",
             "role": "damage"
@@ -253,6 +254,7 @@
         },
         {
           "type": "distribute_statuses",
+          "replayId": "alter-weakness-support",
           "target": {
             "type": "role_any",
             "roles": [

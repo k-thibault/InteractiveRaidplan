@@ -56,4 +56,6 @@ export interface GameState {
   groups: Record<string, GroupEntry[]>;
   /** Static encounter markers, resolved to world positions at simulation creation. */
   markers: Array<MarkerDefinition & { resolvedPosition: Vector2 }>;
+  /** Called whenever game logic reads the controlled player's facing (see `readFacing`). Set by the replay recorder. */
+  onFacingRead?: (player: Player) => void;
 }

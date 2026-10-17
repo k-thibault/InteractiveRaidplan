@@ -11,6 +11,7 @@ export class ShotcallSpeaker {
   /** Whether the browser can synthesize speech at all. */
   readonly supported = typeof window !== 'undefined' && 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined';
   private enabled = false;
+  private muted = false;
   /** Last shotcall object seen. Each set_shotcall creates a new object, so identity distinguishes repeated identical texts. */
   private lastSeen: ShotcallState | undefined;
 
@@ -19,10 +20,16 @@ export class ShotcallSpeaker {
     if (!this.enabled) this.cancel();
   }
 
+  /** While muted (replay scrubbing, or playing faster than 1x) calls are still tracked but never spoken, so unmuting does not read old ones. */
+  setMuted(muted: boolean): void {
+    if (muted && !this.muted) this.cancel();
+    this.muted = muted;
+  }
+
   update(shotcall: ShotcallState | undefined): void {
     if (shotcall === this.lastSeen) return;
     this.lastSeen = shotcall;
-    if (shotcall && this.enabled) this.speak(shotcall.text);
+    if (shotcall && this.enabled && !this.muted) this.speak(shotcall.text);
   }
 
   /** Stops speech and forgets the last call, e.g. when the simulation is rebuilt. */

@@ -48,6 +48,7 @@ export class ArenaRenderer {
   private readonly images = new Map<string, HTMLImageElement>();
   private shotcallVisible = true;
   private hideBots = false;
+  private hideControlledFacing = false;
   private readonly shotcallElement: HTMLDivElement;
 
   constructor(canvas: HTMLCanvasElement) {
@@ -68,6 +69,8 @@ export class ArenaRenderer {
 
   /** When on, players other than the controlled one are not drawn. They still exist and act in the simulation. Has no effect while no player is controlled, since that would leave an empty arena. */
   setHideBots(hide: boolean): void { this.hideBots = hide; }
+  /** Replay viewer: hide the controlled player's facing wedge while its facing is not part of the recording. */
+  setHideControlledFacing(hide: boolean): void { this.hideControlledFacing = hide; }
 
   setShotcallVisible(visible: boolean): void { this.shotcallVisible = visible; this.shotcallElement.hidden = !visible; this.applyShotcallLayout(); }
 
@@ -394,7 +397,7 @@ export class ArenaRenderer {
     }
     const graphicDrawn = this.drawEntityGraphic(entity, point, radius, scale);
     // Polygon markers are stationary objects and have no heading.
-    if ((style.type === 'circle' || style.type === 'ring') && !(graphicDrawn && entity.graphic?.replaceShape)) this.drawFacingWedge(entity, point, radius, scale);
+    if ((style.type === 'circle' || style.type === 'ring') && !(graphicDrawn && entity.graphic?.replaceShape) && !(this.hideControlledFacing && (entity as { controlled?: boolean }).controlled)) this.drawFacingWedge(entity, point, radius, scale);
     this.context.fillStyle = '#dbe7f2'; this.context.font = '12px sans-serif'; this.context.textAlign = 'center'; this.context.fillText(entity.name, point.x, point.y - radius - 8);
     if (showInlineStatuses) entity.statuses.filter((status) => !this.statusDefinitions.get(status.definitionId)?.hidden).forEach((status, index) => this.drawStatusIcon(status, point.x + radius + scale * (.24 + index * .48), point.y - radius * .5, scale));
   }

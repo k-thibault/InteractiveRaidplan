@@ -20,6 +20,7 @@ export interface ApplyStatusEffect {
   status?: string;
   /** Rolled independently for each target when the effect executes. */
   statusChoices?: string[];
+  replayId?: string;
 }
 export interface RemoveStatusEffect { type: 'remove_status'; target: EffectTarget; status: string; stacks?: number; }
 export interface StartCastEffect {
