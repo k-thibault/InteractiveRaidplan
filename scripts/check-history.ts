@@ -2,8 +2,10 @@
 // Run with: npx tsx scripts/check-history.ts
 import { Simulation } from '../src/simulation/Simulation';
 import { AttemptHistory } from '../src/replay/AttemptHistory';
-import { recordSeedReplay, hashEncounter } from '../src/replay/playback';
-import { serializeReplay } from '../src/replay/codec';
+import { createReplaySession, recordSeedReplay, hashEncounter } from '../src/replay/playback';
+import type { Encounter } from '../src/encounters/Encounter';
+import { parseReplay, serializeReplay } from '../src/replay/codec';
+import { StreakTracker } from '../src/streak/StreakTracker';
 import { TICK_MS } from '../src/replay/format';
 import { HISTORY_RETENTION_HOURS, MemoryStorage, ReplayHistoryStore, SESSION_ACTIVE_WINDOW_MS } from '../src/replay/ReplayStore';
 import { loadEncounter, randomWalk } from './lib';
@@ -82,6 +84,39 @@ async function main(): Promise<void> {
   check('onClose does not fire for an attempt that never ticked', closed.length === 1);
   sim = attempt(3); while (!sim.state.completed) sim.tick(TICK_MS); history.settle(); history.settle(); history.abandon();
   check('onClose fires once for a completed attempt', closed.length === 2 && closed[1] === sim.tickCount);
+
+  // A wipe ends the attempt as a failure, not an abandon
+  const wipeEncounter = { ...encounter, events: [...encounter.events, { id: 'check-wipe', at: 5000, type: 'damage', target: { type: 'all' }, damage: { amount: 1, type: 'physical', fatal: true } }] } as unknown as Encounter;
+  const wipeHash = hashEncounter(wipeEncounter); const wipeClosed: Array<typeof replay> = []; const wipeHistory = new AttemptHistory((ended) => wipeClosed.push(ended));
+  const wipeSim = new Simulation(wipeEncounter, { seed: 5, controlledPlayerId: players[0].id, replayOutcomes: new Map() });
+  wipeHistory.begin(wipeSim, randomWalk(wipeSim, players[0].id, 5), { encounterId: 'forsaken', encounterHash: wipeHash, seed: 5, outcomes: new Map(), tickMs: TICK_MS });
+  wipeSim.start(); while (!wipeSim.state.completed) wipeSim.tick(TICK_MS); wipeHistory.settle();
+  const wiped = wipeClosed[0];
+  check('a wiped attempt closes by itself as failed, not completed', wipeClosed.length === 1 && wiped.header.result.failed === true && wiped.header.result.completed === false && Math.abs(wiped.header.endTick * TICK_MS - 8000) < 2 * TICK_MS, wiped && JSON.stringify(wiped.header.result));
+  const wipeSession = createReplaySession(wipeEncounter, wiped); while (wipeSession.advance());
+  check('a wiped replay plays back to the same failed end without diverging', wipeSession.simulation.state.failed && wipeSession.divergedAtTick === undefined && wipeSession.simulation.tickCount === wiped.header.endTick);
+  const wipeSaved = await open('s9').save(wiped);
+  check('the history summary carries the failure', wipeSaved.summary.failed === true && !wipeSaved.summary.completed && parseReplay(wipeSaved.data).header.result.failed === true);
+  check('a completed attempt is not marked failed', replay.header.result.completed && !replay.header.result.failed);
+
+  // Streak-affecting options travel with the replay: what was in force when the attempt ended, shown in listings
+  const streak = new StreakTracker(); let ended: ReturnType<typeof recordSeedReplay> | undefined;
+  const flagged = new AttemptHistory((replayEnded) => { ended = replayEnded; });
+  const play = (controlled: boolean, mid?: () => void) => {
+    streak.beginRun({ botsHidden: true, shotcallsOff: true }); streak.startRun(controlled ? players[0].id : '');
+    const run = new Simulation(encounter, { seed: 9, controlledPlayerId: controlled ? players[0].id : undefined, replayOutcomes: new Map() });
+    flagged.begin(run, controlled ? randomWalk(run, players[0].id, 9) : undefined, { ...meta(9), runFlags: () => streak.flags });
+    run.start(); for (let i = 0; i < 30; i += 1) run.tick(TICK_MS); mid?.(); flagged.abandon(); return ended!;
+  };
+  const zeroHelp = play(true);
+  check('a controlled attempt records the run flags', JSON.stringify(zeroHelp.header.runFlags) === '{"botsHidden":true,"shotcallsOff":true}');
+  check('flags that were lost mid-run are recorded as lost', JSON.stringify(play(true, () => streak.setFlags({ botsHidden: false, shotcallsOff: true }, true)).header.runFlags) === '{"botsHidden":false,"shotcallsOff":true}');
+  check('an all-bots attempt records no flags', play(false).header.runFlags === undefined && recordSeedReplay(encounter, 'forsaken', 5).header.runFlags === undefined);
+  check('flags survive a file round trip and reach the history summary', JSON.stringify(parseReplay(serializeReplay(zeroHelp)).header.runFlags) === JSON.stringify(zeroHelp.header.runFlags) && (await open('s8').save(zeroHelp)).summary.runFlags?.shotcallsOff === true);
+  const tampered = JSON.parse(serializeReplay(zeroHelp)); tampered.header.runFlags = { botsHidden: 'yes' };
+  check('malformed flags are dropped when a file is read', parseReplay(JSON.stringify(tampered)).header.runFlags === undefined);
+  const legacy = JSON.parse(serializeReplay(zeroHelp)); delete legacy.header.runFlags;
+  check('files from before the flags existed still load', parseReplay(JSON.stringify(legacy)).header.runFlags === undefined);
 }
 
 await main();

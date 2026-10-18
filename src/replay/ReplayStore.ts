@@ -1,4 +1,5 @@
 import { parseReplay, serializeReplay } from './codec';
+import type { RunFlags } from '../streak/StreakTypes';
 import type { Replay } from './format';
 
 /** How long a replay from a previous app session is kept before it is purged. */
@@ -12,9 +13,11 @@ export interface ReplaySummary {
   seed: number;
   controlledPlayerId?: string;
   controlledPlayerName?: string;
+  runFlags?: RunFlags;
   tickMs: number;
   endTick: number;
   completed: boolean;
+  failed?: boolean;
   deathCount: number;
 }
 
@@ -88,8 +91,8 @@ export class ReplayHistoryStore {
     const record: StoredReplay = {
       id: `${savedAt}-${this.sessionId}-${this.counter++}`, sessionId: this.sessionId, savedAt,
       summary: {
-        encounterId: header.encounterId, seed: header.seed, controlledPlayerId: header.controlledPlayerId, controlledPlayerName: header.controlledPlayerName,
-        tickMs: header.tickMs, endTick: header.endTick, completed: header.result.completed, deathCount: header.result.deaths.length,
+        encounterId: header.encounterId, seed: header.seed, controlledPlayerId: header.controlledPlayerId, controlledPlayerName: header.controlledPlayerName, runFlags: header.runFlags,
+        tickMs: header.tickMs, endTick: header.endTick, completed: header.result.completed, failed: header.result.failed, deathCount: header.result.deaths.length,
       },
       data: serializeReplay(replay),
     };

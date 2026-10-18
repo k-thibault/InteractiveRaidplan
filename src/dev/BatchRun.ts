@@ -48,7 +48,7 @@ export function runSeed(encounter: Encounter, seed: number, options: BatchOption
     }
     if (!simulation.state.completed && simulation.state.deaths.length === 0) return { seed, completed: false, deaths: [], rolls: {}, error: 'did not reach the end of the timeline' };
     return {
-      seed, completed: simulation.state.completed, deaths: simulation.state.deaths,
+      seed, completed: simulation.state.completed && !simulation.state.failed, deaths: simulation.state.deaths,
       rolls: { ...simulation.rolledChoices, ...simulation.state.rolls },
     };
   } catch (error) {

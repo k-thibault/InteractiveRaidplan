@@ -4,6 +4,7 @@ import type { PlayerDriver } from '../simulation/PlayerDriver';
 import type { Simulation } from '../simulation/Simulation';
 import { hashState } from './hash';
 import { CHECKPOINT_INTERVAL_TICKS, REPLAY_FORMAT_VERSION, SIM_VERSION } from './format';
+import type { RunFlags } from '../streak/StreakTypes';
 import type { Replay } from './format';
 
 export interface RecorderMeta {
@@ -13,6 +14,8 @@ export interface RecorderMeta {
   /** The live outcomes map as it stands at run start; copied here because the run mutates it. */
   outcomes: Map<string, Record<string, unknown>>;
   tickMs: number;
+  /** Read when the recording is finished, since options can only lose streak eligibility during a run. */
+  runFlags?: () => RunFlags;
   /** Called when game logic reads the controlled player's facing while no facing rule is active (a timeline authoring gap). */
   warn?: (message: string) => void;
 }
@@ -105,9 +108,10 @@ export class ReplayRecorder {
         outcomes: this.outcomes,
         controlledPlayerId: this.player?.id,
         controlledPlayerName: this.player?.name,
+        ...(this.player && this.meta.runFlags ? { runFlags: this.meta.runFlags() } : {}),
         tickMs: this.meta.tickMs,
         endTick: simulation.tickCount,
-        result: { completed: state.completed, deaths: state.deaths.map((death) => ({ time: death.time, playerId: death.playerId, source: death.source })) },
+        result: { completed: state.completed && !state.failed, failed: state.failed, deaths: state.deaths.map((death) => ({ time: death.time, playerId: death.playerId, source: death.source })) },
         rolls: { ...simulation.rolledChoices, ...state.rolls },
         startUnits: this.startUnits,
       },

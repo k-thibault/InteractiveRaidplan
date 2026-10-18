@@ -146,6 +146,24 @@ const hit = (id: string, time: number, amount: number, type = 'physical', fatal?
   check('standing outside the area when it resolves avoids the hit', find(dodged, 'a').health === 100);
 }
 
+// Wipes end the run a few seconds after the last player dies
+{
+  const kill = (id: string, time: number, ids: string[]) => at(id, time, { type: 'damage', target: { type: 'players', ids }, damage: { amount: 1, type: 'physical', fatal: true } });
+  const wiped = make({ events: [kill('all', 1000, ['a', 'b', 'c', 'd'])] as never });
+  until(wiped, 3800);
+  check('the run keeps going while the wipe plays out', wiped.state.running && !wiped.state.completed && !wiped.state.failed);
+  until(wiped, 4200);
+  check('the run ends as a failure once everyone has been dead for the delay', wiped.state.failed && wiped.state.completed && !wiped.state.running && wiped.state.time < 4000 + 2 * TICK_MS, wiped.state.time);
+  check('the wipe is logged and further ticks are ignored', wiped.state.log.some((entry) => /failed/i.test(entry.message)) && (() => { const ticks = wiped.tickCount; wiped.tick(TICK_MS); return wiped.tickCount === ticks; })());
+
+  const survivor = make({ events: [kill('three', 1000, ['a', 'b', 'c'])] as never });
+  until(survivor, 9000);
+  check('a survivor keeps the run going', survivor.state.running && !survivor.state.failed && !survivor.state.completed);
+  const late = make({ duration: 2000, events: [kill('all', 1900, ['a', 'b', 'c', 'd'])] as never });
+  until(late, 6000);
+  check('reaching the end of the timeline first is not a failure', late.state.completed && !late.state.failed);
+}
+
 // Shotcalls
 {
   const simulation = make({ events: [

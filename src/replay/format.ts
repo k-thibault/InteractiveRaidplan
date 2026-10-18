@@ -1,5 +1,7 @@
+import type { RunFlags } from '../streak/StreakTypes';
+
 /** Increment when simulation behavior changes so older recordings warn before playback. */
-export const SIM_VERSION = 1;
+export const SIM_VERSION = 2;
 export const REPLAY_FORMAT_VERSION = 1;
 /** One checkpoint hash per this many ticks (one simulated second at 60 ticks per second). */
 export const CHECKPOINT_INTERVAL_TICKS = 60;
@@ -19,11 +21,13 @@ export interface ReplayHeader {
   controlledPlayerId?: string;
   /** Display name of the controlled player, for listings. */
   controlledPlayerName?: string;
+  /** Streak-affecting options in force when the attempt ended; absent for all-bots runs and older files. */
+  runFlags?: RunFlags;
   tickMs: number;
   /** Number of running ticks recorded. */
   endTick: number;
   /** Human-readable summary of how the attempt ended. */
-  result: { completed: boolean; deaths: Array<{ time: number; playerId: string; source: string }> };
+  result: { completed: boolean; /** The attempt ended because everyone died; absent in files from before wipes ended runs. */ failed?: boolean; deaths: Array<{ time: number; playerId: string; source: string }> };
   /** Rolled random groups and cast choices, readable metadata only (playback re-derives them from the seed). */
   rolls: Record<string, string>;
   /** Position of the controlled player (grid units) just before tick 0; the base for the first position delta. */

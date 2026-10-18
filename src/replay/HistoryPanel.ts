@@ -1,3 +1,4 @@
+import { runConditionLabels } from '../streak/RunConditions';
 import { formatClock } from '../util/format';
 import { HISTORY_RETENTION_HOURS } from './ReplayStore';
 import type { ReplayHistoryStore, StoredReplay } from './ReplayStore';
@@ -25,7 +26,8 @@ function el<K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, t
 function resultText(record: StoredReplay): string {
   const { summary } = record;
   const deaths = summary.deathCount === 0 ? '' : ` · ${summary.deathCount} ${summary.deathCount === 1 ? 'death' : 'deaths'}`;
-  return `${summary.completed ? 'Completed' : `Abandoned at ${formatClock(summary.endTick * summary.tickMs)}`}${deaths}`;
+  const outcome = summary.completed ? 'Completed' : `${summary.failed ? 'Failed' : 'Abandoned'} at ${formatClock(summary.endTick * summary.tickMs)}`;
+  return `${outcome}${deaths}`;
 }
 
 /** Dialog listing the replays kept in the history, newest first, with watch, save and delete for each. */
@@ -54,7 +56,7 @@ export function createHistoryPanel(hooks: HistoryPanelHooks): HistoryPanel {
     clear.textContent = confirmClear ? 'Really clear all?' : 'Clear all';
     if (records.length === 0) { list.append(el('p', 'history-empty', 'No replays yet. Start an attempt and it will be recorded here.')); return; }
     const grid = el('table');
-    const head = el('tr'); ['When', 'Timeline', 'Player', 'Result', 'Seed', ''].forEach((text) => head.append(el('th', undefined, text))); grid.append(head);
+    const head = el('tr'); ['When', 'Timeline', 'Player', 'Result', 'Settings', 'Seed', ''].forEach((text) => head.append(el('th', undefined, text))); grid.append(head);
     for (const record of records) {
       const row = el('tr');
       const earlier = record.sessionId !== hooks.store.currentSessionId;
@@ -74,7 +76,7 @@ export function createHistoryPanel(hooks: HistoryPanelHooks): HistoryPanel {
       });
       remove.addEventListener('click', async () => { await hooks.store.remove(record.id); say(''); await render(); });
       actions.append(watch, save, remove);
-      row.append(when, el('td', undefined, hooks.encounterName(record.summary.encounterId)), el('td', undefined, record.summary.controlledPlayerName ?? record.summary.controlledPlayerId ?? 'All bots'), el('td', undefined, resultText(record)), el('td', undefined, String(record.summary.seed >>> 0)), actions);
+      row.append(when, el('td', undefined, hooks.encounterName(record.summary.encounterId)), el('td', undefined, record.summary.controlledPlayerName ?? record.summary.controlledPlayerId ?? 'All bots'), el('td', undefined, resultText(record)), el('td', undefined, record.summary.runFlags ? runConditionLabels(record.summary.runFlags).join(', ') : ''), el('td', undefined, String(record.summary.seed >>> 0)), actions);
       grid.append(row);
     }
     list.append(grid);

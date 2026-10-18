@@ -35,7 +35,8 @@ let c = newSim(3); history.begin(c.sim, c.driver, meta(3)); c.sim.start(); ticks
 check('settle does nothing before completion', history.recording && history.available === undefined);
 ticks(c.sim, Number.MAX_SAFE_INTEGER); history.settle();
 const finished = history.available;
-check('completed attempt replaces the last one', finished !== undefined && finished !== abandoned && finished.header.result.completed && !history.recording);
+// The random-walking player wipes the party before the timeline ends, which closes the attempt as a failure
+check('an attempt that ran to its end replaces the last one', finished !== undefined && finished !== abandoned && (finished.header.result.completed || finished.header.result.failed === true) && !history.recording);
 
 // Viewer: plays a saved/loaded replay to its end with no divergence, pausing and restarting work.
 function playOut(viewer: ReplayViewer): void { for (let guard = 0; guard < 100000 && !viewer.finished; guard += 1) viewer.update(100, 1); }

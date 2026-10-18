@@ -6,6 +6,7 @@ import { DamageResolver } from '../src/mechanics/DamageResolver';
 import { StreakTracker } from '../src/streak/StreakTracker';
 import { STREAK_TYPES, type RunFlags } from '../src/streak/StreakTypes';
 import { formatClock, formatStatusName, statusDisplayName } from '../src/util/format';
+import { isRunFlags, runConditionLabels } from '../src/streak/RunConditions';
 import { DEFAULT_VIEW_OPTIONS, ViewOptionsHold } from '../src/ui/ViewOptions';
 import type { Player } from '../src/entities/Player';
 import type { StatusDefinition } from '../src/entities/Status';
@@ -120,6 +121,16 @@ function check(name: string, ok: boolean): void { console.log(`${ok ? 'PASS' : '
   tracker = new StreakTracker(); tracker.beginRun(flags()); check('an all-bots run (no player) never builds a streak', !tracker.startRun('') && !tracker.succeed() && tracker.view().length === 0);
   check('every streak type has a unique id and the generic one qualifies always', new Set(STREAK_TYPES.map((type) => type.id)).size === STREAK_TYPES.length && STREAK_TYPES.find((type) => type.id === 'total')!.qualifies(flags()));
   check('an overpower cycle is rejected', (() => { try { new StreakTracker([{ id: 'x', label: 'x', qualifies: () => true, overpowers: ['y'], style: { color: '', intensity: 0 } }, { id: 'y', label: 'y', qualifies: () => true, overpowers: ['x'], style: { color: '', intensity: 0 } }]); return false; } catch { return true; } })());
+}
+
+// Conditions a replay was played under: what a single success would display
+{
+  const labels = (botsHidden: boolean, shotcallsOff: boolean) => runConditionLabels({ botsHidden, shotcallsOff }).join();
+  check('a default run has nothing to display', labels(false, false) === '');
+  check('hidden bots alone', labels(true, false) === 'No bots');
+  check('shotcalls off alone', labels(false, true) === 'No calls');
+  check('both help options off display only Zero help, as the others are overpowered', labels(true, true) === 'Zero help');
+  check('run flags are validated by shape', isRunFlags({ botsHidden: true, shotcallsOff: false }) && !isRunFlags({ botsHidden: 1, shotcallsOff: false }) && !isRunFlags(null) && !isRunFlags({ botsHidden: true }));
 }
 
 // Formatting

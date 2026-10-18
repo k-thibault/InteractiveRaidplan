@@ -1,4 +1,5 @@
 import { ShotcallSpeaker } from './audio/ShotcallSpeaker';
+import { runConditionLabels } from './streak/RunConditions';
 import { setupMenus } from './ui/Menu';
 import { ViewOptionsHold, type ViewOptions } from './ui/ViewOptions';
 import { StreakTracker } from './streak/StreakTracker';
@@ -315,7 +316,7 @@ function beginRecording(): void {
   if (history.recording || simulation.tickCount > 0) return;
   if (hashedEncounter?.encounter !== encounter) hashedEncounter = { encounter, hash: hashEncounter(encounter) };
   history.begin(simulation, controller, {
-    encounterId: currentEntryId, encounterHash: hashedEncounter.hash, seed: currentSeed, outcomes: replayOutcomes, tickMs: TICK_MS,
+    encounterId: currentEntryId, encounterHash: hashedEncounter.hash, seed: currentSeed, outcomes: replayOutcomes, tickMs: TICK_MS, runFlags: () => streak.flags,
     warn: import.meta.env.DEV ? (message) => console.warn(message) : undefined,
   });
 }
@@ -418,7 +419,8 @@ function updateReplayUi(): void {
     const warnings = [...viewer.warnings];
     if (diverged !== undefined) warnings.push(`Replay diverged at ${formatClock(diverged)}: what is shown from there on may not match the original attempt.`);
     // The clock and the end of the replay live on the seek bar in the header, so the info line stays short and static.
-    const info = `${player} · seed ${header.seed >>> 0}${header.result.completed ? '' : ' · abandoned'}`;
+    const conditions = header.runFlags ? runConditionLabels(header.runFlags) : [];
+    const info = [player, `seed ${header.seed >>> 0}`, ...(header.result.completed ? [] : [header.result.failed ? 'failed' : 'abandoned']), ...conditions].join(' · ');
     const text = `${info}|${warnings.join(' ')}`;
     if (text !== lastBannerText) {
       lastBannerText = text; replayInfo.textContent = info;
@@ -476,7 +478,7 @@ function frame(now: number): void {
   speaker.setMuted(viewer !== undefined && (viewer.seeking || speed > 1));
   // Inside a recorded span the controlled player's facing was not recorded, so the arrow would be a guess.
   renderer.setHideControlledFacing(viewer?.driver !== undefined && !viewer.driver.facingTracked);
-  if (simulation) { renderer.render(simulation.state); speaker.update(simulation.state.shotcall); renderHud(); clock.textContent = formatClock(simulation.state.time); const controlled = simulation.state.players.find((player) => player.controlled); if (simulation.state.completed) phase.textContent = 'COMPLETE'; else if (controlled && !controlled.alive) phase.textContent = 'DEFEATED'; else if (simulation.state.running) phase.textContent = 'RUNNING'; }
+  if (simulation) { renderer.render(simulation.state); speaker.update(simulation.state.shotcall); renderHud(); clock.textContent = formatClock(simulation.state.time); const controlled = simulation.state.players.find((player) => player.controlled); if (simulation.state.failed) phase.textContent = 'WIPED'; else if (simulation.state.completed) phase.textContent = 'COMPLETE'; else if (controlled && !controlled.alive) phase.textContent = 'DEFEATED'; else if (simulation.state.running) phase.textContent = 'RUNNING'; }
   updateReplayUi();
   requestAnimationFrame(frame);
 }

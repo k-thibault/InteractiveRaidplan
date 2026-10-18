@@ -44,6 +44,8 @@ Every attempt is recorded automatically. Playback reruns the same encounter usin
 
 - Watch the latest attempt, seek through it, or retry with the same random outcomes. Replay controls do not affect your streak.
 - The **Replay** menu holds watching the last attempt, saving, loading and the history. While watching, the header shows the replay details and seek bar, and **Run options** switch to the app defaults (shotcalls on, bots visible) until you exit.
+- A run ends as a failure three seconds after every player has died, and its replay is listed as failed rather than abandoned.
+- Replays record the streak-affecting options they were played with (bots hidden, shotcalls off) and show the streak a success would have earned, such as "Zero help", next to the seed and result.
 - Save and load replay files. Playback warns if the encounter or simulator has changed and reports when the result diverges.
 - History keeps this session's attempts until cleared and removes older sessions after 24 hours. If browser storage is unavailable, history lasts until the tab closes.
 - In development builds, failed seeds from **Batch simulate** can be opened in the replay viewer.

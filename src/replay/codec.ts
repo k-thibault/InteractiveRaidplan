@@ -1,4 +1,5 @@
 import { REPLAY_FORMAT_VERSION } from './format';
+import { isRunFlags } from '../streak/RunConditions';
 import type { Replay, ReplayHeader } from './format';
 
 /** Unsigned LEB128 varint writer/reader pair, with zigzag for signed values. */
@@ -64,5 +65,6 @@ export function parseReplay(text: string): Replay {
   const position = readVarints(fromBase64(raw.position), POSITION_SIGNS);
   const facing = readVarints(fromBase64(raw.facing));
   if (position.length % 3 !== 0 || facing.length % 2 !== 0) throw new Error('Replay file has a truncated track');
+  if (header.runFlags !== undefined && !isRunFlags(header.runFlags)) delete header.runFlags;
   return { header, position, facing, checkpoints: readVarints(fromBase64(raw.checkpoints)), endHash: raw.endHash };
 }

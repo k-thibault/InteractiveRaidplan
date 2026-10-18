@@ -21,6 +21,9 @@ import type { PlayerDriver } from './PlayerDriver';
 
 export interface SimulationOptions { seed: number; controlledPlayerId?: string; replayOutcomes?: Map<string, Record<string, unknown>>; debug?: boolean; }
 
+/** How long the run continues after the last player dies before it ends as a failure. */
+export const WIPE_END_DELAY_MS = 3000;
+
 export class Simulation {
   readonly state: GameState;
   /** What each multi-valued `choice` random group rolled this run; see `RandomContext.rolledChoices`. */
@@ -43,6 +46,8 @@ export class Simulation {
   onTickEnd?: (tickCount: number) => void;
   private driver: PlayerDriver | undefined;
   private ticks = 0;
+  /** Simulated time at which the last player died. */
+  private wipedAt: number | undefined;
 
   constructor(encounter: Encounter, options: SimulationOptions) {
     this.encounterDuration = encounter.duration;
@@ -63,7 +68,7 @@ export class Simulation {
       ...structuredClone(marker),
       resolvedPosition: resolvePositionValue(marker.position),
     }));
-    this.state = { time: 0, arena: resolveArena(encounter.arena), deltaTime: 0, currentMechanic: undefined, players, enemies, effects: [], worldGraphics: [], background: encounter.background, casts: [], tethers: [], running: false, completed: false, log: [], deaths: [], rolls: {}, groups: {}, markers };
+    this.state = { time: 0, arena: resolveArena(encounter.arena), deltaTime: 0, currentMechanic: undefined, players, enemies, effects: [], worldGraphics: [], background: encounter.background, casts: [], tethers: [], running: false, completed: false, failed: false, log: [], deaths: [], rolls: {}, groups: {}, markers };
     this.roleEvaluator = new MechanicalRoleEvaluator(encounter.mechanicalRoles, <T>(value: T) => randomContext.resolve(value));
     this.positionEvaluator = new PositionEvaluator(encounter.positions, <T>(value: T) => randomContext.resolve(value), encounter.markerQueries);
     this.facingEvaluator = new FacingEvaluator(encounter.facing, <T>(value: T) => randomContext.resolve(value), (target, state, self) => this.positionEvaluator.resolveTarget(target, state, self));
@@ -113,6 +118,13 @@ export class Simulation {
   idleTick(deltaMs: number): void {
     if (!this.isPreStart) return;
     this.driver?.idle?.(deltaMs / 1000);
+  }
+
+  /** True once every player has been dead for `WIPE_END_DELAY_MS`, so the death can still be seen play out. */
+  private checkWipe(): boolean {
+    if (this.state.players.length === 0 || this.state.players.some((player) => player.alive)) { this.wipedAt = undefined; return false; }
+    this.wipedAt ??= this.state.time;
+    return this.state.time - this.wipedAt >= WIPE_END_DELAY_MS;
   }
 
   start(): void { this.state.running = true; }
@@ -177,6 +189,10 @@ export class Simulation {
     // Last, so tethers see where everyone ended up this tick (and who just died).
     this.executor.updateTethers();
     if (this.state.time >= this.encounterDuration) { this.state.completed = true; this.state.running = false; }
+    else if (this.checkWipe()) {
+      this.state.log.push({ id: `log-${this.state.log.length + 1}`, time: this.state.time, message: 'Everyone is dead. The attempt has failed.', channel: 'player' });
+      this.state.failed = true; this.state.completed = true; this.state.running = false;
+    }
     this.onTickEnd?.(this.ticks);
   }
 }
