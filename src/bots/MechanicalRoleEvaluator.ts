@@ -1,7 +1,7 @@
 import type { Player } from '../entities/Player';
 import type { GameState } from '../simulation/GameState';
 import type { FacingSource } from '../mechanics/Selector';
-import { isFacingTowards, isFacingAway, DEFAULT_FACING } from '../geometry/Facing';
+import { isFacingTowards, isFacingAway, readFacing } from '../geometry/Facing';
 import { findEntity } from '../mechanics/Selector';
 
 export type Condition =
@@ -100,7 +100,7 @@ export class MechanicalRoleEvaluator {
         const point = typeof condition.source === 'string' ? findEntity(state, condition.source)?.position : condition.source;
         if (!point) return false;
         const test = condition.mode === 'towards' ? isFacingTowards : isFacingAway;
-        return test(player.position, player.facing ?? DEFAULT_FACING, point, condition.tolerance);
+        return test(player.position, readFacing(state, player), point, condition.tolerance);
       }
       case 'and': return condition.conditions.every((child) => this.matches(child, player, state));
       case 'or': return condition.conditions.some((child) => this.matches(child, player, state));

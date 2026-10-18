@@ -2,6 +2,7 @@ import type { GameState } from '../simulation/GameState';
 import type { LogEntry } from '../simulation/Log';
 import type { Random } from '../simulation/Random';
 import { findEntity, selectPlayers } from './Selector';
+import type { PlayerSelector } from './Selector';
 import type { EncounterEvent, SpawnAreaEvent, ShowGraphicEvent, SpawnEnemyEvent, SelectGroupEvent, SelectGroupSubsetEvent, ForEachGroupEvent } from './Event';
 import type { AreaEffect, EffectDefinition, EffectTarget, DamageDefinition, SpawnAreaEffect, AreaDefinition, SpawnEnemyEffect, BatchDefinition } from './Effect';
 import { DamageResolver } from './DamageResolver';
@@ -14,7 +15,7 @@ import { statusDisplayName } from '../util/format';
 import type { CastDefinition, CastFacing } from './Cast';
 import { distance as pointDistance, resolvePositionValue, isTowardsPosition, fromPolar, normalize, subtract, toPolarAngle } from '../geometry/Vector2';
 import type { PositionValue, Vector2 } from '../geometry/Vector2';
-import { DEFAULT_FACING } from '../geometry/Facing';
+import { DEFAULT_FACING, readFacing } from '../geometry/Facing';
 import { DEFAULT_KNOCK_DURATION, facingKnockScale } from './Knock';
 import type { KnockDirection, KnockParams } from './Knock';
 import type { FollowInput } from '../bots/FollowManager';
@@ -59,6 +60,7 @@ export class MechanicExecutor {
   private readonly pendingEffects: { executeAt: number; effects: EffectDefinition[]; inside: Set<string>; sourceId: string; sourceName?: string; cast?: EffectContext }[] = [];
   /** Stores the outcomes of replayable rolls, keyed by `replayId`. */
   private readonly replayOutcomes: Map<string, Record<string, unknown>>;
+  private readonly replayUses = new Map<string, number>();
   private readonly debug: boolean;
   private readonly tethers: TetherManager;
 
@@ -120,6 +122,21 @@ export class MechanicExecutor {
     return replayId ? (this.replayOutcomes.get(replayId)?.[key] as T | undefined) : undefined;
   }
 
+  private claimReplay(replayId: string | undefined): string | undefined {
+    if (!replayId) return undefined;
+    const use = this.replayUses.get(replayId) ?? 0;
+    this.replayUses.set(replayId, use + 1);
+    return `${replayId}#${use}`;
+  }
+
+  private pinnedTargets(target: EffectTarget | PlayerSelector, key: string | undefined, draw: () => Player[]): Player[] {
+    if (!key || typeof target === 'string' || target.type !== 'random') return draw();
+    const recorded = this.getReplay<string[]>(key, 'members')?.map((id) => this.state.players.find((player) => player.id === id));
+    const chosen = recorded && recorded.every((player): player is Player => !!player?.alive) ? recorded : draw();
+    this.setReplay(key, 'members', chosen.map((player) => player.id));
+    return chosen;
+  }
+
   /** Records a replayed value under this `replayId`. */
   private setReplay(replayId: string | undefined, key: string, value: unknown): void {
     if (!replayId) return;
@@ -130,16 +147,21 @@ export class MechanicExecutor {
     if (event.type === 'set_shotcall') this.setShotcall(event.text, event.duration);
     else if (event.type === 'clear_shotcall') this.state.shotcall = undefined;
     else if (event.type === 'set_mechanic') this.state.currentMechanic = event.mechanic;
-    else if (event.type === 'apply_status') for (const player of selectPlayers(event.target, this.state, this.random)) this.applyStatus(player, event.status, event.duration, event.stacks ?? 1);
-    else if (event.type === 'distribute_statuses') this.distributeStatuses(event, selectPlayers(event.target, this.state, this.random), event.replayId);
+    else if (event.type === 'apply_status') {
+      const key = this.claimReplay(event.replayId);
+      const players = this.pinnedTargets(event.target, key, () => selectPlayers(event.target, this.state, this.random));
+      for (const player of players) this.applyStatus(player, event.status, event.duration, event.stacks ?? 1);
+    }
+    else if (event.type === 'distribute_statuses') this.distributeStatuses(event, selectPlayers(event.target, this.state, this.random), this.claimReplay(event.replayId));
     else if (event.type === 'damage') this.applyDamage(selectPlayers(event.target, this.state, this.random), event.damage, undefined, `event ${event.id}`);
     else if (event.type === 'heal') this.healPlayers(selectPlayers(event.target, this.state, this.random), event.amount, event.full);
     else if (event.type === 'start_cast') {
-      const cast = this.resolveCastChoice(event.cast, event.castChoices);
+      const key = this.claimReplay(event.replayId);
+      const cast = this.resolveCastChoice(event.cast, event.castChoices, key);
       if (event.castChoices && event.castChoices.length > 1) this.state.rolls[event.id] = cast;
       // When the cast was rolled from `castChoices` and no `mechanic` was given, default the mechanic flag to
       // whichever cast got picked, so `{"type":"mechanic"}` position/role rules can react to the outcome.
-      this.startCast(cast, event.source, event.mechanic ?? (event.castChoices ? cast : undefined), event.facing, event.replayId);
+      this.startCast(cast, event.source, event.mechanic ?? (event.castChoices ? cast : undefined), event.facing, key);
     }
     else if (event.type === 'remove_status') for (const player of selectPlayers(event.target, this.state, this.random)) this.removeStatus(player, event.status, event.stacks ?? 1);
     else if (event.type === 'spawn_area') this.spawnArea(this.randomContext.resolve(event));
@@ -267,7 +289,7 @@ export class MechanicExecutor {
     if (resolved.direction === 'nearest_player' || resolved.direction === 'random_player') {
       const sourceEntity = findEntity(this.state, resolved.source ?? '');
       if (sourceEntity) {
-        const replayId = resolved.replayableDirection ? resolved.replayId : undefined;
+        const replayId = resolved.replayableDirection ? this.claimReplay(resolved.replayId) : undefined;
         // Reuse a recorded pick only while it still exists. 
         const recordedId = this.getReplay<string>(replayId, 'target');
         const recordedTarget = recordedId ? findEntity(this.state, recordedId) : undefined;
@@ -288,7 +310,9 @@ export class MechanicExecutor {
     if (resolved.direction === 'cast_direction' && cast?.direction !== undefined) base.rotation = cast.direction;
     if (resolved.direction === 'facing') {
       const sourceEntity = findEntity(this.state, resolved.source ?? '');
-      if (sourceEntity?.facing !== undefined) base.rotation = (sourceEntity.facing * Math.PI) / 180 - Math.PI / 2;
+      // A player source (the controlled one) must go through the accessor so the recorder knows its facing mattered.
+      const sourceFacing = sourceEntity && 'controlled' in sourceEntity ? readFacing(this.state, sourceEntity as Player) : sourceEntity?.facing;
+      if (sourceFacing !== undefined) base.rotation = (sourceFacing * Math.PI) / 180 - Math.PI / 2;
     }
     // Re-derive from the locked target's current position when requested. 
     if (resolved.direction === 'cast_target' && cast?.targetId !== undefined) {
@@ -318,10 +342,13 @@ export class MechanicExecutor {
     this.state.worldGraphics.push({ id: `graphic-${this.state.worldGraphics.length + 1}-${this.state.time}`, image, anchor, radius, createdAt: this.state.time, duration });
   }
 
-  private resolveCastChoice(cast: string | undefined, castChoices: string[] | undefined): string {
+  private resolveCastChoice(cast: string | undefined, castChoices: string[] | undefined, replayId?: string): string {
     if (cast) return cast;
     if (!castChoices || castChoices.length === 0) throw new Error('start_cast requires either "cast" or "castChoices"');
-    return castChoices[this.random.integer(0, castChoices.length - 1)];
+    const recorded = this.getReplay<string>(replayId, 'cast');
+    const chosen = recorded !== undefined && castChoices.includes(recorded) ? recorded : castChoices[this.random.integer(0, castChoices.length - 1)];
+    this.setReplay(replayId, 'cast', chosen);
+    return chosen;
   }
 
   private startCast(castId: string, sourceId: string, mechanic?: string, facing?: CastFacing, replayId?: string): void {
@@ -378,23 +405,25 @@ export class MechanicExecutor {
 
   private selectGroup(event: SelectGroupEvent | { name: string; selector: SelectGroupEvent['selector']; replayId?: string }): void {
     // Reuse a recorded group only if everyone is still alive. 
-    const recorded = this.getReplay<string[]>(event.replayId, 'members');
+    const key = this.claimReplay(event.replayId);
+    const recorded = this.getReplay<string[]>(key, 'members');
     const recordedPlayers = recorded?.map((id) => this.state.players.find((player) => player.id === id));
     const selected = recordedPlayers?.every((player): player is typeof this.state.players[number] => !!player?.alive)
       ? recordedPlayers
       : selectPlayers(event.selector, this.state, this.random);
     this.state.groups[event.name] = selected.map((player) => ({ id: player.id, position: { ...player.position } }));
-    this.setReplay(event.replayId, 'members', selected.map((player) => player.id));
+    this.setReplay(key, 'members', selected.map((player) => player.id));
   }
 
   private selectGroupSubset(event: SelectGroupSubsetEvent | { from: string; name: string; count: number; replayId?: string }): void {
     const source = this.state.groups[event.from] ?? [];
     const sourceIds = new Set(source.map((entry) => entry.id));
-    const recorded = this.getReplay<string[]>(event.replayId, 'members');
+    const key = this.claimReplay(event.replayId);
+    const recorded = this.getReplay<string[]>(key, 'members');
     const recordedValid = recorded && recorded.length === event.count && recorded.every((id) => sourceIds.has(id));
     const selected = recordedValid ? recorded!.map((id) => source.find((entry) => entry.id === id)!) : this.random.shuffle(source).slice(0, event.count);
     this.state.groups[event.name] = selected;
-    this.setReplay(event.replayId, 'members', selected.map((entry) => entry.id));
+    this.setReplay(key, 'members', selected.map((entry) => entry.id));
   }
 
   private forEachGroup(event: ForEachGroupEvent | { group: string; effects: EffectDefinition[] }, inside: Set<string>, sourceId: string, sourceName?: string, cast?: EffectContext): void {
@@ -448,28 +477,30 @@ export class MechanicExecutor {
     }
     const resolvedEffect = this.randomContext.resolve(effect);
     if (resolvedEffect.type === 'assign_distribution') {
+      const key = this.claimReplay(resolvedEffect.replayId);
       const participants = this.state.players.filter((player) => player.alive && inside.has(player.id));
       const participantIds = new Set(participants.map((player) => player.id));
-      const recorded = this.getReplay<{ playerId: string; value: unknown }[]>(resolvedEffect.replayId, 'pairs');
+      const recorded = this.getReplay<{ playerId: string; value: unknown }[]>(key, 'pairs');
       const recordedValid = recorded && recorded.length === participants.length && recorded.every((pair) => participantIds.has(pair.playerId));
       if (recordedValid) {
         for (const pair of recorded!) this.applyAssignment(participants.find((player) => player.id === pair.playerId)!, this.randomContext.resolveAssigned(resolvedEffect.effect, pair.value));
       } else {
         const values = this.randomContext.rollDistribution(resolvedEffect.distribution);
         participants.forEach((player, index) => this.applyAssignment(player, this.randomContext.resolveAssigned(resolvedEffect.effect, values[index])));
-        this.setReplay(resolvedEffect.replayId, 'pairs', participants.map((player, index) => ({ playerId: player.id, value: values[index] })));
+        this.setReplay(key, 'pairs', participants.map((player, index) => ({ playerId: player.id, value: values[index] })));
       }
       return;
     }
     if (resolvedEffect.type === 'distribute_statuses') {
-      this.distributeStatuses(resolvedEffect, this.effectTargets(resolvedEffect.target, inside, sourceId, cast), resolvedEffect.replayId);
+      this.distributeStatuses(resolvedEffect, this.effectTargets(resolvedEffect.target, inside, sourceId, cast), this.claimReplay(resolvedEffect.replayId));
       return;
     }
     if (resolvedEffect.type === 'start_cast') {
-      const cast = this.resolveCastChoice(resolvedEffect.cast, resolvedEffect.castChoices);
+      const key = this.claimReplay(resolvedEffect.replayId);
+      const cast = this.resolveCastChoice(resolvedEffect.cast, resolvedEffect.castChoices, key);
       if (resolvedEffect.castChoices && resolvedEffect.castChoices.length > 1) this.state.rolls[`${sourceName ?? sourceId} cast`] = cast;
       const mechanic = resolvedEffect.mechanic ?? (resolvedEffect.castChoices ? cast : undefined);
-      this.startCast(cast, resolvedEffect.source ?? sourceId, mechanic, resolvedEffect.facing, resolvedEffect.replayId);
+      this.startCast(cast, resolvedEffect.source ?? sourceId, mechanic, resolvedEffect.facing, key);
       return;
     }
     if (resolvedEffect.type === 'set_mechanic') { this.state.currentMechanic = resolvedEffect.mechanic; return; }
@@ -493,15 +524,23 @@ export class MechanicExecutor {
       return;
     }
     if (resolvedEffect.type === 'show_graphic') { this.spawnGraphic(resolvedEffect.image, resolvedEffect.anchor ?? { type: 'entity', entity: sourceId }, resolvedEffect.radius, resolvedEffect.duration); return; }
-    const targets = this.effectTargets(resolvedEffect.target, inside, sourceId, cast);
+    const key = resolvedEffect.type === 'apply_status' ? this.claimReplay(resolvedEffect.replayId) : undefined;
+    const targets = this.pinnedTargets(resolvedEffect.target, key, () => this.effectTargets(resolvedEffect.target, inside, sourceId, cast));
     if (resolvedEffect.type === 'damage') this.applyDamage(targets, resolvedEffect.damage, sourceName, cast?.area?.label);
     else if (resolvedEffect.type === 'heal') this.healPlayers(targets, resolvedEffect.amount, resolvedEffect.full);
     else if (resolvedEffect.type === 'knock') this.applyKnock(targets, resolvedEffect, sourceId, cast);
     else {
+      const recorded = this.getReplay<{ playerId: string; status: string }[]>(key, 'statuses');
+      const picked: { playerId: string; status: string }[] = [];
       for (const player of targets) {
-        const status = resolvedEffect.status ?? this.pickStatus(resolvedEffect.statusChoices);
-        if (status) this.applyStatus(player, status, resolvedEffect.duration, resolvedEffect.stacks ?? 1);
+        const previous = recorded?.find((entry) => entry.playerId === player.id)?.status;
+        const status = resolvedEffect.status ?? (previous !== undefined && resolvedEffect.statusChoices?.includes(previous) ? previous : this.pickStatus(resolvedEffect.statusChoices));
+        if (status) {
+          this.applyStatus(player, status, resolvedEffect.duration, resolvedEffect.stacks ?? 1);
+          picked.push({ playerId: player.id, status });
+        }
       }
+      if (!resolvedEffect.status) this.setReplay(key, 'statuses', picked);
     }
   }
 
@@ -531,7 +570,7 @@ export class MechanicExecutor {
       let distance = knock.distance;
       for (const modifier of knock.facingModifiers ?? []) {
         if (!player.statuses.some((status) => status.definitionId === modifier.status)) continue;
-        const scale = facingKnockScale(player.facing ?? DEFAULT_FACING, direction, modifier);
+        const scale = facingKnockScale(readFacing(this.state, player), direction, modifier);
         if (scale === undefined) continue;
         distance *= scale;
         if (modifier.consume) this.removeStatus(player, modifier.status);

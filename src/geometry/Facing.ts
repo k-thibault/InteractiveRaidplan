@@ -1,5 +1,7 @@
 import type { Vector2 } from './Vector2';
 import { toPolarAngle } from './Vector2';
+import type { GameState } from '../simulation/GameState';
+import type { Player } from '../entities/Player';
 
 /** North-facing heading in compass degrees. */
 export const DEFAULT_FACING = 0;
@@ -25,4 +27,13 @@ export function isFacingTowards(from: Vector2, facing: number, to: Vector2, tole
 /** Tests whether a heading points away from a target. */
 export function isFacingAway(from: Vector2, facing: number, to: Vector2, tolerance = 90): boolean {
   return !isFacingTowards(from, facing, to, tolerance);
+}
+
+/**
+ * Reads a player's facing for game logic (facing selectors, role conditions, knock modifiers).
+ * Every such read goes through here so a recorder can notice when the controlled player's facing mattered.
+ */
+export function readFacing(state: GameState, player: Player): number {
+  if (player.controlled) state.onFacingRead?.(player);
+  return player.facing ?? DEFAULT_FACING;
 }

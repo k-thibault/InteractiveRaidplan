@@ -1,7 +1,7 @@
 {
-  "version": 4,
+  "version": 5,
   "name": "Bowels of Agony",
-  "duration": 102000,
+  "duration": 99000,
   "failStatuses": ["damage-down"],
   "arena": {
     "shape": "circle",
@@ -1243,6 +1243,7 @@
       "effects": [
         {
           "type": "apply_status",
+          "replayId": "crystal-call-fire-damage",
           "status": "fire",
           "duration": "$debuffTiming.fireDuration",
           "target": {
@@ -1253,6 +1254,7 @@
         },
         {
           "type": "apply_status",
+          "replayId": "crystal-call-fire-support",
           "status": "fire",
           "duration": "$debuffTiming.fireDuration",
           "target": {
@@ -1266,6 +1268,7 @@
         },
         {
           "type": "apply_status",
+          "replayId": "crystal-call-water-damage",
           "status": "water",
           "duration": "$debuffTiming.waterDuration",
           "target": {
@@ -1280,6 +1283,7 @@
         },
         {
           "type": "apply_status",
+          "replayId": "crystal-call-water-support",
           "status": "water",
           "duration": "$debuffTiming.waterDuration",
           "target": {
@@ -1297,6 +1301,7 @@
         },
         {
           "type": "apply_status",
+          "replayId": "crystal-call-front-back",
           "statusChoices": [
             "front",
             "back"
@@ -4978,6 +4983,7 @@
       "after": "vacuum-cast",
       "delay": 10000,
       "type": "distribute_statuses",
+      "replayId": "trigger-assign",
       "target": {
         "type": "all"
       },
@@ -5045,10 +5051,12 @@
       "id": "line-1-cast",
       "after": "line-1-spawn",
       "type": "start_cast",
+      "replayId": "line-1-cast",
       "source": "line-1",
       "cast": "trigger-line",
       "facing": {
         "type": "with_status",
+        "replayable": true,
         "status": "lc-1",
         "fallback": "random_player"
       }
@@ -5081,10 +5089,12 @@
       "id": "line-2-cast",
       "after": "line-2-spawn",
       "type": "start_cast",
+      "replayId": "line-2-cast",
       "source": "line-2",
       "cast": "trigger-line",
       "facing": {
         "type": "with_status",
+        "replayable": true,
         "status": "lc-2",
         "fallback": "random_player"
       }
@@ -5117,10 +5127,12 @@
       "id": "line-3-cast",
       "after": "line-3-spawn",
       "type": "start_cast",
+      "replayId": "line-3-cast",
       "source": "line-3",
       "cast": "trigger-line",
       "facing": {
         "type": "with_status",
+        "replayable": true,
         "status": "lc-3",
         "fallback": "random_player"
       }
@@ -5153,10 +5165,12 @@
       "id": "line-4-cast",
       "after": "line-4-spawn",
       "type": "start_cast",
+      "replayId": "line-4-cast",
       "source": "line-4",
       "cast": "trigger-line",
       "facing": {
         "type": "with_status",
+        "replayable": true,
         "status": "lc-4",
         "fallback": "random_player"
       }
@@ -5189,10 +5203,12 @@
       "id": "line-5-cast",
       "after": "line-5-spawn",
       "type": "start_cast",
+      "replayId": "line-5-cast",
       "source": "line-5",
       "cast": "trigger-line",
       "facing": {
         "type": "with_status",
+        "replayable": true,
         "status": "lc-5",
         "fallback": "random_player"
       }
@@ -5225,10 +5241,12 @@
       "id": "line-6-cast",
       "after": "line-6-spawn",
       "type": "start_cast",
+      "replayId": "line-6-cast",
       "source": "line-6",
       "cast": "trigger-line",
       "facing": {
         "type": "with_status",
+        "replayable": true,
         "status": "lc-6",
         "fallback": "random_player"
       }
@@ -5261,10 +5279,12 @@
       "id": "line-7-cast",
       "after": "line-7-spawn",
       "type": "start_cast",
+      "replayId": "line-7-cast",
       "source": "line-7",
       "cast": "trigger-line",
       "facing": {
         "type": "with_status",
+        "replayable": true,
         "status": "lc-7",
         "fallback": "random_player"
       }
@@ -5297,10 +5317,12 @@
       "id": "line-8-cast",
       "after": "line-8-spawn",
       "type": "start_cast",
+      "replayId": "line-8-cast",
       "source": "line-8",
       "cast": "trigger-line",
       "facing": {
         "type": "with_status",
+        "replayable": true,
         "status": "lc-8",
         "fallback": "random_player"
       }

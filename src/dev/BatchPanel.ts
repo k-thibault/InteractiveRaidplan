@@ -11,7 +11,7 @@ const SEED_BUTTON_LIMIT = 40;
 
 export interface BatchPanelHooks {
   getEncounter(): Encounter | undefined;
-  /** Opens the seed in the arena with all bots. */
+  /** Opens the seed in the replay viewer with all bots. */
   onReplay(seed: number): void;
 }
 

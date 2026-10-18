@@ -34,6 +34,9 @@ export class StreakTracker {
     this.reset();
   }
 
+  /** Flags of the current run (a copy). */
+  get flags(): RunFlags { return { ...this.runFlags }; }
+
   /** Streak ids a type overpowers, including the implicit generic one. */
   private overpowersOf(type: StreakType): string[] {
     return type.id === GENERIC_STREAK ? [...type.overpowers] : [...new Set([...type.overpowers, GENERIC_STREAK])];
