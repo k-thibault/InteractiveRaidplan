@@ -83,7 +83,7 @@ function check(name: string, ok: boolean): void { console.log(`${ok ? 'PASS' : '
 
 // Streaks
 {
-  const flags = (botsHidden = false, shotcallsOff = false): RunFlags => ({ botsHidden, shotcallsOff });
+  const flags = (botsHidden = false, shotcallsOff = false, enemiesHidden = false): RunFlags => ({ botsHidden, enemiesHidden, shotcallsOff });
   const counts = (tracker: StreakTracker) => Object.fromEntries(tracker.view().map((row) => [row.id, row.count]));
   const play = (tracker: StreakTracker, player: string, runFlags: RunFlags, succeed = true) => { tracker.beginRun(runFlags); tracker.startRun(player); return succeed ? tracker.succeed() : tracker.fail(); };
 
@@ -96,8 +96,19 @@ function check(name: string, ok: boolean): void { console.log(`${ok ? 'PASS' : '
 
   tracker = new StreakTracker(); play(tracker, 'a', flags(true));
   check('hidden bots build the no-bots streak, which hides the equal general one', tracker.view().map((row) => `${row.id}:${row.count}`).join() === 'noBots:1');
+  tracker = new StreakTracker(); play(tracker, 'a', flags(false, false, true));
+  check('hidden enemies build the no-enemies streak, in green', tracker.view().map((row) => `${row.id}:${row.count}`).join() === 'noEnemies:1' && STREAK_TYPES.find((type) => type.id === 'noEnemies')!.style.intensity === STREAK_TYPES.find((type) => type.id === 'noBots')!.style.intensity);
   tracker = new StreakTracker(); play(tracker, 'a', flags(true, true));
-  check('zero help overpowers its component streaks while they are not ahead', tracker.view().map((row) => row.id).join() === 'noBotsNoShotcalls');
+  check('bots hidden with calls off, but enemies shown, is not zero help', tracker.view().map((row) => row.id).sort().join() === 'noBots,noShotcalls');
+  tracker = new StreakTracker(); play(tracker, 'a', flags(true, false, true));
+  check('no entities overpowers no bots and no enemies, and ignores calls', tracker.view().map((row) => row.id).join() === 'noEntities');
+  play(tracker, 'a', flags(true, true));
+  check('no entities is not built by hiding bots alone', tracker.view().map((row) => `${row.id}:${row.count}`).join() === 'noEntities:1,noBots:2,noShotcalls:1');
+  tracker = new StreakTracker(); play(tracker, 'a', flags(true, true, true));
+  check('zero help overpowers every streak below it while they are not ahead', tracker.view().map((row) => row.id).join() === 'noBotsNoShotcalls');
+  play(tracker, 'a', flags(true, false, true));
+  check('no entities pulls ahead of zero help when calls were on', tracker.view().map((row) => `${row.id}:${row.count}`).join() === 'noBotsNoShotcalls:1,noEntities:2');
+  tracker = new StreakTracker(); play(tracker, 'a', flags(true, true, true));
   play(tracker, 'a', flags(true));
   check('a component streak that pulls ahead is shown again, strongest first', tracker.view().map((row) => `${row.id}:${row.count}`).join() === 'noBotsNoShotcalls:1,noBots:2');
 
@@ -112,9 +123,9 @@ function check(name: string, ok: boolean): void { console.log(`${ok ? 'PASS' : '
   check('a run on a kept RNG does not count', tracker.view().length === 0);
   tracker = new StreakTracker(); tracker.beginRun(flags(true, true)); tracker.startRun('a'); tracker.setFlags(flags(false, true), true); tracker.succeed();
   check('a condition lost mid-run stays lost', tracker.view().map((row) => row.id).join() === 'noShotcalls');
-  tracker = new StreakTracker(); tracker.beginRun(flags()); tracker.startRun('a'); tracker.setFlags(flags(true, true), true); tracker.succeed();
+  tracker = new StreakTracker(); tracker.beginRun(flags()); tracker.startRun('a'); tracker.setFlags(flags(true, true, true), true); tracker.succeed();
   check('a condition cannot be gained mid-run', tracker.view().length === 1 && tracker.view()[0].id === 'total');
-  tracker = new StreakTracker(); tracker.beginRun(flags()); tracker.setFlags(flags(true, true), false); tracker.startRun('a'); tracker.succeed();
+  tracker = new StreakTracker(); tracker.beginRun(flags()); tracker.setFlags(flags(true, true, true), false); tracker.startRun('a'); tracker.succeed();
   check('conditions can still change before the run starts', tracker.view()[0].id === 'noBotsNoShotcalls');
   tracker = new StreakTracker(); tracker.beginRun(flags()); tracker.startRun('a'); tracker.succeed();
   check('a run resolves only once', tracker.resolved && !tracker.succeed() && !tracker.fail() && tracker.view()[0].count === 1);
@@ -125,12 +136,17 @@ function check(name: string, ok: boolean): void { console.log(`${ok ? 'PASS' : '
 
 // Conditions a replay was played under: what a single success would display
 {
-  const labels = (botsHidden: boolean, shotcallsOff: boolean) => runConditionLabels({ botsHidden, shotcallsOff }).join();
+  const labels = (botsHidden: boolean, shotcallsOff: boolean, enemiesHidden = false) => runConditionLabels({ botsHidden, enemiesHidden, shotcallsOff }).join();
   check('a default run has nothing to display', labels(false, false) === '');
   check('hidden bots alone', labels(true, false) === 'No bots');
+  check('hidden enemies alone', labels(false, false, true) === 'No enemies');
   check('shotcalls off alone', labels(false, true) === 'No calls');
-  check('both help options off display only Zero help, as the others are overpowered', labels(true, true) === 'Zero help');
-  check('run flags are validated by shape', isRunFlags({ botsHidden: true, shotcallsOff: false }) && !isRunFlags({ botsHidden: 1, shotcallsOff: false }) && !isRunFlags(null) && !isRunFlags({ botsHidden: true }));
+  check('bots and enemies hidden display only No entities', labels(true, false, true) === 'No entities');
+  check('enemies hidden with calls off display both', labels(false, true, true) === 'No enemies,No calls');
+  check('every help option off displays only Zero help, as the others are overpowered', labels(true, true, true) === 'Zero help');
+  check('flags from before enemies could be hidden still label', runConditionLabels({ botsHidden: true, shotcallsOff: true } as RunFlags).join() === 'No bots,No calls');
+  check('run flags are validated by shape', isRunFlags({ botsHidden: true, enemiesHidden: false, shotcallsOff: false }) && !isRunFlags({ botsHidden: 1, enemiesHidden: false, shotcallsOff: false }) && !isRunFlags({ botsHidden: true, enemiesHidden: 'yes', shotcallsOff: false }) && !isRunFlags(null) && !isRunFlags({ botsHidden: true }));
+  check('flags without the enemies entry are still accepted', isRunFlags({ botsHidden: true, shotcallsOff: false }));
 }
 
 // Formatting
@@ -142,11 +158,11 @@ function check(name: string, ok: boolean): void { console.log(`${ok ? 'PASS' : '
 // Replay run options: defaults while watching, live values back afterwards
 {
   const hold = new ViewOptionsHold();
-  const live = { shotcallText: false, shotcallTts: false, hideBots: true };
+  const live = { shotcallText: false, shotcallTts: false, hideBots: true, hideEnemies: true };
   const shown = hold.hold(live);
   check('entering a replay shows the app defaults', JSON.stringify(shown) === JSON.stringify(DEFAULT_VIEW_OPTIONS) && hold.holding);
-  shown.hideBots = true;
-  check('the defaults object cannot be corrupted by callers', DEFAULT_VIEW_OPTIONS.hideBots === false && hold.hold({ shotcallText: true, shotcallTts: true, hideBots: true }).hideBots === false);
+  shown.hideBots = true; shown.hideEnemies = true;
+  check('the defaults object cannot be corrupted by callers', DEFAULT_VIEW_OPTIONS.hideBots === false && DEFAULT_VIEW_OPTIONS.hideEnemies === false && hold.hold({ shotcallText: true, shotcallTts: true, hideBots: true, hideEnemies: true }).hideEnemies === false);
   check('chained replays keep the first snapshot', JSON.stringify(hold.release()) === JSON.stringify(live) && !hold.holding);
   check('leaving with nothing held restores nothing', hold.release() === undefined);
 }

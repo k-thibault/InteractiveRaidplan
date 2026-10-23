@@ -8,7 +8,7 @@ export interface StreakRow {
   style: StreakStyle;
 }
 
-const cleanFlags = (): RunFlags => ({ botsHidden: false, shotcallsOff: false });
+const cleanFlags = (): RunFlags => ({ botsHidden: false, enemiesHidden: false, shotcallsOff: false });
 
 /** Tracks qualified success streaks for the current player. */
 export class StreakTracker {

@@ -10,6 +10,7 @@ import type { Arena } from '../geometry/Arena';
 import { resolveTetherStyle } from '../mechanics/Tether';
 import { entityRadius } from '../entities/Entity';
 import { findEntity } from '../mechanics/Selector';
+import { shownWhileHidden, type Enemy } from '../entities/Enemy';
 
 interface StatusHitArea {
   x: number;
@@ -48,6 +49,7 @@ export class ArenaRenderer {
   private readonly images = new Map<string, HTMLImageElement>();
   private shotcallVisible = true;
   private hideBots = false;
+  private hideEnemies = false;
   private hideControlledFacing = false;
   private readonly shotcallElement: HTMLDivElement;
 
@@ -69,6 +71,8 @@ export class ArenaRenderer {
 
   /** When on, players other than the controlled one are not drawn. They still exist and act in the simulation. Has no effect while no player is controlled, since that would leave an empty arena. */
   setHideBots(hide: boolean): void { this.hideBots = hide; }
+  /** When on, enemies are not drawn unless forced visible or chasing the controlled player. Like hidden bots, needs a controlled player. */
+  setHideEnemies(hide: boolean): void { this.hideEnemies = hide; }
   /** Replay viewer: hide the controlled player's facing wedge while its facing is not part of the recording. */
   setHideControlledFacing(hide: boolean): void { this.hideControlledFacing = hide; }
 
@@ -184,9 +188,14 @@ export class ArenaRenderer {
     }
     context.restore();
     this.drawBorder(state.arena, toCanvas, scale);
-    const hideUncontrolled = this.hideBots && state.players.some((candidate) => candidate.controlled);
-    this.drawTethers(state, hideUncontrolled, scale, toCanvas);
-    for (const enemy of state.enemies) this.drawUnit(enemy, '#ff7757', scale, toCanvas, true);
+    const hasControlled = state.players.some((candidate) => candidate.controlled);
+    const hideUncontrolled = this.hideBots && hasControlled;
+    const hideEnemies = this.hideEnemies && hasControlled;
+    this.drawTethers(state, hideUncontrolled, hideEnemies, scale, toCanvas);
+    for (const enemy of state.enemies) {
+      if (hideEnemies && !shownWhileHidden(enemy, state.casts)) continue;
+      this.drawUnit(enemy, '#ff7757', scale, toCanvas, true);
+    }
     for (const player of state.players) {
       if (hideUncontrolled && !player.controlled) continue;
       this.drawUnit(player, !player.alive ? DEAD_COLOR : player.controlled ? CONTROLLED_PLAYER_COLOR : (player.color ?? PLAYER_COLOR), scale, toCanvas, false);
@@ -196,14 +205,14 @@ export class ArenaRenderer {
     this.updateShotcall(state);
   }
 
-  /** Draws tether lines under units, hiding links to hidden bots. */
-  private drawTethers(state: GameState, hideUncontrolled: boolean, scale: number, toCanvas: (x: number, y: number) => { x: number; y: number }): void {
+  /** Draws tether lines under units, hiding links to hidden bots and enemies. */
+  private drawTethers(state: GameState, hideUncontrolled: boolean, hideEnemies: boolean, scale: number, toCanvas: (x: number, y: number) => { x: number; y: number }): void {
     const { context } = this;
     for (const tether of state.tethers) {
       const source = findEntity(state, tether.sourceId);
       const target = findEntity(state, tether.targetId);
       if (!source || !target) continue;
-      const hidden = (entity: Entity) => hideUncontrolled && 'controlled' in entity && !entity.controlled;
+      const hidden = (entity: Entity) => 'controlled' in entity ? hideUncontrolled && !entity.controlled : hideEnemies && 'type' in entity && entity.type === 'enemy' && !shownWhileHidden(entity as Enemy, state.casts);
       if (hidden(source) || hidden(target)) continue;
       const from = toCanvas(source.position.x, source.position.y);
       const to = toCanvas(target.position.x, target.position.y);

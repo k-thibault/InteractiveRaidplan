@@ -1,7 +1,7 @@
 /** Run options a replay overrides while it is being watched. */
-export interface ViewOptions { shotcallText: boolean; shotcallTts: boolean; hideBots: boolean; }
+export interface ViewOptions { shotcallText: boolean; shotcallTts: boolean; hideBots: boolean; hideEnemies: boolean; }
 
-export const DEFAULT_VIEW_OPTIONS: Readonly<ViewOptions> = { shotcallText: true, shotcallTts: true, hideBots: false };
+export const DEFAULT_VIEW_OPTIONS: Readonly<ViewOptions> = { shotcallText: true, shotcallTts: true, hideBots: false, hideEnemies: false };
 
 /** Swaps the live options for the defaults and remembers them until `release`. */
 export class ViewOptionsHold {

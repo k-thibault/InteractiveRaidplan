@@ -1,5 +1,5 @@
 /** Conditions used to qualify a run for streaks. */
-export type RunFlag = 'botsHidden' | 'shotcallsOff';
+export type RunFlag = 'botsHidden' | 'enemiesHidden' | 'shotcallsOff';
 export type RunFlags = Record<RunFlag, boolean>;
 
 /** Id of the general success streak. */
@@ -25,11 +25,18 @@ export interface StreakType {
 export const STREAK_TYPES: readonly StreakType[] = [
   { id: GENERIC_STREAK, label: 'Success', qualifies: () => true, overpowers: [], style: { color: '#dbe7f2', intensity: 0 } },
   { id: 'noBots', label: 'No bots', qualifies: (f) => f.botsHidden, overpowers: [], style: { color: '#ffd76a', intensity: 0.6 } },
+  { id: 'noEnemies', label: 'No enemies', qualifies: (f) => f.enemiesHidden, overpowers: [], style: { color: '#8ce08a', intensity: 0.6 } },
   { id: 'noShotcalls', label: 'No calls', qualifies: (f) => f.shotcallsOff, overpowers: [], style: { color: '#6fd3ff', intensity: 0.6 } },
   {
+    id: 'noEntities', label: 'No entities',
+    qualifies: (f) => f.botsHidden && f.enemiesHidden,
+    overpowers: ['noBots', 'noEnemies'],
+    style: { color: '#ff9f5a', intensity: 0.8 },
+  },
+  {
     id: 'noBotsNoShotcalls', label: 'Zero help',
-    qualifies: (f) => f.botsHidden && f.shotcallsOff,
-    overpowers: ['noBots', 'noShotcalls'],
+    qualifies: (f) => f.botsHidden && f.enemiesHidden && f.shotcallsOff,
+    overpowers: ['noBots', 'noEnemies', 'noEntities', 'noShotcalls'],
     style: { color: '#ff8de6', intensity: 1 },
   },
 ];

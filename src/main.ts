@@ -24,7 +24,7 @@ import type { StatusDefinition } from './entities/Status';
 import type { Player } from './entities/Player';
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
-app.innerHTML = `<main class="workbench"><header class="topbar"><div class="topbar__title"><h1 id="encounter-name">Loading encounter&hellip;</h1><div class="replay-meta" role="status"><span class="replay-meta__tag">Replay</span><span id="replay-info" class="replay-meta__info"></span><span id="replay-warning" class="replay-meta__warning" hidden></span></div></div><div class="topbar__pickers live-only"><div class="encounter-picker"><label for="encounter-select">Timeline</label><select id="encounter-select"></select></div><div class="encounter-picker"><label for="controlled-player">Control</label><select id="controlled-player"></select></div></div><div class="replay-seek"><span id="seek-time" class="replay-seek__time">00:00.0</span><input id="replay-seek" type="range" min="0" max="0" step="1" value="0" aria-label="Replay position"><span id="seek-end" class="replay-seek__time"></span></div><div class="replay-actions"><button id="replay-retry" type="button" title="Leave the replay and set up a new attempt with the same seed and random outcomes">Retry this RNG</button><button id="replay-exit" type="button">Exit replay</button></div><div class="readout live-only"><span id="phase">READY</span><strong id="clock">00:00.0</strong></div></header><section class="arena-row"><aside id="roster" class="roster-panel" aria-label="Party health"></aside><div class="arena-panel"><canvas id="arena" width="1200" height="800" aria-label="Encounter arena"></canvas><div id="cast-bars" class="cast-bars" aria-live="polite"></div><p class="arena-hint">Move with WASD or the arrow keys.</p><div id="streak" class="streak" role="status" hidden></div><span id="replay-notice" class="replay-notice" role="status"></span></div><aside class="event-log-panel"><h2>Event Log</h2><ul id="event-log"><li class="event-log__empty">No events yet.</li></ul></aside></section><footer class="controls"><div class="control-group"><button id="toggle" type="button">Start</button><button id="restart" type="button">Restart</button><div class="menu" data-menu><button id="replay-menu" class="menu__toggle" type="button">Replay</button><div class="menu__panel" role="menu" hidden><button id="watch-last" type="button" role="menuitem" data-menu-close disabled title="Watch your last attempt">Watch last attempt</button><button id="save-replay" type="button" role="menuitem" data-menu-close disabled title="Download this attempt as a replay file">Save replay</button><button id="load-replay" type="button" role="menuitem" data-menu-close title="Open a saved replay file">Load replay</button><button id="history-open" type="button" role="menuitem" data-menu-close title="Attempts from this session">History</button></div></div><div class="menu" data-menu><button id="run-options" class="menu__toggle" type="button">Run options</button><div class="menu__panel menu__panel--options" hidden><label class="live-only"><input id="keep-rng" type="checkbox"> Keep previous RNG</label>${import.meta.env.DEV ? '<label class="live-only"><input id="debug-mode" type="checkbox"> Debug log</label>' : ''}<div class="menu__row"><span>Shotcalls</span><label><input id="shotcall-text" type="checkbox" checked> Text</label><label><input id="shotcall-tts" type="checkbox" checked> TTS</label></div><label class="live-only"><input id="face-cursor" type="checkbox" checked> Face cursor when still</label><label><input id="hide-bots" type="checkbox"> Hide bots</label></div></div><input id="replay-file" type="file" accept=".json,application/json" hidden>${import.meta.env.DEV ? '<button id="batch-open" type="button">Batch simulate</button>' : ''}</div><div class="speed-group" role="group" aria-label="Simulation speed"><span>Speed</span><button data-speed="0.25" type="button">0.25x</button><button data-speed="0.5" type="button">0.5x</button><button class="selected" data-speed="1" type="button">1x</button><button class="replay-only" data-speed="2" type="button">2x</button><button class="replay-only" data-speed="4" type="button">4x</button></div></footer></main>`;
+app.innerHTML = `<main class="workbench"><header class="topbar"><div class="topbar__title"><h1 id="encounter-name">Loading encounter&hellip;</h1><div class="replay-meta" role="status"><span class="replay-meta__tag">Replay</span><span id="replay-info" class="replay-meta__info"></span><span id="replay-warning" class="replay-meta__warning" hidden></span></div></div><div class="topbar__pickers live-only"><div class="encounter-picker"><label for="encounter-select">Timeline</label><select id="encounter-select"></select></div><div class="encounter-picker"><label for="controlled-player">Control</label><select id="controlled-player"></select></div></div><div class="replay-seek"><span id="seek-time" class="replay-seek__time">00:00.0</span><input id="replay-seek" type="range" min="0" max="0" step="1" value="0" aria-label="Replay position"><span id="seek-end" class="replay-seek__time"></span></div><div class="replay-actions"><button id="replay-retry" type="button" title="Leave the replay and set up a new attempt with the same seed and random outcomes">Retry this RNG</button><button id="replay-exit" type="button">Exit replay</button></div><div class="readout live-only"><span id="phase">READY</span><strong id="clock">00:00.0</strong></div></header><section class="arena-row"><aside id="roster" class="roster-panel" aria-label="Party health"></aside><div class="arena-panel"><canvas id="arena" width="1200" height="800" aria-label="Encounter arena"></canvas><div id="cast-bars" class="cast-bars" aria-live="polite"></div><p class="arena-hint">Move with WASD or the arrow keys.</p><div id="streak" class="streak" role="status" hidden></div><span id="replay-notice" class="replay-notice" role="status"></span></div><aside class="event-log-panel"><h2>Event Log</h2><ul id="event-log"><li class="event-log__empty">No events yet.</li></ul></aside></section><footer class="controls"><div class="control-group"><button id="toggle" type="button">Start</button><button id="restart" type="button">Restart</button><div class="menu" data-menu><button id="replay-menu" class="menu__toggle" type="button">Replay</button><div class="menu__panel" role="menu" hidden><button id="watch-last" type="button" role="menuitem" data-menu-close disabled title="Watch your last attempt">Watch last attempt</button><button id="save-replay" type="button" role="menuitem" data-menu-close disabled title="Download this attempt as a replay file">Save replay</button><button id="load-replay" type="button" role="menuitem" data-menu-close title="Open a saved replay file">Load replay</button><button id="history-open" type="button" role="menuitem" data-menu-close title="Attempts from this session">History</button></div></div><div class="menu" data-menu><button id="run-options" class="menu__toggle" type="button">Run options</button><div class="menu__panel menu__panel--options" hidden><label class="live-only"><input id="keep-rng" type="checkbox"> Keep previous RNG</label>${import.meta.env.DEV ? '<label class="live-only"><input id="debug-mode" type="checkbox"> Debug log</label>' : ''}<div class="menu__row"><span>Shotcalls</span><label><input id="shotcall-text" type="checkbox" checked> Text</label><label><input id="shotcall-tts" type="checkbox" checked> TTS</label></div><label class="live-only"><input id="face-cursor" type="checkbox" checked> Face cursor when still</label><label><input id="hide-bots" type="checkbox"> Hide bots</label><label><input id="hide-enemies" type="checkbox"> Hide enemies</label></div></div><input id="replay-file" type="file" accept=".json,application/json" hidden>${import.meta.env.DEV ? '<button id="batch-open" type="button">Batch simulate</button>' : ''}</div><div class="speed-group" role="group" aria-label="Simulation speed"><span>Speed</span><button data-speed="0.25" type="button">0.25x</button><button data-speed="0.5" type="button">0.5x</button><button class="selected" data-speed="1" type="button">1x</button><button class="replay-only" data-speed="2" type="button">2x</button><button class="replay-only" data-speed="4" type="button">4x</button></div></footer></main>`;
 setupMenus();
 
 const canvas = document.querySelector<HTMLCanvasElement>('#arena')!;
@@ -40,6 +40,7 @@ const logList = document.querySelector<HTMLUListElement>('#event-log')!;
 const controlledPlayer = document.querySelector<HTMLSelectElement>('#controlled-player')!;
 const faceCursor = document.querySelector<HTMLInputElement>('#face-cursor')!;
 const hideBots = document.querySelector<HTMLInputElement>('#hide-bots')!;
+const hideEnemies = document.querySelector<HTMLInputElement>('#hide-enemies')!;
 const shotcallText = document.querySelector<HTMLInputElement>('#shotcall-text')!;
 const shotcallTts = document.querySelector<HTMLInputElement>('#shotcall-tts')!;
 const speaker = new ShotcallSpeaker();
@@ -171,6 +172,7 @@ function rebuild(): void {
   controller.setFaceCursorWhenStill(faceCursor.checked); simulation.setDriver(controller);
   // Hiding bots only makes sense while a specific player is controlled.
   hideBots.disabled = !controlledPlayer.value; hideBots.title = hideBots.disabled ? 'Select a player to control to hide the bots' : '';
+  hideEnemies.disabled = hideBots.disabled; hideEnemies.title = hideEnemies.disabled ? 'Select a player to control to hide the enemies' : '';
   // Ignore RNG replays; capture hidden-bot state at run setup.
   streak.beginRun(currentRunFlags(), !document.querySelector<HTMLInputElement>('#keep-rng')!.checked); renderStreak();
   speaker.reset(); buildRoster(simulation.state.players); accumulator = 0; previous = performance.now(); toggle.textContent = 'Start'; phase.textContent = 'READY'; resetLog();
@@ -201,6 +203,7 @@ controlledPlayer.addEventListener('change', () => { controlledPlayer.blur(); reb
 faceCursor.addEventListener('change', () => controller?.setFaceCursorWhenStill(faceCursor.checked));
 shotcallText.addEventListener('change', () => { renderer.setShotcallVisible(shotcallText.checked); syncStreakFlags(); });
 hideBots.addEventListener('change', () => { renderer.setHideBots(hideBots.checked); syncStreakFlags(); });
+hideEnemies.addEventListener('change', () => { renderer.setHideEnemies(hideEnemies.checked); syncStreakFlags(); });
 // Arrow keys move the player, so they must never scroll the page. Dropdowns and text fields keep their own arrow-key behaviour.
 window.addEventListener('keydown', (event) => {
   if (!event.key.startsWith('Arrow')) return;
@@ -276,6 +279,7 @@ function renderHud(): void {
 function currentRunFlags(): RunFlags {
   return {
     botsHidden: hideBots.checked && !hideBots.disabled,
+    enemiesHidden: hideEnemies.checked && !hideEnemies.disabled,
     shotcallsOff: !shotcallText.checked && !(shotcallTts.checked && !shotcallTts.disabled),
   };
 }
@@ -340,10 +344,10 @@ function showSimulation(next: Simulation): void {
   castBars.replaceChildren(); castBarRows.clear();
 }
 
-/** Replay mode keeps view options (hide bots, shotcalls, speed) and turns off everything that changes the run itself. */
+/** Replay mode keeps view options (hide bots and enemies, shotcalls, speed) and turns off everything that changes the run itself. */
 function showViewOptions(options: ViewOptions): void {
-  shotcallText.checked = options.shotcallText; shotcallTts.checked = options.shotcallTts; hideBots.checked = options.hideBots;
-  renderer.setShotcallVisible(shotcallText.checked); speaker.setEnabled(shotcallTts.checked); renderer.setHideBots(hideBots.checked);
+  shotcallText.checked = options.shotcallText; shotcallTts.checked = options.shotcallTts; hideBots.checked = options.hideBots; hideEnemies.checked = options.hideEnemies;
+  renderer.setShotcallVisible(shotcallText.checked); speaker.setEnabled(shotcallTts.checked); renderer.setHideBots(hideBots.checked); renderer.setHideEnemies(hideEnemies.checked);
 }
 
 function setReplayModeControls(active: boolean): void {
@@ -352,6 +356,7 @@ function setReplayModeControls(active: boolean): void {
   for (const control of [controlledPlayer, keepRng, faceCursor, encounterSelect]) control.disabled = active;
   hideBots.disabled = active ? !viewer?.replay.header.controlledPlayerId : !controlledPlayer.value;
   hideBots.title = hideBots.disabled ? 'Select a player to control to hide the bots' : '';
+  hideEnemies.disabled = hideBots.disabled; hideEnemies.title = hideEnemies.disabled ? 'Select a player to control to hide the enemies' : '';
 }
 
 async function enterReplay(replay: Replay): Promise<void> {
@@ -359,7 +364,7 @@ async function enterReplay(replay: Replay): Promise<void> {
   if (!entry) { setReplayNotice(`That replay is for "${replay.header.encounterId}", which is not available here.`); return; }
   setReplayNotice('');
   if (!viewer) savedControlled = controlledPlayer.value;
-  showViewOptions(viewOptionsHold.hold({ shotcallText: shotcallText.checked, shotcallTts: shotcallTts.checked, hideBots: hideBots.checked }));
+  showViewOptions(viewOptionsHold.hold({ shotcallText: shotcallText.checked, shotcallTts: shotcallTts.checked, hideBots: hideBots.checked, hideEnemies: hideEnemies.checked }));
   viewer = undefined;
   history.abandon();
   if (entry.id !== currentEntryId) { encounterSelect.value = entry.id; await selectEncounter(entry, replay.header.controlledPlayerId ?? ''); }
