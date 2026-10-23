@@ -42,12 +42,15 @@ export class FollowManager {
 
   update(state: GameState): void {
     for (const enemy of state.enemies) {
+      enemy.followsControlled = false;
       const follow = enemy.follow;
       if (!follow) continue;
       const fixed = follow.position && follow.position !== 'cast_target_position' ? follow.position : undefined;
       const target = fixed ? { id: '', alive: true, position: fixed } : (follow.target ? resolveEntityReference(follow.target, state) : undefined);
       if (!target?.alive || target.id === enemy.id) continue;
       const hold = this.activeHold(state, enemy.id);
+      // Holding movement suspends the follow; held facing alone still leaves the enemy chasing.
+      enemy.followsControlled = 'controlled' in target && target.controlled === true && !hold.movement;
       // Closing in only: an enemy already inside the gap stays put.
       const gap = distance(enemy.position, target.position) - follow.distance;
       if (!hold.movement && canMove(enemy) && gap > 0) {

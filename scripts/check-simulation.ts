@@ -4,6 +4,7 @@ import type { Encounter } from '../src/encounters/Encounter';
 import { Simulation } from '../src/simulation/Simulation';
 import { stepControlledPlayer } from '../src/input/ControlledMovement';
 import { deriveSeed } from '../src/dev/BatchRun';
+import { shownWhileHidden } from '../src/entities/Enemy';
 import { TICK_MS } from './lib';
 
 let failures = 0;
@@ -19,14 +20,14 @@ const statuses = [
   { id: 'fire-weak', name: 'Fire weak', damageTaken: [{ damageType: 'fire', multiplier: 2 }] },
 ];
 
-function make(extra: Partial<Encounter> = {}, seed = 1): Simulation {
+function make(extra: Partial<Encounter> = {}, seed = 1, controlledPlayerId?: string): Simulation {
   const encounter = {
     version: 3, name: 'check', duration: 20000, statuses, casts: {},
     players: [player('a', -8, 6), player('b', 8, 6), player('c', 0, 6), player('d', -4, 6)],
     enemies: [{ id: 'boss', name: 'Boss', type: 'enemy', alive: true, position: { x: 0, y: -6 }, statuses: [] }],
     events: [], ...extra,
   } as unknown as Encounter;
-  const simulation = new Simulation(encounter, { seed, replayOutcomes: new Map() });
+  const simulation = new Simulation(encounter, { seed, controlledPlayerId, replayOutcomes: new Map() });
   simulation.start();
   return simulation;
 }
@@ -233,6 +234,53 @@ const hit = (id: string, time: number, amount: number, type = 'physical', fatal?
   const outputs = new Set(Array.from({ length: 16 }, (_, index) => draws(deriveSeed(0, index))));
   check('the same seed repeats a random group roll', draws(5) === draws(5));
   check('different seeds roll differently', outputs.size > 1, [...outputs].join(' | '));
+}
+
+// Hiding enemies: only forced-visible enemies and ones chasing the controlled player stay drawn
+{
+  const follow = (target: string, time = 0) => at(`follow-${target}`, time, { type: 'start_follow', source: 'boss', target: { type: 'id', id: target }, distance: 2 });
+  const encounter = (events: object[]): Partial<Encounter> => ({
+    enemies: [
+      { id: 'boss', name: 'Boss', type: 'enemy', alive: true, position: { x: 0, y: -6 }, statuses: [] },
+      { id: 'shown', name: 'Shown', type: 'enemy', alive: true, position: { x: 4, y: -6 }, statuses: [], forceVisible: true },
+      { id: 'plain', name: 'Plain', type: 'enemy', alive: true, position: { x: -4, y: -6 }, statuses: [] },
+    ],
+    enemyTemplates: { marker: { name: 'Marker', forceVisible: true } },
+    casts: {
+      hold: { id: 'hold', name: 'Hold', castTime: 1000, effects: [], suspendFollow: { movement: true } },
+      turn: { id: 'turn', name: 'Turn', castTime: 1000, effects: [], suspendFollow: { facing: true } },
+      reveal: { id: 'reveal', name: 'Reveal', castTime: 1000, effects: [], revealCaster: true },
+    },
+    events: [
+      at('marker', 0, { type: 'spawn_enemy', enemyId: 'marker', enemy: 'marker', position: { x: 2, y: 2 } }),
+      at('extra', 0, { type: 'spawn_enemy', enemyId: 'extra', position: { x: -2, y: 2 } }),
+      ...events,
+    ] as never,
+  });
+  const visible = (simulation: Simulation) => simulation.state.enemies.filter((enemy) => shownWhileHidden(enemy, simulation.state.casts)).map((enemy) => enemy.id).sort().join();
+
+  let simulation = make(encounter([follow('a'), at('hold', 1000, { type: 'start_cast', source: 'boss', cast: 'hold' }), at('turn', 3000, { type: 'start_cast', source: 'boss', cast: 'turn' }), at('stop', 5000, { type: 'stop_follow', source: 'boss' })]), 1, 'a');
+  until(simulation, 500);
+  check('forceVisible entities and templates stay shown, as does an enemy following the controlled player', visible(simulation) === 'boss,marker,shown');
+  until(simulation, 1500);
+  check('a follow suspended by a held movement is hidden again', visible(simulation) === 'marker,shown');
+  until(simulation, 2500);
+  check('the enemy is shown again when the hold ends', visible(simulation) === 'boss,marker,shown');
+  until(simulation, 3500);
+  check('a follow with only facing held keeps chasing, so stays shown', visible(simulation) === 'boss,marker,shown');
+  until(simulation, 5500);
+  check('an enemy whose follow was stopped is hidden', visible(simulation) === 'marker,shown');
+
+  simulation = make(encounter([at('reveal', 1000, { type: 'start_cast', source: 'plain', cast: 'reveal' })]), 1, 'a');
+  until(simulation, 500); const before = visible(simulation); until(simulation, 1500); const during = visible(simulation); until(simulation, 2500);
+  check('a caster is shown for the length of a revealing cast only', before === 'marker,shown' && during === 'marker,plain,shown' && visible(simulation) === before);
+
+  simulation = make(encounter([follow('b')]), 1, 'a'); until(simulation, 500);
+  check('following another player does not show the enemy', visible(simulation) === 'marker,shown');
+  simulation = make(encounter([follow('a')])); until(simulation, 500);
+  check('following a bot while nobody is controlled does not show the enemy', visible(simulation) === 'marker,shown');
+  simulation = make(encounter([at('fixed', 0, { type: 'start_follow', source: 'boss', position: { x: 5, y: 5 }, distance: 1 })]), 1, 'a'); until(simulation, 500);
+  check('chasing a fixed point does not show the enemy', visible(simulation) === 'marker,shown');
 }
 
 console.log(failures === 0 ? '\nsimulation check passed' : `\n${failures} check(s) failed`);

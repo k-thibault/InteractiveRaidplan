@@ -10,6 +10,8 @@ export interface CastDefinition {
   facing?: CastFacing;
   /** Pauses the caster's follow movement and/or facing until the cast completes. */
   suspendFollow?: { movement?: boolean; facing?: boolean };
+  /** Draws the caster for the length of the cast, even while enemies are hidden. */
+  revealCaster?: boolean;
 }
 
 /** Targeting resolves once at cast start. */
@@ -38,4 +40,6 @@ export interface ActiveCast {
   targetPosition?: { x: number; y: number };
   /** Tether tracked by a tether-facing cast. */
   tetherId?: string;
+  /** Copied from the definition when the cast starts. */
+  revealsCaster?: boolean;
 }

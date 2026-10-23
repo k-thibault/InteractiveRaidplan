@@ -1374,6 +1374,7 @@
       "name": "Thunder III",
       "castTime": 5000,
       "visible": true,
+      "revealCaster": true,
       "suspendFollow": {
         "movement": true
       },
@@ -1493,6 +1494,7 @@
       "name": "Longitudinal Implosion",
       "castTime": 5000,
       "visible": true,
+      "revealCaster": true,
       "suspendFollow": {
         "movement": true,
         "facing": true
@@ -1538,6 +1540,7 @@
       "name": "Latitudinal Implosion",
       "castTime": 5000,
       "visible": true,
+      "revealCaster": true,
       "suspendFollow": {
         "movement": true,
         "facing": true
@@ -1598,6 +1601,7 @@
       "name": "Vacuum Wave",
       "castTime": 8000,
       "visible": true,
+      "revealCaster": true,
       "suspendFollow": {
         "movement": true
       },
@@ -3852,6 +3856,7 @@
   "enemyTemplates": {
     "wind-crystal": {
       "name": "Wind",
+      "forceVisible": true,
       "style": {
         "type": "diamond",
         "radius": 0.7,
@@ -3865,6 +3870,7 @@
     },
     "water-crystal": {
       "name": "Water",
+      "forceVisible": true,
       "style": {
         "type": "square",
         "radius": 0.7,
@@ -3878,6 +3884,7 @@
     },
     "fire-crystal": {
       "name": "Fire",
+      "forceVisible": true,
       "style": {
         "type": "triangle",
         "radius": 0.7,
@@ -3891,6 +3898,7 @@
     },
     "charger": {
       "name": "Kefka",
+      "forceVisible": true,
       "style": {
         "type": "circle",
         "radius": 1,

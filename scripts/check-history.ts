@@ -103,20 +103,22 @@ async function main(): Promise<void> {
   const streak = new StreakTracker(); let ended: ReturnType<typeof recordSeedReplay> | undefined;
   const flagged = new AttemptHistory((replayEnded) => { ended = replayEnded; });
   const play = (controlled: boolean, mid?: () => void) => {
-    streak.beginRun({ botsHidden: true, shotcallsOff: true }); streak.startRun(controlled ? players[0].id : '');
+    streak.beginRun({ botsHidden: true, enemiesHidden: true, shotcallsOff: true }); streak.startRun(controlled ? players[0].id : '');
     const run = new Simulation(encounter, { seed: 9, controlledPlayerId: controlled ? players[0].id : undefined, replayOutcomes: new Map() });
     flagged.begin(run, controlled ? randomWalk(run, players[0].id, 9) : undefined, { ...meta(9), runFlags: () => streak.flags });
     run.start(); for (let i = 0; i < 30; i += 1) run.tick(TICK_MS); mid?.(); flagged.abandon(); return ended!;
   };
   const zeroHelp = play(true);
-  check('a controlled attempt records the run flags', JSON.stringify(zeroHelp.header.runFlags) === '{"botsHidden":true,"shotcallsOff":true}');
-  check('flags that were lost mid-run are recorded as lost', JSON.stringify(play(true, () => streak.setFlags({ botsHidden: false, shotcallsOff: true }, true)).header.runFlags) === '{"botsHidden":false,"shotcallsOff":true}');
+  check('a controlled attempt records the run flags', JSON.stringify(zeroHelp.header.runFlags) === '{"botsHidden":true,"enemiesHidden":true,"shotcallsOff":true}');
+  check('flags that were lost mid-run are recorded as lost', JSON.stringify(play(true, () => streak.setFlags({ botsHidden: false, enemiesHidden: true, shotcallsOff: true }, true)).header.runFlags) === '{"botsHidden":false,"enemiesHidden":true,"shotcallsOff":true}');
   check('an all-bots attempt records no flags', play(false).header.runFlags === undefined && recordSeedReplay(encounter, 'forsaken', 5).header.runFlags === undefined);
   check('flags survive a file round trip and reach the history summary', JSON.stringify(parseReplay(serializeReplay(zeroHelp)).header.runFlags) === JSON.stringify(zeroHelp.header.runFlags) && (await open('s8').save(zeroHelp)).summary.runFlags?.shotcallsOff === true);
   const tampered = JSON.parse(serializeReplay(zeroHelp)); tampered.header.runFlags = { botsHidden: 'yes' };
   check('malformed flags are dropped when a file is read', parseReplay(JSON.stringify(tampered)).header.runFlags === undefined);
   const legacy = JSON.parse(serializeReplay(zeroHelp)); delete legacy.header.runFlags;
   check('files from before the flags existed still load', parseReplay(JSON.stringify(legacy)).header.runFlags === undefined);
+  const beforeEnemies = JSON.parse(serializeReplay(zeroHelp)); beforeEnemies.header.runFlags = { botsHidden: true, shotcallsOff: true };
+  check('files from before enemies could be hidden keep their flags', JSON.stringify(parseReplay(JSON.stringify(beforeEnemies)).header.runFlags) === '{"botsHidden":true,"shotcallsOff":true}');
 }
 
 await main();

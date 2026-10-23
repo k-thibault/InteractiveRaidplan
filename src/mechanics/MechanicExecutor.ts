@@ -366,7 +366,7 @@ export class MechanicExecutor {
       source.facing = toPolarAngle(target.position, source.position);
       source.facingRuleActive = true;
     }
-    this.state.casts.push({ id: `cast-${this.state.casts.length + 1}`, definitionId: castId, sourceId, startedAt: this.state.time, completesAt: this.state.time + definition.castTime, targetId: resolved?.targetId, direction: resolved?.direction, targetPosition: resolved?.targetPosition, tetherId: resolved?.tetherId });
+    this.state.casts.push({ id: `cast-${this.state.casts.length + 1}`, definitionId: castId, sourceId, startedAt: this.state.time, completesAt: this.state.time + definition.castTime, targetId: resolved?.targetId, direction: resolved?.direction, targetPosition: resolved?.targetPosition, tetherId: resolved?.tetherId, revealsCaster: definition.revealCaster });
   }
 
   private resolveFacing(facing: CastFacing, sourceId: string, replayId?: string): { targetId: string; direction: number; targetPosition: Vector2; tetherId?: string } | undefined {
@@ -448,7 +448,7 @@ export class MechanicExecutor {
     const id = resolved.enemyId ?? `enemy-${this.state.enemies.length + 1}-${this.state.time}`;
     const enemy: Enemy = {
       id, type: 'enemy', name: resolved.name ?? 'Enemy', position: { ...position }, alive: true,
-      style: resolved.style, graphic: resolved.graphic, statuses: [],
+      style: resolved.style, graphic: resolved.graphic, forceVisible: resolved.forceVisible, statuses: [],
       expiresAt: resolved.expiresAfter !== undefined ? this.state.time + resolved.expiresAfter : undefined
     };
     const nearestPlayer = this.state.players
