@@ -28,7 +28,7 @@ const EXPRESSIONS: Record<string, (operands: number[]) => number> = {
   $neg: ([operand]) => -operand,
 };
 /** Names that are filled in later (per member / per batch / per cast) and must survive `resolve`. */
-const DEFERRED_REFERENCES = ['assignedValue', 'groupMember', 'batchCount', 'castTarget'];
+const DEFERRED_REFERENCES = ['assignedValue', 'groupMember', 'batchCount', 'batchSources', 'castTarget'];
 const REFERENCE_PATH = /(?:\.([\w-]+)|\[(\d+)\])/g;
 
 interface SequenceState { definition: SequenceDefinition; currentIndex: number; step: number; }

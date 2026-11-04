@@ -3,5 +3,6 @@
   { "id": "forsaken", "name": "Forsaken", "file": "./forsaken.json", "prodready": true },
   { "id": "movement", "name": "Movement Effects", "file": "./movement.json" },
   { "id": "dmu_p3", "name": "Bowels of Agony", "file": "./crystals.json", "prodready": true },
-  { "id": "tethers", "name": "Tether Lab", "file": "./tethers.json" }
+  { "id": "tethers", "name": "Tether Lab", "file": "./tethers.json" },
+  { "id": "earthquake", "name": "Earthquake", "file": "./earthquake.json" }
 ]

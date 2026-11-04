@@ -186,6 +186,7 @@ export class Simulation {
     this.botManager.update(this.state);
     this.followManager.update(this.state);
     this.executor.resolveArenaEdge();
+    this.executor.updateProximity();
     // Last, so tethers see where everyone ended up this tick (and who just died).
     this.executor.updateTethers();
     if (this.state.time >= this.encounterDuration) { this.state.completed = true; this.state.running = false; }

@@ -1,7 +1,7 @@
 // Data integrity for every encounter in public/encounters: loader validation, dangling references and a smoke run.
 // Run with: npx tsx scripts/check-encounters.ts
 import { existsSync, readFileSync } from 'node:fs';
-import { collectEntityGraphics, validateMarkerReferences, validateTethers } from '../src/encounters/EncounterLoader';
+import { collectEntityGraphics, validateBatches, validateDelayedEffects, validateMarkerReferences, validateStatuses, validateTethers } from '../src/encounters/EncounterLoader';
 import { validateArenaDefinition } from '../src/geometry/Arena';
 import { resolvePositionValue } from '../src/geometry/Vector2';
 import { Simulation } from '../src/simulation/Simulation';
@@ -52,7 +52,7 @@ for (const id of ENCOUNTER_IDS) {
   const encounter = loadEncounter(id); const e = encounter as unknown as Json;
   const problems = (label: string, list: string[]) => check(`${id}: ${label}`, list.length === 0, list);
 
-  check(`${id}: arena, markers and tethers pass the loader's validation`, throwsMessage(() => {
+  check(`${id}: arena, markers, statuses, batches, delays and tethers pass the loader's validation`, throwsMessage(() => {
     if (encounter.arena) validateArenaDefinition(encounter.arena);
     const markerIds = new Set<string>();
     for (const marker of encounter.markers ?? []) {
@@ -63,10 +63,10 @@ for (const id of ENCOUNTER_IDS) {
       markerIds.add(marker.id);
     }
     validateMarkerReferences(encounter, markerIds);
-    validateTethers(encounter);
+    validateTethers(encounter); validateBatches(encounter); validateStatuses(encounter); validateDelayedEffects(encounter);
   }) === undefined, throwsMessage(() => {
     const markerIds = new Set((encounter.markers ?? []).map((marker) => marker.id));
-    validateMarkerReferences(encounter, markerIds); validateTethers(encounter);
+    validateMarkerReferences(encounter, markerIds); validateTethers(encounter); validateBatches(encounter); validateStatuses(encounter); validateDelayedEffects(encounter);
   }));
 
   const graphicNames = new Set([...(encounter.resources?.graphics ?? []), ...(encounter.markers ?? []).flatMap((marker) => marker.image ? [marker.image] : []), ...collectEntityGraphics([encounter.players, encounter.enemies, encounter.enemyTemplates, encounter.events, encounter.casts])]);

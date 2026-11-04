@@ -1,7 +1,7 @@
 import type { RunFlags } from '../streak/StreakTypes';
 
 /** Increment when simulation behavior changes so older recordings warn before playback. */
-export const SIM_VERSION = 2;
+export const SIM_VERSION = 3;
 export const REPLAY_FORMAT_VERSION = 1;
 /** One checkpoint hash per this many ticks (one simulated second at 60 ticks per second). */
 export const CHECKPOINT_INTERVAL_TICKS = 60;

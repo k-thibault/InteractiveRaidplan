@@ -95,13 +95,53 @@ export function validateTethers(encounter: Encounter): void {
   visit([encounter.events, encounter.casts, encounter.statuses, encounter.areas, encounter.batches, encounter.tethers]);
 }
 
+/** Validates batch windows, size limits and overflow modes. */
+export function validateBatches(encounter: Encounter): void {
+  for (const [name, batch] of Object.entries(encounter.batches ?? {})) {
+    if (batch.window !== undefined && !finiteAtLeast(batch.window, 0)) throw new Error(`Batch "${name}" window must be a non-negative number`);
+    if (batch.maxCount !== undefined && !(Number.isInteger(batch.maxCount) && batch.maxCount >= 1)) throw new Error(`Batch "${name}" maxCount must be a positive whole number`);
+    if (batch.overflow !== undefined && batch.overflow !== 'queue' && batch.overflow !== 'immediate') throw new Error(`Batch "${name}" overflow must be "queue" or "immediate"`);
+  }
+}
+
+/** Validates damage immunity and proximity settings on status definitions. */
+export function validateStatuses(encounter: Encounter): void {
+  for (const status of encounter.statuses ?? []) {
+    const where = `Status "${status.id}"`;
+    const immunity = status.damageImmunity;
+    if (immunity) {
+      if (immunity.mode !== 'invulnerable' && immunity.mode !== 'undying') throw new Error(`${where} damageImmunity mode must be "invulnerable" or "undying"`);
+      if (immunity.charges !== undefined && !(Number.isInteger(immunity.charges) && immunity.charges >= 1)) throw new Error(`${where} damageImmunity charges must be a positive whole number`);
+    }
+    const proximity = status.proximity;
+    if (proximity) {
+      if (!(typeof proximity.radius === 'number' && Number.isFinite(proximity.radius) && proximity.radius > 0)) throw new Error(`${where} proximity radius must be a positive number`);
+      if (!Array.isArray(proximity.effects) || proximity.effects.length === 0) throw new Error(`${where} proximity needs at least one effect`);
+      if (proximity.interval !== undefined && !(Number.isFinite(proximity.interval) && proximity.interval > 0)) throw new Error(`${where} proximity interval must be a positive number`);
+      if (proximity.interval !== undefined && proximity.fadeOnTrigger) throw new Error(`${where} proximity cannot combine interval with fadeOnTrigger`);
+    }
+  }
+}
+
+/** Validates delays on nested delayed effects. */
+export function validateDelayedEffects(encounter: Encounter): void {
+  const visit = (node: unknown): void => {
+    if (Array.isArray(node)) { node.forEach(visit); return; }
+    if (node === null || typeof node !== 'object') return;
+    const record = node as Record<string, unknown>;
+    if (record.type === 'delayed_effects' && !finiteAtLeast(record.delay, 0)) throw new Error('delayed_effects delay must be a non-negative number');
+    for (const child of Object.values(record)) visit(child);
+  };
+  visit([encounter.events, encounter.casts, encounter.statuses, encounter.areas, encounter.batches]);
+}
+
 /** Names of the library graphics used by entity `graphic` blocks anywhere in the encounter (players, enemies, templates, spawn events and effects). */
 export function collectEntityGraphics(node: unknown, found = new Set<string>()): Set<string> {
   if (Array.isArray(node)) { node.forEach((child) => collectEntityGraphics(child, found)); return found; }
   if (node === null || typeof node !== 'object') return found;
   for (const [key, value] of Object.entries(node as Record<string, unknown>)) {
     const image = (value as { image?: unknown } | null)?.image;
-    if (key === 'graphic' && typeof image === 'string' && !image.includes('$')) found.add(image);
+    if ((key === 'graphic' || key === 'casterGraphic') && typeof image === 'string' && !image.includes('$')) found.add(image);
     else collectEntityGraphics(value, found);
   }
   return found;
@@ -129,6 +169,9 @@ export async function loadEncounter(url: string): Promise<Encounter> {
   }
   validateMarkerReferences(encounter, markerIds);
   validateTethers(encounter);
+  validateBatches(encounter);
+  validateStatuses(encounter);
+  validateDelayedEffects(encounter);
   const graphics = [...new Set([
     ...(encounter.resources?.graphics ?? []),
     ...(encounter.markers?.flatMap((marker) => marker.image ? [marker.image] : []) ?? []),

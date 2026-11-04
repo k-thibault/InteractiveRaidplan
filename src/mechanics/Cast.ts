@@ -1,4 +1,8 @@
+import type { Entity, EntityGraphic } from '../entities/Entity';
 import type { EffectDefinition } from './Effect';
+
+/** Replaces the caster's own graphic; fields left out keep the caster's value. */
+export type CasterGraphic = Pick<EntityGraphic, 'image'> & Partial<EntityGraphic>;
 
 export interface CastDefinition {
   id: string;
@@ -12,6 +16,8 @@ export interface CastDefinition {
   suspendFollow?: { movement?: boolean; facing?: boolean };
   /** Draws the caster for the length of the cast, even while enemies are hidden. */
   revealCaster?: boolean;
+  /** Drawn in place of the caster's graphic until the cast completes. */
+  casterGraphic?: CasterGraphic;
 }
 
 /** Targeting resolves once at cast start. */
@@ -42,4 +48,12 @@ export interface ActiveCast {
   tetherId?: string;
   /** Copied from the definition when the cast starts. */
   revealsCaster?: boolean;
+  /** Copied from the definition when the cast starts. */
+  casterGraphic?: CasterGraphic;
+}
+
+/** The entity's own graphic, replaced by the newest active cast of its that sets `casterGraphic`. */
+export function displayedGraphic(entity: Entity, casts: readonly ActiveCast[]): EntityGraphic | undefined {
+  const override = [...casts].reverse().find((cast) => cast.sourceId === entity.id && cast.casterGraphic)?.casterGraphic;
+  return override ? { ...entity.graphic, ...override } : entity.graphic;
 }

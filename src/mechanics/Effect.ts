@@ -7,15 +7,22 @@ import type { KnockParams } from './Knock';
 import type { FollowInput } from '../bots/FollowManager';
 import type { SpawnTetherEffect, RemoveTetherEffect } from './Tether';
 
-export type DamageType = 'physical' | 'magical' | 'dark' | 'fire' | 'ice' | 'water' | 'wind' | 'poison';
-export interface DamageDefinition { amount: number; type: DamageType; fatal?: boolean; }
+export type DamageType = 'physical' | 'magical' | 'dark' | 'fire' | 'ice' | 'water' | 'wind' | 'earth' | 'poison';
+export interface DamageDefinition {
+  amount: number; type: DamageType; fatal?: boolean;
+  /** Ignores invulnerable and undying statuses, e.g. for enrage damage. */
+  bypassImmunity?: boolean;
+}
 /** `source` targets the effect source; `inside_others` excludes an area's anchor. */
 /** In tether hooks, `tethered` and `tether_source` target the current holder and source. */
-export type EffectTarget = 'inside' | 'inside_others' | 'outside' | 'all' | 'source' | 'tethered' | 'tether_source' | PlayerSelector;
+/** In proximity hooks, `proximity_target` is the player who triggered it. */
+export type EffectTarget = 'inside' | 'inside_others' | 'outside' | 'all' | 'source' | 'tethered' | 'tether_source' | 'proximity_target' | PlayerSelector;
 export interface HealEffect { type: 'heal'; target: EffectTarget; amount?: number; full?: boolean; }
 export interface DamageEffect { type: 'damage'; target: EffectTarget; damage: DamageDefinition; }
 export interface ApplyStatusEffect {
-  type: 'apply_status'; target: EffectTarget; duration?: number; stacks?: number;
+  type: 'apply_status'; target?: EffectTarget; duration?: number; stacks?: number;
+  /** Applies to this one entity (e.g. an enemy) instead of the selected players. */
+  targetEntity?: string;
   /** Fixed status id. Mutually exclusive with `statusChoices`. */
   status?: string;
   /** Rolled independently for each target when the effect executes. */
@@ -38,10 +45,17 @@ export interface KnockEffect extends KnockParams { type: 'knock'; target: Effect
 export interface StartFollowEffect extends FollowInput { type: 'start_follow'; source?: string; }
 /** Ends follow mode on `source` (the effect's source entity when unset). */
 export interface StopFollowEffect { type: 'stop_follow'; source?: string; }
-/** Counts toward the named batch; see `BatchDefinition`. */
+/** Counts toward the named batch; see `BatchDefinition`. The effect's source is remembered as `$batchSources`. */
 export interface AddToBatchEffect { type: 'add_to_batch'; batch: string; }
-/** Collects calls over a window, then runs effects with `$batchCount`. */
-export interface BatchDefinition { window?: number; effects: EffectDefinition[]; }
+/** Collects calls over a window, then runs effects with `$batchCount` and `$batchSources` (who made each call). */
+export interface BatchDefinition {
+  window?: number;
+  /** Most calls one batch takes. Further calls carry into a new batch; unlimited when omitted. */
+  maxCount?: number;
+  /** When a carried-over batch's window starts: once the batch before it resolves (`queue`, the default) or as soon as it is created. */
+  overflow?: 'queue' | 'immediate';
+  effects: EffectDefinition[];
+}
 export interface RecalculateRolesEffect { type: 'recalculate_roles'; group?: string; }
 export interface RecalculatePositionsEffect { type: 'recalculate_positions'; group?: string; params?: Record<string, number>; }
 /** Re-matches facing rules for every player and enemy against the `facing` definitions. */

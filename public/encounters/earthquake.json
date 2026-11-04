@@ -1,0 +1,1721 @@
+{
+  "version": 5,
+  "name": "Earthquake",
+  "duration": 50000,
+  "arena": {
+    "shape": "circle",
+    "radius": 8,
+    "edge": "deadly"
+  },
+  "background": "bg-dmup3",
+  "resources": {
+    "graphics": [
+      "bg-dmup3",
+      "boss-chaos",
+      "boss-exdeath",
+      "object-earth-crystal",
+      "object-black-orb",
+      "boss-striker",
+      "boss-striker-left",
+      "boss-striker-right",
+      "icon-crust",
+      "icon-accretion",
+      "icon-earth-vulnerability",
+      "icon-limitcut-1",
+      "icon-limitcut-2",
+      "icon-limitcut-3"
+    ]
+  },
+  "randomGroups": {
+    "strike": {
+      "mode": "choice",
+      "values": [
+        {
+          "angle": 0,
+          "cast": "strike-left",
+          "hitAngle": 90,
+          "safeAngle": 270,
+          "call": "North, left"
+        },
+        {
+          "angle": 0,
+          "cast": "strike-right",
+          "hitAngle": 270,
+          "safeAngle": 90,
+          "call": "North, right"
+        },
+        {
+          "angle": 45,
+          "cast": "strike-left",
+          "hitAngle": 135,
+          "safeAngle": 315,
+          "call": "Northeast, left"
+        },
+        {
+          "angle": 45,
+          "cast": "strike-right",
+          "hitAngle": 315,
+          "safeAngle": 135,
+          "call": "Northeast, right"
+        },
+        {
+          "angle": 90,
+          "cast": "strike-left",
+          "hitAngle": 180,
+          "safeAngle": 0,
+          "call": "East, left"
+        },
+        {
+          "angle": 90,
+          "cast": "strike-right",
+          "hitAngle": 0,
+          "safeAngle": 180,
+          "call": "East, right"
+        },
+        {
+          "angle": 135,
+          "cast": "strike-left",
+          "hitAngle": 225,
+          "safeAngle": 45,
+          "call": "Southeast, left"
+        },
+        {
+          "angle": 135,
+          "cast": "strike-right",
+          "hitAngle": 45,
+          "safeAngle": 225,
+          "call": "Southeast, right"
+        },
+        {
+          "angle": 180,
+          "cast": "strike-left",
+          "hitAngle": 270,
+          "safeAngle": 90,
+          "call": "South, left"
+        },
+        {
+          "angle": 180,
+          "cast": "strike-right",
+          "hitAngle": 90,
+          "safeAngle": 270,
+          "call": "South, right"
+        },
+        {
+          "angle": 225,
+          "cast": "strike-left",
+          "hitAngle": 315,
+          "safeAngle": 135,
+          "call": "Southwest, left"
+        },
+        {
+          "angle": 225,
+          "cast": "strike-right",
+          "hitAngle": 135,
+          "safeAngle": 315,
+          "call": "Southwest, right"
+        },
+        {
+          "angle": 270,
+          "cast": "strike-left",
+          "hitAngle": 0,
+          "safeAngle": 180,
+          "call": "West, left"
+        },
+        {
+          "angle": 270,
+          "cast": "strike-right",
+          "hitAngle": 180,
+          "safeAngle": 0,
+          "call": "West, right"
+        },
+        {
+          "angle": 315,
+          "cast": "strike-left",
+          "hitAngle": 45,
+          "safeAngle": 225,
+          "call": "Northwest, left"
+        },
+        {
+          "angle": 315,
+          "cast": "strike-right",
+          "hitAngle": 225,
+          "safeAngle": 45,
+          "call": "Northwest, right"
+        }
+      ]
+    },
+    "laserOrbs": {
+      "mode": "choice",
+      "values": [
+        {
+          "first": "orb-n",
+          "a": "orb-s",
+          "b": "orb-w"
+        },
+        {
+          "first": "orb-n",
+          "a": "orb-e",
+          "b": "orb-w"
+        },
+        {
+          "first": "orb-n",
+          "a": "orb-e",
+          "b": "orb-s"
+        },
+        {
+          "first": "orb-e",
+          "a": "orb-s",
+          "b": "orb-w"
+        },
+        {
+          "first": "orb-e",
+          "a": "orb-n",
+          "b": "orb-w"
+        },
+        {
+          "first": "orb-e",
+          "a": "orb-n",
+          "b": "orb-s"
+        },
+        {
+          "first": "orb-s",
+          "a": "orb-e",
+          "b": "orb-w"
+        },
+        {
+          "first": "orb-s",
+          "a": "orb-n",
+          "b": "orb-w"
+        },
+        {
+          "first": "orb-s",
+          "a": "orb-n",
+          "b": "orb-e"
+        },
+        {
+          "first": "orb-w",
+          "a": "orb-e",
+          "b": "orb-s"
+        },
+        {
+          "first": "orb-w",
+          "a": "orb-n",
+          "b": "orb-s"
+        },
+        {
+          "first": "orb-w",
+          "a": "orb-n",
+          "b": "orb-e"
+        }
+      ]
+    }
+  },
+  "markers": [
+    {
+      "id": "A",
+      "position": {
+        "x": 0.0,
+        "y": -5.2
+      },
+      "character": "A",
+      "border": {
+        "shape": "circle",
+        "radius": 0.6
+      },
+      "color": "#ff0000"
+    },
+    {
+      "id": "1",
+      "position": {
+        "x": 5.2,
+        "y": -5.2
+      },
+      "character": "1",
+      "border": {
+        "shape": "square",
+        "radius": 0.6
+      },
+      "color": "#ff0000"
+    },
+    {
+      "id": "B",
+      "position": {
+        "x": 5.2,
+        "y": 0.0
+      },
+      "character": "B",
+      "border": {
+        "shape": "circle",
+        "radius": 0.6
+      },
+      "color": "#dddd00"
+    },
+    {
+      "id": "2",
+      "position": {
+        "x": 5.2,
+        "y": 5.2
+      },
+      "character": "2",
+      "border": {
+        "shape": "square",
+        "radius": 0.6
+      },
+      "color": "#dddd00"
+    },
+    {
+      "id": "C",
+      "position": {
+        "x": 0.0,
+        "y": 5.2
+      },
+      "character": "C",
+      "border": {
+        "shape": "circle",
+        "radius": 0.6
+      },
+      "color": "#1155ff"
+    },
+    {
+      "id": "3",
+      "position": {
+        "x": -5.2,
+        "y": 5.2
+      },
+      "character": "3",
+      "border": {
+        "shape": "square",
+        "radius": 0.6
+      },
+      "color": "#1155ff"
+    },
+    {
+      "id": "D",
+      "position": {
+        "x": -5.2,
+        "y": 0.0
+      },
+      "character": "D",
+      "border": {
+        "shape": "circle",
+        "radius": 0.6
+      },
+      "color": "#8800ee"
+    },
+    {
+      "id": "4",
+      "position": {
+        "x": -5.2,
+        "y": -5.2
+      },
+      "character": "4",
+      "border": {
+        "shape": "square",
+        "radius": 0.6
+      },
+      "color": "#8800ee"
+    }
+  ],
+  "areas": {
+    "earth-aoe": {
+      "shape": "circle",
+      "radius": 20,
+      "label": "earth-aoe",
+      "element": "earth",
+      "telegraphDuration": 1500,
+      "duration": 500,
+      "executionColor": "#b08a4a",
+      "resolution": [
+        {
+          "condition": {
+            "type": "player_count",
+            "min": 0
+          },
+          "effects": [
+            {
+              "type": "damage",
+              "target": "inside_others",
+              "damage": {
+                "amount": 50,
+                "type": "earth"
+              }
+            },
+            {
+              "type": "apply_status",
+              "target": "inside_others",
+              "status": "earth-vulnerability",
+              "duration": 4000
+            }
+          ]
+        }
+      ]
+    },
+    "strike-half": {
+      "shape": "cone",
+      "radius": 30,
+      "angle": 180,
+      "label": "earth-strike",
+      "element": "earth",
+      "telegraphDuration": 0,
+      "duration": 500,
+      "executionColor": "#d95757",
+      "resolution": [
+        {
+          "condition": {
+            "type": "player_count",
+            "min": 0
+          },
+          "effects": [
+            {
+              "type": "damage",
+              "target": "inside",
+              "damage": {
+                "amount": 999,
+                "type": "earth",
+                "fatal": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "orb-laser": {
+      "shape": "line",
+      "radius": 20,
+      "width": 3,
+      "label": "orb-laser",
+      "element": "dark",
+      "telegraphDuration": 0,
+      "duration": 500,
+      "executionColor": "#9b5cff",
+      "resolution": [
+        {
+          "condition": {
+            "type": "player_count",
+            "min": 0
+          },
+          "effects": [
+            {
+              "type": "damage",
+              "target": "inside",
+              "damage": {
+                "amount": 40,
+                "type": "dark"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "batches": {
+    "earth": {
+      "window": 1000,
+      "maxCount": 1,
+      "overflow": "queue",
+      "effects": [
+        {
+          "type": "spawn_area",
+          "area": "earth-aoe",
+          "source": "$batchSources[0]"
+        }
+      ]
+    }
+  },
+  "tethers": {
+    "orb-link": {
+      "name": "Gravity",
+      "duration": 3200,
+      "style": {
+        "color": "#b07cff",
+        "width": 0.12,
+        "dash": [
+          0.4,
+          0.3
+        ],
+        "glow": true
+      }
+    }
+  },
+  "statuses": [
+    {
+      "id": "quake-guard",
+      "name": "Quake Guard",
+      "hidden": true,
+      "damageImmunity": {
+        "mode": "undying",
+        "charges": 1
+      }
+    },
+    {
+      "id": "crust",
+      "name": "Crust",
+      "icon": "icon-crust",
+      "damageImmunity": {
+        "mode": "undying",
+        "charges": 1
+      },
+      "onRemove": [
+        {
+          "type": "add_to_batch",
+          "batch": "earth"
+        }
+      ]
+    },
+    {
+      "id": "accretion",
+      "name": "Accretion",
+      "icon": "icon-accretion",
+      "onExpire": [
+        {
+          "type": "damage",
+          "target": "source",
+          "damage": {
+            "amount": 0,
+            "type": "earth",
+            "fatal": true,
+            "bypassImmunity": true
+          }
+        }
+      ],
+      "onRemove": [
+        {
+          "type": "add_to_batch",
+          "batch": "earth"
+        }
+      ]
+    },
+    {
+      "id": "first",
+      "name": "First",
+      "icon": "icon-limitcut-1"
+    },
+    {
+      "id": "second",
+      "name": "Second",
+      "icon": "icon-limitcut-2"
+    },
+    {
+      "id": "third",
+      "name": "Third",
+      "icon": "icon-limitcut-3"
+    },
+    {
+      "id": "earth-vulnerability",
+      "name": "Earth Vulnerability",
+      "icon": "icon-earth-vulnerability",
+      "tags": [
+        "vulnerability"
+      ],
+      "damageTaken": [
+        {
+          "damageType": "earth",
+          "fatal": true
+        }
+      ]
+    },
+    {
+      "id": "orb-armed",
+      "name": "Singularity",
+      "hidden": true,
+      "proximity": {
+        "radius": 1.5,
+        "effects": [
+          {
+            "type": "damage",
+            "target": "proximity_target",
+            "damage": {
+              "amount": 0,
+              "type": "dark",
+              "fatal": true,
+              "bypassImmunity": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "laser-pick",
+      "name": "Laser Pick",
+      "hidden": true
+    }
+  ],
+  "casts": {
+    "earthquake": {
+      "id": "earthquake",
+      "name": "Earthquake",
+      "castTime": 5000,
+      "visible": true,
+      "effects": [
+        {
+          "type": "apply_status",
+          "target": {
+            "type": "all"
+          },
+          "status": "quake-guard"
+        },
+        {
+          "type": "damage",
+          "target": {
+            "type": "all"
+          },
+          "damage": {
+            "amount": 9999,
+            "type": "earth"
+          }
+        },
+        {
+          "type": "apply_status",
+          "replayId": "quake-accretion-healer",
+          "target": {
+            "type": "random",
+            "count": 1,
+            "role": "healer"
+          },
+          "status": "accretion",
+          "duration": 9000
+        },
+        {
+          "type": "apply_status",
+          "replayId": "quake-accretion-damage",
+          "target": {
+            "type": "random",
+            "count": 1,
+            "role": "damage"
+          },
+          "status": "accretion",
+          "duration": 12000
+        },
+        {
+          "type": "select_group",
+          "name": "first",
+          "replayId": "quake-first",
+          "selector": {
+            "type": "or",
+            "selectors": [
+              {
+                "type": "random",
+                "count": 1,
+                "roles": [
+                  "tank",
+                  "healer"
+                ],
+                "from": {
+                  "type": "without_status",
+                  "status": "accretion"
+                }
+              },
+              {
+                "type": "random",
+                "count": 1,
+                "role": "damage",
+                "from": {
+                  "type": "without_status",
+                  "status": "accretion"
+                }
+              },
+              {
+                "type": "random",
+                "count": 1,
+                "from": {
+                  "type": "with_status",
+                  "status": "accretion"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "apply_status",
+          "target": {
+            "type": "from_group",
+            "group": "first"
+          },
+          "status": "crust",
+          "duration": 60000
+        },
+        {
+          "type": "apply_status",
+          "target": {
+            "type": "from_group",
+            "group": "first"
+          },
+          "status": "first",
+          "duration": 60000
+        },
+        {
+          "type": "select_group",
+          "name": "second",
+          "replayId": "quake-second",
+          "selector": {
+            "type": "or",
+            "selectors": [
+              {
+                "type": "random",
+                "count": 1,
+                "roles": [
+                  "tank",
+                  "healer"
+                ],
+                "from": {
+                  "type": "and",
+                  "selectors": [
+                    {
+                      "type": "without_status",
+                      "status": "first"
+                    },
+                    {
+                      "type": "without_status",
+                      "status": "accretion"
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "random",
+                "count": 1,
+                "role": "damage",
+                "from": {
+                  "type": "and",
+                  "selectors": [
+                    {
+                      "type": "without_status",
+                      "status": "first"
+                    },
+                    {
+                      "type": "without_status",
+                      "status": "accretion"
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "random",
+                "count": 1,
+                "from": {
+                  "type": "and",
+                  "selectors": [
+                    {
+                      "type": "with_status",
+                      "status": "accretion"
+                    },
+                    {
+                      "type": "without_status",
+                      "status": "first"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "apply_status",
+          "target": {
+            "type": "from_group",
+            "group": "second"
+          },
+          "status": "crust",
+          "duration": 70000
+        },
+        {
+          "type": "apply_status",
+          "target": {
+            "type": "from_group",
+            "group": "second"
+          },
+          "status": "second",
+          "duration": 70000
+        },
+        {
+          "type": "select_group",
+          "name": "third",
+          "replayId": "quake-third",
+          "selector": {
+            "type": "and",
+            "selectors": [
+              {
+                "type": "without_status",
+                "status": "first"
+              },
+              {
+                "type": "without_status",
+                "status": "second"
+              }
+            ]
+          }
+        },
+        {
+          "type": "apply_status",
+          "target": {
+            "type": "from_group",
+            "group": "third"
+          },
+          "status": "crust",
+          "duration": 80000
+        },
+        {
+          "type": "apply_status",
+          "target": {
+            "type": "from_group",
+            "group": "third"
+          },
+          "status": "third",
+          "duration": 80000
+        }
+      ]
+    },
+    "black-hole": {
+      "id": "black-hole",
+      "name": "Black Hole",
+      "castTime": 4000,
+      "visible": true,
+      "effects": [
+        {
+          "type": "spawn_enemy",
+          "enemyId": "orb-n",
+          "enemy": "orb",
+          "position": {
+            "type": "polar",
+            "angle": 0,
+            "radius": 7
+          },
+          "expiresAfter": 16000
+        },
+        {
+          "type": "spawn_enemy",
+          "enemyId": "orb-e",
+          "enemy": "orb",
+          "position": {
+            "type": "polar",
+            "angle": 90,
+            "radius": 7
+          },
+          "expiresAfter": 16000
+        },
+        {
+          "type": "spawn_enemy",
+          "enemyId": "orb-s",
+          "enemy": "orb",
+          "position": {
+            "type": "polar",
+            "angle": 180,
+            "radius": 7
+          },
+          "expiresAfter": 16000
+        },
+        {
+          "type": "spawn_enemy",
+          "enemyId": "orb-w",
+          "enemy": "orb",
+          "position": {
+            "type": "polar",
+            "angle": 270,
+            "radius": 7
+          },
+          "expiresAfter": 16000
+        },
+        {
+          "type": "delayed_effects",
+          "delay": 3000,
+          "effects": [
+            {
+              "type": "apply_status",
+              "targetEntity": "orb-n",
+              "status": "orb-armed"
+            },
+            {
+              "type": "apply_status",
+              "targetEntity": "orb-e",
+              "status": "orb-armed"
+            },
+            {
+              "type": "apply_status",
+              "targetEntity": "orb-s",
+              "status": "orb-armed"
+            },
+            {
+              "type": "apply_status",
+              "targetEntity": "orb-w",
+              "status": "orb-armed"
+            }
+          ]
+        }
+      ]
+    },
+    "strike-left": {
+      "id": "strike-left",
+      "name": "Fissure",
+      "castTime": 4000,
+      "visible": true,
+      "casterGraphic": {
+        "image": "boss-striker-left"
+      },
+      "effects": [
+        {
+          "type": "spawn_area",
+          "area": "strike-half",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "rotationOffset": {
+            "$sub": [
+              "$strike.hitAngle",
+              90
+            ]
+          }
+        }
+      ]
+    },
+    "strike-right": {
+      "id": "strike-right",
+      "name": "Fissure",
+      "castTime": 4000,
+      "visible": true,
+      "casterGraphic": {
+        "image": "boss-striker-right"
+      },
+      "effects": [
+        {
+          "type": "spawn_area",
+          "area": "strike-half",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "rotationOffset": {
+            "$sub": [
+              "$strike.hitAngle",
+              90
+            ]
+          }
+        }
+      ]
+    },
+    "orb-laser": {
+      "id": "orb-laser",
+      "name": "Event Horizon",
+      "castTime": 3000,
+      "visible": true,
+      "effects": [
+        {
+          "type": "spawn_area",
+          "area": "orb-laser",
+          "direction": "cast_target"
+        }
+      ]
+    }
+  },
+  "positions": {
+    "strike-dodge": [
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-1"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": "$strike.safeAngle",
+          "angleOffset": -40,
+          "radius": 3.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-2"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": "$strike.safeAngle",
+          "angleOffset": 40,
+          "radius": 3.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-3"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": "$strike.safeAngle",
+          "angleOffset": -40,
+          "radius": 4.2
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-4"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": "$strike.safeAngle",
+          "angleOffset": 40,
+          "radius": 4.2
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-5"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": "$strike.safeAngle",
+          "angleOffset": 0,
+          "radius": 3.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-6"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": "$strike.safeAngle",
+          "angleOffset": 0,
+          "radius": 4.2
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-7"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": "$strike.safeAngle",
+          "angleOffset": -20,
+          "radius": 5.2
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-8"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": "$strike.safeAngle",
+          "angleOffset": 20,
+          "radius": 5.2
+        }
+      }
+    ],
+    "orb-hold": [
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-1"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 45,
+          "radius": 3.2
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-2"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 225,
+          "radius": 3.2
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-3"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 135,
+          "radius": 3.2
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-4"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 315,
+          "radius": 3.2
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-5"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 45,
+          "radius": 4.6
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-6"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 225,
+          "radius": 4.6
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-7"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 135,
+          "radius": 4.6
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-8"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 315,
+          "radius": 4.6
+        }
+      }
+    ]
+  },
+  "enemyTemplates": {
+    "earth-crystal": {
+      "name": "Earth",
+      "forceVisible": true,
+      "style": {
+        "type": "diamond",
+        "radius": 0.7,
+        "color": "#b08a4a"
+      },
+      "graphic": {
+        "image": "object-earth-crystal",
+        "replaceShape": true,
+        "rotate": false
+      }
+    },
+    "earth-striker": {
+      "name": "Gaia",
+      "forceVisible": true,
+      "style": {
+        "type": "circle",
+        "radius": 1,
+        "color": "#c9a15f"
+      },
+      "graphic": {
+        "image": "boss-striker",
+        "radius": 1.4,
+        "replaceShape": true,
+        "rotate": true
+      }
+    },
+    "orb": {
+      "name": "Singularity",
+      "forceVisible": true,
+      "style": {
+        "type": "circle",
+        "radius": 0.5,
+        "color": "#7a3cc8"
+      },
+      "graphic": {
+        "image": "object-black-orb",
+        "radius": 0.7,
+        "replaceShape": true,
+        "rotate": false
+      }
+    }
+  },
+  "players": [
+    {
+      "id": "mt",
+      "name": "Omni",
+      "type": "player",
+      "role": "tank",
+      "color": "#4d8dff",
+      "team": "red",
+      "flexPriority": 1,
+      "mechanicalRoles": [
+        "small_tank",
+        "spot-1"
+      ],
+      "moveSpeed": 5,
+      "health": 200,
+      "alive": true,
+      "position": {
+        "x": 5,
+        "y": -3
+      },
+      "statuses": [],
+      "focus": "boss-small"
+    },
+    {
+      "id": "ot",
+      "name": "Corn",
+      "type": "player",
+      "role": "tank",
+      "color": "#4d8dff",
+      "team": "purple",
+      "flexPriority": 1,
+      "mechanicalRoles": [
+        "large_tank",
+        "spot-2"
+      ],
+      "moveSpeed": 5,
+      "health": 200,
+      "alive": true,
+      "position": {
+        "x": -5,
+        "y": -4
+      },
+      "statuses": [],
+      "focus": "boss-large"
+    },
+    {
+      "id": "h1",
+      "name": "Helmut",
+      "type": "player",
+      "role": "healer",
+      "color": "#4cd97b",
+      "team": "purple",
+      "flexPriority": 4,
+      "mechanicalRoles": [
+        "spot-3"
+      ],
+      "moveSpeed": 5,
+      "health": 100,
+      "alive": true,
+      "position": {
+        "x": -2,
+        "y": 4
+      },
+      "statuses": [],
+      "focus": "boss-large"
+    },
+    {
+      "id": "h2",
+      "name": "Xqk",
+      "type": "player",
+      "role": "healer",
+      "color": "#4cd97b",
+      "team": "red",
+      "flexPriority": 4,
+      "mechanicalRoles": [
+        "spot-4"
+      ],
+      "moveSpeed": 5,
+      "health": 100,
+      "alive": true,
+      "position": {
+        "x": 2,
+        "y": 4
+      },
+      "statuses": [],
+      "focus": "boss-small"
+    },
+    {
+      "id": "m1",
+      "name": "Mike",
+      "type": "player",
+      "role": "damage",
+      "color": "#ff5a4f",
+      "team": "blue",
+      "flexPriority": 2,
+      "mechanicalRoles": [
+        "spot-5"
+      ],
+      "moveSpeed": 5,
+      "health": 100,
+      "alive": true,
+      "position": {
+        "x": -5,
+        "y": 4
+      },
+      "statuses": [],
+      "damagePosition": "melee",
+      "focus": "boss-large",
+      "followFocus": true
+    },
+    {
+      "id": "m2",
+      "name": "Aaragon",
+      "type": "player",
+      "role": "damage",
+      "color": "#ff5a4f",
+      "team": "yellow",
+      "flexPriority": 2,
+      "mechanicalRoles": [
+        "spot-6"
+      ],
+      "moveSpeed": 5,
+      "health": 100,
+      "alive": true,
+      "position": {
+        "x": -3.5,
+        "y": 3.5
+      },
+      "statuses": [],
+      "damagePosition": "melee",
+      "focus": "boss-large",
+      "followFocus": true
+    },
+    {
+      "id": "r1",
+      "name": "Lynfel",
+      "type": "player",
+      "role": "damage",
+      "color": "#ff5a4f",
+      "team": "blue",
+      "flexPriority": 3,
+      "mechanicalRoles": [
+        "spot-7"
+      ],
+      "moveSpeed": 5,
+      "health": 100,
+      "alive": true,
+      "position": {
+        "x": 3.5,
+        "y": 3.5
+      },
+      "statuses": [],
+      "damagePosition": "ranged",
+      "focus": "boss-small"
+    },
+    {
+      "id": "r2",
+      "name": "L'leilah",
+      "type": "player",
+      "role": "damage",
+      "color": "#ff5a4f",
+      "team": "yellow",
+      "flexPriority": 3,
+      "mechanicalRoles": [
+        "spot-8"
+      ],
+      "moveSpeed": 5,
+      "health": 100,
+      "alive": true,
+      "position": {
+        "x": 5,
+        "y": 4
+      },
+      "statuses": [],
+      "damagePosition": "ranged",
+      "focus": "boss-small"
+    }
+  ],
+  "enemies": [
+    {
+      "id": "boss-large",
+      "name": "Chaos",
+      "type": "enemy",
+      "alive": true,
+      "position": {
+        "x": -3.4,
+        "y": 0
+      },
+      "style": {
+        "type": "ring",
+        "radius": 2.8
+      },
+      "graphic": {
+        "image": "boss-chaos",
+        "radius": 2.1,
+        "rotate": true
+      },
+      "statuses": []
+    },
+    {
+      "id": "boss-small",
+      "name": "Exdeath",
+      "type": "enemy",
+      "alive": true,
+      "position": {
+        "x": 3.2,
+        "y": 0
+      },
+      "style": {
+        "type": "ring",
+        "radius": 2.0
+      },
+      "graphic": {
+        "image": "boss-exdeath",
+        "radius": 1.5,
+        "rotate": true
+      },
+      "statuses": []
+    }
+  ],
+  "events": [
+    {
+      "id": "default-mechanic",
+      "at": 0,
+      "type": "set_mechanic",
+      "mechanic": "default"
+    },
+    {
+      "id": "earth-crystal-spawn",
+      "at": 0,
+      "type": "spawn_enemy",
+      "enemyId": "earth-crystal",
+      "enemy": "earth-crystal",
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "earthquake-shotcall",
+      "at": 2000,
+      "type": "set_shotcall",
+      "text": "Earthquake",
+      "duration": 3000
+    },
+    {
+      "id": "earthquake-cast",
+      "at": 3000,
+      "type": "start_cast",
+      "source": "boss-large",
+      "cast": "earthquake",
+      "mechanic": "earthquake"
+    },
+    {
+      "id": "quake-heal-survive",
+      "at": 9000,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "amount": 60,
+      "full": false
+    },
+    {
+      "id": "quake-heal-healer",
+      "at": 10000,
+      "type": "heal",
+      "target": {
+        "type": "and",
+        "selectors": [
+          {
+            "type": "with_status",
+            "status": "accretion"
+          },
+          {
+            "type": "role",
+            "role": "healer"
+          }
+        ]
+      },
+      "full": true
+    },
+    {
+      "id": "quake-cleanse-healer",
+      "at": 10000,
+      "type": "remove_status",
+      "target": {
+        "type": "and",
+        "selectors": [
+          {
+            "type": "with_status",
+            "status": "accretion"
+          },
+          {
+            "type": "role",
+            "role": "healer"
+          }
+        ]
+      },
+      "status": "accretion"
+    },
+    {
+      "id": "quake-heal-all",
+      "at": 15000,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "quake-cleanse-all",
+      "at": 15000,
+      "type": "remove_status",
+      "target": {
+        "type": "all"
+      },
+      "status": "accretion"
+    },
+    {
+      "id": "chain-heal-1",
+      "at": 19000,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "strike-spawn",
+      "at": 21000,
+      "type": "spawn_enemy",
+      "enemyId": "striker",
+      "enemy": "earth-striker",
+      "position": {
+        "type": "polar",
+        "angle": "$strike.angle",
+        "radius": 9.2
+      },
+      "expiresAfter": 6000
+    },
+    {
+      "id": "strike-cast",
+      "at": 21000,
+      "type": "start_cast",
+      "source": "striker",
+      "cast": "$strike.cast",
+      "mechanic": "strike",
+      "facing": {
+        "type": "entity",
+        "id": "earth-crystal"
+      }
+    },
+    {
+      "id": "strike-shotcall",
+      "at": 21000,
+      "type": "set_shotcall",
+      "text": "${strike.call}",
+      "duration": 4000
+    },
+    {
+      "id": "strike-dodge",
+      "at": 21000,
+      "type": "recalculate_positions",
+      "group": "strike-dodge"
+    },
+    {
+      "id": "orb-hold",
+      "at": 28000,
+      "type": "recalculate_positions",
+      "group": "orb-hold"
+    },
+    {
+      "id": "black-hole-cast",
+      "at": 29000,
+      "type": "start_cast",
+      "source": "boss-small",
+      "cast": "black-hole",
+      "mechanic": "black-hole"
+    },
+    {
+      "id": "black-hole-shotcall",
+      "at": 29000,
+      "type": "set_shotcall",
+      "text": "Black hole, stay off the orbs",
+      "duration": 4000
+    },
+    {
+      "id": "laser-1-heal",
+      "at": 37000,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "laser-1-pick",
+      "at": 37000,
+      "type": "select_group",
+      "name": "laser-1",
+      "selector": {
+        "type": "random",
+        "count": 1
+      },
+      "replayId": "laser-1"
+    },
+    {
+      "id": "laser-1-tether",
+      "at": 37500,
+      "type": "spawn_tether",
+      "source": "$laserOrbs.first",
+      "tether": "orb-link",
+      "target": {
+        "type": "from_group",
+        "group": "laser-1"
+      }
+    },
+    {
+      "id": "laser-1-cast",
+      "at": 37500,
+      "type": "start_cast",
+      "source": "$laserOrbs.first",
+      "cast": "orb-laser",
+      "facing": {
+        "type": "tether",
+        "tether": "orb-link"
+      }
+    },
+    {
+      "id": "laser-1-shotcall",
+      "at": 37500,
+      "type": "set_shotcall",
+      "text": "Tether, line incoming",
+      "duration": 3000
+    },
+    {
+      "id": "laser-2-heal",
+      "at": 43000,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "laser-2a-pick",
+      "at": 43000,
+      "type": "select_group",
+      "name": "laser-2a",
+      "selector": {
+        "type": "random",
+        "count": 1
+      },
+      "replayId": "laser-2a"
+    },
+    {
+      "id": "laser-2a-mark",
+      "at": 43000,
+      "type": "apply_status",
+      "target": {
+        "type": "from_group",
+        "group": "laser-2a"
+      },
+      "status": "laser-pick",
+      "duration": 8000
+    },
+    {
+      "id": "laser-2b-pick",
+      "at": 43000,
+      "type": "select_group",
+      "name": "laser-2b",
+      "selector": {
+        "type": "random",
+        "count": 1,
+        "from": {
+          "type": "without_status",
+          "status": "laser-pick"
+        }
+      },
+      "replayId": "laser-2b"
+    },
+    {
+      "id": "laser-2a-tether",
+      "at": 43500,
+      "type": "spawn_tether",
+      "source": "$laserOrbs.a",
+      "tether": "orb-link",
+      "target": {
+        "type": "from_group",
+        "group": "laser-2a"
+      }
+    },
+    {
+      "id": "laser-2a-cast",
+      "at": 43500,
+      "type": "start_cast",
+      "source": "$laserOrbs.a",
+      "cast": "orb-laser",
+      "facing": {
+        "type": "tether",
+        "tether": "orb-link"
+      }
+    },
+    {
+      "id": "laser-2b-tether",
+      "at": 43500,
+      "type": "spawn_tether",
+      "source": "$laserOrbs.b",
+      "tether": "orb-link",
+      "target": {
+        "type": "from_group",
+        "group": "laser-2b"
+      }
+    },
+    {
+      "id": "laser-2b-cast",
+      "at": 43500,
+      "type": "start_cast",
+      "source": "$laserOrbs.b",
+      "cast": "orb-laser",
+      "facing": {
+        "type": "tether",
+        "tether": "orb-link"
+      }
+    },
+    {
+      "id": "laser-2-shotcall",
+      "at": 43500,
+      "type": "set_shotcall",
+      "text": "Two tethers, lines incoming",
+      "duration": 3000
+    },
+    {
+      "id": "final-heal",
+      "at": 48500,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    }
+  ]
+}

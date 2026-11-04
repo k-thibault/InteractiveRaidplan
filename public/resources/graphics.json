@@ -37,5 +37,13 @@
   "object-wind-crystal": "/resources/graphics/object-wind-crystal.svg",
   "object-fire-crystal": "/resources/graphics/object-fire-crystal.svg",
   "object-water-crystal": "/resources/graphics/object-water-crystal.svg",
-  "signal-incoming-strike": "/resources/graphics/signal-incoming-strike.svg"
+  "signal-incoming-strike": "/resources/graphics/signal-incoming-strike.svg",
+  "object-earth-crystal": "/resources/graphics/object-earth-crystal.svg",
+  "object-black-orb": "/resources/graphics/object-black-orb.svg",
+  "boss-striker": "/resources/graphics/boss-striker.svg",
+  "boss-striker-left": "/resources/graphics/boss-striker-left.svg",
+  "boss-striker-right": "/resources/graphics/boss-striker-right.svg",
+  "icon-crust": "/resources/graphics/icon-crust.svg",
+  "icon-accretion": "/resources/graphics/icon-accretion.svg",
+  "icon-earth-vulnerability": "/resources/graphics/icon-earth-vulnerability.svg"
 }
