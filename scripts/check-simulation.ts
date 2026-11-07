@@ -28,6 +28,8 @@ const statuses = [
   { id: 'aura', name: 'Aura', proximity: { radius: 3, effects: [{ type: 'damage', target: 'proximity_target', damage: { amount: 10, type: 'magical' } }] } },
   { id: 'aura-fade', name: 'Aura fade', proximity: { radius: 3, fadeOnTrigger: true, effects: [{ type: 'damage', target: 'proximity_target', damage: { amount: 10, type: 'magical' } }] } },
   { id: 'trap', name: 'Trap', hidden: true, proximity: { radius: 3, effects: [{ type: 'damage', target: 'proximity_target', damage: { amount: 0, type: 'dark', fatal: true, bypassImmunity: true } }] } },
+  { id: 'cursed', name: 'Cursed', maxStacks: 2, onMaxStacks: [{ type: 'remove_status', target: 'source', status: 'cursed', stacks: 2 }, { type: 'apply_status', target: 'source', status: 'doom' }] },
+  { id: 'doom', name: 'Doom' },
   { id: 'mark', name: 'Mark', onRemove: [{ type: 'add_to_batch', batch: 'marks' }] },
   { id: 'pulse', name: 'Pulse', proximity: { radius: 3, interval: 1000, effects: [{ type: 'damage', target: 'proximity_target', damage: { amount: 5, type: 'magical' } }] } },
 ];
@@ -478,6 +480,16 @@ const hit = (id: string, time: number, amount: number, type = 'physical', fatal?
   check('a batch call remembers who made it', find(queued, 'b').health === 100 && find(queued, 'c').health === 100);
   until(queued, 800); check('the first queued batch resolves for its own source', find(queued, 'b').health === 90 && find(queued, 'c').health === 100);
   until(queued, 1400); check('the next batch resolves for the next source', find(queued, 'c').health === 90 && find(queued, 'b').health === 90);
+}
+
+// Max-stack hook
+{
+  const curse = (id: string, time: number, who: string) => at(id, time, { type: 'apply_status', target: only(who), status: 'cursed' });
+  const simulation = make({ events: [curse('a1', 100, 'a'), curse('a2', 200, 'a'), curse('b1', 100, 'b')] as never });
+  until(simulation, 400);
+  const has = (id: string, status: string) => find(simulation, id).statuses.some((entry) => entry.definitionId === status);
+  check('reaching max stacks runs the hook, which can swap the status', has('a', 'doom') && !has('a', 'cursed'));
+  check('a status below max stacks is left alone', has('b', 'cursed') && !has('b', 'doom'));
 }
 
 // Encounter validation

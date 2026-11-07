@@ -1,6 +1,6 @@
 // Run with: npx tsx scripts/tether-check.ts
 import { Simulation } from '../src/simulation/Simulation';
-import { selectPlayers } from '../src/mechanics/Selector';
+import { selectPlayers, resolveEntityReference } from '../src/mechanics/Selector';
 import { Random } from '../src/simulation/Random';
 import type { Encounter } from '../src/encounters/Encounter';
 
@@ -112,6 +112,16 @@ const spawn = (id: string, ids: string[], extra: object = {}) => ({ id, at: 0, t
   check('cast locks onto the tether target', cast()?.targetId === 'a' && cast().tetherId !== undefined);
   move(sim, 'c', 0, 0); tick(sim);
   check('a pass redirects the cast', cast().targetId === 'c' && Math.abs(Math.cos(cast().direction!)) < 1e-6);
+}
+
+// 6. a position reference follows the tether through passes
+{
+  const sim = make({ events: [spawn('s1', ['a'], { label: 'ta', passable: true })] as never });
+  tick(sim);
+  const holderOf = () => resolveEntityReference({ type: 'tether_target', source: 'boss' }, sim.state)?.id;
+  check('tether_target is the current holder', holderOf() === 'a');
+  move(sim, 'c', 0, 3); tick(sim);
+  check('tether_target follows a pass', holderOf() === 'c');
 }
 
 console.log(failures === 0 ? '\nAll checks passed.' : `\n${failures} check(s) failed.`);

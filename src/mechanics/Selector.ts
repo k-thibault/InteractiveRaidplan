@@ -38,6 +38,10 @@ export function findEntity(state: GameState, id: string): Entity | undefined {
 /** Role references match the first living player; id references match any entity. */
 export function resolveEntityReference(reference: EntityReference, state: GameState): Entity | undefined {
   if (reference.type === 'id') return findEntity(state, reference.id);
+  if (reference.type === 'tether_target') {
+    const tether = state.tethers.find((entry) => entry.sourceId === reference.source);
+    return tether ? state.players.find((player) => player.id === tether.targetId && player.alive) : undefined;
+  }
   if (reference.type === 'gameplay_role') return state.players.find((player) => player.role === reference.role && player.alive);
   return state.players.find((player) => player.mechanicalRoles.includes(reference.role) && player.alive);
 }

@@ -777,10 +777,12 @@ export class MechanicExecutor {
     const charges = definition?.damageImmunity?.charges;
     if (existing) {
       if (charges !== undefined) existing.charges = charges;
+      const before = existing.stacks;
       if (definition?.maxStacks) existing.stacks = Math.min(definition.maxStacks, existing.stacks + stacks);
       // Permanent effects last longer than timed ones. 
       const isLonger = newExpiresAt === undefined ? existing.expiresAt !== undefined : existing.expiresAt !== undefined && newExpiresAt > existing.expiresAt;
       if (isLonger) existing.expiresAt = newExpiresAt;
+      if (definition?.maxStacks && before < definition.maxStacks && existing.stacks >= definition.maxStacks) this.runStatusEffects(definition.onMaxStacks, player.id, statusId, definition.name);
       return;
     }
     player.statuses.push({ definitionId: statusId, appliedAt: this.state.time, expiresAt: newExpiresAt, stacks, charges });
@@ -788,6 +790,7 @@ export class MechanicExecutor {
     if ('controlled' in player && player.controlled && !definition?.hidden) this.logEvent(`You were affected by ${statusDisplayName(statusId, this.statusDefinitions)}.`);
     else if (this.debug) this.logEvent(`${player.name} gained ${statusDisplayName(statusId, this.statusDefinitions)}${definition?.hidden ? ' (hidden)' : ''}.`, 'debug');
     for (const effect of definition?.onApply ?? []) this.executeEffect(effect, new Set(), player.id);
+    if (definition?.maxStacks && stacks >= definition.maxStacks) this.runStatusEffects(definition.onMaxStacks, player.id, statusId, definition.name);
   }
 
   private removeStatusesOnDeath(player: typeof this.state.players[number]): void {

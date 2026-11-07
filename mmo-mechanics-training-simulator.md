@@ -25,6 +25,7 @@ The arena displays players, enemies, markers, attack areas, and active cast bars
 - Circle, cone, and donut attacks, casts, markers, arena boundaries, and visual resources.
 - Player health, status effects and stacks, damage, control effects, and forced movement.
 - Status-based damage immunity and proximity effects, including statuses on enemies.
+- Statuses that run effects when their stacks reach the maximum, such as converting into another status.
 - Cast-specific caster graphics and capped batches with queued effects.
 - Bot movement and role-based positioning to simulate the rest of the party.
 - Randomized mechanics with repeatable runs through the seed control.

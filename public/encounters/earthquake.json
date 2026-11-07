@@ -1,7 +1,7 @@
 {
   "version": 5,
   "name": "Earthquake",
-  "duration": 50000,
+  "duration": 101800,
   "arena": {
     "shape": "circle",
     "radius": 8,
@@ -35,112 +35,160 @@
           "cast": "strike-left",
           "hitAngle": 90,
           "safeAngle": 270,
-          "call": "North, left"
+          "call": "North, left",
+          "mech": "strike-left",
+          "followCast": "echo-left",
+          "followCall": "Cones on tank, healer and damage"
         },
         {
           "angle": 0,
           "cast": "strike-right",
           "hitAngle": 270,
           "safeAngle": 90,
-          "call": "North, right"
+          "call": "North, right",
+          "mech": "strike-right",
+          "followCast": "echo-right",
+          "followCall": "Wide cone, all eight together"
         },
         {
           "angle": 45,
           "cast": "strike-left",
           "hitAngle": 135,
           "safeAngle": 315,
-          "call": "Northeast, left"
+          "call": "Northeast, left",
+          "mech": "strike-left",
+          "followCast": "echo-left",
+          "followCall": "Cones on tank, healer and damage"
         },
         {
           "angle": 45,
           "cast": "strike-right",
           "hitAngle": 315,
           "safeAngle": 135,
-          "call": "Northeast, right"
+          "call": "Northeast, right",
+          "mech": "strike-right",
+          "followCast": "echo-right",
+          "followCall": "Wide cone, all eight together"
         },
         {
           "angle": 90,
           "cast": "strike-left",
           "hitAngle": 180,
           "safeAngle": 0,
-          "call": "East, left"
+          "call": "East, left",
+          "mech": "strike-left",
+          "followCast": "echo-left",
+          "followCall": "Cones on tank, healer and damage"
         },
         {
           "angle": 90,
           "cast": "strike-right",
           "hitAngle": 0,
           "safeAngle": 180,
-          "call": "East, right"
+          "call": "East, right",
+          "mech": "strike-right",
+          "followCast": "echo-right",
+          "followCall": "Wide cone, all eight together"
         },
         {
           "angle": 135,
           "cast": "strike-left",
           "hitAngle": 225,
           "safeAngle": 45,
-          "call": "Southeast, left"
+          "call": "Southeast, left",
+          "mech": "strike-left",
+          "followCast": "echo-left",
+          "followCall": "Cones on tank, healer and damage"
         },
         {
           "angle": 135,
           "cast": "strike-right",
           "hitAngle": 45,
           "safeAngle": 225,
-          "call": "Southeast, right"
+          "call": "Southeast, right",
+          "mech": "strike-right",
+          "followCast": "echo-right",
+          "followCall": "Wide cone, all eight together"
         },
         {
           "angle": 180,
           "cast": "strike-left",
           "hitAngle": 270,
           "safeAngle": 90,
-          "call": "South, left"
+          "call": "South, left",
+          "mech": "strike-left",
+          "followCast": "echo-left",
+          "followCall": "Cones on tank, healer and damage"
         },
         {
           "angle": 180,
           "cast": "strike-right",
           "hitAngle": 90,
           "safeAngle": 270,
-          "call": "South, right"
+          "call": "South, right",
+          "mech": "strike-right",
+          "followCast": "echo-right",
+          "followCall": "Wide cone, all eight together"
         },
         {
           "angle": 225,
           "cast": "strike-left",
           "hitAngle": 315,
           "safeAngle": 135,
-          "call": "Southwest, left"
+          "call": "Southwest, left",
+          "mech": "strike-left",
+          "followCast": "echo-left",
+          "followCall": "Cones on tank, healer and damage"
         },
         {
           "angle": 225,
           "cast": "strike-right",
           "hitAngle": 135,
           "safeAngle": 315,
-          "call": "Southwest, right"
+          "call": "Southwest, right",
+          "mech": "strike-right",
+          "followCast": "echo-right",
+          "followCall": "Wide cone, all eight together"
         },
         {
           "angle": 270,
           "cast": "strike-left",
           "hitAngle": 0,
           "safeAngle": 180,
-          "call": "West, left"
+          "call": "West, left",
+          "mech": "strike-left",
+          "followCast": "echo-left",
+          "followCall": "Cones on tank, healer and damage"
         },
         {
           "angle": 270,
           "cast": "strike-right",
           "hitAngle": 180,
           "safeAngle": 0,
-          "call": "West, right"
+          "call": "West, right",
+          "mech": "strike-right",
+          "followCast": "echo-right",
+          "followCall": "Wide cone, all eight together"
         },
         {
           "angle": 315,
           "cast": "strike-left",
           "hitAngle": 45,
           "safeAngle": 225,
-          "call": "Northwest, left"
+          "call": "Northwest, left",
+          "mech": "strike-left",
+          "followCast": "echo-left",
+          "followCall": "Cones on tank, healer and damage"
         },
         {
           "angle": 315,
           "cast": "strike-right",
           "hitAngle": 225,
           "safeAngle": 45,
-          "call": "Northwest, right"
+          "call": "Northwest, right",
+          "mech": "strike-right",
+          "followCast": "echo-right",
+          "followCall": "Wide cone, all eight together"
         }
       ]
     },
@@ -150,62 +198,460 @@
         {
           "first": "orb-n",
           "a": "orb-s",
-          "b": "orb-w"
+          "b": "orb-w",
+          "firstAngle": 0,
+          "aAngle": 180,
+          "bAngle": 270
         },
         {
           "first": "orb-n",
           "a": "orb-e",
-          "b": "orb-w"
+          "b": "orb-w",
+          "firstAngle": 0,
+          "aAngle": 90,
+          "bAngle": 270
         },
         {
           "first": "orb-n",
           "a": "orb-e",
-          "b": "orb-s"
+          "b": "orb-s",
+          "firstAngle": 0,
+          "aAngle": 90,
+          "bAngle": 180
         },
         {
           "first": "orb-e",
           "a": "orb-s",
-          "b": "orb-w"
+          "b": "orb-w",
+          "firstAngle": 90,
+          "aAngle": 180,
+          "bAngle": 270
         },
         {
           "first": "orb-e",
           "a": "orb-n",
-          "b": "orb-w"
+          "b": "orb-w",
+          "firstAngle": 90,
+          "aAngle": 0,
+          "bAngle": 270
         },
         {
           "first": "orb-e",
           "a": "orb-n",
-          "b": "orb-s"
+          "b": "orb-s",
+          "firstAngle": 90,
+          "aAngle": 0,
+          "bAngle": 180
         },
         {
           "first": "orb-s",
           "a": "orb-e",
-          "b": "orb-w"
+          "b": "orb-w",
+          "firstAngle": 180,
+          "aAngle": 90,
+          "bAngle": 270
         },
         {
           "first": "orb-s",
           "a": "orb-n",
-          "b": "orb-w"
+          "b": "orb-w",
+          "firstAngle": 180,
+          "aAngle": 0,
+          "bAngle": 270
         },
         {
           "first": "orb-s",
           "a": "orb-n",
-          "b": "orb-e"
+          "b": "orb-e",
+          "firstAngle": 180,
+          "aAngle": 0,
+          "bAngle": 90
         },
         {
           "first": "orb-w",
           "a": "orb-e",
-          "b": "orb-s"
+          "b": "orb-s",
+          "firstAngle": 270,
+          "aAngle": 90,
+          "bAngle": 180
         },
         {
           "first": "orb-w",
           "a": "orb-n",
-          "b": "orb-s"
+          "b": "orb-s",
+          "firstAngle": 270,
+          "aAngle": 0,
+          "bAngle": 180
         },
         {
           "first": "orb-w",
           "a": "orb-n",
-          "b": "orb-e"
+          "b": "orb-e",
+          "firstAngle": 270,
+          "aAngle": 0,
+          "bAngle": 90
+        }
+      ]
+    },
+    "strike2": {
+      "mode": "choice",
+      "values": [
+        {
+          "angle": 0,
+          "cast": "strike2-left",
+          "hitAngle": 90,
+          "safeAngle": 270,
+          "call": "North, left",
+          "mech": "strike2-left",
+          "followCast": "echo-left",
+          "followCall": "Cones on tank, healer and damage"
+        },
+        {
+          "angle": 0,
+          "cast": "strike2-right",
+          "hitAngle": 270,
+          "safeAngle": 90,
+          "call": "North, right",
+          "mech": "strike2-right",
+          "followCast": "echo-right",
+          "followCall": "Wide cone, all eight together"
+        },
+        {
+          "angle": 45,
+          "cast": "strike2-left",
+          "hitAngle": 135,
+          "safeAngle": 315,
+          "call": "Northeast, left",
+          "mech": "strike2-left",
+          "followCast": "echo-left",
+          "followCall": "Cones on tank, healer and damage"
+        },
+        {
+          "angle": 45,
+          "cast": "strike2-right",
+          "hitAngle": 315,
+          "safeAngle": 135,
+          "call": "Northeast, right",
+          "mech": "strike2-right",
+          "followCast": "echo-right",
+          "followCall": "Wide cone, all eight together"
+        },
+        {
+          "angle": 90,
+          "cast": "strike2-left",
+          "hitAngle": 180,
+          "safeAngle": 0,
+          "call": "East, left",
+          "mech": "strike2-left",
+          "followCast": "echo-left",
+          "followCall": "Cones on tank, healer and damage"
+        },
+        {
+          "angle": 90,
+          "cast": "strike2-right",
+          "hitAngle": 0,
+          "safeAngle": 180,
+          "call": "East, right",
+          "mech": "strike2-right",
+          "followCast": "echo-right",
+          "followCall": "Wide cone, all eight together"
+        },
+        {
+          "angle": 135,
+          "cast": "strike2-left",
+          "hitAngle": 225,
+          "safeAngle": 45,
+          "call": "Southeast, left",
+          "mech": "strike2-left",
+          "followCast": "echo-left",
+          "followCall": "Cones on tank, healer and damage"
+        },
+        {
+          "angle": 135,
+          "cast": "strike2-right",
+          "hitAngle": 45,
+          "safeAngle": 225,
+          "call": "Southeast, right",
+          "mech": "strike2-right",
+          "followCast": "echo-right",
+          "followCall": "Wide cone, all eight together"
+        },
+        {
+          "angle": 180,
+          "cast": "strike2-left",
+          "hitAngle": 270,
+          "safeAngle": 90,
+          "call": "South, left",
+          "mech": "strike2-left",
+          "followCast": "echo-left",
+          "followCall": "Cones on tank, healer and damage"
+        },
+        {
+          "angle": 180,
+          "cast": "strike2-right",
+          "hitAngle": 90,
+          "safeAngle": 270,
+          "call": "South, right",
+          "mech": "strike2-right",
+          "followCast": "echo-right",
+          "followCall": "Wide cone, all eight together"
+        },
+        {
+          "angle": 225,
+          "cast": "strike2-left",
+          "hitAngle": 315,
+          "safeAngle": 135,
+          "call": "Southwest, left",
+          "mech": "strike2-left",
+          "followCast": "echo-left",
+          "followCall": "Cones on tank, healer and damage"
+        },
+        {
+          "angle": 225,
+          "cast": "strike2-right",
+          "hitAngle": 135,
+          "safeAngle": 315,
+          "call": "Southwest, right",
+          "mech": "strike2-right",
+          "followCast": "echo-right",
+          "followCall": "Wide cone, all eight together"
+        },
+        {
+          "angle": 270,
+          "cast": "strike2-left",
+          "hitAngle": 0,
+          "safeAngle": 180,
+          "call": "West, left",
+          "mech": "strike2-left",
+          "followCast": "echo-left",
+          "followCall": "Cones on tank, healer and damage"
+        },
+        {
+          "angle": 270,
+          "cast": "strike2-right",
+          "hitAngle": 180,
+          "safeAngle": 0,
+          "call": "West, right",
+          "mech": "strike2-right",
+          "followCast": "echo-right",
+          "followCall": "Wide cone, all eight together"
+        },
+        {
+          "angle": 315,
+          "cast": "strike2-left",
+          "hitAngle": 45,
+          "safeAngle": 225,
+          "call": "Northwest, left",
+          "mech": "strike2-left",
+          "followCast": "echo-left",
+          "followCall": "Cones on tank, healer and damage"
+        },
+        {
+          "angle": 315,
+          "cast": "strike2-right",
+          "hitAngle": 225,
+          "safeAngle": 45,
+          "call": "Northwest, right",
+          "mech": "strike2-right",
+          "followCast": "echo-right",
+          "followCall": "Wide cone, all eight together"
+        }
+      ]
+    },
+    "laserOrbs3": {
+      "mode": "choice",
+      "values": [
+        {
+          "p": "orb-n",
+          "q": "orb-e",
+          "r": "orb-s",
+          "pAngle": 0,
+          "qAngle": 90,
+          "rAngle": 180
+        },
+        {
+          "p": "orb-n",
+          "q": "orb-e",
+          "r": "orb-w",
+          "pAngle": 0,
+          "qAngle": 90,
+          "rAngle": 270
+        },
+        {
+          "p": "orb-n",
+          "q": "orb-s",
+          "r": "orb-e",
+          "pAngle": 0,
+          "qAngle": 180,
+          "rAngle": 90
+        },
+        {
+          "p": "orb-n",
+          "q": "orb-s",
+          "r": "orb-w",
+          "pAngle": 0,
+          "qAngle": 180,
+          "rAngle": 270
+        },
+        {
+          "p": "orb-n",
+          "q": "orb-w",
+          "r": "orb-e",
+          "pAngle": 0,
+          "qAngle": 270,
+          "rAngle": 90
+        },
+        {
+          "p": "orb-n",
+          "q": "orb-w",
+          "r": "orb-s",
+          "pAngle": 0,
+          "qAngle": 270,
+          "rAngle": 180
+        },
+        {
+          "p": "orb-e",
+          "q": "orb-n",
+          "r": "orb-s",
+          "pAngle": 90,
+          "qAngle": 0,
+          "rAngle": 180
+        },
+        {
+          "p": "orb-e",
+          "q": "orb-n",
+          "r": "orb-w",
+          "pAngle": 90,
+          "qAngle": 0,
+          "rAngle": 270
+        },
+        {
+          "p": "orb-e",
+          "q": "orb-s",
+          "r": "orb-n",
+          "pAngle": 90,
+          "qAngle": 180,
+          "rAngle": 0
+        },
+        {
+          "p": "orb-e",
+          "q": "orb-s",
+          "r": "orb-w",
+          "pAngle": 90,
+          "qAngle": 180,
+          "rAngle": 270
+        },
+        {
+          "p": "orb-e",
+          "q": "orb-w",
+          "r": "orb-n",
+          "pAngle": 90,
+          "qAngle": 270,
+          "rAngle": 0
+        },
+        {
+          "p": "orb-e",
+          "q": "orb-w",
+          "r": "orb-s",
+          "pAngle": 90,
+          "qAngle": 270,
+          "rAngle": 180
+        },
+        {
+          "p": "orb-s",
+          "q": "orb-n",
+          "r": "orb-e",
+          "pAngle": 180,
+          "qAngle": 0,
+          "rAngle": 90
+        },
+        {
+          "p": "orb-s",
+          "q": "orb-n",
+          "r": "orb-w",
+          "pAngle": 180,
+          "qAngle": 0,
+          "rAngle": 270
+        },
+        {
+          "p": "orb-s",
+          "q": "orb-e",
+          "r": "orb-n",
+          "pAngle": 180,
+          "qAngle": 90,
+          "rAngle": 0
+        },
+        {
+          "p": "orb-s",
+          "q": "orb-e",
+          "r": "orb-w",
+          "pAngle": 180,
+          "qAngle": 90,
+          "rAngle": 270
+        },
+        {
+          "p": "orb-s",
+          "q": "orb-w",
+          "r": "orb-n",
+          "pAngle": 180,
+          "qAngle": 270,
+          "rAngle": 0
+        },
+        {
+          "p": "orb-s",
+          "q": "orb-w",
+          "r": "orb-e",
+          "pAngle": 180,
+          "qAngle": 270,
+          "rAngle": 90
+        },
+        {
+          "p": "orb-w",
+          "q": "orb-n",
+          "r": "orb-e",
+          "pAngle": 270,
+          "qAngle": 0,
+          "rAngle": 90
+        },
+        {
+          "p": "orb-w",
+          "q": "orb-n",
+          "r": "orb-s",
+          "pAngle": 270,
+          "qAngle": 0,
+          "rAngle": 180
+        },
+        {
+          "p": "orb-w",
+          "q": "orb-e",
+          "r": "orb-n",
+          "pAngle": 270,
+          "qAngle": 90,
+          "rAngle": 0
+        },
+        {
+          "p": "orb-w",
+          "q": "orb-e",
+          "r": "orb-s",
+          "pAngle": 270,
+          "qAngle": 90,
+          "rAngle": 180
+        },
+        {
+          "p": "orb-w",
+          "q": "orb-s",
+          "r": "orb-n",
+          "pAngle": 270,
+          "qAngle": 180,
+          "rAngle": 0
+        },
+        {
+          "p": "orb-w",
+          "q": "orb-s",
+          "r": "orb-e",
+          "pAngle": 270,
+          "qAngle": 180,
+          "rAngle": 90
         }
       ]
     }
@@ -322,7 +768,7 @@
       "radius": 20,
       "label": "earth-aoe",
       "element": "earth",
-      "telegraphDuration": 1500,
+      "telegraphDuration": 0,
       "duration": 500,
       "executionColor": "#b08a4a",
       "resolution": [
@@ -384,10 +830,10 @@
       "radius": 20,
       "width": 3,
       "label": "orb-laser",
-      "element": "dark",
+      "element": "void",
       "telegraphDuration": 0,
       "duration": 500,
-      "executionColor": "#9b5cff",
+      "executionColor": "#6a2cff",
       "resolution": [
         {
           "condition": {
@@ -400,7 +846,174 @@
               "target": "inside",
               "damage": {
                 "amount": 40,
-                "type": "dark"
+                "type": "void"
+              }
+            },
+            {
+              "type": "apply_status",
+              "target": "inside",
+              "status": "nothingness"
+            }
+          ]
+        }
+      ]
+    },
+    "echo-center": {
+      "shape": "circle",
+      "radius": 2.4,
+      "label": "echo-center",
+      "element": "earth",
+      "telegraphDuration": 0,
+      "duration": 500,
+      "executionColor": "#d95757",
+      "resolution": [
+        {
+          "condition": {
+            "type": "player_count",
+            "min": 0
+          },
+          "effects": [
+            {
+              "type": "damage",
+              "target": "inside",
+              "damage": {
+                "amount": 999,
+                "type": "earth",
+                "fatal": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "echo-cone": {
+      "shape": "cone",
+      "radius": 30,
+      "label": "echo-cone",
+      "element": "magical",
+      "telegraphDuration": 0,
+      "duration": 500,
+      "executionColor": "#c9a15f",
+      "angle": 30,
+      "resolution": [
+        {
+          "condition": {
+            "type": "player_count",
+            "min": 0
+          },
+          "effects": [
+            {
+              "type": "damage",
+              "target": "inside",
+              "damage": {
+                "amount": 60,
+                "type": "magical"
+              }
+            },
+            {
+              "type": "apply_status",
+              "target": "inside",
+              "status": "magic-vulnerability",
+              "duration": 6000
+            }
+          ]
+        }
+      ]
+    },
+    "echo-wide": {
+      "shape": "cone",
+      "radius": 30,
+      "label": "echo-wide",
+      "element": "magical",
+      "telegraphDuration": 0,
+      "duration": 500,
+      "executionColor": "#c9a15f",
+      "angle": 30,
+      "resolution": [
+        {
+          "condition": {
+            "type": "player_count",
+            "min": 8
+          },
+          "effects": [
+            {
+              "type": "damage",
+              "target": "inside",
+              "damage": {
+                "amount": 50,
+                "type": "magical"
+              }
+            }
+          ]
+        },
+        {
+          "condition": {
+            "type": "player_count",
+            "min": 0
+          },
+          "effects": [
+            {
+              "type": "damage",
+              "target": "inside",
+              "damage": {
+                "amount": 999,
+                "type": "magical",
+                "fatal": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "edict-cleave": {
+      "shape": "cone",
+      "radius": 30,
+      "label": "edict",
+      "element": "magical",
+      "telegraphDuration": 0,
+      "duration": 500,
+      "executionColor": "#9b5cff",
+      "angle": 180,
+      "resolution": [
+        {
+          "condition": {
+            "type": "player_count",
+            "min": 0
+          },
+          "effects": [
+            {
+              "type": "damage",
+              "target": "inside",
+              "damage": {
+                "amount": 999,
+                "type": "magical",
+                "fatal": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "thunder-bait": {
+      "shape": "circle",
+      "radius": 3,
+      "label": "thunder-bait",
+      "telegraphDuration": 0,
+      "duration": 500,
+      "executionColor": "#2244ff",
+      "resolution": [
+        {
+          "condition": {
+            "type": "player_count",
+            "min": 0
+          },
+          "effects": [
+            {
+              "type": "damage",
+              "target": "inside",
+              "damage": {
+                "amount": 150,
+                "type": "magical"
               }
             }
           ]
@@ -425,7 +1038,7 @@
   "tethers": {
     "orb-link": {
       "name": "Gravity",
-      "duration": 3200,
+      "duration": 4700,
       "style": {
         "color": "#b07cff",
         "width": 0.12,
@@ -433,6 +1046,17 @@
           0.4,
           0.3
         ],
+        "glow": true
+      },
+      "passable": true,
+      "passTolerance": 0.3
+    },
+    "echo-link": {
+      "name": "Echo",
+      "duration": 3700,
+      "style": {
+        "color": "#ff9944",
+        "width": 0.1,
         "glow": true
       }
     }
@@ -519,7 +1143,7 @@
       "name": "Singularity",
       "hidden": true,
       "proximity": {
-        "radius": 1.5,
+        "radius": 1.1,
         "effects": [
           {
             "type": "damage",
@@ -537,6 +1161,77 @@
     {
       "id": "laser-pick",
       "name": "Laser Pick",
+      "hidden": true
+    },
+    {
+      "id": "nothingness",
+      "name": "Nothingness",
+      "character": "N",
+      "color": "#6a2cff",
+      "maxStacks": 2,
+      "showStacks": true,
+      "onMaxStacks": [
+        {
+          "type": "remove_status",
+          "target": "source",
+          "status": "nothingness",
+          "stacks": 2
+        },
+        {
+          "type": "apply_status",
+          "target": "source",
+          "status": "void-vulnerability"
+        }
+      ]
+    },
+    {
+      "id": "void-vulnerability",
+      "name": "Void Vulnerability",
+      "character": "V",
+      "color": "#9b5cff",
+      "tags": [
+        "vulnerability"
+      ],
+      "damageTaken": [
+        {
+          "damageType": "void",
+          "fatal": true
+        }
+      ]
+    },
+    {
+      "id": "magic-vulnerability",
+      "name": "Magic Vulnerability",
+      "character": "M",
+      "color": "#4d8dff",
+      "tags": [
+        "vulnerability"
+      ],
+      "damageTaken": [
+        {
+          "damageType": "magical",
+          "fatal": true
+        }
+      ]
+    },
+    {
+      "id": "edict-mark",
+      "name": "Edict Mark",
+      "hidden": true
+    },
+    {
+      "id": "link-1",
+      "name": "Link 1",
+      "hidden": true
+    },
+    {
+      "id": "link-2",
+      "name": "Link 2",
+      "hidden": true
+    },
+    {
+      "id": "link-3",
+      "name": "Link 3",
       "hidden": true
     }
   ],
@@ -632,7 +1327,7 @@
             "group": "first"
           },
           "status": "crust",
-          "duration": 60000
+          "duration": 100000
         },
         {
           "type": "apply_status",
@@ -641,7 +1336,7 @@
             "group": "first"
           },
           "status": "first",
-          "duration": 60000
+          "duration": 100000
         },
         {
           "type": "select_group",
@@ -716,7 +1411,7 @@
             "group": "second"
           },
           "status": "crust",
-          "duration": 70000
+          "duration": 110000
         },
         {
           "type": "apply_status",
@@ -725,7 +1420,7 @@
             "group": "second"
           },
           "status": "second",
-          "duration": 70000
+          "duration": 110000
         },
         {
           "type": "select_group",
@@ -752,7 +1447,7 @@
             "group": "third"
           },
           "status": "crust",
-          "duration": 80000
+          "duration": 120000
         },
         {
           "type": "apply_status",
@@ -761,7 +1456,7 @@
             "group": "third"
           },
           "status": "third",
-          "duration": 80000
+          "duration": 120000
         }
       ]
     },
@@ -780,7 +1475,7 @@
             "angle": 0,
             "radius": 7
           },
-          "expiresAfter": 16000
+          "expiresAfter": 17500
         },
         {
           "type": "spawn_enemy",
@@ -791,7 +1486,7 @@
             "angle": 90,
             "radius": 7
           },
-          "expiresAfter": 16000
+          "expiresAfter": 17500
         },
         {
           "type": "spawn_enemy",
@@ -802,7 +1497,7 @@
             "angle": 180,
             "radius": 7
           },
-          "expiresAfter": 16000
+          "expiresAfter": 17500
         },
         {
           "type": "spawn_enemy",
@@ -813,7 +1508,7 @@
             "angle": 270,
             "radius": 7
           },
-          "expiresAfter": 16000
+          "expiresAfter": 17500
         },
         {
           "type": "delayed_effects",
@@ -896,7 +1591,7 @@
     "orb-laser": {
       "id": "orb-laser",
       "name": "Event Horizon",
-      "castTime": 3000,
+      "castTime": 4500,
       "visible": true,
       "effects": [
         {
@@ -905,10 +1600,368 @@
           "direction": "cast_target"
         }
       ]
+    },
+    "black-hole-return": {
+      "id": "black-hole-return",
+      "name": "Black Hole",
+      "castTime": 4000,
+      "visible": true,
+      "effects": [
+        {
+          "type": "spawn_enemy",
+          "enemyId": "orb-n",
+          "enemy": "orb",
+          "position": {
+            "type": "polar",
+            "angle": 0,
+            "radius": 7
+          },
+          "expiresAfter": 21000
+        },
+        {
+          "type": "spawn_enemy",
+          "enemyId": "orb-e",
+          "enemy": "orb",
+          "position": {
+            "type": "polar",
+            "angle": 90,
+            "radius": 7
+          },
+          "expiresAfter": 21000
+        },
+        {
+          "type": "spawn_enemy",
+          "enemyId": "orb-s",
+          "enemy": "orb",
+          "position": {
+            "type": "polar",
+            "angle": 180,
+            "radius": 7
+          },
+          "expiresAfter": 21000
+        },
+        {
+          "type": "spawn_enemy",
+          "enemyId": "orb-w",
+          "enemy": "orb",
+          "position": {
+            "type": "polar",
+            "angle": 270,
+            "radius": 7
+          },
+          "expiresAfter": 21000
+        },
+        {
+          "type": "delayed_effects",
+          "delay": 3000,
+          "effects": [
+            {
+              "type": "apply_status",
+              "targetEntity": "orb-n",
+              "status": "orb-armed"
+            },
+            {
+              "type": "apply_status",
+              "targetEntity": "orb-e",
+              "status": "orb-armed"
+            },
+            {
+              "type": "apply_status",
+              "targetEntity": "orb-s",
+              "status": "orb-armed"
+            },
+            {
+              "type": "apply_status",
+              "targetEntity": "orb-w",
+              "status": "orb-armed"
+            }
+          ]
+        }
+      ]
+    },
+    "strike2-left": {
+      "id": "strike2-left",
+      "name": "Fissure",
+      "castTime": 4000,
+      "visible": true,
+      "casterGraphic": {
+        "image": "boss-striker-left"
+      },
+      "effects": [
+        {
+          "type": "spawn_area",
+          "area": "strike-half",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "rotationOffset": {
+            "$sub": [
+              "$strike2.hitAngle",
+              90
+            ]
+          }
+        }
+      ]
+    },
+    "strike2-right": {
+      "id": "strike2-right",
+      "name": "Fissure",
+      "castTime": 4000,
+      "visible": true,
+      "casterGraphic": {
+        "image": "boss-striker-right"
+      },
+      "effects": [
+        {
+          "type": "spawn_area",
+          "area": "strike-half",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "rotationOffset": {
+            "$sub": [
+              "$strike2.hitAngle",
+              90
+            ]
+          }
+        }
+      ]
+    },
+    "echo-left": {
+      "id": "echo-left",
+      "name": "Aftershock",
+      "castTime": 3500,
+      "visible": true,
+      "casterGraphic": {
+        "image": "boss-striker-left"
+      },
+      "effects": [
+        {
+          "type": "spawn_area",
+          "area": "echo-center",
+          "position": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      ]
+    },
+    "echo-right": {
+      "id": "echo-right",
+      "name": "Aftershock",
+      "castTime": 3500,
+      "visible": true,
+      "casterGraphic": {
+        "image": "boss-striker-right"
+      },
+      "effects": [
+        {
+          "type": "spawn_area",
+          "area": "echo-center",
+          "position": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      ]
+    },
+    "echo-wide": {
+      "id": "echo-wide",
+      "name": "Aftershock",
+      "castTime": 3500,
+      "visible": true,
+      "facing": {
+        "type": "random_player",
+        "replayable": true
+      },
+      "effects": [
+        {
+          "type": "spawn_area",
+          "area": "echo-wide",
+          "direction": "cast_target"
+        }
+      ]
+    },
+    "echo-cone-tank": {
+      "id": "echo-cone-tank",
+      "name": "Aftershock",
+      "castTime": 3500,
+      "visible": true,
+      "effects": [
+        {
+          "type": "spawn_area",
+          "area": "echo-cone",
+          "direction": "cast_target"
+        }
+      ]
+    },
+    "echo-cone-healer": {
+      "id": "echo-cone-healer",
+      "name": "Aftershock",
+      "castTime": 3500,
+      "visible": true,
+      "effects": [
+        {
+          "type": "spawn_area",
+          "area": "echo-cone",
+          "direction": "cast_target"
+        }
+      ]
+    },
+    "echo-cone-damage": {
+      "id": "echo-cone-damage",
+      "name": "Aftershock",
+      "castTime": 3500,
+      "visible": true,
+      "effects": [
+        {
+          "type": "spawn_area",
+          "area": "echo-cone",
+          "direction": "cast_target"
+        }
+      ]
+    },
+    "thunder-bait": {
+      "id": "thunder-bait",
+      "name": "Thunder III",
+      "castTime": 5000,
+      "visible": true,
+      "revealCaster": true,
+      "suspendFollow": {
+        "movement": true
+      },
+      "effects": [
+        {
+          "type": "select_group",
+          "name": "thunder-bait-1",
+          "selector": {
+            "type": "nearest",
+            "source": "boss-small",
+            "count": 1
+          }
+        },
+        {
+          "type": "for_each_group",
+          "group": "thunder-bait-1",
+          "effects": [
+            {
+              "type": "spawn_area",
+              "area": "thunder-bait",
+              "source": "$groupMember.id",
+              "position": "$groupMember.position"
+            }
+          ]
+        },
+        {
+          "type": "delayed_effects",
+          "delay": 500,
+          "effects": [
+            {
+              "type": "recalculate_roles",
+              "group": "tank-swap"
+            },
+            {
+              "type": "set_focus",
+              "target": {
+                "type": "mechanical_role",
+                "role": "large_tank"
+              },
+              "enemy": "boss-large"
+            },
+            {
+              "type": "set_focus",
+              "target": {
+                "type": "mechanical_role",
+                "role": "small_tank"
+              },
+              "enemy": "boss-small"
+            },
+            {
+              "type": "start_follow",
+              "source": "boss-large",
+              "target": {
+                "type": "mechanical_role",
+                "role": "large_tank"
+              },
+              "distance": 4.4,
+              "moveSpeed": 4
+            },
+            {
+              "type": "recalculate_positions",
+              "group": "thunder-bait-swap"
+            }
+          ]
+        },
+        {
+          "type": "delayed_effects",
+          "delay": 2000,
+          "effects": [
+            {
+              "type": "select_group",
+              "name": "thunder-bait-2",
+              "selector": {
+                "type": "nearest",
+                "source": "boss-small",
+                "count": 1
+              }
+            },
+            {
+              "type": "for_each_group",
+              "group": "thunder-bait-2",
+              "effects": [
+                {
+                  "type": "spawn_area",
+                  "area": "thunder-bait",
+                  "source": "$groupMember.id",
+                  "position": "$groupMember.position"
+                }
+              ]
+            },
+            {
+              "type": "start_follow",
+              "source": "boss-small",
+              "target": {
+                "type": "mechanical_role",
+                "role": "small_tank"
+              },
+              "distance": 3.6,
+              "moveSpeed": 4
+            }
+          ]
+        },
+        {
+          "type": "delayed_effects",
+          "delay": 2500,
+          "effects": [
+            {
+              "type": "recalculate_positions",
+              "group": "thunder-bait-settle"
+            }
+          ]
+        }
+      ]
+    },
+    "edict": {
+      "id": "edict",
+      "name": "Edict",
+      "castTime": 4500,
+      "visible": true,
+      "suspendFollow": {
+        "movement": true
+      },
+      "effects": [
+        {
+          "type": "spawn_area",
+          "area": "edict-cleave",
+          "direction": "cast_direction"
+        }
+      ]
     }
   },
   "positions": {
-    "strike-dodge": [
+    "echo-triple": [
       {
         "when": [
           {
@@ -918,9 +1971,13 @@
         ],
         "target": {
           "type": "polar",
-          "angle": "$strike.safeAngle",
-          "angleOffset": -40,
-          "radius": 3.0
+          "angle": {
+            "$add": [
+              "$strike.safeAngle",
+              -4
+            ]
+          },
+          "radius": 4.0
         }
       },
       {
@@ -932,9 +1989,13 @@
         ],
         "target": {
           "type": "polar",
-          "angle": "$strike.safeAngle",
-          "angleOffset": 40,
-          "radius": 3.0
+          "angle": {
+            "$add": [
+              "$strike.safeAngle",
+              4
+            ]
+          },
+          "radius": 5.5
         }
       },
       {
@@ -946,9 +2007,13 @@
         ],
         "target": {
           "type": "polar",
-          "angle": "$strike.safeAngle",
-          "angleOffset": -40,
-          "radius": 4.2
+          "angle": {
+            "$add": [
+              "$strike.safeAngle",
+              -49
+            ]
+          },
+          "radius": 4.0
         }
       },
       {
@@ -960,9 +2025,13 @@
         ],
         "target": {
           "type": "polar",
-          "angle": "$strike.safeAngle",
-          "angleOffset": 40,
-          "radius": 4.2
+          "angle": {
+            "$add": [
+              "$strike.safeAngle",
+              -41
+            ]
+          },
+          "radius": 5.5
         }
       },
       {
@@ -974,9 +2043,13 @@
         ],
         "target": {
           "type": "polar",
-          "angle": "$strike.safeAngle",
-          "angleOffset": 0,
-          "radius": 3.0
+          "angle": {
+            "$add": [
+              "$strike.safeAngle",
+              40
+            ]
+          },
+          "radius": 3.6
         }
       },
       {
@@ -988,9 +2061,13 @@
         ],
         "target": {
           "type": "polar",
-          "angle": "$strike.safeAngle",
-          "angleOffset": 0,
-          "radius": 4.2
+          "angle": {
+            "$add": [
+              "$strike.safeAngle",
+              43.3
+            ]
+          },
+          "radius": 4.8
         }
       },
       {
@@ -1002,9 +2079,13 @@
         ],
         "target": {
           "type": "polar",
-          "angle": "$strike.safeAngle",
-          "angleOffset": -20,
-          "radius": 5.2
+          "angle": {
+            "$add": [
+              "$strike.safeAngle",
+              46.7
+            ]
+          },
+          "radius": 6.0
         }
       },
       {
@@ -1016,115 +2097,3718 @@
         ],
         "target": {
           "type": "polar",
-          "angle": "$strike.safeAngle",
-          "angleOffset": 20,
-          "radius": 5.2
+          "angle": {
+            "$add": [
+              "$strike.safeAngle",
+              50
+            ]
+          },
+          "radius": 7.0
+        }
+      }
+    ],
+    "echo-stack": [
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-1"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": {
+            "$add": [
+              "$strike.safeAngle",
+              -5
+            ]
+          },
+          "radius": 4.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-2"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": {
+            "$add": [
+              "$strike.safeAngle",
+              5
+            ]
+          },
+          "radius": 5.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-3"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": {
+            "$add": [
+              "$strike.safeAngle",
+              -3
+            ]
+          },
+          "radius": 6.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-4"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": {
+            "$add": [
+              "$strike.safeAngle",
+              3
+            ]
+          },
+          "radius": 7.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-5"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": {
+            "$add": [
+              "$strike.safeAngle",
+              -5
+            ]
+          },
+          "radius": 4.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-6"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": {
+            "$add": [
+              "$strike.safeAngle",
+              5
+            ]
+          },
+          "radius": 5.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-7"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": {
+            "$add": [
+              "$strike.safeAngle",
+              -1
+            ]
+          },
+          "radius": 6.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-8"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": {
+            "$add": [
+              "$strike.safeAngle",
+              1
+            ]
+          },
+          "radius": 3.8
+        }
+      }
+    ],
+    "echo2-triple": [
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-1"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": {
+            "$add": [
+              "$strike2.safeAngle",
+              -4
+            ]
+          },
+          "radius": 4.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-2"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": {
+            "$add": [
+              "$strike2.safeAngle",
+              4
+            ]
+          },
+          "radius": 5.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-3"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": {
+            "$add": [
+              "$strike2.safeAngle",
+              -49
+            ]
+          },
+          "radius": 4.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-4"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": {
+            "$add": [
+              "$strike2.safeAngle",
+              -41
+            ]
+          },
+          "radius": 5.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-5"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": {
+            "$add": [
+              "$strike2.safeAngle",
+              40
+            ]
+          },
+          "radius": 3.6
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-6"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": {
+            "$add": [
+              "$strike2.safeAngle",
+              43.3
+            ]
+          },
+          "radius": 4.8
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-7"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": {
+            "$add": [
+              "$strike2.safeAngle",
+              46.7
+            ]
+          },
+          "radius": 6.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-8"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": {
+            "$add": [
+              "$strike2.safeAngle",
+              50
+            ]
+          },
+          "radius": 7.0
+        }
+      }
+    ],
+    "echo2-stack": [
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-1"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": {
+            "$add": [
+              "$strike2.safeAngle",
+              -5
+            ]
+          },
+          "radius": 4.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-2"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": {
+            "$add": [
+              "$strike2.safeAngle",
+              5
+            ]
+          },
+          "radius": 5.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-3"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": {
+            "$add": [
+              "$strike2.safeAngle",
+              -3
+            ]
+          },
+          "radius": 6.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-4"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": {
+            "$add": [
+              "$strike2.safeAngle",
+              3
+            ]
+          },
+          "radius": 7.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-5"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": {
+            "$add": [
+              "$strike2.safeAngle",
+              -5
+            ]
+          },
+          "radius": 4.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-6"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": {
+            "$add": [
+              "$strike2.safeAngle",
+              5
+            ]
+          },
+          "radius": 5.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-7"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": {
+            "$add": [
+              "$strike2.safeAngle",
+              -1
+            ]
+          },
+          "radius": 6.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "spot-8"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": {
+            "$add": [
+              "$strike2.safeAngle",
+              1
+            ]
+          },
+          "radius": 3.8
         }
       }
     ],
     "orb-hold": [
       {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "spot-1"
-          }
-        ],
+        "when": {
+          "type": "mechanical_role",
+          "role": "small_tank"
+        },
+        "live": true,
         "target": {
-          "type": "polar",
-          "angle": 45,
-          "radius": 3.2
+          "type": "drag",
+          "entity": {
+            "type": "id",
+            "id": "boss-small"
+          },
+          "to": {
+            "type": "fixed",
+            "position": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        }
+      },
+      {
+        "when": {
+          "type": "mechanical_role",
+          "role": "large_tank"
+        },
+        "live": true,
+        "target": {
+          "type": "drag",
+          "entity": {
+            "type": "id",
+            "id": "boss-large"
+          },
+          "to": {
+            "type": "fixed",
+            "position": {
+              "x": 0,
+              "y": 0
+            }
+          }
         }
       },
       {
         "when": [
           {
             "type": "mechanical_role",
-            "role": "spot-2"
+            "role": "bait-1"
           }
         ],
         "target": {
           "type": "polar",
-          "angle": 225,
-          "radius": 3.2
+          "angle": 22.5,
+          "radius": 1.5
         }
       },
       {
         "when": [
           {
             "type": "mechanical_role",
-            "role": "spot-3"
+            "role": "bait-2"
           }
         ],
         "target": {
           "type": "polar",
-          "angle": 135,
-          "radius": 3.2
+          "angle": 67.5,
+          "radius": 1.5
         }
       },
       {
         "when": [
           {
             "type": "mechanical_role",
-            "role": "spot-4"
+            "role": "bait-3"
           }
         ],
         "target": {
           "type": "polar",
-          "angle": 315,
-          "radius": 3.2
+          "angle": 112.5,
+          "radius": 1.5
         }
       },
       {
         "when": [
           {
             "type": "mechanical_role",
-            "role": "spot-5"
+            "role": "bait-4"
           }
         ],
         "target": {
           "type": "polar",
-          "angle": 45,
-          "radius": 4.6
+          "angle": 157.5,
+          "radius": 1.5
         }
       },
       {
         "when": [
           {
             "type": "mechanical_role",
-            "role": "spot-6"
+            "role": "bait-5"
           }
         ],
         "target": {
           "type": "polar",
-          "angle": 225,
-          "radius": 4.6
+          "angle": 202.5,
+          "radius": 1.5
         }
       },
       {
         "when": [
           {
             "type": "mechanical_role",
-            "role": "spot-7"
+            "role": "bait-6"
           }
         ],
         "target": {
           "type": "polar",
-          "angle": 135,
-          "radius": 4.6
+          "angle": 247.5,
+          "radius": 1.5
         }
       },
       {
         "when": [
           {
             "type": "mechanical_role",
-            "role": "spot-8"
+            "role": "bait-7"
           }
         ],
         "target": {
           "type": "polar",
-          "angle": 315,
-          "radius": 4.6
+          "angle": 292.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-8"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 337.5,
+          "radius": 1.5
+        }
+      }
+    ],
+    "orb-ring": [
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-1"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 22.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-2"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 67.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-3"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 112.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-4"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 157.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-5"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 202.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-6"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 247.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-7"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 292.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-8"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 337.5,
+          "radius": 1.5
+        }
+      }
+    ],
+    "thunder-bait-prep": [
+      {
+        "when": {
+          "type": "mechanical_role",
+          "role": "small_tank"
+        },
+        "live": true,
+        "target": {
+          "type": "drag",
+          "entity": {
+            "type": "id",
+            "id": "boss-small"
+          },
+          "to": {
+            "type": "fixed",
+            "position": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        }
+      },
+      {
+        "when": {
+          "type": "mechanical_role",
+          "role": "large_tank"
+        },
+        "live": true,
+        "target": {
+          "type": "drag",
+          "entity": {
+            "type": "id",
+            "id": "boss-large"
+          },
+          "to": {
+            "type": "fixed",
+            "position": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-1"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 22.5,
+          "radius": 6.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-2"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 67.5,
+          "radius": 6.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-3"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 112.5,
+          "radius": 6.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-4"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 157.5,
+          "radius": 6.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-5"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 202.5,
+          "radius": 6.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-6"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 247.5,
+          "radius": 6.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-7"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 292.5,
+          "radius": 6.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-8"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 337.5,
+          "radius": 6.5
+        }
+      }
+    ],
+    "thunder-bait-start": [
+      {
+        "when": {
+          "type": "mechanical_role",
+          "role": "small_tank"
+        },
+        "target": {
+          "type": "entity",
+          "player": {
+            "type": "id",
+            "id": "boss-small"
+          }
+        }
+      },
+      {
+        "when": {
+          "type": "mechanical_role",
+          "role": "large_tank"
+        },
+        "target": {
+          "type": "polar",
+          "angle": 0,
+          "radius": 4.2
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-1"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 22.5,
+          "radius": 6.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-2"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 67.5,
+          "radius": 6.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-3"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 112.5,
+          "radius": 6.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-4"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 157.5,
+          "radius": 6.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-5"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 202.5,
+          "radius": 6.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-6"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 247.5,
+          "radius": 6.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-7"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 292.5,
+          "radius": 6.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-8"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 337.5,
+          "radius": 6.5
+        }
+      }
+    ],
+    "thunder-bait-swap": [
+      {
+        "when": {
+          "type": "mechanical_role",
+          "role": "small_tank"
+        },
+        "live": true,
+        "target": {
+          "type": "entity",
+          "player": {
+            "type": "id",
+            "id": "boss-small"
+          }
+        }
+      },
+      {
+        "when": {
+          "type": "mechanical_role",
+          "role": "large_tank"
+        },
+        "target": {
+          "type": "polar",
+          "angle": 0,
+          "radius": 4.2
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-1"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 22.5,
+          "radius": 6.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-2"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 67.5,
+          "radius": 6.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-3"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 112.5,
+          "radius": 6.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-4"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 157.5,
+          "radius": 6.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-5"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 202.5,
+          "radius": 6.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-6"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 247.5,
+          "radius": 6.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-7"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 292.5,
+          "radius": 6.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-8"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 337.5,
+          "radius": 6.5
+        }
+      }
+    ],
+    "thunder-bait-settle": [
+      {
+        "when": {
+          "type": "mechanical_role",
+          "role": "small_tank"
+        },
+        "live": true,
+        "target": {
+          "type": "drag",
+          "entity": {
+            "type": "id",
+            "id": "boss-small"
+          },
+          "to": {
+            "type": "fixed",
+            "position": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        }
+      },
+      {
+        "when": {
+          "type": "mechanical_role",
+          "role": "large_tank"
+        },
+        "live": true,
+        "target": {
+          "type": "drag",
+          "entity": {
+            "type": "id",
+            "id": "boss-large"
+          },
+          "to": {
+            "type": "fixed",
+            "position": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-1"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 22.5,
+          "radius": 6.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-2"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 67.5,
+          "radius": 6.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-3"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 112.5,
+          "radius": 6.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-4"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 157.5,
+          "radius": 6.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-5"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 202.5,
+          "radius": 6.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-6"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 247.5,
+          "radius": 6.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-7"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 292.5,
+          "radius": 6.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-8"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 337.5,
+          "radius": 6.5
+        }
+      }
+    ],
+    "edict-dodge": [
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-1"
+          }
+        ],
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "boss-large"
+            }
+          },
+          "awayFrom": {
+            "type": "entity",
+            "player": {
+              "type": "mechanical_role",
+              "role": "edict-target"
+            }
+          },
+          "distance": 3.4,
+          "angleOffset": -45
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-2"
+          }
+        ],
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "boss-large"
+            }
+          },
+          "awayFrom": {
+            "type": "entity",
+            "player": {
+              "type": "mechanical_role",
+              "role": "edict-target"
+            }
+          },
+          "distance": 3.4,
+          "angleOffset": 45
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-3"
+          }
+        ],
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "boss-large"
+            }
+          },
+          "awayFrom": {
+            "type": "entity",
+            "player": {
+              "type": "mechanical_role",
+              "role": "edict-target"
+            }
+          },
+          "distance": 3.4,
+          "angleOffset": -15
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-4"
+          }
+        ],
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "boss-large"
+            }
+          },
+          "awayFrom": {
+            "type": "entity",
+            "player": {
+              "type": "mechanical_role",
+              "role": "edict-target"
+            }
+          },
+          "distance": 3.4,
+          "angleOffset": 15
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-5"
+          }
+        ],
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "boss-large"
+            }
+          },
+          "awayFrom": {
+            "type": "entity",
+            "player": {
+              "type": "mechanical_role",
+              "role": "edict-target"
+            }
+          },
+          "distance": 1.9,
+          "angleOffset": -40
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-6"
+          }
+        ],
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "boss-large"
+            }
+          },
+          "awayFrom": {
+            "type": "entity",
+            "player": {
+              "type": "mechanical_role",
+              "role": "edict-target"
+            }
+          },
+          "distance": 1.9,
+          "angleOffset": 40
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-7"
+          }
+        ],
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "boss-large"
+            }
+          },
+          "awayFrom": {
+            "type": "entity",
+            "player": {
+              "type": "mechanical_role",
+              "role": "edict-target"
+            }
+          },
+          "distance": 1.9,
+          "angleOffset": -13
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-8"
+          }
+        ],
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "boss-large"
+            }
+          },
+          "awayFrom": {
+            "type": "entity",
+            "player": {
+              "type": "mechanical_role",
+              "role": "edict-target"
+            }
+          },
+          "distance": 1.9,
+          "angleOffset": 13
+        }
+      }
+    ],
+    "l1-stage": [
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-1"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": "$laserOrbs.firstAngle",
+          "radius": 4.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-1"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 22.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-2"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 67.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-3"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 112.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-4"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 157.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-5"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 202.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-6"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 247.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-7"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 292.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-8"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 337.5,
+          "radius": 1.5
+        }
+      }
+    ],
+    "l1-grab": [
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-1"
+          }
+        ],
+        "live": true,
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "$laserOrbs.first"
+            }
+          },
+          "toward": {
+            "type": "entity",
+            "player": {
+              "type": "tether_target",
+              "source": "$laserOrbs.first"
+            }
+          },
+          "distance": 2.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-1"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 22.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-2"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 67.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-3"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 112.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-4"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 157.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-5"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 202.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-6"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 247.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-7"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 292.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-8"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 337.5,
+          "radius": 1.5
+        }
+      }
+    ],
+    "l1-spot": [
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-1"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": "$laserOrbs.firstAngle",
+          "angleOffset": 18.2,
+          "radius": 7.37
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-1"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 22.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-2"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 67.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-3"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 112.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-4"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 157.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-5"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 202.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-6"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 247.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-7"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 292.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-8"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 337.5,
+          "radius": 1.5
+        }
+      }
+    ],
+    "l2-stage": [
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-1"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": "$laserOrbs.aAngle",
+          "radius": 4.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-2"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": "$laserOrbs.bAngle",
+          "radius": 4.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-1"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 22.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-2"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 67.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-3"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 112.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-4"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 157.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-5"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 202.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-6"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 247.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-7"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 292.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-8"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 337.5,
+          "radius": 1.5
+        }
+      }
+    ],
+    "l2-grab": [
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-1"
+          }
+        ],
+        "live": true,
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "$laserOrbs.a"
+            }
+          },
+          "toward": {
+            "type": "entity",
+            "player": {
+              "type": "tether_target",
+              "source": "$laserOrbs.a"
+            }
+          },
+          "distance": 2.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-2"
+          }
+        ],
+        "live": true,
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "$laserOrbs.b"
+            }
+          },
+          "toward": {
+            "type": "entity",
+            "player": {
+              "type": "tether_target",
+              "source": "$laserOrbs.b"
+            }
+          },
+          "distance": 2.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-1"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 22.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-2"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 67.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-3"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 112.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-4"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 157.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-5"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 202.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-6"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 247.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-7"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 292.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-8"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 337.5,
+          "radius": 1.5
+        }
+      }
+    ],
+    "l2-spot": [
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-1"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": "$laserOrbs.aAngle",
+          "angleOffset": 18.2,
+          "radius": 7.37
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-2"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": "$laserOrbs.bAngle",
+          "angleOffset": 18.2,
+          "radius": 7.37
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-1"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 22.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-2"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 67.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-3"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 112.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-4"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 157.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-5"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 202.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-6"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 247.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-7"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 292.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-8"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 337.5,
+          "radius": 1.5
+        }
+      }
+    ],
+    "l3a-stage": [
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-1"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": "$laserOrbs3.pAngle",
+          "radius": 4.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-2"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": "$laserOrbs3.qAngle",
+          "radius": 4.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-3"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": "$laserOrbs3.rAngle",
+          "radius": 4.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-1"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 22.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-2"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 67.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-3"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 112.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-4"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 157.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-5"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 202.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-6"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 247.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-7"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 292.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-8"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 337.5,
+          "radius": 1.5
+        }
+      }
+    ],
+    "l3a-grab": [
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-1"
+          }
+        ],
+        "live": true,
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "$laserOrbs3.p"
+            }
+          },
+          "toward": {
+            "type": "entity",
+            "player": {
+              "type": "tether_target",
+              "source": "$laserOrbs3.p"
+            }
+          },
+          "distance": 2.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-2"
+          }
+        ],
+        "live": true,
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "$laserOrbs3.q"
+            }
+          },
+          "toward": {
+            "type": "entity",
+            "player": {
+              "type": "tether_target",
+              "source": "$laserOrbs3.q"
+            }
+          },
+          "distance": 2.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-3"
+          }
+        ],
+        "live": true,
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "$laserOrbs3.r"
+            }
+          },
+          "toward": {
+            "type": "entity",
+            "player": {
+              "type": "tether_target",
+              "source": "$laserOrbs3.r"
+            }
+          },
+          "distance": 2.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-1"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 22.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-2"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 67.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-3"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 112.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-4"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 157.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-5"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 202.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-6"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 247.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-7"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 292.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-8"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 337.5,
+          "radius": 1.5
+        }
+      }
+    ],
+    "l3a-spot": [
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-1"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": "$laserOrbs3.pAngle",
+          "angleOffset": 18.2,
+          "radius": 7.37
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-2"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": "$laserOrbs3.qAngle",
+          "angleOffset": 18.2,
+          "radius": 7.37
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-3"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": "$laserOrbs3.rAngle",
+          "angleOffset": 18.2,
+          "radius": 7.37
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-1"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 22.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-2"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 67.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-3"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 112.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-4"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 157.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-5"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 202.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-6"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 247.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-7"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 292.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-8"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 337.5,
+          "radius": 1.5
+        }
+      }
+    ],
+    "l3b-stage": [
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-4"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": "$laserOrbs3.pAngle",
+          "radius": 4.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-2"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": "$laserOrbs3.qAngle",
+          "radius": 4.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-3"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": "$laserOrbs3.rAngle",
+          "radius": 4.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-1"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 22.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-2"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 67.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-3"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 112.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-4"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 157.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-5"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 202.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-6"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 247.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-7"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 292.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-8"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 337.5,
+          "radius": 1.5
+        }
+      }
+    ],
+    "l3b-grab": [
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-4"
+          }
+        ],
+        "live": true,
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "$laserOrbs3.p"
+            }
+          },
+          "toward": {
+            "type": "entity",
+            "player": {
+              "type": "tether_target",
+              "source": "$laserOrbs3.p"
+            }
+          },
+          "distance": 2.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-2"
+          }
+        ],
+        "live": true,
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "$laserOrbs3.q"
+            }
+          },
+          "toward": {
+            "type": "entity",
+            "player": {
+              "type": "tether_target",
+              "source": "$laserOrbs3.q"
+            }
+          },
+          "distance": 2.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-3"
+          }
+        ],
+        "live": true,
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "$laserOrbs3.r"
+            }
+          },
+          "toward": {
+            "type": "entity",
+            "player": {
+              "type": "tether_target",
+              "source": "$laserOrbs3.r"
+            }
+          },
+          "distance": 2.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-1"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 22.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-2"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 67.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-3"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 112.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-4"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 157.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-5"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 202.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-6"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 247.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-7"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 292.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-8"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 337.5,
+          "radius": 1.5
+        }
+      }
+    ],
+    "l3b-spot": [
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-4"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": "$laserOrbs3.pAngle",
+          "angleOffset": 18.2,
+          "radius": 7.37
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-2"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": "$laserOrbs3.qAngle",
+          "angleOffset": 18.2,
+          "radius": 7.37
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-3"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": "$laserOrbs3.rAngle",
+          "angleOffset": 18.2,
+          "radius": 7.37
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-1"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 22.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-2"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 67.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-3"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 112.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-4"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 157.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-5"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 202.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-6"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 247.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-7"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 292.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-8"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 337.5,
+          "radius": 1.5
+        }
+      }
+    ],
+    "l3c-stage": [
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-4"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": "$laserOrbs3.pAngle",
+          "radius": 4.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-5"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": "$laserOrbs3.qAngle",
+          "radius": 4.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-3"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": "$laserOrbs3.rAngle",
+          "radius": 4.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-1"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 22.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-2"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 67.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-3"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 112.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-4"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 157.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-5"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 202.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-6"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 247.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-7"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 292.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-8"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 337.5,
+          "radius": 1.5
+        }
+      }
+    ],
+    "l3c-grab": [
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-4"
+          }
+        ],
+        "live": true,
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "$laserOrbs3.p"
+            }
+          },
+          "toward": {
+            "type": "entity",
+            "player": {
+              "type": "tether_target",
+              "source": "$laserOrbs3.p"
+            }
+          },
+          "distance": 2.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-5"
+          }
+        ],
+        "live": true,
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "$laserOrbs3.q"
+            }
+          },
+          "toward": {
+            "type": "entity",
+            "player": {
+              "type": "tether_target",
+              "source": "$laserOrbs3.q"
+            }
+          },
+          "distance": 2.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-3"
+          }
+        ],
+        "live": true,
+        "target": {
+          "type": "shift",
+          "from": {
+            "type": "entity",
+            "player": {
+              "type": "id",
+              "id": "$laserOrbs3.r"
+            }
+          },
+          "toward": {
+            "type": "entity",
+            "player": {
+              "type": "tether_target",
+              "source": "$laserOrbs3.r"
+            }
+          },
+          "distance": 2.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-1"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 22.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-2"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 67.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-3"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 112.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-4"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 157.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-5"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 202.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-6"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 247.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-7"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 292.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-8"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 337.5,
+          "radius": 1.5
+        }
+      }
+    ],
+    "l3c-spot": [
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-4"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": "$laserOrbs3.pAngle",
+          "angleOffset": 18.2,
+          "radius": 7.37
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-5"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": "$laserOrbs3.qAngle",
+          "angleOffset": 18.2,
+          "radius": 7.37
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-3"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": "$laserOrbs3.rAngle",
+          "angleOffset": 18.2,
+          "radius": 7.37
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-1"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 22.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-2"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 67.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-3"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 112.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-4"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 157.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-5"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 202.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-6"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 247.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-7"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 292.5,
+          "radius": 1.5
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-8"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angle": 337.5,
+          "radius": 1.5
         }
       }
     ]
@@ -1429,6 +6113,12 @@
       "mechanic": "earthquake"
     },
     {
+      "id": "bait-roles",
+      "at": 8100,
+      "type": "recalculate_roles",
+      "group": "bait"
+    },
+    {
       "id": "quake-heal-survive",
       "at": 9000,
       "type": "heal",
@@ -1504,6 +6194,36 @@
       "full": true
     },
     {
+      "id": "small-follows-mt",
+      "at": 2000,
+      "type": "start_follow",
+      "source": "boss-small",
+      "target": {
+        "type": "id",
+        "id": "mt"
+      },
+      "distance": 3.6,
+      "moveSpeed": 4
+    },
+    {
+      "id": "large-follows-ot",
+      "at": 2000,
+      "type": "start_follow",
+      "source": "boss-large",
+      "target": {
+        "type": "id",
+        "id": "ot"
+      },
+      "distance": 4.4,
+      "moveSpeed": 4
+    },
+    {
+      "id": "bosses-mid",
+      "at": 2100,
+      "type": "recalculate_positions",
+      "group": "orb-hold"
+    },
+    {
       "id": "strike-spawn",
       "at": 21000,
       "type": "spawn_enemy",
@@ -1514,7 +6234,7 @@
         "angle": "$strike.angle",
         "radius": 9.2
       },
-      "expiresAfter": 6000
+      "expiresAfter": 30500
     },
     {
       "id": "strike-cast",
@@ -1522,7 +6242,7 @@
       "type": "start_cast",
       "source": "striker",
       "cast": "$strike.cast",
-      "mechanic": "strike",
+      "mechanic": "$strike.mech",
       "facing": {
         "type": "entity",
         "id": "earth-crystal"
@@ -1536,20 +6256,183 @@
       "duration": 4000
     },
     {
-      "id": "strike-dodge",
+      "id": "echo-triple-positions",
       "at": 21000,
       "type": "recalculate_positions",
-      "group": "strike-dodge"
+      "group": "echo-triple",
+      "ifMechanic": "strike-left"
     },
     {
-      "id": "orb-hold",
-      "at": 28000,
+      "id": "echo-stack-positions",
+      "at": 21000,
+      "type": "recalculate_positions",
+      "group": "echo-stack",
+      "ifMechanic": "strike-right"
+    },
+    {
+      "id": "echo-shotcall",
+      "at": 25000,
+      "type": "set_shotcall",
+      "text": "${strike.followCall}",
+      "duration": 3500
+    },
+    {
+      "id": "echo-tank-pick",
+      "at": 25000,
+      "type": "select_group",
+      "name": "echo-tank",
+      "selector": {
+        "type": "random",
+        "count": 1,
+        "role": "tank"
+      },
+      "replayId": "echo-tank",
+      "ifMechanic": "strike-left"
+    },
+    {
+      "id": "echo-healer-pick",
+      "at": 25000,
+      "type": "select_group",
+      "name": "echo-healer",
+      "selector": {
+        "type": "random",
+        "count": 1,
+        "role": "healer"
+      },
+      "replayId": "echo-healer",
+      "ifMechanic": "strike-left"
+    },
+    {
+      "id": "echo-damage-pick",
+      "at": 25000,
+      "type": "select_group",
+      "name": "echo-damage",
+      "selector": {
+        "type": "random",
+        "count": 1,
+        "role": "damage"
+      },
+      "replayId": "echo-damage",
+      "ifMechanic": "strike-left"
+    },
+    {
+      "id": "echo-tank-tether",
+      "at": 25000,
+      "type": "spawn_tether",
+      "source": "earth-crystal",
+      "tether": "echo-link",
+      "label": "echo-tank",
+      "target": {
+        "type": "from_group",
+        "group": "echo-tank"
+      },
+      "ifMechanic": "strike-left"
+    },
+    {
+      "id": "echo-healer-tether",
+      "at": 25000,
+      "type": "spawn_tether",
+      "source": "earth-crystal",
+      "tether": "echo-link",
+      "label": "echo-healer",
+      "target": {
+        "type": "from_group",
+        "group": "echo-healer"
+      },
+      "ifMechanic": "strike-left"
+    },
+    {
+      "id": "echo-damage-tether",
+      "at": 25000,
+      "type": "spawn_tether",
+      "source": "earth-crystal",
+      "tether": "echo-link",
+      "label": "echo-damage",
+      "target": {
+        "type": "from_group",
+        "group": "echo-damage"
+      },
+      "ifMechanic": "strike-left"
+    },
+    {
+      "id": "echo-tank-cast",
+      "at": 25000,
+      "type": "start_cast",
+      "source": "earth-crystal",
+      "cast": "echo-cone-tank",
+      "facing": {
+        "type": "tether",
+        "tether": "echo-tank"
+      },
+      "ifMechanic": "strike-left"
+    },
+    {
+      "id": "echo-healer-cast",
+      "at": 25000,
+      "type": "start_cast",
+      "source": "earth-crystal",
+      "cast": "echo-cone-healer",
+      "facing": {
+        "type": "tether",
+        "tether": "echo-healer"
+      },
+      "ifMechanic": "strike-left"
+    },
+    {
+      "id": "echo-damage-cast",
+      "at": 25000,
+      "type": "start_cast",
+      "source": "earth-crystal",
+      "cast": "echo-cone-damage",
+      "facing": {
+        "type": "tether",
+        "tether": "echo-damage"
+      },
+      "ifMechanic": "strike-left"
+    },
+    {
+      "id": "echo-left-cast",
+      "at": 25000,
+      "type": "start_cast",
+      "source": "striker",
+      "cast": "echo-left",
+      "ifMechanic": "strike-left"
+    },
+    {
+      "id": "echo-right-cast",
+      "at": 25000,
+      "type": "start_cast",
+      "source": "striker",
+      "cast": "echo-right",
+      "ifMechanic": "strike-right"
+    },
+    {
+      "id": "echo-wide-cast",
+      "at": 25000,
+      "type": "start_cast",
+      "source": "earth-crystal",
+      "cast": "echo-wide",
+      "replayId": "echo-wide",
+      "ifMechanic": "strike-right"
+    },
+    {
+      "id": "orb-hold-1",
+      "at": 28700,
       "type": "recalculate_positions",
       "group": "orb-hold"
     },
     {
-      "id": "black-hole-cast",
+      "id": "post-echo-heal",
       "at": 29000,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "black-hole-cast",
+      "at": 29500,
       "type": "start_cast",
       "source": "boss-small",
       "cast": "black-hole",
@@ -1557,14 +6440,20 @@
     },
     {
       "id": "black-hole-shotcall",
-      "at": 29000,
+      "at": 29500,
       "type": "set_shotcall",
       "text": "Black hole, stay off the orbs",
       "duration": 4000
     },
     {
+      "id": "orb-ring-1",
+      "at": 33600,
+      "type": "recalculate_positions",
+      "group": "orb-ring"
+    },
+    {
       "id": "laser-1-heal",
-      "at": 37000,
+      "at": 37500,
       "type": "heal",
       "target": {
         "type": "all"
@@ -1572,107 +6461,81 @@
       "full": true
     },
     {
-      "id": "laser-1-pick",
-      "at": 37000,
+      "id": "l1-1-holder",
+      "at": 38000,
       "type": "select_group",
-      "name": "laser-1",
-      "selector": {
-        "type": "random",
-        "count": 1
-      },
-      "replayId": "laser-1"
-    },
-    {
-      "id": "laser-1-tether",
-      "at": 37500,
-      "type": "spawn_tether",
-      "source": "$laserOrbs.first",
-      "tether": "orb-link",
-      "target": {
-        "type": "from_group",
-        "group": "laser-1"
-      }
-    },
-    {
-      "id": "laser-1-cast",
-      "at": 37500,
-      "type": "start_cast",
-      "source": "$laserOrbs.first",
-      "cast": "orb-laser",
-      "facing": {
-        "type": "tether",
-        "tether": "orb-link"
-      }
-    },
-    {
-      "id": "laser-1-shotcall",
-      "at": 37500,
-      "type": "set_shotcall",
-      "text": "Tether, line incoming",
-      "duration": 3000
-    },
-    {
-      "id": "laser-2-heal",
-      "at": 43000,
-      "type": "heal",
-      "target": {
-        "type": "all"
-      },
-      "full": true
-    },
-    {
-      "id": "laser-2a-pick",
-      "at": 43000,
-      "type": "select_group",
-      "name": "laser-2a",
-      "selector": {
-        "type": "random",
-        "count": 1
-      },
-      "replayId": "laser-2a"
-    },
-    {
-      "id": "laser-2a-mark",
-      "at": 43000,
-      "type": "apply_status",
-      "target": {
-        "type": "from_group",
-        "group": "laser-2a"
-      },
-      "status": "laser-pick",
-      "duration": 8000
-    },
-    {
-      "id": "laser-2b-pick",
-      "at": 43000,
-      "type": "select_group",
-      "name": "laser-2b",
+      "name": "l1-holder-1",
       "selector": {
         "type": "random",
         "count": 1,
         "from": {
-          "type": "without_status",
-          "status": "laser-pick"
+          "type": "and",
+          "selectors": [
+            {
+              "type": "or",
+              "selectors": [
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-2"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-3"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-4"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-5"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-6"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-7"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-8"
+                }
+              ]
+            }
+          ]
         }
       },
-      "replayId": "laser-2b"
+      "replayId": "l1-holder-1"
     },
     {
-      "id": "laser-2a-tether",
-      "at": 43500,
+      "id": "l1-1-link",
+      "at": 38000,
+      "type": "apply_status",
+      "target": {
+        "type": "from_group",
+        "group": "l1-holder-1"
+      },
+      "status": "link-1",
+      "duration": 4000
+    },
+    {
+      "id": "l1-1-tether",
+      "at": 38000,
       "type": "spawn_tether",
-      "source": "$laserOrbs.a",
+      "source": "$laserOrbs.first",
       "tether": "orb-link",
       "target": {
         "type": "from_group",
-        "group": "laser-2a"
+        "group": "l1-holder-1"
       }
     },
     {
-      "id": "laser-2a-cast",
-      "at": 43500,
+      "id": "l1-1-cast",
+      "at": 38000,
       "type": "start_cast",
-      "source": "$laserOrbs.a",
+      "source": "$laserOrbs.first",
       "cast": "orb-laser",
       "facing": {
         "type": "tether",
@@ -1680,42 +6543,1578 @@
       }
     },
     {
-      "id": "laser-2b-tether",
-      "at": 43500,
-      "type": "spawn_tether",
-      "source": "$laserOrbs.b",
-      "tether": "orb-link",
-      "target": {
-        "type": "from_group",
-        "group": "laser-2b"
-      }
+      "id": "l1-stage",
+      "at": 38100,
+      "type": "recalculate_positions",
+      "group": "l1-stage"
     },
     {
-      "id": "laser-2b-cast",
-      "at": 43500,
-      "type": "start_cast",
-      "source": "$laserOrbs.b",
-      "cast": "orb-laser",
-      "facing": {
-        "type": "tether",
-        "tether": "orb-link"
-      }
+      "id": "l1-grab",
+      "at": 38900,
+      "type": "recalculate_positions",
+      "group": "l1-grab"
     },
     {
-      "id": "laser-2-shotcall",
-      "at": 43500,
+      "id": "l1-restage",
+      "at": 40200,
+      "type": "recalculate_positions",
+      "group": "l1-stage"
+    },
+    {
+      "id": "l1-spot",
+      "at": 40800,
+      "type": "recalculate_positions",
+      "group": "l1-spot"
+    },
+    {
+      "id": "l1-shotcall",
+      "at": 38000,
       "type": "set_shotcall",
-      "text": "Two tethers, lines incoming",
+      "text": "Grab the tether, then point it away",
       "duration": 3000
     },
     {
+      "id": "laser-1-hold",
+      "at": 42700,
+      "type": "recalculate_positions",
+      "group": "orb-hold"
+    },
+    {
+      "id": "laser-1-post-heal",
+      "at": 43000,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "laser-2-heal",
+      "at": 45500,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "l2-1-holder",
+      "at": 46000,
+      "type": "select_group",
+      "name": "l2-holder-1",
+      "selector": {
+        "type": "random",
+        "count": 1,
+        "from": {
+          "type": "and",
+          "selectors": [
+            {
+              "type": "or",
+              "selectors": [
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-3"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-4"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-5"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-6"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-7"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-8"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "replayId": "l2-holder-1"
+    },
+    {
+      "id": "l2-1-link",
+      "at": 46000,
+      "type": "apply_status",
+      "target": {
+        "type": "from_group",
+        "group": "l2-holder-1"
+      },
+      "status": "link-1",
+      "duration": 4000
+    },
+    {
+      "id": "l2-1-tether",
+      "at": 46000,
+      "type": "spawn_tether",
+      "source": "$laserOrbs.a",
+      "tether": "orb-link",
+      "target": {
+        "type": "from_group",
+        "group": "l2-holder-1"
+      }
+    },
+    {
+      "id": "l2-1-cast",
+      "at": 46000,
+      "type": "start_cast",
+      "source": "$laserOrbs.a",
+      "cast": "orb-laser",
+      "facing": {
+        "type": "tether",
+        "tether": "orb-link"
+      }
+    },
+    {
+      "id": "l2-2-holder",
+      "at": 46000,
+      "type": "select_group",
+      "name": "l2-holder-2",
+      "selector": {
+        "type": "random",
+        "count": 1,
+        "from": {
+          "type": "and",
+          "selectors": [
+            {
+              "type": "or",
+              "selectors": [
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-3"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-4"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-5"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-6"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-7"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-8"
+                }
+              ]
+            },
+            {
+              "type": "without_status",
+              "status": "link-1"
+            }
+          ]
+        }
+      },
+      "replayId": "l2-holder-2"
+    },
+    {
+      "id": "l2-2-link",
+      "at": 46000,
+      "type": "apply_status",
+      "target": {
+        "type": "from_group",
+        "group": "l2-holder-2"
+      },
+      "status": "link-2",
+      "duration": 4000
+    },
+    {
+      "id": "l2-2-tether",
+      "at": 46000,
+      "type": "spawn_tether",
+      "source": "$laserOrbs.b",
+      "tether": "orb-link",
+      "target": {
+        "type": "from_group",
+        "group": "l2-holder-2"
+      }
+    },
+    {
+      "id": "l2-2-cast",
+      "at": 46000,
+      "type": "start_cast",
+      "source": "$laserOrbs.b",
+      "cast": "orb-laser",
+      "facing": {
+        "type": "tether",
+        "tether": "orb-link"
+      }
+    },
+    {
+      "id": "l2-stage",
+      "at": 46100,
+      "type": "recalculate_positions",
+      "group": "l2-stage"
+    },
+    {
+      "id": "l2-grab",
+      "at": 46900,
+      "type": "recalculate_positions",
+      "group": "l2-grab"
+    },
+    {
+      "id": "l2-restage",
+      "at": 48200,
+      "type": "recalculate_positions",
+      "group": "l2-stage"
+    },
+    {
+      "id": "l2-spot",
+      "at": 48800,
+      "type": "recalculate_positions",
+      "group": "l2-spot"
+    },
+    {
+      "id": "l2-shotcall",
+      "at": 46000,
+      "type": "set_shotcall",
+      "text": "Two tethers, grab them and point them away",
+      "duration": 3000
+    },
+    {
+      "id": "laser-2-hold",
+      "at": 50700,
+      "type": "recalculate_positions",
+      "group": "orb-hold"
+    },
+    {
+      "id": "laser-2-post-heal",
+      "at": 51000,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "striker-move",
+      "at": 51500,
+      "type": "spawn_enemy",
+      "enemyId": "striker",
+      "enemy": "earth-striker",
+      "position": {
+        "type": "polar",
+        "angle": "$strike2.angle",
+        "radius": 9.2
+      },
+      "expiresAfter": 21000
+    },
+    {
+      "id": "thunder-bait-prep",
+      "at": 51600,
+      "type": "recalculate_positions",
+      "group": "thunder-bait-prep"
+    },
+    {
+      "id": "thunder-bait-start",
+      "at": 53800,
+      "type": "recalculate_positions",
+      "group": "thunder-bait-start"
+    },
+    {
+      "id": "thunder-bait-cast",
+      "at": 54000,
+      "type": "start_cast",
+      "source": "boss-small",
+      "cast": "thunder-bait",
+      "mechanic": "thunder-bait"
+    },
+    {
+      "id": "thunder-bait-shotcall",
+      "at": 54000,
+      "type": "set_shotcall",
+      "text": "Tankbusters",
+      "duration": 3000
+    },
+    {
+      "id": "thunder-bait-pre-heal",
+      "at": 53900,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "thunder-bait-heal",
+      "at": 61700,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "edict-mark",
+      "at": 62000,
+      "type": "apply_status",
+      "target": {
+        "type": "random",
+        "count": 1
+      },
+      "status": "edict-mark",
+      "duration": 7000,
+      "replayId": "edict-mark"
+    },
+    {
+      "id": "edict-roles",
+      "at": 62050,
+      "type": "recalculate_roles",
+      "group": "edict"
+    },
+    {
+      "id": "edict-cast",
+      "at": 62100,
+      "type": "start_cast",
+      "source": "boss-large",
+      "cast": "edict",
+      "mechanic": "edict",
+      "facing": {
+        "type": "with_status",
+        "status": "edict-mark"
+      }
+    },
+    {
+      "id": "edict-dodge",
+      "at": 62100,
+      "type": "recalculate_positions",
+      "group": "edict-dodge"
+    },
+    {
+      "id": "edict-shotcall",
+      "at": 62100,
+      "type": "set_shotcall",
+      "text": "Edict, get behind Chaos",
+      "duration": 4500
+    },
+    {
+      "id": "edict-hold",
+      "at": 66800,
+      "type": "recalculate_positions",
+      "group": "orb-hold"
+    },
+    {
+      "id": "edict-heal",
+      "at": 67100,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "strike2-cast",
+      "at": 67600,
+      "type": "start_cast",
+      "source": "striker",
+      "cast": "$strike2.cast",
+      "mechanic": "$strike2.mech",
+      "facing": {
+        "type": "entity",
+        "id": "earth-crystal"
+      }
+    },
+    {
+      "id": "strike2-shotcall",
+      "at": 67600,
+      "type": "set_shotcall",
+      "text": "${strike2.call}",
+      "duration": 4000
+    },
+    {
+      "id": "echo2-triple-positions",
+      "at": 67600,
+      "type": "recalculate_positions",
+      "group": "echo2-triple",
+      "ifMechanic": "strike2-left"
+    },
+    {
+      "id": "echo2-stack-positions",
+      "at": 67600,
+      "type": "recalculate_positions",
+      "group": "echo2-stack",
+      "ifMechanic": "strike2-right"
+    },
+    {
+      "id": "echo2-shotcall",
+      "at": 71600,
+      "type": "set_shotcall",
+      "text": "${strike2.followCall}",
+      "duration": 3500
+    },
+    {
+      "id": "echo2-tank-pick",
+      "at": 71600,
+      "type": "select_group",
+      "name": "echo2-tank",
+      "selector": {
+        "type": "random",
+        "count": 1,
+        "role": "tank"
+      },
+      "replayId": "echo2-tank",
+      "ifMechanic": "strike2-left"
+    },
+    {
+      "id": "echo2-healer-pick",
+      "at": 71600,
+      "type": "select_group",
+      "name": "echo2-healer",
+      "selector": {
+        "type": "random",
+        "count": 1,
+        "role": "healer"
+      },
+      "replayId": "echo2-healer",
+      "ifMechanic": "strike2-left"
+    },
+    {
+      "id": "echo2-damage-pick",
+      "at": 71600,
+      "type": "select_group",
+      "name": "echo2-damage",
+      "selector": {
+        "type": "random",
+        "count": 1,
+        "role": "damage"
+      },
+      "replayId": "echo2-damage",
+      "ifMechanic": "strike2-left"
+    },
+    {
+      "id": "echo2-tank-tether",
+      "at": 71600,
+      "type": "spawn_tether",
+      "source": "earth-crystal",
+      "tether": "echo-link",
+      "label": "echo2-tank",
+      "target": {
+        "type": "from_group",
+        "group": "echo2-tank"
+      },
+      "ifMechanic": "strike2-left"
+    },
+    {
+      "id": "echo2-healer-tether",
+      "at": 71600,
+      "type": "spawn_tether",
+      "source": "earth-crystal",
+      "tether": "echo-link",
+      "label": "echo2-healer",
+      "target": {
+        "type": "from_group",
+        "group": "echo2-healer"
+      },
+      "ifMechanic": "strike2-left"
+    },
+    {
+      "id": "echo2-damage-tether",
+      "at": 71600,
+      "type": "spawn_tether",
+      "source": "earth-crystal",
+      "tether": "echo-link",
+      "label": "echo2-damage",
+      "target": {
+        "type": "from_group",
+        "group": "echo2-damage"
+      },
+      "ifMechanic": "strike2-left"
+    },
+    {
+      "id": "echo2-tank-cast",
+      "at": 71600,
+      "type": "start_cast",
+      "source": "earth-crystal",
+      "cast": "echo-cone-tank",
+      "facing": {
+        "type": "tether",
+        "tether": "echo2-tank"
+      },
+      "ifMechanic": "strike2-left"
+    },
+    {
+      "id": "echo2-healer-cast",
+      "at": 71600,
+      "type": "start_cast",
+      "source": "earth-crystal",
+      "cast": "echo-cone-healer",
+      "facing": {
+        "type": "tether",
+        "tether": "echo2-healer"
+      },
+      "ifMechanic": "strike2-left"
+    },
+    {
+      "id": "echo2-damage-cast",
+      "at": 71600,
+      "type": "start_cast",
+      "source": "earth-crystal",
+      "cast": "echo-cone-damage",
+      "facing": {
+        "type": "tether",
+        "tether": "echo2-damage"
+      },
+      "ifMechanic": "strike2-left"
+    },
+    {
+      "id": "echo2-left-cast",
+      "at": 71600,
+      "type": "start_cast",
+      "source": "striker",
+      "cast": "echo-left",
+      "ifMechanic": "strike2-left"
+    },
+    {
+      "id": "echo2-right-cast",
+      "at": 71600,
+      "type": "start_cast",
+      "source": "striker",
+      "cast": "echo-right",
+      "ifMechanic": "strike2-right"
+    },
+    {
+      "id": "echo2-wide-cast",
+      "at": 71600,
+      "type": "start_cast",
+      "source": "earth-crystal",
+      "cast": "echo-wide",
+      "replayId": "echo2-wide",
+      "ifMechanic": "strike2-right"
+    },
+    {
+      "id": "orb-hold-2",
+      "at": 75300,
+      "type": "recalculate_positions",
+      "group": "orb-hold"
+    },
+    {
+      "id": "post-echo-2-heal",
+      "at": 75600,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "black-hole-2-cast",
+      "at": 76100,
+      "type": "start_cast",
+      "source": "boss-small",
+      "cast": "black-hole-return",
+      "mechanic": "black-hole"
+    },
+    {
+      "id": "black-hole-2-shotcall",
+      "at": 76100,
+      "type": "set_shotcall",
+      "text": "Black hole, three tethers",
+      "duration": 4000
+    },
+    {
+      "id": "orb-ring-2",
+      "at": 80200,
+      "type": "recalculate_positions",
+      "group": "orb-ring"
+    },
+    {
+      "id": "laser-3a-heal",
+      "at": 83800,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "l3a-1-holder",
+      "at": 84300,
+      "type": "select_group",
+      "name": "l3a-holder-1",
+      "selector": {
+        "type": "random",
+        "count": 1,
+        "from": {
+          "type": "and",
+          "selectors": [
+            {
+              "type": "or",
+              "selectors": [
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-4"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-5"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-6"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-7"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-8"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "replayId": "l3a-holder-1"
+    },
+    {
+      "id": "l3a-1-link",
+      "at": 84300,
+      "type": "apply_status",
+      "target": {
+        "type": "from_group",
+        "group": "l3a-holder-1"
+      },
+      "status": "link-1",
+      "duration": 4000
+    },
+    {
+      "id": "l3a-1-tether",
+      "at": 84300,
+      "type": "spawn_tether",
+      "source": "$laserOrbs3.p",
+      "tether": "orb-link",
+      "target": {
+        "type": "from_group",
+        "group": "l3a-holder-1"
+      }
+    },
+    {
+      "id": "l3a-1-cast",
+      "at": 84300,
+      "type": "start_cast",
+      "source": "$laserOrbs3.p",
+      "cast": "orb-laser",
+      "facing": {
+        "type": "tether",
+        "tether": "orb-link"
+      }
+    },
+    {
+      "id": "l3a-2-holder",
+      "at": 84300,
+      "type": "select_group",
+      "name": "l3a-holder-2",
+      "selector": {
+        "type": "random",
+        "count": 1,
+        "from": {
+          "type": "and",
+          "selectors": [
+            {
+              "type": "or",
+              "selectors": [
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-4"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-5"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-6"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-7"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-8"
+                }
+              ]
+            },
+            {
+              "type": "without_status",
+              "status": "link-1"
+            }
+          ]
+        }
+      },
+      "replayId": "l3a-holder-2"
+    },
+    {
+      "id": "l3a-2-link",
+      "at": 84300,
+      "type": "apply_status",
+      "target": {
+        "type": "from_group",
+        "group": "l3a-holder-2"
+      },
+      "status": "link-2",
+      "duration": 4000
+    },
+    {
+      "id": "l3a-2-tether",
+      "at": 84300,
+      "type": "spawn_tether",
+      "source": "$laserOrbs3.q",
+      "tether": "orb-link",
+      "target": {
+        "type": "from_group",
+        "group": "l3a-holder-2"
+      }
+    },
+    {
+      "id": "l3a-2-cast",
+      "at": 84300,
+      "type": "start_cast",
+      "source": "$laserOrbs3.q",
+      "cast": "orb-laser",
+      "facing": {
+        "type": "tether",
+        "tether": "orb-link"
+      }
+    },
+    {
+      "id": "l3a-3-holder",
+      "at": 84300,
+      "type": "select_group",
+      "name": "l3a-holder-3",
+      "selector": {
+        "type": "random",
+        "count": 1,
+        "from": {
+          "type": "and",
+          "selectors": [
+            {
+              "type": "or",
+              "selectors": [
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-4"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-5"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-6"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-7"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-8"
+                }
+              ]
+            },
+            {
+              "type": "without_status",
+              "status": "link-1"
+            },
+            {
+              "type": "without_status",
+              "status": "link-2"
+            }
+          ]
+        }
+      },
+      "replayId": "l3a-holder-3"
+    },
+    {
+      "id": "l3a-3-link",
+      "at": 84300,
+      "type": "apply_status",
+      "target": {
+        "type": "from_group",
+        "group": "l3a-holder-3"
+      },
+      "status": "link-3",
+      "duration": 4000
+    },
+    {
+      "id": "l3a-3-tether",
+      "at": 84300,
+      "type": "spawn_tether",
+      "source": "$laserOrbs3.r",
+      "tether": "orb-link",
+      "target": {
+        "type": "from_group",
+        "group": "l3a-holder-3"
+      }
+    },
+    {
+      "id": "l3a-3-cast",
+      "at": 84300,
+      "type": "start_cast",
+      "source": "$laserOrbs3.r",
+      "cast": "orb-laser",
+      "facing": {
+        "type": "tether",
+        "tether": "orb-link"
+      }
+    },
+    {
+      "id": "l3a-stage",
+      "at": 84400,
+      "type": "recalculate_positions",
+      "group": "l3a-stage"
+    },
+    {
+      "id": "l3a-grab",
+      "at": 85200,
+      "type": "recalculate_positions",
+      "group": "l3a-grab"
+    },
+    {
+      "id": "l3a-restage",
+      "at": 86500,
+      "type": "recalculate_positions",
+      "group": "l3a-stage"
+    },
+    {
+      "id": "l3a-spot",
+      "at": 87100,
+      "type": "recalculate_positions",
+      "group": "l3a-spot"
+    },
+    {
+      "id": "l3a-shotcall",
+      "at": 84300,
+      "type": "set_shotcall",
+      "text": "Three tethers, one two and three",
+      "duration": 3000
+    },
+    {
+      "id": "laser-3a-post-heal",
+      "at": 90800,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "l3b-prestage",
+      "at": 88900,
+      "type": "recalculate_positions",
+      "group": "l3b-stage"
+    },
+    {
+      "id": "l3b-1-holder",
+      "at": 89300,
+      "type": "select_group",
+      "name": "l3b-holder-1",
+      "selector": {
+        "type": "random",
+        "count": 1,
+        "from": {
+          "type": "and",
+          "selectors": [
+            {
+              "type": "or",
+              "selectors": [
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-5"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-6"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-7"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-8"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "replayId": "l3b-holder-1"
+    },
+    {
+      "id": "l3b-1-link",
+      "at": 89300,
+      "type": "apply_status",
+      "target": {
+        "type": "from_group",
+        "group": "l3b-holder-1"
+      },
+      "status": "link-1",
+      "duration": 4000
+    },
+    {
+      "id": "l3b-1-tether",
+      "at": 89300,
+      "type": "spawn_tether",
+      "source": "$laserOrbs3.p",
+      "tether": "orb-link",
+      "target": {
+        "type": "from_group",
+        "group": "l3b-holder-1"
+      }
+    },
+    {
+      "id": "l3b-1-cast",
+      "at": 89300,
+      "type": "start_cast",
+      "source": "$laserOrbs3.p",
+      "cast": "orb-laser",
+      "facing": {
+        "type": "tether",
+        "tether": "orb-link"
+      }
+    },
+    {
+      "id": "l3b-2-holder",
+      "at": 89300,
+      "type": "select_group",
+      "name": "l3b-holder-2",
+      "selector": {
+        "type": "random",
+        "count": 1,
+        "from": {
+          "type": "and",
+          "selectors": [
+            {
+              "type": "or",
+              "selectors": [
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-5"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-6"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-7"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-8"
+                }
+              ]
+            },
+            {
+              "type": "without_status",
+              "status": "link-1"
+            }
+          ]
+        }
+      },
+      "replayId": "l3b-holder-2"
+    },
+    {
+      "id": "l3b-2-link",
+      "at": 89300,
+      "type": "apply_status",
+      "target": {
+        "type": "from_group",
+        "group": "l3b-holder-2"
+      },
+      "status": "link-2",
+      "duration": 4000
+    },
+    {
+      "id": "l3b-2-tether",
+      "at": 89300,
+      "type": "spawn_tether",
+      "source": "$laserOrbs3.q",
+      "tether": "orb-link",
+      "target": {
+        "type": "from_group",
+        "group": "l3b-holder-2"
+      }
+    },
+    {
+      "id": "l3b-2-cast",
+      "at": 89300,
+      "type": "start_cast",
+      "source": "$laserOrbs3.q",
+      "cast": "orb-laser",
+      "facing": {
+        "type": "tether",
+        "tether": "orb-link"
+      }
+    },
+    {
+      "id": "l3b-3-holder",
+      "at": 89300,
+      "type": "select_group",
+      "name": "l3b-holder-3",
+      "selector": {
+        "type": "random",
+        "count": 1,
+        "from": {
+          "type": "and",
+          "selectors": [
+            {
+              "type": "or",
+              "selectors": [
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-5"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-6"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-7"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-8"
+                }
+              ]
+            },
+            {
+              "type": "without_status",
+              "status": "link-1"
+            },
+            {
+              "type": "without_status",
+              "status": "link-2"
+            }
+          ]
+        }
+      },
+      "replayId": "l3b-holder-3"
+    },
+    {
+      "id": "l3b-3-link",
+      "at": 89300,
+      "type": "apply_status",
+      "target": {
+        "type": "from_group",
+        "group": "l3b-holder-3"
+      },
+      "status": "link-3",
+      "duration": 4000
+    },
+    {
+      "id": "l3b-3-tether",
+      "at": 89300,
+      "type": "spawn_tether",
+      "source": "$laserOrbs3.r",
+      "tether": "orb-link",
+      "target": {
+        "type": "from_group",
+        "group": "l3b-holder-3"
+      }
+    },
+    {
+      "id": "l3b-3-cast",
+      "at": 89300,
+      "type": "start_cast",
+      "source": "$laserOrbs3.r",
+      "cast": "orb-laser",
+      "facing": {
+        "type": "tether",
+        "tether": "orb-link"
+      }
+    },
+    {
+      "id": "l3b-stage",
+      "at": 89400,
+      "type": "recalculate_positions",
+      "group": "l3b-stage"
+    },
+    {
+      "id": "l3b-grab",
+      "at": 90200,
+      "type": "recalculate_positions",
+      "group": "l3b-grab"
+    },
+    {
+      "id": "l3b-restage",
+      "at": 91500,
+      "type": "recalculate_positions",
+      "group": "l3b-stage"
+    },
+    {
+      "id": "l3b-spot",
+      "at": 92100,
+      "type": "recalculate_positions",
+      "group": "l3b-spot"
+    },
+    {
+      "id": "l3b-shotcall",
+      "at": 89300,
+      "type": "set_shotcall",
+      "text": "Four takes one\u2019s spot",
+      "duration": 3000
+    },
+    {
+      "id": "laser-3b-post-heal",
+      "at": 95800,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "l3c-prestage",
+      "at": 93900,
+      "type": "recalculate_positions",
+      "group": "l3c-stage"
+    },
+    {
+      "id": "l3c-1-holder",
+      "at": 94300,
+      "type": "select_group",
+      "name": "l3c-holder-1",
+      "selector": {
+        "type": "random",
+        "count": 1,
+        "from": {
+          "type": "and",
+          "selectors": [
+            {
+              "type": "or",
+              "selectors": [
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-1"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-6"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-7"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-8"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "replayId": "l3c-holder-1"
+    },
+    {
+      "id": "l3c-1-link",
+      "at": 94300,
+      "type": "apply_status",
+      "target": {
+        "type": "from_group",
+        "group": "l3c-holder-1"
+      },
+      "status": "link-1",
+      "duration": 4000
+    },
+    {
+      "id": "l3c-1-tether",
+      "at": 94300,
+      "type": "spawn_tether",
+      "source": "$laserOrbs3.p",
+      "tether": "orb-link",
+      "target": {
+        "type": "from_group",
+        "group": "l3c-holder-1"
+      }
+    },
+    {
+      "id": "l3c-1-cast",
+      "at": 94300,
+      "type": "start_cast",
+      "source": "$laserOrbs3.p",
+      "cast": "orb-laser",
+      "facing": {
+        "type": "tether",
+        "tether": "orb-link"
+      }
+    },
+    {
+      "id": "l3c-2-holder",
+      "at": 94300,
+      "type": "select_group",
+      "name": "l3c-holder-2",
+      "selector": {
+        "type": "random",
+        "count": 1,
+        "from": {
+          "type": "and",
+          "selectors": [
+            {
+              "type": "or",
+              "selectors": [
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-1"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-6"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-7"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-8"
+                }
+              ]
+            },
+            {
+              "type": "without_status",
+              "status": "link-1"
+            }
+          ]
+        }
+      },
+      "replayId": "l3c-holder-2"
+    },
+    {
+      "id": "l3c-2-link",
+      "at": 94300,
+      "type": "apply_status",
+      "target": {
+        "type": "from_group",
+        "group": "l3c-holder-2"
+      },
+      "status": "link-2",
+      "duration": 4000
+    },
+    {
+      "id": "l3c-2-tether",
+      "at": 94300,
+      "type": "spawn_tether",
+      "source": "$laserOrbs3.q",
+      "tether": "orb-link",
+      "target": {
+        "type": "from_group",
+        "group": "l3c-holder-2"
+      }
+    },
+    {
+      "id": "l3c-2-cast",
+      "at": 94300,
+      "type": "start_cast",
+      "source": "$laserOrbs3.q",
+      "cast": "orb-laser",
+      "facing": {
+        "type": "tether",
+        "tether": "orb-link"
+      }
+    },
+    {
+      "id": "l3c-3-holder",
+      "at": 94300,
+      "type": "select_group",
+      "name": "l3c-holder-3",
+      "selector": {
+        "type": "random",
+        "count": 1,
+        "from": {
+          "type": "and",
+          "selectors": [
+            {
+              "type": "or",
+              "selectors": [
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-1"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-6"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-7"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-8"
+                }
+              ]
+            },
+            {
+              "type": "without_status",
+              "status": "link-1"
+            },
+            {
+              "type": "without_status",
+              "status": "link-2"
+            }
+          ]
+        }
+      },
+      "replayId": "l3c-holder-3"
+    },
+    {
+      "id": "l3c-3-link",
+      "at": 94300,
+      "type": "apply_status",
+      "target": {
+        "type": "from_group",
+        "group": "l3c-holder-3"
+      },
+      "status": "link-3",
+      "duration": 4000
+    },
+    {
+      "id": "l3c-3-tether",
+      "at": 94300,
+      "type": "spawn_tether",
+      "source": "$laserOrbs3.r",
+      "tether": "orb-link",
+      "target": {
+        "type": "from_group",
+        "group": "l3c-holder-3"
+      }
+    },
+    {
+      "id": "l3c-3-cast",
+      "at": 94300,
+      "type": "start_cast",
+      "source": "$laserOrbs3.r",
+      "cast": "orb-laser",
+      "facing": {
+        "type": "tether",
+        "tether": "orb-link"
+      }
+    },
+    {
+      "id": "l3c-stage",
+      "at": 94400,
+      "type": "recalculate_positions",
+      "group": "l3c-stage"
+    },
+    {
+      "id": "l3c-grab",
+      "at": 95200,
+      "type": "recalculate_positions",
+      "group": "l3c-grab"
+    },
+    {
+      "id": "l3c-restage",
+      "at": 96500,
+      "type": "recalculate_positions",
+      "group": "l3c-stage"
+    },
+    {
+      "id": "l3c-spot",
+      "at": 97100,
+      "type": "recalculate_positions",
+      "group": "l3c-spot"
+    },
+    {
+      "id": "l3c-shotcall",
+      "at": 94300,
+      "type": "set_shotcall",
+      "text": "Five takes two\u2019s spot",
+      "duration": 3000
+    },
+    {
+      "id": "laser-3-hold",
+      "at": 99000,
+      "type": "recalculate_positions",
+      "group": "orb-hold"
+    },
+    {
       "id": "final-heal",
-      "at": 48500,
+      "at": 100500,
       "type": "heal",
       "target": {
         "type": "all"
       },
       "full": true
     }
-  ]
+  ],
+  "mechanicalRoles": {
+    "bait": {
+      "bait-1": [
+        {
+          "type": "gameplay_role",
+          "role": "damage"
+        },
+        {
+          "type": "has_status",
+          "status": "first"
+        },
+        {
+          "type": "not_has_status",
+          "status": "accretion"
+        }
+      ],
+      "bait-2": [
+        {
+          "type": "or",
+          "conditions": [
+            {
+              "type": "gameplay_role",
+              "role": "tank"
+            },
+            {
+              "type": "gameplay_role",
+              "role": "healer"
+            }
+          ]
+        },
+        {
+          "type": "has_status",
+          "status": "first"
+        },
+        {
+          "type": "not_has_status",
+          "status": "accretion"
+        }
+      ],
+      "bait-3": [
+        {
+          "type": "has_status",
+          "status": "first"
+        },
+        {
+          "type": "has_status",
+          "status": "accretion"
+        }
+      ],
+      "bait-4": [
+        {
+          "type": "gameplay_role",
+          "role": "damage"
+        },
+        {
+          "type": "has_status",
+          "status": "second"
+        },
+        {
+          "type": "not_has_status",
+          "status": "accretion"
+        }
+      ],
+      "bait-5": [
+        {
+          "type": "or",
+          "conditions": [
+            {
+              "type": "gameplay_role",
+              "role": "tank"
+            },
+            {
+              "type": "gameplay_role",
+              "role": "healer"
+            }
+          ]
+        },
+        {
+          "type": "has_status",
+          "status": "second"
+        },
+        {
+          "type": "not_has_status",
+          "status": "accretion"
+        }
+      ],
+      "bait-6": [
+        {
+          "type": "has_status",
+          "status": "second"
+        },
+        {
+          "type": "has_status",
+          "status": "accretion"
+        }
+      ],
+      "bait-7": [
+        {
+          "type": "gameplay_role",
+          "role": "damage"
+        },
+        {
+          "type": "has_status",
+          "status": "third"
+        }
+      ],
+      "bait-8": [
+        {
+          "type": "or",
+          "conditions": [
+            {
+              "type": "gameplay_role",
+              "role": "tank"
+            },
+            {
+              "type": "gameplay_role",
+              "role": "healer"
+            }
+          ]
+        },
+        {
+          "type": "has_status",
+          "status": "third"
+        }
+      ]
+    },
+    "edict": {
+      "edict-target": [
+        {
+          "type": "has_status",
+          "status": "edict-mark"
+        }
+      ]
+    },
+    "tank-swap": {
+      "large_tank": [
+        {
+          "type": "gameplay_role",
+          "role": "tank"
+        },
+        {
+          "type": "mechanical_role",
+          "role": "small_tank"
+        }
+      ],
+      "small_tank": [
+        {
+          "type": "gameplay_role",
+          "role": "tank"
+        },
+        {
+          "type": "mechanical_role",
+          "role": "large_tank"
+        }
+      ]
+    }
+  }
 }

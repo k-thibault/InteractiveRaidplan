@@ -7,7 +7,7 @@ import type { KnockParams } from './Knock';
 import type { FollowInput } from '../bots/FollowManager';
 import type { SpawnTetherEffect, RemoveTetherEffect } from './Tether';
 
-export type DamageType = 'physical' | 'magical' | 'dark' | 'fire' | 'ice' | 'water' | 'wind' | 'earth' | 'poison';
+export type DamageType = 'physical' | 'magical' | 'dark' | 'fire' | 'ice' | 'water' | 'wind' | 'earth' | 'poison' | 'void';
 export interface DamageDefinition {
   amount: number; type: DamageType; fatal?: boolean;
   /** Ignores invulnerable and undying statuses, e.g. for enrage damage. */

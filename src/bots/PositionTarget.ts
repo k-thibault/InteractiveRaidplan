@@ -4,7 +4,9 @@ import type { MarkerQuery } from './MarkerQuery';
 export type EntityReference =
   | { type: 'mechanical_role'; role: string }
   | { type: 'gameplay_role'; role: PlayerRole }
-  | { type: 'id'; id: string };
+  | { type: 'id'; id: string }
+  /** Whoever currently holds the tether from `source`, following passes. */
+  | { type: 'tether_target'; source: string };
 
 export type PositionTarget =
   | { type: 'fixed'; position: { x: number; y: number } | string }
