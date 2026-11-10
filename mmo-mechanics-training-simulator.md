@@ -22,17 +22,15 @@ The arena displays players, enemies, markers, attack areas, and active cast bars
 ## Features
 
 - Selectable encounter timelines with scripted phases and timed mechanics.
-- Circle, cone, and donut attacks, casts, markers, arena boundaries, and visual resources.
-- Player health, status effects and stacks, damage, control effects, and forced movement.
-- Status-based damage immunity and proximity effects, including statuses on enemies.
-- Statuses that run effects when their stacks reach the maximum, such as converting into another status.
+- Circle, cone, and donut attacks, casts, markers, arena boundaries, and visual resources, with spawn points that can sit on the live bearing of an entity.
+- Player health, status effects and stacks, damage, control effects, and forced movement. Statuses can also be blocked while another status is active.
 - Cast-specific caster graphics and capped batches with queued effects.
-- Bot movement and role-based positioning to simulate the rest of the party.
+- Bot movement and role-based positioning to simulate the rest of the party, including safe spots constrained by multiple half-planes and routes around enemies marked for avoidance.
 - Randomized mechanics with repeatable runs through the seed control.
 - Tethers linking entities, with passing, break conditions, and length-based styling.
-- Ability to hide other bots and enemies while controlling a player; enemies stay drawn while they chase you or when a timeline marks them `forceVisible`.
+- Ability to hide other bots and enemies while controlling a player.
 - Replays of every attempt: watch, seek, save, load and retry an attempt (see below).
-- A streak counter of successive successful runs, including runs with bots or enemies hidden by a player (No bots, No enemies, No entities, No calls, Zero help).
+- A streak counter of successive successful runs, including special streaks for runs with bots or enemies hidden by a player.
 - Responsive layout for the arena, party roster, and event log.
 
 ## Dev build features

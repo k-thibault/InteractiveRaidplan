@@ -42,6 +42,8 @@ export interface StatusDefinition {
   knockImmune?: boolean;
   /** While active, a root blocks movement and a stun blocks movement and facing changes. */
   control?: 'root' | 'stun';
+  /** The status is not applied while the holder has any of these statuses. */
+  blockedBy?: string[];
   /** Runs when the stacks reach `maxStacks`; `source` targets the holder. */
   onMaxStacks?: EffectDefinition[];
   /** Runs on any removal, including expiry. */

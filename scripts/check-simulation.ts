@@ -30,6 +30,7 @@ const statuses = [
   { id: 'trap', name: 'Trap', hidden: true, proximity: { radius: 3, effects: [{ type: 'damage', target: 'proximity_target', damage: { amount: 0, type: 'dark', fatal: true, bypassImmunity: true } }] } },
   { id: 'cursed', name: 'Cursed', maxStacks: 2, onMaxStacks: [{ type: 'remove_status', target: 'source', status: 'cursed', stacks: 2 }, { type: 'apply_status', target: 'source', status: 'doom' }] },
   { id: 'doom', name: 'Doom' },
+  { id: 'hexed', name: 'Hexed', blockedBy: ['doom'] },
   { id: 'mark', name: 'Mark', onRemove: [{ type: 'add_to_batch', batch: 'marks' }] },
   { id: 'pulse', name: 'Pulse', proximity: { radius: 3, interval: 1000, effects: [{ type: 'damage', target: 'proximity_target', damage: { amount: 5, type: 'magical' } }] } },
 ];
@@ -490,6 +491,66 @@ const hit = (id: string, time: number, amount: number, type = 'physical', fatal?
   const has = (id: string, status: string) => find(simulation, id).statuses.some((entry) => entry.definitionId === status);
   check('reaching max stacks runs the hook, which can swap the status', has('a', 'doom') && !has('a', 'cursed'));
   check('a status below max stacks is left alone', has('b', 'cursed') && !has('b', 'doom'));
+}
+
+// Safe spot search
+{
+  const fixed = (x: number, y: number) => ({ type: 'fixed', position: { x, y } });
+  const plane = (to: { x: number; y: number }, margin: number) => ({ origin: fixed(0, 0), from: fixed(0, 0), to: fixed(to.x, to.y), margin });
+  const spot = (constraints: object[], extra: object = {}) => {
+    const rules = { default: [{ target: { type: 'safe_spot', constraints, anchor: fixed(-5, 0), ...extra } }] };
+    const simulation = make({ positions: rules, events: [at('go', 0, { type: 'recalculate_positions', group: 'default' })] as never, players: [player('a', -5, 0)] as never });
+    until(simulation, 6000);
+    return find(simulation, 'a').position;
+  };
+  const near = spot([plane({ x: 1, y: 0 }, 2)]);
+  check('a safe spot is the point nearest the anchor inside every constraint', Math.abs(near.x - 2) < 0.2 && Math.abs(near.y) < 0.2, JSON.stringify(near));
+  const dropped = spot([plane({ x: 1, y: 0 }, 2), plane({ x: 0, y: 1 }, 50)]);
+  check('unsatisfiable trailing constraints are dropped', Math.abs(dropped.x - 2) < 0.2, JSON.stringify(dropped));
+  const far = spot([plane({ x: 1, y: 0 }, 2), plane({ x: 0, y: 1 }, 50)], { farFrom: fixed(0, -9) });
+  check('with only some constraints met, the spot farthest from farFrom is used', far.x > 2 && far.y > 6, JSON.stringify(far));
+}
+
+// Entity-bearing positions
+{
+  const spawn = { type: 'spawn_area', position: { type: 'polar', angleFrom: 'boss', angleOffset: 180, radius: 3 }, shape: 'circle', radius: 1, telegraphDuration: 0, duration: 500, resolution: [], label: 'probe' };
+  const simulation = make({ casts: { probe: { id: 'probe', name: 'Probe', castTime: 100, visible: true, effects: [spawn] } } as never, events: [at('go', 0, { type: 'start_cast', source: 'boss', cast: 'probe' })] as never });
+  until(simulation, 300);
+  const area = simulation.state.effects.find((effect) => effect.label === 'probe');
+  check('an area can be placed on the bearing of a live entity', !!area && Math.abs(area.position.x) < 1e-6 && Math.abs(area.position.y - 3) < 1e-6, JSON.stringify(area?.position));
+}
+
+// Blocked statuses
+{
+  const hex = (id: string, time: number, who: string) => at(id, time, { type: 'apply_status', target: only(who), status: 'hexed' });
+  const doom = at('d', 50, { type: 'apply_status', target: only('a'), status: 'doom' });
+  const simulation = make({ events: [doom, hex('a1', 100, 'a'), hex('b1', 100, 'b')] as never });
+  until(simulation, 300);
+  const has = (id: string, status: string) => find(simulation, id).statuses.some((entry) => entry.definitionId === status);
+  check('a status is not applied while a blocking status is held', !has('a', 'hexed'));
+  check('a blocked status still applies to holders without the blocker', has('b', 'hexed'));
+}
+
+// Overlapping casts
+{
+  const cast = (id: string, castTime: number) => ({ id, name: id, castTime, visible: true, effects: [{ type: 'apply_status', target: only('a'), status: id === 'late' ? 'doom' : 'hexed' }] });
+  const start = (id: string, time: number, cast: string) => at(id, time, { type: 'start_cast', source: 'boss', cast });
+  const simulation = make({ casts: { first: cast('first', 100), long: cast('long', 500), late: cast('late', 1000) } as never,
+    events: [start('s1', 0, 'first'), start('s2', 0, 'long'), start('s3', 150, 'late')] as never });
+  until(simulation, 1300);
+  check('a cast started while others are running is not dropped when an earlier one finishes', find(simulation, 'a').statuses.some((entry) => entry.definitionId === 'doom'));
+}
+
+// Bot obstacle avoidance
+{
+  const rules = { default: [{ target: { type: 'fixed', position: { x: 6, y: 0 } } }] };
+  const simulation = make({ positions: rules, players: [player('a', -6, 0)] as never,
+    events: [at('rock', 0, { type: 'spawn_enemy', enemyId: 'rock', position: { x: 0, y: 0 }, botAvoidRadius: 2 }), at('go', 0, { type: 'recalculate_positions', group: 'default' })] as never });
+  let closest = Infinity;
+  while (simulation.state.time < 4000) { simulation.tick(TICK_MS); const p = find(simulation, 'a').position; closest = Math.min(closest, Math.hypot(p.x, p.y)); }
+  const end = find(simulation, 'a').position;
+  check('bots walk around an enemy they are told to avoid', closest >= 1.95, closest.toFixed(2));
+  check('and still reach their destination', Math.hypot(end.x - 6, end.y) < 0.3, JSON.stringify(end));
 }
 
 // Encounter validation

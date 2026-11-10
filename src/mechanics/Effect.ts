@@ -77,6 +77,8 @@ export interface AreaDefinition {
   /** Spawn-time targeting mode; `cast_*` reuses the locked cast target. */
   direction?: 'front' | 'back' | 'nearest_player' | 'random_player' | 'cast_direction' | 'cast_target' | 'facing';
   rotationOffset?: number;
+  /** Id of an entity the area points at from its origin, taking precedence over `direction`. */
+  aimAt?: string;
   /** Enables replay-safe resolution for nearest/random player direction picks. */
   replayableDirection?: boolean;
   side?: 'north' | 'south';

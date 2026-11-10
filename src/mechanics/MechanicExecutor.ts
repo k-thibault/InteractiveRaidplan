@@ -13,7 +13,7 @@ import type { ApplyStatusAssignment, DistributeStatusesEffect } from './Effect';
 import type { GraphicAnchor } from './Graphic';
 import { statusDisplayName } from '../util/format';
 import type { CastDefinition, CastFacing } from './Cast';
-import { distance as pointDistance, resolvePositionValue, isTowardsPosition, fromPolar, normalize, subtract, toPolarAngle } from '../geometry/Vector2';
+import { distance as pointDistance, resolvePositionValue, isTowardsPosition, isPolarPosition, fromPolar, normalize, subtract, toPolarAngle } from '../geometry/Vector2';
 import type { PositionValue, Vector2 } from '../geometry/Vector2';
 import { DEFAULT_FACING, readFacing } from '../geometry/Facing';
 import { DEFAULT_KNOCK_DURATION, facingKnockScale } from './Knock';
@@ -309,6 +309,10 @@ export class MechanicExecutor {
 
   /** Resolves positions, including live `towards` targets. */
   private resolvePosition(value: PositionValue): Vector2 | undefined {
+    if (isPolarPosition(value) && value.angleFrom !== undefined) {
+      const entity = findEntity(this.state, value.angleFrom);
+      return entity ? resolvePositionValue({ ...value, angle: toPolarAngle(entity.position, value.origin ?? { x: 0, y: 0 }), angleFrom: undefined }) : undefined;
+    }
     if (!isTowardsPosition(value)) return resolvePositionValue(value);
     const from = this.resolvePosition(value.from);
     const target = findEntity(this.state, value.target);
@@ -374,6 +378,10 @@ export class MechanicExecutor {
       const target = findEntity(this.state, cast.targetId);
       if (sourceEntity && target) base.rotation = Math.atan2(target.position.y - sourceEntity.position.y, target.position.x - sourceEntity.position.x);
     }
+    if (resolved.aimAt !== undefined) {
+      const aimed = findEntity(this.state, resolved.aimAt);
+      if (aimed) base.rotation = Math.atan2(aimed.position.y - source.y, aimed.position.x - source.x);
+    }
     if (resolved.rotationOffset) base.rotation += (resolved.rotationOffset * Math.PI) / 180;
     const effect: AreaEffect = resolved.shape === 'cone'
       ? { ...base, shape: 'cone', angle: resolved.angle ?? 60 }
@@ -420,7 +428,14 @@ export class MechanicExecutor {
       source.facing = toPolarAngle(target.position, source.position);
       source.facingRuleActive = true;
     }
-    this.state.casts.push({ id: `cast-${this.state.casts.length + 1}`, definitionId: castId, sourceId, startedAt: this.state.time, completesAt: this.state.time + definition.castTime, targetId: resolved?.targetId, direction: resolved?.direction, targetPosition: resolved?.targetPosition, tetherId: resolved?.tetherId, revealsCaster: definition.revealCaster, casterGraphic: definition.casterGraphic });
+    this.state.casts.push({ id: this.nextCastId(), definitionId: castId, sourceId, startedAt: this.state.time, completesAt: this.state.time + definition.castTime, targetId: resolved?.targetId, direction: resolved?.direction, targetPosition: resolved?.targetPosition, tetherId: resolved?.tetherId, revealsCaster: definition.revealCaster, casterGraphic: definition.casterGraphic });
+  }
+
+  /** Numbered from the live count, skipping any id still in use so finishing one cast never removes another. */
+  private nextCastId(): string {
+    let number = this.state.casts.length + 1;
+    while (this.state.casts.some((cast) => cast.id === `cast-${number}`)) number += 1;
+    return `cast-${number}`;
   }
 
   private resolveFacing(facing: CastFacing, sourceId: string, replayId?: string): { targetId: string; direction: number; targetPosition: Vector2; tetherId?: string } | undefined {
@@ -502,7 +517,7 @@ export class MechanicExecutor {
     const id = resolved.enemyId ?? `enemy-${this.state.enemies.length + 1}-${this.state.time}`;
     const enemy: Enemy = {
       id, type: 'enemy', name: resolved.name ?? 'Enemy', position: { ...position }, alive: true,
-      style: resolved.style, graphic: resolved.graphic, forceVisible: resolved.forceVisible, statuses: [],
+      style: resolved.style, graphic: resolved.graphic, forceVisible: resolved.forceVisible, botAvoidRadius: resolved.botAvoidRadius, statuses: [],
       expiresAt: resolved.expiresAfter !== undefined ? this.state.time + resolved.expiresAfter : undefined
     };
     const nearestPlayer = this.state.players
@@ -772,6 +787,7 @@ export class MechanicExecutor {
 
   private applyStatus(player: StatusHolder, statusId: string, duration: number | undefined, stacks = 1): void {
     const definition = this.statusDefinitions.get(statusId);
+    if (definition?.blockedBy?.some((blocker) => player.statuses.some((status) => status.definitionId === blocker))) return;
     const existing = player.statuses.find((status) => status.definitionId === statusId);
     const newExpiresAt = duration === undefined ? undefined : this.state.time + duration;
     const charges = definition?.damageImmunity?.charges;

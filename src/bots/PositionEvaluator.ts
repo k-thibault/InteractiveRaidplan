@@ -1,12 +1,12 @@
 import type { GameState } from '../simulation/GameState';
 import type { Player } from '../entities/Player';
 import type { Enemy } from '../entities/Enemy';
-import { clampToArena, distanceToArenaEdge } from '../geometry/Arena';
+import { BOT_DEADLY_EDGE_INSET, clampToArena, distanceToArenaEdge } from '../geometry/Arena';
 import type { AreaEffect } from '../mechanics/Effect';
 import type { PositionTarget } from './PositionTarget';
 import { resolveEntityReference } from '../mechanics/Selector';
 import { MechanicalRoleEvaluator, type ConditionExpression } from './MechanicalRoleEvaluator';
-import { fromPolar, toPolarAngle, circularMeanAngle, normalize, subtract } from '../geometry/Vector2';
+import { fromPolar, toPolarAngle, circularMeanAngle, normalize, subtract, distance } from '../geometry/Vector2';
 import type { Vector2 } from '../geometry/Vector2';
 import { signedAngleDelta } from '../geometry/Facing';
 import { pickMarker } from './MarkerQuery';
@@ -97,10 +97,16 @@ export class PositionEvaluator {
     }
     if (target.type === 'polar') {
       let angle: number | string | undefined;
-      if (target.angleFrom) {
+      const centre = target.originEntity ? resolveEntityReference(this.resolveValue(target.originEntity), state)?.position : target.origin;
+      if (target.originEntity && !centre) return undefined;
+      if (target.angleFacing) {
+        const facing = resolveEntityReference(this.resolveValue(target.angleFacing), state)?.facing;
+        if (facing === undefined) return undefined;
+        angle = facing;
+      } else if (target.angleFrom) {
         const entity = resolveEntityReference(this.resolveValue(target.angleFrom), state);
         if (!entity) return undefined;
-        angle = toPolarAngle(entity.position, target.origin ?? { x: 0, y: 0 });
+        angle = toPolarAngle(entity.position, centre ?? { x: 0, y: 0 });
       } else if (target.angle !== undefined) {
         angle = this.resolveValue(this.substituteParams(target.angle, params));
       }
@@ -111,10 +117,10 @@ export class PositionEvaluator {
         const by = this.resolveValue(this.substituteParams(target.angleTowards.by, params));
         if (!other || typeof by !== 'number') return undefined;
         // Turn the shorter way round toward the other entity's bearing; a negative `by` turns away from it.
-        const turn = signedAngleDelta(angle, toPolarAngle(other.position, target.origin ?? { x: 0, y: 0 }));
+        const turn = signedAngleDelta(angle, toPolarAngle(other.position, centre ?? { x: 0, y: 0 }));
         angle += Math.sign(turn) * by;
       }
-      return fromPolar(angle + (target.angleOffset ?? 0), radius, target.origin);
+      return fromPolar(angle + (target.angleOffset ?? 0), radius, centre);
     }
     if (target.type === 'drag') {
       const follower = resolveEntityReference(this.resolveValue(target.entity), state);
@@ -180,6 +186,7 @@ export class PositionEvaluator {
       const signed = target.toward ? distance : -distance;
       return { x: from.x + heading.x * signed, y: from.y + heading.y * signed };
     }
+    if (target.type === 'safe_spot') return this.resolveSafeSpot(target, state, params, player);
     if (target.type === 'area') return this.resolveArea(target, state);
 
     const entity = resolveEntityReference(this.resolveValue(target.player), state);
@@ -187,6 +194,38 @@ export class PositionEvaluator {
       x: entity.position.x + (target.offset?.x ?? 0),
       y: entity.position.y + (target.offset?.y ?? 0)
     } : undefined;
+  }
+
+  private resolveSafeSpot(target: Extract<PositionTarget, { type: 'safe_spot' }>, state: GameState, params?: Record<string, number>, player?: Player): Vector2 | undefined {
+    const anchor = this.resolve(target.anchor, state, params, player);
+    if (!anchor) return undefined;
+    const farFrom = target.farFrom ? this.resolve(target.farFrom, state, params, player) : undefined;
+    // A constraint whose inputs don't exist right now (e.g. a despawned entity) is skipped.
+    const planes = target.constraints.flatMap((constraint) => {
+      const origin = this.resolve(constraint.origin, state, params, player);
+      const from = this.resolve(constraint.from, state, params, player);
+      const to = this.resolve(constraint.to, state, params, player);
+      return origin && from && to ? [{ origin, direction: normalize(subtract(to, from)), margin: constraint.margin ?? 0 }] : [];
+    });
+    const step = target.step ?? 0.5;
+    const candidates: Vector2[] = [];
+    for (let x = -state.arena.halfWidth; x <= state.arena.halfWidth; x += step) {
+      for (let y = -state.arena.halfHeight; y <= state.arena.halfHeight; y += step) {
+        const point = { x, y };
+        const inset = { x, y };
+        clampToArena(inset, state.arena, BOT_DEADLY_EDGE_INSET);
+        if (inset.x === x && inset.y === y) candidates.push(point);
+      }
+    }
+    const satisfies = (point: Vector2, count: number) => planes.slice(0, count).every((plane) => (point.x - plane.origin.x) * plane.direction.x + (point.y - plane.origin.y) * plane.direction.y >= plane.margin);
+    for (let count = planes.length; count >= 0; count -= 1) {
+      const valid = candidates.filter((point) => satisfies(point, count));
+      if (valid.length === 0) continue;
+      const byFarthest = count < planes.length && farFrom !== undefined;
+      const score = (point: Vector2) => byFarthest ? -distance(point, farFrom!) : distance(point, anchor);
+      return valid.reduce((best, point) => score(point) < score(best) ? point : best);
+    }
+    return undefined;
   }
 
   /** Finds the marker a `marker` target names, either by id or by running its query against the live markers. */

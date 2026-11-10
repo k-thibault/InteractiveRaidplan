@@ -23,7 +23,9 @@ export function distance(a: Vector2, b: Vector2): number {
 /** Compass-angle position relative to an origin. */
 export interface PolarPosition {
   type: 'polar';
-  angle: number | string;
+  angle?: number | string;
+  /** Id of an entity whose current bearing from `origin` replaces `angle`. */
+  angleFrom?: string;
   radius: number | string;
   origin?: Vector2;
   /** Degrees added to `angle`, e.g. to place something 90 degrees round from another anchor. */

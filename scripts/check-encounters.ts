@@ -75,7 +75,7 @@ for (const id of ENCOUNTER_IDS) {
 
   const statusIds = new Set((encounter.statuses ?? []).map((status) => status.id));
   problems('status ids are unique', (encounter.statuses ?? []).map((status) => status.id).filter((statusId, index, all) => all.indexOf(statusId) !== index));
-  problems('referenced statuses are defined', collect(e, ['status', 'statusChoices', 'failStatuses', 'statuses']).filter((ref) => !statusIds.has(ref.value)).map((ref) => `${ref.path} -> "${ref.value}"`));
+  problems('referenced statuses are defined', collect(e, ['status', 'statusChoices', 'failStatuses', 'statuses', 'blockedBy']).filter((ref) => !statusIds.has(ref.value)).map((ref) => `${ref.path} -> "${ref.value}"`));
 
   const castIds = new Set(Object.keys(encounter.casts ?? {}));
   problems('referenced casts are defined', collect(e, ['cast', 'castChoices']).filter((ref) => !castIds.has(ref.value)).map((ref) => `${ref.path} -> "${ref.value}"`));
