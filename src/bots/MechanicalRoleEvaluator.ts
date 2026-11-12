@@ -23,8 +23,15 @@ export type Condition =
   | { type: 'not'; condition: ConditionExpression }
   | { type: 'player_condition'; player: PlayerReference; condition: ConditionExpression }
   | { type: 'flex_conflict_loser'; pairRole: string; statuses: string[] }
+  /** Matches a tether source by numeric rank; negative ranks count from the end. */
+  | { type: 'tether_source_rank'; source: string; rank: number }
   /** Selects a living role holder by priority order; calculate the role in an earlier group. */
   | { type: 'ranked'; role: string; order: string[]; rank?: number };
+
+/** A role ending in `*` matches any held role with that prefix, e.g. `orb-*`. */
+function hasRole(player: Player, role: string): boolean {
+  return role.endsWith('*') ? player.mechanicalRoles.some((held) => held.startsWith(role.slice(0, -1))) : player.mechanicalRoles.includes(role);
+}
 
 export type ConditionExpression = Condition | ConditionExpression[];
 export interface RoleChange { playerId: string; added: string[]; removed: string[]; }
@@ -89,7 +96,7 @@ export class MechanicalRoleEvaluator {
       case 'player_id': return player.id === condition.id;
       case 'damage_position': return player.damagePosition === condition.position;
       case 'team': return player.team === condition.team;
-      case 'mechanical_role': return player.mechanicalRoles.includes(condition.role);
+      case 'mechanical_role': return hasRole(player, condition.role);
       case 'mechanic': return state.currentMechanic === condition.mechanic;
       case 'active_cast': return state.casts.some((cast) => cast.definitionId === condition.cast && (!condition.source || cast.sourceId === condition.source));
       case 'active_area': return state.effects.some((effect) =>
@@ -115,6 +122,12 @@ export class MechanicalRoleEvaluator {
           .filter((candidate) => candidate.alive && candidate.mechanicalRoles.includes(condition.role))
           .sort((a, b) => rankOf(a) - rankOf(b));
         return holders.indexOf(player) === (condition.rank ?? 0);
+      }
+      case 'tether_source_rank': {
+        const sources = [...new Set(state.tethers.map((tether) => tether.sourceId))]
+          .filter((id) => state.casts.some((cast) => cast.sourceId === id))
+          .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+        return sources.at(condition.rank) === condition.source;
       }
       case 'flex_conflict_loser': {
         const requiredRoles = Array.isArray(condition.pairRole) ? condition.pairRole : [condition.pairRole];

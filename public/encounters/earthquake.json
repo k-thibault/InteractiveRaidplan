@@ -107,20 +107,39 @@
         }
       ]
     },
-    "orbMissing1": {
+    "orbLayout1": {
       "mode": "choice",
       "values": [
         {
-          "angle": 0
+          "a": 0,
+          "b": 90,
+          "c": 180
         },
         {
-          "angle": 90
+          "a": 0,
+          "b": 90,
+          "c": 270
         },
         {
-          "angle": 180
+          "a": 0,
+          "b": 180,
+          "c": 270
         },
         {
-          "angle": 270
+          "a": 90,
+          "b": 180,
+          "c": 270
+        }
+      ]
+    },
+    "decoyLayout1": {
+      "mode": "choice",
+      "values": [
+        {
+          "offset": 0
+        },
+        {
+          "offset": 45
         }
       ]
     },
@@ -132,20 +151,39 @@
         "orb-3"
       ]
     },
-    "orbMissing2": {
+    "orbLayout2": {
       "mode": "choice",
       "values": [
         {
-          "angle": 0
+          "a": 0,
+          "b": 90,
+          "c": 180
         },
         {
-          "angle": 90
+          "a": 0,
+          "b": 90,
+          "c": 270
         },
         {
-          "angle": 180
+          "a": 0,
+          "b": 180,
+          "c": 270
         },
         {
-          "angle": 270
+          "a": 90,
+          "b": 180,
+          "c": 270
+        }
+      ]
+    },
+    "decoyLayout2": {
+      "mode": "choice",
+      "values": [
+        {
+          "offset": 0
+        },
+        {
+          "offset": 45
         }
       ]
     },
@@ -975,12 +1013,7 @@
           "enemy": "orb",
           "position": {
             "type": "polar",
-            "angle": {
-              "$add": [
-                "$orbMissing1.angle",
-                90
-              ]
-            },
+            "angle": "$orbLayout1.a",
             "radius": 7
           },
           "expiresAfter": 15600
@@ -991,12 +1024,7 @@
           "enemy": "orb",
           "position": {
             "type": "polar",
-            "angle": {
-              "$add": [
-                "$orbMissing1.angle",
-                180
-              ]
-            },
+            "angle": "$orbLayout1.b",
             "radius": 7
           },
           "expiresAfter": 15600
@@ -1007,56 +1035,71 @@
           "enemy": "orb",
           "position": {
             "type": "polar",
-            "angle": {
-              "$add": [
-                "$orbMissing1.angle",
-                270
-              ]
-            },
+            "angle": "$orbLayout1.c",
             "radius": 7
           },
           "expiresAfter": 15600
         },
         {
           "type": "spawn_enemy",
-          "enemyId": "decoy-n",
+          "enemyId": "decoy-1",
           "enemy": "orb",
           "position": {
             "type": "polar",
-            "angle": 0,
+            "angle": {
+              "$add": [
+                "$decoyLayout1.offset",
+                0
+              ]
+            },
             "radius": 4
           },
           "expiresAfter": 15600
         },
         {
           "type": "spawn_enemy",
-          "enemyId": "decoy-e",
+          "enemyId": "decoy-2",
           "enemy": "orb",
           "position": {
             "type": "polar",
-            "angle": 90,
+            "angle": {
+              "$add": [
+                "$decoyLayout1.offset",
+                90
+              ]
+            },
             "radius": 4
           },
           "expiresAfter": 15600
         },
         {
           "type": "spawn_enemy",
-          "enemyId": "decoy-s",
+          "enemyId": "decoy-3",
           "enemy": "orb",
           "position": {
             "type": "polar",
-            "angle": 180,
+            "angle": {
+              "$add": [
+                "$decoyLayout1.offset",
+                180
+              ]
+            },
             "radius": 4
           },
           "expiresAfter": 15600
         },
         {
           "type": "spawn_enemy",
-          "enemyId": "decoy-w",
+          "enemyId": "decoy-4",
           "enemy": "orb",
           "position": {
             "type": "polar",
-            "angle": 270,
+            "angle": {
+              "$add": [
+                "$decoyLayout1.offset",
+                270
+              ]
+            },
             "radius": 4
           },
           "expiresAfter": 15600
@@ -1082,22 +1125,22 @@
             },
             {
               "type": "apply_status",
-              "targetEntity": "decoy-n",
+              "targetEntity": "decoy-1",
               "status": "orb-armed"
             },
             {
               "type": "apply_status",
-              "targetEntity": "decoy-e",
+              "targetEntity": "decoy-2",
               "status": "orb-armed"
             },
             {
               "type": "apply_status",
-              "targetEntity": "decoy-s",
+              "targetEntity": "decoy-3",
               "status": "orb-armed"
             },
             {
               "type": "apply_status",
-              "targetEntity": "decoy-w",
+              "targetEntity": "decoy-4",
               "status": "orb-armed"
             }
           ]
@@ -1253,12 +1296,7 @@
           "enemy": "orb",
           "position": {
             "type": "polar",
-            "angle": {
-              "$add": [
-                "$orbMissing2.angle",
-                90
-              ]
-            },
+            "angle": "$orbLayout2.a",
             "radius": 7
           },
           "expiresAfter": 18050
@@ -1269,12 +1307,7 @@
           "enemy": "orb",
           "position": {
             "type": "polar",
-            "angle": {
-              "$add": [
-                "$orbMissing2.angle",
-                180
-              ]
-            },
+            "angle": "$orbLayout2.b",
             "radius": 7
           },
           "expiresAfter": 18050
@@ -1285,56 +1318,71 @@
           "enemy": "orb",
           "position": {
             "type": "polar",
-            "angle": {
-              "$add": [
-                "$orbMissing2.angle",
-                270
-              ]
-            },
+            "angle": "$orbLayout2.c",
             "radius": 7
           },
           "expiresAfter": 18050
         },
         {
           "type": "spawn_enemy",
-          "enemyId": "decoy-n",
+          "enemyId": "decoy-1",
           "enemy": "orb",
           "position": {
             "type": "polar",
-            "angle": 0,
+            "angle": {
+              "$add": [
+                "$decoyLayout2.offset",
+                0
+              ]
+            },
             "radius": 4
           },
           "expiresAfter": 18050
         },
         {
           "type": "spawn_enemy",
-          "enemyId": "decoy-e",
+          "enemyId": "decoy-2",
           "enemy": "orb",
           "position": {
             "type": "polar",
-            "angle": 90,
+            "angle": {
+              "$add": [
+                "$decoyLayout2.offset",
+                90
+              ]
+            },
             "radius": 4
           },
           "expiresAfter": 18050
         },
         {
           "type": "spawn_enemy",
-          "enemyId": "decoy-s",
+          "enemyId": "decoy-3",
           "enemy": "orb",
           "position": {
             "type": "polar",
-            "angle": 180,
+            "angle": {
+              "$add": [
+                "$decoyLayout2.offset",
+                180
+              ]
+            },
             "radius": 4
           },
           "expiresAfter": 18050
         },
         {
           "type": "spawn_enemy",
-          "enemyId": "decoy-w",
+          "enemyId": "decoy-4",
           "enemy": "orb",
           "position": {
             "type": "polar",
-            "angle": 270,
+            "angle": {
+              "$add": [
+                "$decoyLayout2.offset",
+                270
+              ]
+            },
             "radius": 4
           },
           "expiresAfter": 18050
@@ -1360,22 +1408,22 @@
             },
             {
               "type": "apply_status",
-              "targetEntity": "decoy-n",
+              "targetEntity": "decoy-1",
               "status": "orb-armed"
             },
             {
               "type": "apply_status",
-              "targetEntity": "decoy-e",
+              "targetEntity": "decoy-2",
               "status": "orb-armed"
             },
             {
               "type": "apply_status",
-              "targetEntity": "decoy-s",
+              "targetEntity": "decoy-3",
               "status": "orb-armed"
             },
             {
               "type": "apply_status",
-              "targetEntity": "decoy-w",
+              "targetEntity": "decoy-4",
               "status": "orb-armed"
             }
           ]
@@ -2088,108 +2136,7 @@
         }
       },
       {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-1"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 22.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-2"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 67.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-3"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 112.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-4"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 157.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-5"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 202.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-6"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 247.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-7"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 292.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-8"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 337.5,
-          "radius": 1.5
-        }
+        "include": "orb-ring"
       }
     ],
     "orb-ring": [
@@ -2886,2350 +2833,9 @@
         }
       }
     ],
-    "l1-stage": [
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-1"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "radius": 5.5,
-          "angleFrom": {
-            "type": "id",
-            "id": "$orbOrder1[0]"
-          }
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-1"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 22.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-2"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 67.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-3"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 112.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-4"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 157.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-5"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 202.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-6"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 247.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-7"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 292.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-8"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 337.5,
-          "radius": 1.5
-        }
-      }
-    ],
-    "l1-grab": [
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-1"
-          }
-        ],
-        "live": true,
-        "target": {
-          "type": "shift",
-          "from": {
-            "type": "entity",
-            "player": {
-              "type": "id",
-              "id": "$orbOrder1[0]"
-            }
-          },
-          "toward": {
-            "type": "entity",
-            "player": {
-              "type": "tether_target",
-              "source": "$orbOrder1[0]"
-            }
-          },
-          "distance": 1.6
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-1"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 22.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-2"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 67.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-3"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 112.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-4"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 157.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-5"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 202.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-6"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 247.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-7"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 292.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-8"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 337.5,
-          "radius": 1.5
-        }
-      }
-    ],
-    "l1-spot": [
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-1"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angleOffset": 18.2,
-          "radius": 7.37,
-          "angleFrom": {
-            "type": "id",
-            "id": "$orbOrder1[0]"
-          }
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-1"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 22.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-2"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 67.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-3"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 112.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-4"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 157.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-5"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 202.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-6"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 247.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-7"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 292.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-8"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 337.5,
-          "radius": 1.5
-        }
-      }
-    ],
-    "l2-stage": [
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-1"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "radius": 5.5,
-          "angleFrom": {
-            "type": "id",
-            "id": "$orbOrder1[1]"
-          }
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-2"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "radius": 5.5,
-          "angleFrom": {
-            "type": "id",
-            "id": "$orbOrder1[2]"
-          }
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-1"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 22.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-2"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 67.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-3"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 112.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-4"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 157.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-5"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 202.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-6"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 247.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-7"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 292.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-8"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 337.5,
-          "radius": 1.5
-        }
-      }
-    ],
-    "l2-grab": [
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-1"
-          }
-        ],
-        "live": true,
-        "target": {
-          "type": "shift",
-          "from": {
-            "type": "entity",
-            "player": {
-              "type": "id",
-              "id": "$orbOrder1[1]"
-            }
-          },
-          "toward": {
-            "type": "entity",
-            "player": {
-              "type": "tether_target",
-              "source": "$orbOrder1[1]"
-            }
-          },
-          "distance": 1.6
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-2"
-          }
-        ],
-        "live": true,
-        "target": {
-          "type": "shift",
-          "from": {
-            "type": "entity",
-            "player": {
-              "type": "id",
-              "id": "$orbOrder1[2]"
-            }
-          },
-          "toward": {
-            "type": "entity",
-            "player": {
-              "type": "tether_target",
-              "source": "$orbOrder1[2]"
-            }
-          },
-          "distance": 1.6
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-1"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 22.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-2"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 67.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-3"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 112.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-4"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 157.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-5"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 202.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-6"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 247.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-7"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 292.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-8"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 337.5,
-          "radius": 1.5
-        }
-      }
-    ],
-    "l2-spot": [
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-1"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angleOffset": 18.2,
-          "radius": 7.37,
-          "angleFrom": {
-            "type": "id",
-            "id": "$orbOrder1[1]"
-          }
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-2"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angleOffset": 18.2,
-          "radius": 7.37,
-          "angleFrom": {
-            "type": "id",
-            "id": "$orbOrder1[2]"
-          }
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-1"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 22.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-2"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 67.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-3"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 112.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-4"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 157.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-5"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 202.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-6"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 247.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-7"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 292.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-8"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 337.5,
-          "radius": 1.5
-        }
-      }
-    ],
-    "l3a-stage": [
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-1"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "radius": 5.5,
-          "angleFrom": {
-            "type": "id",
-            "id": "$orbOrder2[0]"
-          }
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-2"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "radius": 5.5,
-          "angleFrom": {
-            "type": "id",
-            "id": "$orbOrder2[1]"
-          }
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-3"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "radius": 5.5,
-          "angleFrom": {
-            "type": "id",
-            "id": "$orbOrder2[2]"
-          }
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-1"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 22.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-2"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 67.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-3"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 112.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-4"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 157.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-5"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 202.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-6"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 247.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-7"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 292.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-8"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 337.5,
-          "radius": 1.5
-        }
-      }
-    ],
-    "l3a-grab": [
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-1"
-          }
-        ],
-        "live": true,
-        "target": {
-          "type": "shift",
-          "from": {
-            "type": "entity",
-            "player": {
-              "type": "id",
-              "id": "$orbOrder2[0]"
-            }
-          },
-          "toward": {
-            "type": "entity",
-            "player": {
-              "type": "tether_target",
-              "source": "$orbOrder2[0]"
-            }
-          },
-          "distance": 1.6
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-2"
-          }
-        ],
-        "live": true,
-        "target": {
-          "type": "shift",
-          "from": {
-            "type": "entity",
-            "player": {
-              "type": "id",
-              "id": "$orbOrder2[1]"
-            }
-          },
-          "toward": {
-            "type": "entity",
-            "player": {
-              "type": "tether_target",
-              "source": "$orbOrder2[1]"
-            }
-          },
-          "distance": 1.6
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-3"
-          }
-        ],
-        "live": true,
-        "target": {
-          "type": "shift",
-          "from": {
-            "type": "entity",
-            "player": {
-              "type": "id",
-              "id": "$orbOrder2[2]"
-            }
-          },
-          "toward": {
-            "type": "entity",
-            "player": {
-              "type": "tether_target",
-              "source": "$orbOrder2[2]"
-            }
-          },
-          "distance": 1.6
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-1"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 22.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-2"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 67.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-3"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 112.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-4"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 157.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-5"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 202.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-6"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 247.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-7"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 292.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-8"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 337.5,
-          "radius": 1.5
-        }
-      }
-    ],
-    "l3a-spot": [
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-1"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angleOffset": 18.2,
-          "radius": 7.37,
-          "angleFrom": {
-            "type": "id",
-            "id": "$orbOrder2[0]"
-          }
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-2"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angleOffset": 18.2,
-          "radius": 7.37,
-          "angleFrom": {
-            "type": "id",
-            "id": "$orbOrder2[1]"
-          }
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-3"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angleOffset": 18.2,
-          "radius": 7.37,
-          "angleFrom": {
-            "type": "id",
-            "id": "$orbOrder2[2]"
-          }
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-1"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 22.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-2"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 67.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-3"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 112.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-4"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 157.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-5"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 202.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-6"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 247.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-7"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 292.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-8"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 337.5,
-          "radius": 1.5
-        }
-      }
-    ],
-    "l3b-stage": [
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-4"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "radius": 5.5,
-          "angleFrom": {
-            "type": "id",
-            "id": "$orbOrder2[0]"
-          }
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-2"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "radius": 5.5,
-          "angleFrom": {
-            "type": "id",
-            "id": "$orbOrder2[1]"
-          }
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-3"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "radius": 5.5,
-          "angleFrom": {
-            "type": "id",
-            "id": "$orbOrder2[2]"
-          }
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-1"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 22.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-2"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 67.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-3"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 112.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-4"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 157.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-5"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 202.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-6"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 247.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-7"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 292.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-8"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 337.5,
-          "radius": 1.5
-        }
-      }
-    ],
-    "l3b-grab": [
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-4"
-          }
-        ],
-        "live": true,
-        "target": {
-          "type": "shift",
-          "from": {
-            "type": "entity",
-            "player": {
-              "type": "id",
-              "id": "$orbOrder2[0]"
-            }
-          },
-          "toward": {
-            "type": "entity",
-            "player": {
-              "type": "tether_target",
-              "source": "$orbOrder2[0]"
-            }
-          },
-          "distance": 1.6
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-2"
-          }
-        ],
-        "live": true,
-        "target": {
-          "type": "shift",
-          "from": {
-            "type": "entity",
-            "player": {
-              "type": "id",
-              "id": "$orbOrder2[1]"
-            }
-          },
-          "toward": {
-            "type": "entity",
-            "player": {
-              "type": "tether_target",
-              "source": "$orbOrder2[1]"
-            }
-          },
-          "distance": 1.6
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-3"
-          }
-        ],
-        "live": true,
-        "target": {
-          "type": "shift",
-          "from": {
-            "type": "entity",
-            "player": {
-              "type": "id",
-              "id": "$orbOrder2[2]"
-            }
-          },
-          "toward": {
-            "type": "entity",
-            "player": {
-              "type": "tether_target",
-              "source": "$orbOrder2[2]"
-            }
-          },
-          "distance": 1.6
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-1"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 22.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-2"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 67.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-3"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 112.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-4"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 157.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-5"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 202.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-6"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 247.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-7"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 292.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-8"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 337.5,
-          "radius": 1.5
-        }
-      }
-    ],
-    "l3b-spot": [
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-4"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angleOffset": 18.2,
-          "radius": 7.37,
-          "angleFrom": {
-            "type": "id",
-            "id": "$orbOrder2[0]"
-          }
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-2"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angleOffset": 18.2,
-          "radius": 7.37,
-          "angleFrom": {
-            "type": "id",
-            "id": "$orbOrder2[1]"
-          }
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-3"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angleOffset": 18.2,
-          "radius": 7.37,
-          "angleFrom": {
-            "type": "id",
-            "id": "$orbOrder2[2]"
-          }
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-1"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 22.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-2"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 67.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-3"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 112.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-4"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 157.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-5"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 202.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-6"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 247.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-7"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 292.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-8"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 337.5,
-          "radius": 1.5
-        }
-      }
-    ],
-    "l3c-stage": [
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-4"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "radius": 5.5,
-          "angleFrom": {
-            "type": "id",
-            "id": "$orbOrder2[0]"
-          }
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-5"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "radius": 5.5,
-          "angleFrom": {
-            "type": "id",
-            "id": "$orbOrder2[1]"
-          }
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-3"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "radius": 5.5,
-          "angleFrom": {
-            "type": "id",
-            "id": "$orbOrder2[2]"
-          }
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-1"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 22.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-2"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 67.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-3"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 112.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-4"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 157.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-5"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 202.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-6"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 247.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-7"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 292.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-8"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 337.5,
-          "radius": 1.5
-        }
-      }
-    ],
-    "l3c-grab": [
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-4"
-          }
-        ],
-        "live": true,
-        "target": {
-          "type": "shift",
-          "from": {
-            "type": "entity",
-            "player": {
-              "type": "id",
-              "id": "$orbOrder2[0]"
-            }
-          },
-          "toward": {
-            "type": "entity",
-            "player": {
-              "type": "tether_target",
-              "source": "$orbOrder2[0]"
-            }
-          },
-          "distance": 1.6
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-5"
-          }
-        ],
-        "live": true,
-        "target": {
-          "type": "shift",
-          "from": {
-            "type": "entity",
-            "player": {
-              "type": "id",
-              "id": "$orbOrder2[1]"
-            }
-          },
-          "toward": {
-            "type": "entity",
-            "player": {
-              "type": "tether_target",
-              "source": "$orbOrder2[1]"
-            }
-          },
-          "distance": 1.6
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-3"
-          }
-        ],
-        "live": true,
-        "target": {
-          "type": "shift",
-          "from": {
-            "type": "entity",
-            "player": {
-              "type": "id",
-              "id": "$orbOrder2[2]"
-            }
-          },
-          "toward": {
-            "type": "entity",
-            "player": {
-              "type": "tether_target",
-              "source": "$orbOrder2[2]"
-            }
-          },
-          "distance": 1.6
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-1"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 22.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-2"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 67.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-3"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 112.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-4"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 157.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-5"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 202.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-6"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 247.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-7"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 292.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-8"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 337.5,
-          "radius": 1.5
-        }
-      }
-    ],
-    "l3c-spot": [
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-4"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angleOffset": 18.2,
-          "radius": 7.37,
-          "angleFrom": {
-            "type": "id",
-            "id": "$orbOrder2[0]"
-          }
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-5"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angleOffset": 18.2,
-          "radius": 7.37,
-          "angleFrom": {
-            "type": "id",
-            "id": "$orbOrder2[1]"
-          }
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-3"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angleOffset": 18.2,
-          "radius": 7.37,
-          "angleFrom": {
-            "type": "id",
-            "id": "$orbOrder2[2]"
-          }
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-1"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 22.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-2"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 67.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-3"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 112.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-4"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 157.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-5"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 202.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-6"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 247.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-7"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 292.5,
-          "radius": 1.5
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-8"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angle": 337.5,
-          "radius": 1.5
-        }
-      }
-    ],
     "thunder-avoid": [
       {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-1"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angleOffset": 18.2,
-          "radius": 7.37,
-          "angleFrom": {
-            "type": "id",
-            "id": "$orbOrder1[1]"
-          }
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-2"
-          }
-        ],
-        "target": {
-          "type": "polar",
-          "angleOffset": 18.2,
-          "radius": 7.37,
-          "angleFrom": {
-            "type": "id",
-            "id": "$orbOrder1[2]"
-          }
-        }
+        "include": "orb-rim"
       },
       {
         "when": {
@@ -7072,6 +4678,140 @@
           "angleOffset": 13
         }
       }
+    ],
+    "orb-stage": [
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "orb-*"
+          },
+          {
+            "type": "or",
+            "conditions": [
+              {
+                "type": "gameplay_role",
+                "role": "tank"
+              },
+              {
+                "type": "damage_position",
+                "position": "melee"
+              }
+            ]
+          }
+        ],
+        "target": {
+          "type": "bait_line",
+          "from": {
+            "type": "own_tether_source"
+          },
+          "clearance": 3.4,
+          "minFromSource": 2.4,
+          "side": "clockwise",
+          "slack": 0.5,
+          "beyond": 1.0
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "orb-*"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angleFrom": {
+            "type": "own_tether_source"
+          },
+          "radius": 5.5
+        }
+      },
+      {
+        "include": "orb-ring"
+      }
+    ],
+    "orb-grab": [
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "orb-*"
+          }
+        ],
+        "live": true,
+        "target": {
+          "type": "tether_intercept",
+          "minFromSource": 1.6,
+          "margin": 0.3
+        }
+      },
+      {
+        "include": "orb-ring"
+      }
+    ],
+    "orb-rim": [
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "orb-*"
+          }
+        ],
+        "target": {
+          "type": "polar",
+          "angleFrom": {
+            "type": "own_tether_source"
+          },
+          "angleOffset": 18.2,
+          "radius": 7.37
+        }
+      }
+    ],
+    "orb-aim-soak": [
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "orb-*"
+          },
+          {
+            "type": "or",
+            "conditions": [
+              {
+                "type": "gameplay_role",
+                "role": "tank"
+              },
+              {
+                "type": "damage_position",
+                "position": "melee"
+              }
+            ]
+          }
+        ],
+        "target": {
+          "type": "bait_line",
+          "from": {
+            "type": "own_tether_source"
+          },
+          "clearance": 3.4,
+          "minFromSource": 2.4,
+          "side": "clockwise",
+          "slack": 0.5,
+          "beyond": 1.0
+        }
+      },
+      {
+        "include": "orb-rim"
+      }
+    ],
+    "orb-aim": [
+      {
+        "include": "orb-aim-soak"
+      },
+      {
+        "include": "orb-ring"
+      }
     ]
   },
   "enemyTemplates": {
@@ -7129,7 +4869,7 @@
       "role": "tank",
       "color": "#4d8dff",
       "team": "red",
-      "flexPriority": 1,
+      "flexPriority": 2,
       "mechanicalRoles": [
         "small_tank",
         "spot-1"
@@ -7194,7 +4934,7 @@
       "role": "healer",
       "color": "#4cd97b",
       "team": "red",
-      "flexPriority": 4,
+      "flexPriority": 3,
       "mechanicalRoles": [
         "spot-4"
       ],
@@ -7215,7 +4955,7 @@
       "role": "damage",
       "color": "#ff5a4f",
       "team": "blue",
-      "flexPriority": 2,
+      "flexPriority": 4,
       "mechanicalRoles": [
         "spot-5"
       ],
@@ -7238,7 +4978,7 @@
       "role": "damage",
       "color": "#ff5a4f",
       "team": "yellow",
-      "flexPriority": 2,
+      "flexPriority": 3,
       "mechanicalRoles": [
         "spot-6"
       ],
@@ -7261,7 +5001,7 @@
       "role": "damage",
       "color": "#ff5a4f",
       "team": "blue",
-      "flexPriority": 3,
+      "flexPriority": 2,
       "mechanicalRoles": [
         "spot-7"
       ],
@@ -7283,7 +5023,7 @@
       "role": "damage",
       "color": "#ff5a4f",
       "team": "yellow",
-      "flexPriority": 3,
+      "flexPriority": 1,
       "mechanicalRoles": [
         "spot-8"
       ],
@@ -7366,6 +5106,24 @@
       "source": "boss-large",
       "cast": "earthquake",
       "mechanic": "earthquake"
+    },
+    {
+      "id": "orb-sets",
+      "at": 8100,
+      "type": "recalculate_roles",
+      "group": "orb-sets"
+    },
+    {
+      "id": "orb-flex",
+      "at": 8100,
+      "type": "recalculate_roles",
+      "group": "orb-flex"
+    },
+    {
+      "id": "orb-types",
+      "at": 8100,
+      "type": "recalculate_roles",
+      "group": "orb-types"
     },
     {
       "id": "bait-roles",
@@ -7551,6 +5309,12 @@
       "mechanic": "black-hole"
     },
     {
+      "id": "l1-soakers",
+      "at": 24050,
+      "type": "recalculate_roles",
+      "group": "soakers-l1"
+    },
+    {
       "id": "l1-1-holder",
       "at": 24050,
       "type": "select_group",
@@ -7633,28 +5397,34 @@
       }
     },
     {
+      "id": "l1-picks",
+      "at": 24050,
+      "type": "recalculate_roles",
+      "group": "orb-picks"
+    },
+    {
       "id": "l1-stage",
       "at": 24150,
       "type": "recalculate_positions",
-      "group": "l1-stage"
+      "group": "orb-stage"
     },
     {
       "id": "l1-grab",
       "at": 26450,
       "type": "recalculate_positions",
-      "group": "l1-grab"
+      "group": "orb-grab"
     },
     {
       "id": "l1-restage",
       "at": 27750,
       "type": "recalculate_positions",
-      "group": "l1-stage"
+      "group": "orb-stage"
     },
     {
       "id": "l1-spot",
       "at": 28550,
       "type": "recalculate_positions",
-      "group": "l1-spot"
+      "group": "orb-aim"
     },
     {
       "id": "post-echo-heal",
@@ -7678,6 +5448,12 @@
         "type": "all"
       },
       "full": true
+    },
+    {
+      "id": "l2-soakers",
+      "at": 31600,
+      "type": "recalculate_roles",
+      "group": "soakers-l2"
     },
     {
       "id": "l2-1-holder",
@@ -7840,28 +5616,34 @@
       }
     },
     {
+      "id": "l2-picks",
+      "at": 31600,
+      "type": "recalculate_roles",
+      "group": "orb-picks"
+    },
+    {
       "id": "l2-stage",
       "at": 31700,
       "type": "recalculate_positions",
-      "group": "l2-stage"
+      "group": "orb-stage"
     },
     {
       "id": "l2-grab",
       "at": 34000,
       "type": "recalculate_positions",
-      "group": "l2-grab"
+      "group": "orb-grab"
     },
     {
       "id": "l2-restage",
       "at": 35300,
       "type": "recalculate_positions",
-      "group": "l2-stage"
+      "group": "orb-stage"
     },
     {
       "id": "l2-spot",
       "at": 36100,
       "type": "recalculate_positions",
-      "group": "l2-spot"
+      "group": "orb-aim"
     },
     {
       "id": "thunder-bait-cast",
@@ -8041,6 +5823,12 @@
       "source": "boss-small",
       "cast": "black-hole-return",
       "mechanic": "black-hole"
+    },
+    {
+      "id": "l3a-soakers",
+      "at": 51200,
+      "type": "recalculate_roles",
+      "group": "soakers-l3a"
     },
     {
       "id": "l3a-1-holder",
@@ -8277,28 +6065,34 @@
       }
     },
     {
+      "id": "l3a-picks",
+      "at": 51200,
+      "type": "recalculate_roles",
+      "group": "orb-picks"
+    },
+    {
       "id": "l3a-stage",
       "at": 51300,
       "type": "recalculate_positions",
-      "group": "l3a-stage"
+      "group": "orb-stage"
     },
     {
       "id": "l3a-grab",
       "at": 53600,
       "type": "recalculate_positions",
-      "group": "l3a-grab"
+      "group": "orb-grab"
     },
     {
       "id": "l3a-restage",
       "at": 54900,
       "type": "recalculate_positions",
-      "group": "l3a-stage"
+      "group": "orb-stage"
     },
     {
       "id": "l3a-spot",
       "at": 55700,
       "type": "recalculate_positions",
-      "group": "l3a-spot"
+      "group": "orb-aim"
     },
     {
       "id": "post-echo-2-heal",
@@ -8319,10 +6113,10 @@
       "full": true
     },
     {
-      "id": "l3b-prestage",
-      "at": 58800,
-      "type": "recalculate_positions",
-      "group": "l3b-stage"
+      "id": "l3b-soakers",
+      "at": 59200,
+      "type": "recalculate_roles",
+      "group": "soakers-l3b"
     },
     {
       "id": "l3b-1-holder",
@@ -8547,28 +6341,34 @@
       }
     },
     {
+      "id": "l3b-picks",
+      "at": 59200,
+      "type": "recalculate_roles",
+      "group": "orb-picks"
+    },
+    {
       "id": "l3b-stage",
       "at": 59300,
       "type": "recalculate_positions",
-      "group": "l3b-stage"
+      "group": "orb-stage"
     },
     {
       "id": "l3b-grab",
       "at": 60100,
       "type": "recalculate_positions",
-      "group": "l3b-grab"
+      "group": "orb-grab"
     },
     {
       "id": "l3b-restage",
       "at": 61400,
       "type": "recalculate_positions",
-      "group": "l3b-stage"
+      "group": "orb-stage"
     },
     {
       "id": "l3b-spot",
       "at": 62000,
       "type": "recalculate_positions",
-      "group": "l3b-spot"
+      "group": "orb-aim"
     },
     {
       "id": "laser-3b-post-heal",
@@ -8580,10 +6380,10 @@
       "full": true
     },
     {
-      "id": "l3c-prestage",
-      "at": 63800,
-      "type": "recalculate_positions",
-      "group": "l3c-stage"
+      "id": "l3c-soakers",
+      "at": 64200,
+      "type": "recalculate_roles",
+      "group": "soakers-l3c"
     },
     {
       "id": "l3c-1-holder",
@@ -8808,28 +6608,34 @@
       }
     },
     {
+      "id": "l3c-picks",
+      "at": 64200,
+      "type": "recalculate_roles",
+      "group": "orb-picks"
+    },
+    {
       "id": "l3c-stage",
       "at": 64300,
       "type": "recalculate_positions",
-      "group": "l3c-stage"
+      "group": "orb-stage"
     },
     {
       "id": "l3c-grab",
       "at": 65100,
       "type": "recalculate_positions",
-      "group": "l3c-grab"
+      "group": "orb-grab"
     },
     {
       "id": "l3c-restage",
       "at": 66400,
       "type": "recalculate_positions",
-      "group": "l3c-stage"
+      "group": "orb-stage"
     },
     {
       "id": "l3c-spot",
       "at": 67000,
       "type": "recalculate_positions",
-      "group": "l3c-spot"
+      "group": "orb-aim"
     },
     {
       "id": "laser-3c-post-heal",
@@ -8890,102 +6696,68 @@
     "bait": {
       "bait-1": [
         {
-          "type": "gameplay_role",
-          "role": "damage"
+          "type": "mechanical_role",
+          "role": "type-damage"
         },
         {
           "type": "has_status",
           "status": "first"
-        },
-        {
-          "type": "not_has_status",
-          "status": "accretion"
         }
       ],
       "bait-2": [
         {
-          "type": "or",
-          "conditions": [
-            {
-              "type": "gameplay_role",
-              "role": "tank"
-            },
-            {
-              "type": "gameplay_role",
-              "role": "healer"
-            }
-          ]
+          "type": "mechanical_role",
+          "role": "type-support"
         },
         {
           "type": "has_status",
           "status": "first"
-        },
-        {
-          "type": "not_has_status",
-          "status": "accretion"
         }
       ],
       "bait-3": [
         {
-          "type": "has_status",
-          "status": "first"
+          "type": "mechanical_role",
+          "role": "type-flex"
         },
         {
           "type": "has_status",
-          "status": "accretion"
+          "status": "first"
         }
       ],
       "bait-4": [
         {
-          "type": "gameplay_role",
-          "role": "damage"
+          "type": "mechanical_role",
+          "role": "type-damage"
         },
         {
           "type": "has_status",
           "status": "second"
-        },
-        {
-          "type": "not_has_status",
-          "status": "accretion"
         }
       ],
       "bait-5": [
         {
-          "type": "or",
-          "conditions": [
-            {
-              "type": "gameplay_role",
-              "role": "tank"
-            },
-            {
-              "type": "gameplay_role",
-              "role": "healer"
-            }
-          ]
+          "type": "mechanical_role",
+          "role": "type-support"
         },
         {
           "type": "has_status",
           "status": "second"
-        },
-        {
-          "type": "not_has_status",
-          "status": "accretion"
         }
       ],
       "bait-6": [
         {
-          "type": "has_status",
-          "status": "second"
+          "type": "mechanical_role",
+          "role": "type-flex"
         },
         {
           "type": "has_status",
-          "status": "accretion"
+          "status": "second"
         }
       ],
       "bait-7": [
         {
-          "type": "gameplay_role",
-          "role": "damage"
+          "type": "mechanical_role",
+          "role": "type-damage"
         },
         {
           "type": "has_status",
@@ -8994,17 +6766,8 @@
       ],
       "bait-8": [
         {
-          "type": "or",
-          "conditions": [
-            {
-              "type": "gameplay_role",
-              "role": "tank"
-            },
-            {
-              "type": "gameplay_role",
-              "role": "healer"
-            }
-          ]
+          "type": "mechanical_role",
+          "role": "type-support"
         },
         {
           "type": "has_status",
@@ -9041,6 +6804,335 @@
           "role": "large_tank"
         }
       ]
+    },
+    "orb-sets": {
+      "set-support": [
+        {
+          "type": "or",
+          "conditions": [
+            {
+              "type": "gameplay_role",
+              "role": "tank"
+            },
+            {
+              "type": "gameplay_role",
+              "role": "healer"
+            }
+          ]
+        }
+      ],
+      "set-damage": [
+        {
+          "type": "gameplay_role",
+          "role": "damage"
+        }
+      ]
+    },
+    "orb-flex": {
+      "type-flex": {
+        "type": "or",
+        "conditions": [
+          {
+            "type": "flex_conflict_loser",
+            "pairRole": "set-support",
+            "statuses": [
+              "first",
+              "second",
+              "third"
+            ]
+          },
+          {
+            "type": "flex_conflict_loser",
+            "pairRole": "set-damage",
+            "statuses": [
+              "first",
+              "second",
+              "third"
+            ]
+          }
+        ]
+      }
+    },
+    "orb-types": {
+      "type-support": [
+        {
+          "type": "mechanical_role",
+          "role": "set-support"
+        },
+        {
+          "type": "not",
+          "condition": {
+            "type": "mechanical_role",
+            "role": "type-flex"
+          }
+        }
+      ],
+      "type-damage": [
+        {
+          "type": "mechanical_role",
+          "role": "set-damage"
+        },
+        {
+          "type": "not",
+          "condition": {
+            "type": "mechanical_role",
+            "role": "type-flex"
+          }
+        }
+      ]
+    },
+    "soakers-l1": {
+      "soaker": {
+        "type": "or",
+        "conditions": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-1"
+          }
+        ]
+      }
+    },
+    "soakers-l2": {
+      "soaker": {
+        "type": "or",
+        "conditions": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-1"
+          },
+          {
+            "type": "mechanical_role",
+            "role": "bait-2"
+          }
+        ]
+      }
+    },
+    "soakers-l3a": {
+      "soaker": {
+        "type": "or",
+        "conditions": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-1"
+          },
+          {
+            "type": "mechanical_role",
+            "role": "bait-2"
+          },
+          {
+            "type": "mechanical_role",
+            "role": "bait-3"
+          }
+        ]
+      }
+    },
+    "soakers-l3b": {
+      "soaker": {
+        "type": "or",
+        "conditions": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-4"
+          },
+          {
+            "type": "mechanical_role",
+            "role": "bait-2"
+          },
+          {
+            "type": "mechanical_role",
+            "role": "bait-3"
+          }
+        ]
+      }
+    },
+    "soakers-l3c": {
+      "soaker": {
+        "type": "or",
+        "conditions": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-4"
+          },
+          {
+            "type": "mechanical_role",
+            "role": "bait-5"
+          },
+          {
+            "type": "mechanical_role",
+            "role": "bait-3"
+          }
+        ]
+      }
+    },
+    "orb-picks": {
+      "orb-1": {
+        "type": "and",
+        "conditions": [
+          {
+            "type": "mechanical_role",
+            "role": "soaker"
+          },
+          {
+            "type": "or",
+            "conditions": [
+              {
+                "type": "and",
+                "conditions": [
+                  {
+                    "type": "mechanical_role",
+                    "role": "type-damage"
+                  },
+                  {
+                    "type": "tether_source_rank",
+                    "source": "orb-1",
+                    "rank": 0
+                  }
+                ]
+              },
+              {
+                "type": "and",
+                "conditions": [
+                  {
+                    "type": "mechanical_role",
+                    "role": "type-support"
+                  },
+                  {
+                    "type": "tether_source_rank",
+                    "source": "orb-1",
+                    "rank": -1
+                  }
+                ]
+              },
+              {
+                "type": "and",
+                "conditions": [
+                  {
+                    "type": "mechanical_role",
+                    "role": "type-flex"
+                  },
+                  {
+                    "type": "tether_source_rank",
+                    "source": "orb-1",
+                    "rank": -2
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "orb-2": {
+        "type": "and",
+        "conditions": [
+          {
+            "type": "mechanical_role",
+            "role": "soaker"
+          },
+          {
+            "type": "or",
+            "conditions": [
+              {
+                "type": "and",
+                "conditions": [
+                  {
+                    "type": "mechanical_role",
+                    "role": "type-damage"
+                  },
+                  {
+                    "type": "tether_source_rank",
+                    "source": "orb-2",
+                    "rank": 0
+                  }
+                ]
+              },
+              {
+                "type": "and",
+                "conditions": [
+                  {
+                    "type": "mechanical_role",
+                    "role": "type-support"
+                  },
+                  {
+                    "type": "tether_source_rank",
+                    "source": "orb-2",
+                    "rank": -1
+                  }
+                ]
+              },
+              {
+                "type": "and",
+                "conditions": [
+                  {
+                    "type": "mechanical_role",
+                    "role": "type-flex"
+                  },
+                  {
+                    "type": "tether_source_rank",
+                    "source": "orb-2",
+                    "rank": -2
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "orb-3": {
+        "type": "and",
+        "conditions": [
+          {
+            "type": "mechanical_role",
+            "role": "soaker"
+          },
+          {
+            "type": "or",
+            "conditions": [
+              {
+                "type": "and",
+                "conditions": [
+                  {
+                    "type": "mechanical_role",
+                    "role": "type-damage"
+                  },
+                  {
+                    "type": "tether_source_rank",
+                    "source": "orb-3",
+                    "rank": 0
+                  }
+                ]
+              },
+              {
+                "type": "and",
+                "conditions": [
+                  {
+                    "type": "mechanical_role",
+                    "role": "type-support"
+                  },
+                  {
+                    "type": "tether_source_rank",
+                    "source": "orb-3",
+                    "rank": -1
+                  }
+                ]
+              },
+              {
+                "type": "and",
+                "conditions": [
+                  {
+                    "type": "mechanical_role",
+                    "role": "type-flex"
+                  },
+                  {
+                    "type": "tether_source_rank",
+                    "source": "orb-3",
+                    "rank": -2
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
     }
   }
 }

@@ -23,9 +23,9 @@ The arena displays players, enemies, markers, attack areas, and active cast bars
 
 - Selectable encounter timelines with scripted phases and timed mechanics.
 - Circle, cone, and donut attacks, casts, markers, arena boundaries, and visual resources, with spawn points that can sit on the live bearing of an entity.
-- Player health, status effects and stacks, damage, control effects, and forced movement. Statuses can also be blocked while another status is active.
+- Player health, status effects and stacks, damage, control effects, and forced movement.
 - Cast-specific caster graphics and capped batches with queued effects.
-- Bot movement and role-based positioning to simulate the rest of the party, including safe spots constrained by multiple half-planes and routes around enemies marked for avoidance.
+- Bot movement and role-based positioning to simulate the rest of the party.
 - Randomized mechanics with repeatable runs through the seed control.
 - Tethers linking entities, with passing, break conditions, and length-based styling.
 - Ability to hide other bots and enemies while controlling a player.

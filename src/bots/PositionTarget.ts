@@ -6,7 +6,10 @@ export type EntityReference =
   | { type: 'gameplay_role'; role: PlayerRole }
   | { type: 'id'; id: string }
   /** Whoever currently holds the tether from `source`, following passes. */
-  | { type: 'tether_target'; source: string };
+  | { type: 'tether_target'; source: string }
+  /** The source or holder of the player's role-linked tether. */
+  | { type: 'own_tether_source' }
+  | { type: 'own_tether_target' };
 
 /** Keeps points `margin` or more past the line through `origin`, on the side that `to` lies on relative to `from`. */
 export interface HalfPlaneConstraint { origin: PositionTarget; from: PositionTarget; to: PositionTarget; margin?: number; }
@@ -26,6 +29,10 @@ export type PositionTarget =
   | { type: 'entity'; player: EntityReference; offset?: { x: number; y: number } }
   /** Offset from `from`; nested marker queries rank from it by default. `clamp` snaps the shift heading. */
   | { type: 'shift'; from: PositionTarget; toward?: PositionTarget; awayFrom?: PositionTarget; distance: number | string; clamp?: import('../geometry/DirectionClamp').DirectionClamp; /** Degrees the heading is turned clockwise (negative: counterclockwise) before moving, applied after `clamp`. */ angleOffset?: number | string }
+  /** A point on a bait line, offset from the centre and source. */
+  | { type: 'bait_line'; from: EntityReference; clearance: number; minFromSource?: number; /** Allowed distance before the tangent. */ slack?: number; /** Allowed distance beyond the tangent. */ beyond?: number; /** Turn direction around the centre. */ side?: 'clockwise' | 'counterclockwise' | 'nearest' }
+  /** A point along the player's tether. */
+  | { type: 'tether_intercept'; minFromSource?: number; margin?: number }
   /**
    * Searches the arena for a point inside as many `constraints` as possible, taken in order of importance.
    * With all of them satisfied the point nearest `anchor` wins; with only a leading subset, the point farthest from `farFrom` (default: nearest `anchor`).
