@@ -68,7 +68,7 @@ export class Simulation {
       ...structuredClone(marker),
       resolvedPosition: resolvePositionValue(marker.position),
     }));
-    this.state = { time: 0, arena: resolveArena(encounter.arena), deltaTime: 0, currentMechanic: undefined, players, enemies, effects: [], worldGraphics: [], background: encounter.background, casts: [], tethers: [], running: false, completed: false, failed: false, log: [], deaths: [], rolls: {}, groups: {}, markers };
+    this.state = { time: 0, arena: resolveArena(encounter.arena), deltaTime: 0, currentMechanic: undefined, players, enemies, effects: [], worldGraphics: [], background: encounter.background, casts: [], tethers: [], lastTetherTargets: {}, running: false, completed: false, failed: false, log: [], deaths: [], rolls: {}, groups: {}, markers };
     this.roleEvaluator = new MechanicalRoleEvaluator(encounter.mechanicalRoles, <T>(value: T) => randomContext.resolve(value));
     this.positionEvaluator = new PositionEvaluator(encounter.positions, <T>(value: T) => randomContext.resolve(value), encounter.markerQueries);
     this.facingEvaluator = new FacingEvaluator(encounter.facing, <T>(value: T) => randomContext.resolve(value), (target, state, self) => this.positionEvaluator.resolveTarget(target, state, self));
@@ -185,6 +185,7 @@ export class Simulation {
     this.positionEvaluator.update(this.state);
     this.botManager.update(this.state);
     this.followManager.update(this.state);
+    this.driver?.afterBots?.(this.ticks);
     this.executor.resolveArenaEdge();
     this.executor.updateProximity();
     // Last, so tethers see where everyone ended up this tick (and who just died).

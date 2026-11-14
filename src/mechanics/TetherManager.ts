@@ -84,6 +84,7 @@ export class TetherManager {
         onPass: merged.onPass,
       };
       this.state.tethers.push(tether);
+      this.state.lastTetherTargets[source.id] = target.id;
       this.announce(target, `${source.name} tethered you.`, `${target.name} was tethered by ${source.name}.`);
     }
   }
@@ -168,6 +169,7 @@ export class TetherManager {
         .sort((a, b) => a.along - b.along)[0]?.player;
       if (!taker) continue;
       tether.targetId = taker.id;
+      this.state.lastTetherTargets[source.id] = taker.id;
       tether.baselineLength = distance(source.position, taker.position);
       this.announce(holder, `${source.name}'s tether was taken by ${taker.name}.`, `${taker.name} took ${holder.name}'s tether from ${source.name}.`);
       this.announce(taker, `You took ${holder.name}'s tether from ${source.name}.`, '');

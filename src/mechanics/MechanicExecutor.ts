@@ -27,6 +27,8 @@ import type { TetherDefinition, TetherSpawnOptions } from './Tether';
 
 /** Grace period in ms for batches that don't set `window`. */
 const DEFAULT_BATCH_WINDOW = 500;
+/** `$role{name}` in shotcall text. */
+const ROLE_REFERENCE = /\$role\{([\w-]+)\}/g;
 
 /** Carries the cast's locked target/direction into nested effects. */
 interface EffectContext {
@@ -229,6 +231,11 @@ export class MechanicExecutor {
   }
 
   private setShotcall(text: string, duration?: number): void {
+    // Roles are read when the call is made, since they can be reassigned between calls.
+    text = text.replace(ROLE_REFERENCE, (reference, role: string) => {
+      const holders = this.state.players.filter((player) => player.mechanicalRoles.includes(role)).map((player) => player.shotcallText ?? player.name);
+      return holders.length > 0 ? holders.join(' and ') : reference;
+    });
     this.state.shotcall = { text, createdAt: this.state.time, expiresAt: duration === undefined ? undefined : this.state.time + Math.max(0, duration) };
   }
 

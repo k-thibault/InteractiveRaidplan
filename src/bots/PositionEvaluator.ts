@@ -207,6 +207,7 @@ export class PositionEvaluator {
     }
     if (target.type === 'bait_line') return this.resolveBaitLine(target, state, player);
     if (target.type === 'tether_intercept') return this.resolveIntercept(target, state, player);
+    if (target.type === 'tether_grab') return this.resolveGrab(target, state, params, player);
     if (target.type === 'safe_spot') return this.resolveSafeSpot(target, state, params, player);
     if (target.type === 'area') return this.resolveArea(target, state);
 
@@ -291,6 +292,17 @@ export class PositionEvaluator {
       return at(best);
     });
     return spots.reduce((best, spot) => distance(spot, enemy.position) < distance(best, enemy.position) - 1e-9 ? spot : best);
+  }
+
+  private resolveGrab(target: Extract<PositionTarget, { type: 'tether_grab' }>, state: GameState, params?: Record<string, number>, player?: Player): Vector2 | undefined {
+    const tether = this.ownTether(state, player);
+    const source = tether && findEntity(state, tether.sourceId);
+    const holder = tether && findEntity(state, tether.targetId);
+    if (!player || !source || !holder || holder.id === player.id) return this.resolve(target.then, state, params, player);
+    const length = distance(source.position, holder.position);
+    if (length === 0) return { ...holder.position };
+    const step = Math.min(target.offset ?? 0.6, length / 2) / length;
+    return { x: holder.position.x + (source.position.x - holder.position.x) * step, y: holder.position.y + (source.position.y - holder.position.y) * step };
   }
 
   private resolveIntercept(target: Extract<PositionTarget, { type: 'tether_intercept' }>, state: GameState, player?: Player): Vector2 | undefined {

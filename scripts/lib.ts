@@ -63,14 +63,14 @@ export function recordBots(encounter: Encounter, seed: number): BotTrack {
 
 /** Puts the controlled slot where the bot was, tick by tick: a survivable stand-in for a human. */
 export function ghostDriver(simulation: Simulation, playerId: string, track: BotTrack): PlayerDriver {
-  return {
-    step(tick) {
-      const player = simulation.state.players.find((candidate) => candidate.id === playerId)!;
-      const wanted = track.positions[tick]?.[playerId]; if (!wanted) return;
-      player.position.x = wanted.x; player.position.y = wanted.y; quantizePosition(player.position);
-      if (wanted.facing !== undefined) player.facing = quantizeFacing(wanted.facing);
-    },
+  const place = (tick: number): void => {
+    const player = simulation.state.players.find((candidate) => candidate.id === playerId)!;
+    const wanted = track.positions[tick]?.[playerId]; if (!wanted) return;
+    player.position.x = wanted.x; player.position.y = wanted.y; quantizePosition(player.position);
+    if (wanted.facing !== undefined) player.facing = quantizeFacing(wanted.facing);
   };
+  // The bot had moved by the end of its tick, so tethers and edge checks must see where the next tick starts.
+  return { step: place, afterBots: place };
 }
 
 

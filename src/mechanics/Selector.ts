@@ -28,6 +28,8 @@ export type PlayerSelector =
   | { type: 'facing'; source: FacingSource; mode: 'towards' | 'away'; tolerance?: number }
   /** Players at a tether end; filters follow passes. */
   | { type: 'tethered'; tether?: string; source?: string; end?: 'target' | 'source' | 'either' }
+  /** Whoever last held `source`'s tether, even once it has ended; `fallback` applies if they are gone or dead. */
+  | { type: 'last_tether_target'; source: string; fallback?: PlayerSelector }
   | { type: 'and'; selectors: PlayerSelector[] }
   | { type: 'or'; selectors: PlayerSelector[] };
 
@@ -76,6 +78,11 @@ export function selectPlayers(selector: PlayerSelector, state: GameState, random
       if (selector.end === 'source' || selector.end === 'either') ends.add(tether.sourceId);
     }
     return players.filter((player) => ends.has(player.id));
+  }
+  if (selector.type === 'last_tether_target') {
+    const holder = players.find((player) => player.id === state.lastTetherTargets[selector.source]);
+    if (holder) return [holder];
+    return selector.fallback ? selectPlayers(selector.fallback, state, random) : [];
   }
   if (selector.type === 'and') {
     return players.filter((player) => selector.selectors.every((child) => selectPlayers(child, state, random).some((candidate) => candidate.id === player.id)));

@@ -531,9 +531,9 @@
         }
       ]
     },
-    "strike-strip": {
-      "shape": "line",
-      "radius": 9,
+    "strike-circle": {
+      "shape": "circle",
+      "radius": 4.25,
       "label": "earth-strike",
       "element": "earth",
       "telegraphDuration": 0,
@@ -557,8 +557,7 @@
             }
           ]
         }
-      ],
-      "width": 5.333333333333333
+      ]
     }
   },
   "batches": {
@@ -1158,16 +1157,13 @@
       "effects": [
         {
           "type": "spawn_area",
-          "area": "strike-strip",
+          "area": "strike-circle",
           "position": {
             "type": "polar",
             "angleFrom": "striker",
-            "angleOffset": 0,
-            "radius": 7.333333333333333
-          },
-          "direction": "facing",
-          "rotationOffset": -90,
-          "width": 9.333333333333334
+            "angleOffset": 31.5348,
+            "radius": 8.6039
+          }
         },
         {
           "type": "delayed_effects",
@@ -1175,16 +1171,13 @@
           "effects": [
             {
               "type": "spawn_area",
-              "area": "strike-strip",
+              "area": "strike-circle",
               "position": {
                 "type": "polar",
                 "angleFrom": "striker",
-                "angleOffset": 0,
-                "radius": 0
-              },
-              "direction": "facing",
-              "rotationOffset": -90,
-              "width": 5.333333333333333
+                "angleOffset": 90.0,
+                "radius": 4.5
+              }
             }
           ]
         },
@@ -1194,16 +1187,13 @@
           "effects": [
             {
               "type": "spawn_area",
-              "area": "strike-strip",
+              "area": "strike-circle",
               "position": {
                 "type": "polar",
                 "angleFrom": "striker",
-                "angleOffset": 180,
-                "radius": 7.333333333333333
-              },
-              "direction": "facing",
-              "rotationOffset": -90,
-              "width": 9.333333333333334
+                "angleOffset": 148.4652,
+                "radius": 8.6039
+              }
             }
           ]
         }
@@ -1220,16 +1210,13 @@
       "effects": [
         {
           "type": "spawn_area",
-          "area": "strike-strip",
+          "area": "strike-circle",
           "position": {
             "type": "polar",
             "angleFrom": "striker",
-            "angleOffset": 0,
-            "radius": 7.333333333333333
-          },
-          "direction": "facing",
-          "rotationOffset": 90,
-          "width": 9.333333333333334
+            "angleOffset": -31.5348,
+            "radius": 8.6039
+          }
         },
         {
           "type": "delayed_effects",
@@ -1237,16 +1224,13 @@
           "effects": [
             {
               "type": "spawn_area",
-              "area": "strike-strip",
+              "area": "strike-circle",
               "position": {
                 "type": "polar",
                 "angleFrom": "striker",
-                "angleOffset": 0,
-                "radius": 0
-              },
-              "direction": "facing",
-              "rotationOffset": 90,
-              "width": 5.333333333333333
+                "angleOffset": -90.0,
+                "radius": 4.5
+              }
             }
           ]
         },
@@ -1256,16 +1240,13 @@
           "effects": [
             {
               "type": "spawn_area",
-              "area": "strike-strip",
+              "area": "strike-circle",
               "position": {
                 "type": "polar",
                 "angleFrom": "striker",
-                "angleOffset": 180,
-                "radius": 7.333333333333333
-              },
-              "direction": "facing",
-              "rotationOffset": 90,
-              "width": 9.333333333333334
+                "angleOffset": -148.4652,
+                "radius": 8.6039
+              }
             }
           ]
         }
@@ -1441,16 +1422,13 @@
       "effects": [
         {
           "type": "spawn_area",
-          "area": "strike-strip",
+          "area": "strike-circle",
           "position": {
             "type": "polar",
             "angleFrom": "striker",
-            "angleOffset": 0,
-            "radius": 7.333333333333333
-          },
-          "direction": "facing",
-          "rotationOffset": -90,
-          "width": 9.333333333333334
+            "angleOffset": 31.5348,
+            "radius": 8.6039
+          }
         },
         {
           "type": "delayed_effects",
@@ -1458,16 +1436,13 @@
           "effects": [
             {
               "type": "spawn_area",
-              "area": "strike-strip",
+              "area": "strike-circle",
               "position": {
                 "type": "polar",
                 "angleFrom": "striker",
-                "angleOffset": 0,
-                "radius": 0
-              },
-              "direction": "facing",
-              "rotationOffset": -90,
-              "width": 5.333333333333333
+                "angleOffset": 90.0,
+                "radius": 4.5
+              }
             }
           ]
         },
@@ -1477,16 +1452,13 @@
           "effects": [
             {
               "type": "spawn_area",
-              "area": "strike-strip",
+              "area": "strike-circle",
               "position": {
                 "type": "polar",
                 "angleFrom": "striker",
-                "angleOffset": 180,
-                "radius": 7.333333333333333
-              },
-              "direction": "facing",
-              "rotationOffset": -90,
-              "width": 9.333333333333334
+                "angleOffset": 148.4652,
+                "radius": 8.6039
+              }
             }
           ]
         }
@@ -1503,16 +1475,13 @@
       "effects": [
         {
           "type": "spawn_area",
-          "area": "strike-strip",
+          "area": "strike-circle",
           "position": {
             "type": "polar",
             "angleFrom": "striker",
-            "angleOffset": 0,
-            "radius": 7.333333333333333
-          },
-          "direction": "facing",
-          "rotationOffset": 90,
-          "width": 9.333333333333334
+            "angleOffset": -31.5348,
+            "radius": 8.6039
+          }
         },
         {
           "type": "delayed_effects",
@@ -1520,16 +1489,13 @@
           "effects": [
             {
               "type": "spawn_area",
-              "area": "strike-strip",
+              "area": "strike-circle",
               "position": {
                 "type": "polar",
                 "angleFrom": "striker",
-                "angleOffset": 0,
-                "radius": 0
-              },
-              "direction": "facing",
-              "rotationOffset": 90,
-              "width": 5.333333333333333
+                "angleOffset": -90.0,
+                "radius": 4.5
+              }
             }
           ]
         },
@@ -1539,16 +1505,13 @@
           "effects": [
             {
               "type": "spawn_area",
-              "area": "strike-strip",
+              "area": "strike-circle",
               "position": {
                 "type": "polar",
                 "angleFrom": "striker",
-                "angleOffset": 180,
-                "radius": 7.333333333333333
-              },
-              "direction": "facing",
-              "rotationOffset": 90,
-              "width": 9.333333333333334
+                "angleOffset": -148.4652,
+                "radius": 8.6039
+              }
             }
           ]
         }
@@ -4679,7 +4642,18 @@
         }
       }
     ],
-    "orb-stage": [
+    "orb-middle": [
+      {
+        "target": {
+          "type": "fixed",
+          "position": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      }
+    ],
+    "orb-grab": [
       {
         "when": [
           {
@@ -4700,38 +4674,23 @@
             ]
           }
         ],
+        "live": true,
         "target": {
-          "type": "bait_line",
-          "from": {
-            "type": "own_tether_source"
-          },
-          "clearance": 3.4,
-          "minFromSource": 2.4,
-          "side": "clockwise",
-          "slack": 0.5,
-          "beyond": 1.0
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "orb-*"
+          "type": "tether_grab",
+          "offset": 0.8,
+          "then": {
+            "type": "bait_line",
+            "from": {
+              "type": "own_tether_source"
+            },
+            "clearance": 3.4,
+            "minFromSource": 2.4,
+            "side": "clockwise",
+            "slack": 0.5,
+            "beyond": 1.0
           }
-        ],
-        "target": {
-          "type": "polar",
-          "angleFrom": {
-            "type": "own_tether_source"
-          },
-          "radius": 5.5
         }
       },
-      {
-        "include": "orb-ring"
-      }
-    ],
-    "orb-grab": [
       {
         "when": [
           {
@@ -4741,13 +4700,20 @@
         ],
         "live": true,
         "target": {
-          "type": "tether_intercept",
-          "minFromSource": 1.6,
-          "margin": 0.3
+          "type": "tether_grab",
+          "offset": 0.8,
+          "then": {
+            "type": "polar",
+            "angleFrom": {
+              "type": "own_tether_source"
+            },
+            "angleOffset": 18.2,
+            "radius": 7.37
+          }
         }
       },
       {
-        "include": "orb-ring"
+        "include": "orb-middle"
       }
     ],
     "orb-rim": [
@@ -4766,51 +4732,6 @@
           "angleOffset": 18.2,
           "radius": 7.37
         }
-      }
-    ],
-    "orb-aim-soak": [
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "orb-*"
-          },
-          {
-            "type": "or",
-            "conditions": [
-              {
-                "type": "gameplay_role",
-                "role": "tank"
-              },
-              {
-                "type": "damage_position",
-                "position": "melee"
-              }
-            ]
-          }
-        ],
-        "target": {
-          "type": "bait_line",
-          "from": {
-            "type": "own_tether_source"
-          },
-          "clearance": 3.4,
-          "minFromSource": 2.4,
-          "side": "clockwise",
-          "slack": 0.5,
-          "beyond": 1.0
-        }
-      },
-      {
-        "include": "orb-rim"
-      }
-    ],
-    "orb-aim": [
-      {
-        "include": "orb-aim-soak"
-      },
-      {
-        "include": "orb-ring"
       }
     ]
   },
@@ -5406,25 +5327,7 @@
       "id": "l1-stage",
       "at": 24150,
       "type": "recalculate_positions",
-      "group": "orb-stage"
-    },
-    {
-      "id": "l1-grab",
-      "at": 26450,
-      "type": "recalculate_positions",
       "group": "orb-grab"
-    },
-    {
-      "id": "l1-restage",
-      "at": 27750,
-      "type": "recalculate_positions",
-      "group": "orb-stage"
-    },
-    {
-      "id": "l1-spot",
-      "at": 28550,
-      "type": "recalculate_positions",
-      "group": "orb-aim"
     },
     {
       "id": "post-echo-heal",
@@ -5625,25 +5528,7 @@
       "id": "l2-stage",
       "at": 31700,
       "type": "recalculate_positions",
-      "group": "orb-stage"
-    },
-    {
-      "id": "l2-grab",
-      "at": 34000,
-      "type": "recalculate_positions",
       "group": "orb-grab"
-    },
-    {
-      "id": "l2-restage",
-      "at": 35300,
-      "type": "recalculate_positions",
-      "group": "orb-stage"
-    },
-    {
-      "id": "l2-spot",
-      "at": 36100,
-      "type": "recalculate_positions",
-      "group": "orb-aim"
     },
     {
       "id": "thunder-bait-cast",
@@ -6074,25 +5959,7 @@
       "id": "l3a-stage",
       "at": 51300,
       "type": "recalculate_positions",
-      "group": "orb-stage"
-    },
-    {
-      "id": "l3a-grab",
-      "at": 53600,
-      "type": "recalculate_positions",
       "group": "orb-grab"
-    },
-    {
-      "id": "l3a-restage",
-      "at": 54900,
-      "type": "recalculate_positions",
-      "group": "orb-stage"
-    },
-    {
-      "id": "l3a-spot",
-      "at": 55700,
-      "type": "recalculate_positions",
-      "group": "orb-aim"
     },
     {
       "id": "post-echo-2-heal",
@@ -6124,36 +5991,39 @@
       "type": "select_group",
       "name": "l3b-holder-1",
       "selector": {
-        "type": "random",
-        "count": 1,
-        "from": {
-          "type": "and",
-          "selectors": [
-            {
-              "type": "or",
-              "selectors": [
-                {
-                  "type": "mechanical_role",
-                  "role": "bait-5"
-                },
-                {
-                  "type": "mechanical_role",
-                  "role": "bait-6"
-                },
-                {
-                  "type": "mechanical_role",
-                  "role": "bait-7"
-                },
-                {
-                  "type": "mechanical_role",
-                  "role": "bait-8"
-                }
-              ]
-            }
-          ]
+        "type": "last_tether_target",
+        "source": "$orbOrder2[0]",
+        "fallback": {
+          "type": "random",
+          "count": 1,
+          "from": {
+            "type": "and",
+            "selectors": [
+              {
+                "type": "or",
+                "selectors": [
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-5"
+                  },
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-6"
+                  },
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-7"
+                  },
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-8"
+                  }
+                ]
+              }
+            ]
+          }
         }
-      },
-      "replayId": "l3b-holder-1"
+      }
     },
     {
       "id": "l3b-1-link",
@@ -6194,40 +6064,43 @@
       "type": "select_group",
       "name": "l3b-holder-2",
       "selector": {
-        "type": "random",
-        "count": 1,
-        "from": {
-          "type": "and",
-          "selectors": [
-            {
-              "type": "or",
-              "selectors": [
-                {
-                  "type": "mechanical_role",
-                  "role": "bait-5"
-                },
-                {
-                  "type": "mechanical_role",
-                  "role": "bait-6"
-                },
-                {
-                  "type": "mechanical_role",
-                  "role": "bait-7"
-                },
-                {
-                  "type": "mechanical_role",
-                  "role": "bait-8"
-                }
-              ]
-            },
-            {
-              "type": "without_status",
-              "status": "link-1"
-            }
-          ]
+        "type": "last_tether_target",
+        "source": "$orbOrder2[1]",
+        "fallback": {
+          "type": "random",
+          "count": 1,
+          "from": {
+            "type": "and",
+            "selectors": [
+              {
+                "type": "or",
+                "selectors": [
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-5"
+                  },
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-6"
+                  },
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-7"
+                  },
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-8"
+                  }
+                ]
+              },
+              {
+                "type": "without_status",
+                "status": "link-1"
+              }
+            ]
+          }
         }
-      },
-      "replayId": "l3b-holder-2"
+      }
     },
     {
       "id": "l3b-2-link",
@@ -6268,44 +6141,47 @@
       "type": "select_group",
       "name": "l3b-holder-3",
       "selector": {
-        "type": "random",
-        "count": 1,
-        "from": {
-          "type": "and",
-          "selectors": [
-            {
-              "type": "or",
-              "selectors": [
-                {
-                  "type": "mechanical_role",
-                  "role": "bait-5"
-                },
-                {
-                  "type": "mechanical_role",
-                  "role": "bait-6"
-                },
-                {
-                  "type": "mechanical_role",
-                  "role": "bait-7"
-                },
-                {
-                  "type": "mechanical_role",
-                  "role": "bait-8"
-                }
-              ]
-            },
-            {
-              "type": "without_status",
-              "status": "link-1"
-            },
-            {
-              "type": "without_status",
-              "status": "link-2"
-            }
-          ]
+        "type": "last_tether_target",
+        "source": "$orbOrder2[2]",
+        "fallback": {
+          "type": "random",
+          "count": 1,
+          "from": {
+            "type": "and",
+            "selectors": [
+              {
+                "type": "or",
+                "selectors": [
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-5"
+                  },
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-6"
+                  },
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-7"
+                  },
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-8"
+                  }
+                ]
+              },
+              {
+                "type": "without_status",
+                "status": "link-1"
+              },
+              {
+                "type": "without_status",
+                "status": "link-2"
+              }
+            ]
+          }
         }
-      },
-      "replayId": "l3b-holder-3"
+      }
     },
     {
       "id": "l3b-3-link",
@@ -6350,25 +6226,7 @@
       "id": "l3b-stage",
       "at": 59300,
       "type": "recalculate_positions",
-      "group": "orb-stage"
-    },
-    {
-      "id": "l3b-grab",
-      "at": 60100,
-      "type": "recalculate_positions",
       "group": "orb-grab"
-    },
-    {
-      "id": "l3b-restage",
-      "at": 61400,
-      "type": "recalculate_positions",
-      "group": "orb-stage"
-    },
-    {
-      "id": "l3b-spot",
-      "at": 62000,
-      "type": "recalculate_positions",
-      "group": "orb-aim"
     },
     {
       "id": "laser-3b-post-heal",
@@ -6391,36 +6249,39 @@
       "type": "select_group",
       "name": "l3c-holder-1",
       "selector": {
-        "type": "random",
-        "count": 1,
-        "from": {
-          "type": "and",
-          "selectors": [
-            {
-              "type": "or",
-              "selectors": [
-                {
-                  "type": "mechanical_role",
-                  "role": "bait-1"
-                },
-                {
-                  "type": "mechanical_role",
-                  "role": "bait-6"
-                },
-                {
-                  "type": "mechanical_role",
-                  "role": "bait-7"
-                },
-                {
-                  "type": "mechanical_role",
-                  "role": "bait-8"
-                }
-              ]
-            }
-          ]
+        "type": "last_tether_target",
+        "source": "$orbOrder2[0]",
+        "fallback": {
+          "type": "random",
+          "count": 1,
+          "from": {
+            "type": "and",
+            "selectors": [
+              {
+                "type": "or",
+                "selectors": [
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-1"
+                  },
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-6"
+                  },
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-7"
+                  },
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-8"
+                  }
+                ]
+              }
+            ]
+          }
         }
-      },
-      "replayId": "l3c-holder-1"
+      }
     },
     {
       "id": "l3c-1-link",
@@ -6461,40 +6322,43 @@
       "type": "select_group",
       "name": "l3c-holder-2",
       "selector": {
-        "type": "random",
-        "count": 1,
-        "from": {
-          "type": "and",
-          "selectors": [
-            {
-              "type": "or",
-              "selectors": [
-                {
-                  "type": "mechanical_role",
-                  "role": "bait-1"
-                },
-                {
-                  "type": "mechanical_role",
-                  "role": "bait-6"
-                },
-                {
-                  "type": "mechanical_role",
-                  "role": "bait-7"
-                },
-                {
-                  "type": "mechanical_role",
-                  "role": "bait-8"
-                }
-              ]
-            },
-            {
-              "type": "without_status",
-              "status": "link-1"
-            }
-          ]
+        "type": "last_tether_target",
+        "source": "$orbOrder2[1]",
+        "fallback": {
+          "type": "random",
+          "count": 1,
+          "from": {
+            "type": "and",
+            "selectors": [
+              {
+                "type": "or",
+                "selectors": [
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-1"
+                  },
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-6"
+                  },
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-7"
+                  },
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-8"
+                  }
+                ]
+              },
+              {
+                "type": "without_status",
+                "status": "link-1"
+              }
+            ]
+          }
         }
-      },
-      "replayId": "l3c-holder-2"
+      }
     },
     {
       "id": "l3c-2-link",
@@ -6535,44 +6399,47 @@
       "type": "select_group",
       "name": "l3c-holder-3",
       "selector": {
-        "type": "random",
-        "count": 1,
-        "from": {
-          "type": "and",
-          "selectors": [
-            {
-              "type": "or",
-              "selectors": [
-                {
-                  "type": "mechanical_role",
-                  "role": "bait-1"
-                },
-                {
-                  "type": "mechanical_role",
-                  "role": "bait-6"
-                },
-                {
-                  "type": "mechanical_role",
-                  "role": "bait-7"
-                },
-                {
-                  "type": "mechanical_role",
-                  "role": "bait-8"
-                }
-              ]
-            },
-            {
-              "type": "without_status",
-              "status": "link-1"
-            },
-            {
-              "type": "without_status",
-              "status": "link-2"
-            }
-          ]
+        "type": "last_tether_target",
+        "source": "$orbOrder2[2]",
+        "fallback": {
+          "type": "random",
+          "count": 1,
+          "from": {
+            "type": "and",
+            "selectors": [
+              {
+                "type": "or",
+                "selectors": [
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-1"
+                  },
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-6"
+                  },
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-7"
+                  },
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-8"
+                  }
+                ]
+              },
+              {
+                "type": "without_status",
+                "status": "link-1"
+              },
+              {
+                "type": "without_status",
+                "status": "link-2"
+              }
+            ]
+          }
         }
-      },
-      "replayId": "l3c-holder-3"
+      }
     },
     {
       "id": "l3c-3-link",
@@ -6617,25 +6484,7 @@
       "id": "l3c-stage",
       "at": 64300,
       "type": "recalculate_positions",
-      "group": "orb-stage"
-    },
-    {
-      "id": "l3c-grab",
-      "at": 65100,
-      "type": "recalculate_positions",
       "group": "orb-grab"
-    },
-    {
-      "id": "l3c-restage",
-      "at": 66400,
-      "type": "recalculate_positions",
-      "group": "orb-stage"
-    },
-    {
-      "id": "l3c-spot",
-      "at": 67000,
-      "type": "recalculate_positions",
-      "group": "orb-aim"
     },
     {
       "id": "laser-3c-post-heal",

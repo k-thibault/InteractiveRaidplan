@@ -33,6 +33,8 @@ export type PositionTarget =
   | { type: 'bait_line'; from: EntityReference; clearance: number; minFromSource?: number; /** Allowed distance before the tangent. */ slack?: number; /** Allowed distance beyond the tangent. */ beyond?: number; /** Turn direction around the centre. */ side?: 'clockwise' | 'counterclockwise' | 'nearest' }
   /** A point along the player's tether. */
   | { type: 'tether_intercept'; minFromSource?: number; margin?: number }
+  /** Beside the holder of the player's tether, `offset` toward its source, until the player holds it; then `then`. */
+  | { type: 'tether_grab'; offset?: number; then: PositionTarget }
   /**
    * Searches the arena for a point inside as many `constraints` as possible, taken in order of importance.
    * With all of them satisfied the point nearest `anchor` wins; with only a leading subset, the point farthest from `farFrom` (default: nearest `anchor`).

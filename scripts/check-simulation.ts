@@ -205,6 +205,16 @@ const hit = (id: string, time: number, amount: number, type = 'physical', fatal?
   until(simulation, 800); check('a timed shotcall expires', simulation.state.shotcall === undefined);
   until(simulation, 1500); check('an untimed shotcall stays until replaced', simulation.state.shotcall?.text === 'Spread');
   until(simulation, 2100); check('clear_shotcall removes it', simulation.state.shotcall === undefined);
+
+  const named = make({ events: [
+    at('role', 100, { type: 'set_shotcall', text: '$role{left} going left' }),
+    at('pair', 200, { type: 'set_shotcall', text: '$role{pair} stack' }),
+    at('none', 300, { type: 'set_shotcall', text: '$role{nobody} go' }),
+  ] as never });
+  find(named, 'a').mechanicalRoles = ['left', 'pair']; find(named, 'a').shotcallText = 'ay'; find(named, 'b').mechanicalRoles = ['pair'];
+  until(named, 150); check('a role reference uses the holder\'s shotcallText', named.state.shotcall?.text === 'ay going left', named.state.shotcall?.text);
+  until(named, 250); check('several holders are joined and a player without shotcallText uses their name', named.state.shotcall?.text === 'ay and B stack', named.state.shotcall?.text);
+  until(named, 350); check('a role nobody holds is left as written', named.state.shotcall?.text === '$role{nobody} go', named.state.shotcall?.text);
 }
 
 // Knocks and control
