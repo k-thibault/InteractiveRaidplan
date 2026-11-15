@@ -1,4 +1,5 @@
 import type { GameState } from '../simulation/GameState';
+import type { StatusInstance } from '../entities/Status';
 
 const FNV_OFFSET = 0x811c9dc5;
 const FNV_PRIME = 0x01000193;
@@ -27,6 +28,20 @@ class Hasher {
   text(value: string): void { for (let index = 0; index < value.length; index += 1) { const code = value.charCodeAt(index); this.byte(code & 0xff); this.byte(code >>> 8); } this.byte(0); }
 }
 
+function hashStatuses(hasher: Hasher, statuses: StatusInstance[]): void {
+  for (const status of statuses) {
+    hasher.text(status.definitionId); hasher.number(status.stacks); hasher.number(status.expiresAt);
+    if (status.charges !== undefined) hasher.number(status.charges);
+    if (status.proximity) {
+      hasher.number(status.proximity.inRange.length);
+      for (const id of status.proximity.inRange) hasher.text(id);
+      const lastHit = Object.entries(status.proximity.lastHit).sort(([left], [right]) => left < right ? -1 : left > right ? 1 : 0);
+      hasher.number(lastHit.length);
+      for (const [id, time] of lastHit) { hasher.text(id); hasher.number(time); }
+    }
+  }
+}
+
 /** Hashes replay-relevant state, excluding untracked controlled-player facing. */
 export function hashState(state: GameState): number {
   const hasher = new Hasher();
@@ -35,11 +50,11 @@ export function hashState(state: GameState): number {
     hasher.text(player.id); hasher.number(player.position.x); hasher.number(player.position.y);
     if (!player.controlled) hasher.number(player.facing);
     hasher.number(player.health); hasher.byte(player.alive ? 1 : 0);
-    for (const status of player.statuses) { hasher.text(status.definitionId); hasher.number(status.stacks); hasher.number(status.expiresAt); }
+    hashStatuses(hasher, player.statuses);
   }
   for (const enemy of state.enemies) {
     hasher.text(enemy.id); hasher.number(enemy.position.x); hasher.number(enemy.position.y); hasher.number(enemy.facing);
-    for (const status of enemy.statuses) { hasher.text(status.definitionId); hasher.number(status.stacks); hasher.number(status.expiresAt); }
+    hashStatuses(hasher, enemy.statuses);
   }
   for (const tether of state.tethers) { hasher.text(tether.id); hasher.text(tether.sourceId); hasher.text(tether.targetId); hasher.number(tether.createdAt); hasher.number(tether.baselineLength); hasher.number(tether.expiresAt); }
   for (const enemy of state.enemies) hasher.number(enemy.expiresAt);

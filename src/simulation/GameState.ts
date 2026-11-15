@@ -45,6 +45,8 @@ export interface GameState {
   casts: ActiveCast[];
   /** Links between two entities, oldest first. */
   tethers: ActiveTether[];
+  /** Latest holder of each tether source's tether, kept after the tether ends. */
+  lastTetherTargets: Record<string, string>;
   running: boolean;
   /** The run has ended, either by reaching the end of the timeline or by a wipe (see `failed`). */
   completed: boolean;

@@ -28,6 +28,8 @@ export type PlayerSelector =
   | { type: 'facing'; source: FacingSource; mode: 'towards' | 'away'; tolerance?: number }
   /** Players at a tether end; filters follow passes. */
   | { type: 'tethered'; tether?: string; source?: string; end?: 'target' | 'source' | 'either' }
+  /** Whoever last held `source`'s tether, even once it has ended; `fallback` applies if they are gone or dead. */
+  | { type: 'last_tether_target'; source: string; fallback?: PlayerSelector }
   | { type: 'and'; selectors: PlayerSelector[] }
   | { type: 'or'; selectors: PlayerSelector[] };
 
@@ -38,7 +40,13 @@ export function findEntity(state: GameState, id: string): Entity | undefined {
 /** Role references match the first living player; id references match any entity. */
 export function resolveEntityReference(reference: EntityReference, state: GameState): Entity | undefined {
   if (reference.type === 'id') return findEntity(state, reference.id);
+  if (reference.type === 'tether_target') {
+    const tether = state.tethers.find((entry) => entry.sourceId === reference.source);
+    return tether ? state.players.find((player) => player.id === tether.targetId && player.alive) : undefined;
+  }
   if (reference.type === 'gameplay_role') return state.players.find((player) => player.role === reference.role && player.alive);
+  // These name something relative to the acting player, so only position rules can resolve them.
+  if (reference.type === 'own_tether_source' || reference.type === 'own_tether_target' || reference.type === 'self') return undefined;
   return state.players.find((player) => player.mechanicalRoles.includes(reference.role) && player.alive);
 }
 
@@ -70,6 +78,11 @@ export function selectPlayers(selector: PlayerSelector, state: GameState, random
       if (selector.end === 'source' || selector.end === 'either') ends.add(tether.sourceId);
     }
     return players.filter((player) => ends.has(player.id));
+  }
+  if (selector.type === 'last_tether_target') {
+    const holder = players.find((player) => player.id === state.lastTetherTargets[selector.source]);
+    if (holder) return [holder];
+    return selector.fallback ? selectPlayers(selector.fallback, state, random) : [];
   }
   if (selector.type === 'and') {
     return players.filter((player) => selector.selectors.every((child) => selectPlayers(child, state, random).some((candidate) => candidate.id === player.id)));

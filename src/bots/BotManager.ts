@@ -6,6 +6,7 @@ import { DEFAULT_FACING } from '../geometry/Facing';
 import { canMove, canTurn } from '../entities/Control';
 import type { GameState } from '../simulation/GameState';
 import type { Vector2 } from '../geometry/Vector2';
+import { outsideObstacles, routeAround } from './Avoidance';
 import { BOT_DEADLY_EDGE_INSET, clampToArena, constrainToArena } from '../geometry/Arena';
 import { clampDirection } from '../geometry/DirectionClamp';
 
@@ -54,11 +55,14 @@ export class BotManager {
       const followingFocus = player.desiredPosition === undefined && target !== undefined;
       if (target) {
         // Bots never aim past a deadly border, however their position rule was written.
-        const destination = { x: target.x, y: target.y };
+        const obstacles = state.enemies.filter((enemy) => enemy.alive && enemy.botAvoidRadius !== undefined).map((enemy) => ({ position: enemy.position, radius: enemy.botAvoidRadius! }));
+        // Bots never stand in an avoided zone, so a destination inside one is moved to its edge.
+        const destination = obstacles.length > 0 ? outsideObstacles(target, obstacles) : { x: target.x, y: target.y };
         if (state.arena.edge === 'deadly') clampToArena(destination, state.arena, BOT_DEADLY_EDGE_INSET);
         const remaining = distance(player.position, destination);
-        let direction = normalize({ x: destination.x - player.position.x, y: destination.y - player.position.y });
-        const step = Math.min(remaining, player.moveSpeed * state.deltaTime / 1000);
+        const heading = obstacles.length > 0 ? routeAround(player.position, destination, obstacles, state.arena) : destination;
+        let direction = normalize({ x: heading.x - player.position.x, y: heading.y - player.position.y });
+        const step = Math.min(distance(player.position, heading), player.moveSpeed * state.deltaTime / 1000);
         if (player.movementClamp && remaining > step) direction = clampDirection(direction, player.movementClamp);
         if (step > MOVING_EPSILON) {
           if (canMove(player)) {

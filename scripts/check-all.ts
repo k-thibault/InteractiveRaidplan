@@ -4,7 +4,7 @@ import { spawn } from 'node:child_process';
 
 interface Check { file: string; slow?: boolean; }
 const CHECKS: Check[] = [
-  { file: 'check-geometry.ts' }, { file: 'check-core.ts' }, { file: 'check-simulation.ts' }, { file: 'tether-check.ts' }, { file: 'check-encounters.ts' },
+  { file: 'check-geometry.ts' }, { file: 'check-core.ts' }, { file: 'check-simulation.ts' }, { file: 'check-avoidance.ts' }, { file: 'check-earthquake.ts' }, { file: 'tether-check.ts' }, { file: 'check-encounters.ts' },
   { file: 'check-replay-ids.ts' }, { file: 'check-history.ts' }, { file: 'check-viewer.ts' }, { file: 'check-foundation.ts' },
   { file: 'check-replay.ts', slow: true }, { file: 'check-prodready.ts', slow: true },
 ];

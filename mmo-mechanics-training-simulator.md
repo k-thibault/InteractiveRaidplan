@@ -24,12 +24,13 @@ The arena displays players, enemies, markers, attack areas, and active cast bars
 - Selectable encounter timelines with scripted phases and timed mechanics.
 - Circle, cone, and donut attacks, casts, markers, arena boundaries, and visual resources.
 - Player health, status effects and stacks, damage, control effects, and forced movement.
+- Cast-specific caster graphics and capped batches with queued effects.
 - Bot movement and role-based positioning to simulate the rest of the party.
 - Randomized mechanics with repeatable runs through the seed control.
 - Tethers linking entities, with passing, break conditions, and length-based styling.
-- Ability to hide other bots and enemies while controlling a player; enemies stay drawn while they chase you or when a timeline marks them `forceVisible`.
+- Ability to hide other bots and enemies while controlling a player.
 - Replays of every attempt: watch, seek, save, load and retry an attempt (see below).
-- A streak counter of successive successful runs, including runs with bots or enemies hidden by a player (No bots, No enemies, No entities, No calls, Zero help).
+- A streak counter of successive successful runs, including special streaks for runs with bots or enemies hidden by a player.
 - Responsive layout for the arena, party roster, and event log.
 
 ## Dev build features
@@ -43,9 +44,8 @@ useful for making sure a new timeline has reliable bot logic before release.
 Every attempt is recorded automatically. Playback reruns the same encounter using its seed, random outcomes, and your recorded movement and facing, so the party responds as it did in the original run.
 
 - Watch the latest attempt, seek through it, or retry with the same random outcomes. Replay controls do not affect your streak.
-- The **Replay** menu holds watching the last attempt, saving, loading and the history. While watching, the header shows the replay details and seek bar, and **Run options** switch to the app defaults (shotcalls on, bots and enemies visible) until you exit.
-- A run ends as a failure three seconds after every player has died, and its replay is listed as failed rather than abandoned.
-- Replays record the streak-affecting options they were played with (bots hidden, enemies hidden, shotcalls off) and show the streak a success would have earned, such as "Zero help", next to the seed and result.
+- A run ends as a failure three seconds after every player has died, and its replay is listed as failed.
+- Replays record the streak-affecting options they were played with (bots hidden, enemies hidden, shotcalls off).
 - Save and load replay files. Playback warns if the encounter or simulator has changed and reports when the result diverges.
 - History keeps this session's attempts until cleared and removes older sessions after 24 hours. If browser storage is unavailable, history lasts until the tab closes.
 - In development builds, failed seeds from **Batch simulate** can be opened in the replay viewer.

@@ -1,12 +1,15 @@
 import type { GameState } from '../simulation/GameState';
 import type { Player } from '../entities/Player';
 import type { Enemy } from '../entities/Enemy';
-import { clampToArena, distanceToArenaEdge } from '../geometry/Arena';
+import { BOT_DEADLY_EDGE_INSET, clampToArena, distanceToArenaEdge } from '../geometry/Arena';
 import type { AreaEffect } from '../mechanics/Effect';
-import type { PositionTarget } from './PositionTarget';
-import { resolveEntityReference } from '../mechanics/Selector';
+import type { HalfPlaneConstraint, PositionTarget } from './PositionTarget';
+import { findEntity, resolveEntityReference } from '../mechanics/Selector';
+import type { EntityReference } from './PositionTarget';
+import type { ActiveTether } from '../mechanics/Tether';
+import { focusedEnemy } from './BotManager';
 import { MechanicalRoleEvaluator, type ConditionExpression } from './MechanicalRoleEvaluator';
-import { fromPolar, toPolarAngle, circularMeanAngle, normalize, subtract } from '../geometry/Vector2';
+import { fromPolar, toPolarAngle, circularMeanAngle, normalize, subtract, distance } from '../geometry/Vector2';
 import type { Vector2 } from '../geometry/Vector2';
 import { signedAngleDelta } from '../geometry/Facing';
 import { pickMarker } from './MarkerQuery';
@@ -16,6 +19,9 @@ import { clampDirection, type DirectionClamp } from '../geometry/DirectionClamp'
 /** Distance in world units under which a follower counts as standing on its drag goal. */
 const DRAG_ARRIVED = 0.05;
 
+/** Gap kept between a bait spot and an avoided zone, so the bot isn't pushed off the line by the zone's edge. */
+const ZONE_MARGIN = 0.25;
+
 export interface PositionRule {
   when?: ConditionExpression;
   target: PositionTarget;
@@ -23,12 +29,25 @@ export interface PositionRule {
   live?: boolean;
   clamp?: DirectionClamp;
 }
+/** Stands in for all the rules of another group at this point in the list. */
+export interface PositionInclude { include: string; }
 /** Position rules are grouped and only the requested group is evaluated. */
-export type PositionDefinition = PositionRule[];
+export type PositionDefinition = (PositionRule | PositionInclude)[];
 export type PositionDefinitions = Record<string, PositionDefinition>;
 
+/** Replaces every `include` with the rules of the group it names, so lookups only ever see rules. */
+function expandIncludes(definitions: PositionDefinitions): Record<string, PositionRule[]> {
+  const expand = (group: string, trail: string[]): PositionRule[] => {
+    if (trail.includes(group)) throw new Error(`Position group \"${group}\" includes itself (${[...trail, group].join(' -> ')})`);
+    const rules = definitions[group];
+    if (!rules) throw new Error(`Position group \"${trail[trail.length - 1] ?? ''}\" includes unknown group \"${group}\"`);
+    return rules.flatMap((rule) => 'include' in rule ? expand(rule.include, [...trail, group]) : [rule]);
+  };
+  return Object.fromEntries(Object.keys(definitions).map((group) => [group, expand(group, [])]));
+}
+
 export class PositionEvaluator {
-  private readonly definitions: PositionDefinitions;
+  private readonly definitions: Record<string, PositionRule[]>;
   private readonly conditionEvaluator: MechanicalRoleEvaluator;
   private readonly resolveValue: <T>(value: T) => T;
   /** The `live` rule each player currently follows. */
@@ -37,7 +56,7 @@ export class PositionEvaluator {
   private readonly markerQueries: Record<string, MarkerQuery>;
 
   constructor(definitions: PositionDefinitions = {}, resolveValue: <T>(value: T) => T = (value) => value, markerQueries: Record<string, MarkerQuery> = {}) {
-    this.definitions = definitions;
+    this.definitions = expandIncludes(definitions);
     this.markerQueries = markerQueries;
     this.conditionEvaluator = new MechanicalRoleEvaluator({}, resolveValue);
     this.resolveValue = resolveValue;
@@ -97,27 +116,46 @@ export class PositionEvaluator {
     }
     if (target.type === 'polar') {
       let angle: number | string | undefined;
-      if (target.angleFrom) {
-        const entity = resolveEntityReference(this.resolveValue(target.angleFrom), state);
+      const centre = target.originEntity ? this.entity(target.originEntity, state, player)?.position : target.origin;
+      if (target.originEntity && !centre) return undefined;
+      if (target.angleFacing) {
+        const facing = this.entity(target.angleFacing, state, player)?.facing;
+        if (facing === undefined) return undefined;
+        angle = facing;
+      } else if (target.angleFrom) {
+        const entity = this.entity(target.angleFrom, state, player);
         if (!entity) return undefined;
-        angle = toPolarAngle(entity.position, target.origin ?? { x: 0, y: 0 });
+        angle = toPolarAngle(entity.position, centre ?? { x: 0, y: 0 });
       } else if (target.angle !== undefined) {
         angle = this.resolveValue(this.substituteParams(target.angle, params));
       }
       const radius = this.resolveValue(this.substituteParams(target.radius, params));
       if (typeof angle !== 'number' || typeof radius !== 'number') return undefined;
       if (target.angleTowards) {
-        const other = resolveEntityReference(this.resolveValue(target.angleTowards.entity), state);
+        const other = this.entity(target.angleTowards.entity, state, player);
         const by = this.resolveValue(this.substituteParams(target.angleTowards.by, params));
         if (!other || typeof by !== 'number') return undefined;
         // Turn the shorter way round toward the other entity's bearing; a negative `by` turns away from it.
-        const turn = signedAngleDelta(angle, toPolarAngle(other.position, target.origin ?? { x: 0, y: 0 }));
+        const turn = signedAngleDelta(angle, toPolarAngle(other.position, centre ?? { x: 0, y: 0 }));
         angle += Math.sign(turn) * by;
       }
-      return fromPolar(angle + (target.angleOffset ?? 0), radius, target.origin);
+      return fromPolar(angle + (target.angleOffset ?? 0), radius, centre);
+    }
+    if (target.type === 'flee') {
+      const threat = this.entity(target.from, state, player)?.position;
+      if (!threat || !player) return undefined;
+      const dx = player.position.x - threat.x;
+      const dy = player.position.y - threat.y;
+      const gap = Math.hypot(dx, dy);
+      if (gap >= target.distance) return { ...player.position };
+      // Standing on the threat, flee away from the arena centre.
+      const heading = gap > 0.01 ? { x: dx / gap, y: dy / gap } : normalize(player.position.x === 0 && player.position.y === 0 ? { x: 0, y: -1 } : player.position);
+      const spot = { x: threat.x + heading.x * target.distance, y: threat.y + heading.y * target.distance };
+      clampToArena(spot, state.arena, BOT_DEADLY_EDGE_INSET);
+      return spot;
     }
     if (target.type === 'drag') {
-      const follower = resolveEntityReference(this.resolveValue(target.entity), state);
+      const follower = this.entity(target.entity, state, player);
       const goal = this.resolve(target.to, state, params, player);
       const gap = target.distance ?? (follower as Partial<Enemy> | undefined)?.follow?.distance;
       if (!follower || !goal || gap === undefined) return undefined;
@@ -142,7 +180,7 @@ export class PositionEvaluator {
         if (!point) return undefined;
         angle = toPolarAngle(point, target.origin ?? { x: 0, y: 0 });
       } else if (target.angleFrom) {
-        const entity = resolveEntityReference(this.resolveValue(target.angleFrom), state);
+        const entity = this.entity(target.angleFrom, state, player);
         if (!entity) return undefined;
         angle = toPolarAngle(entity.position, target.origin ?? { x: 0, y: 0 });
       } else if (target.angle !== undefined) {
@@ -159,8 +197,8 @@ export class PositionEvaluator {
       return { x: origin.x + unit.x * reach, y: origin.y + unit.y * reach };
     }
     if (target.type === 'between') {
-      const from = resolveEntityReference(this.resolveValue(target.a), state);
-      const to = resolveEntityReference(this.resolveValue(target.b), state);
+      const from = this.entity(target.a, state, player);
+      const to = this.entity(target.b, state, player);
       if (!from || !to) return undefined;
       const t = target.t ?? 0.5;
       return { x: from.position.x + (to.position.x - from.position.x) * t, y: from.position.y + (to.position.y - from.position.y) * t };
@@ -180,13 +218,131 @@ export class PositionEvaluator {
       const signed = target.toward ? distance : -distance;
       return { x: from.x + heading.x * signed, y: from.y + heading.y * signed };
     }
+    if (target.type === 'bait_line') return this.resolveBaitLine(target, state, player);
+    if (target.type === 'tether_intercept') return this.resolveIntercept(target, state, player);
+    if (target.type === 'tether_grab') return this.resolveGrab(target, state, params, player);
+    if (target.type === 'safe_spot') return this.resolveSafeSpot(target, state, params, player);
     if (target.type === 'area') return this.resolveArea(target, state);
 
-    const entity = resolveEntityReference(this.resolveValue(target.player), state);
+    const entity = this.entity(target.player, state, player);
     return entity ? {
       x: entity.position.x + (target.offset?.x ?? 0),
       y: entity.position.y + (target.offset?.y ?? 0)
     } : undefined;
+  }
+
+  private resolveSafeSpot(target: Extract<PositionTarget, { type: 'safe_spot' }>, state: GameState, params?: Record<string, number>, player?: Player): Vector2 | undefined {
+    const anchor = this.resolve(target.anchor, state, params, player);
+    if (!anchor) return undefined;
+    const farFrom = target.farFrom ? this.resolve(target.farFrom, state, params, player) : undefined;
+    // A constraint whose inputs don't exist right now (e.g. a despawned entity) is skipped.
+    const toPlane = (constraint: HalfPlaneConstraint) => {
+      const origin = this.resolve(constraint.origin, state, params, player);
+      const from = this.resolve(constraint.from, state, params, player);
+      const to = this.resolve(constraint.to, state, params, player);
+      return origin && from && to ? [{ origin, direction: normalize(subtract(to, from)), margin: constraint.margin ?? 0 }] : [];
+    };
+    const requirements = target.constraints.flatMap((constraint) => {
+      const alternatives = ('anyOf' in constraint ? constraint.anyOf : [constraint]).flatMap(toPlane);
+      return alternatives.length > 0 ? [alternatives] : [];
+    });
+    const step = target.step ?? 0.5;
+    const candidates: Vector2[] = [];
+    for (let x = -state.arena.halfWidth; x <= state.arena.halfWidth; x += step) {
+      for (let y = -state.arena.halfHeight; y <= state.arena.halfHeight; y += step) {
+        const point = { x, y };
+        const inset = { x, y };
+        clampToArena(inset, state.arena, BOT_DEADLY_EDGE_INSET);
+        if (inset.x === x && inset.y === y) candidates.push(point);
+      }
+    }
+    const beyond = (point: Vector2, plane: { origin: Vector2; direction: Vector2; margin: number }) => (point.x - plane.origin.x) * plane.direction.x + (point.y - plane.origin.y) * plane.direction.y >= plane.margin;
+    const satisfies = (point: Vector2, count: number) => requirements.slice(0, count).every((alternatives) => alternatives.some((plane) => beyond(point, plane)));
+    for (let count = requirements.length; count >= 0; count -= 1) {
+      const valid = candidates.filter((point) => satisfies(point, count));
+      if (valid.length === 0) continue;
+      const byFarthest = count < requirements.length && farFrom !== undefined;
+      const score = (point: Vector2) => byFarthest ? -distance(point, farFrom!) : distance(point, anchor);
+      return valid.reduce((best, point) => score(point) < score(best) ? point : best);
+    }
+    return undefined;
+  }
+
+  /** Finds the tether named by one of this player's mechanical roles. */
+  private ownTether(state: GameState, player?: Player): ActiveTether | undefined {
+    return player ? state.tethers.find((tether) => player.mechanicalRoles.includes(tether.sourceId)) : undefined;
+  }
+
+  private entity(reference: EntityReference, state: GameState, player?: Player) {
+    const resolved = this.resolveValue(reference);
+    if (resolved.type === 'self') return player;
+    if (resolved.type !== 'own_tether_source' && resolved.type !== 'own_tether_target') return resolveEntityReference(resolved, state);
+    const tether = this.ownTether(state, player);
+    if (!tether) return undefined;
+    return findEntity(state, resolved.type === 'own_tether_source' ? tether.sourceId : tether.targetId);
+  }
+
+  private resolveBaitLine(target: Extract<PositionTarget, { type: 'bait_line' }>, state: GameState, player?: Player): Vector2 | undefined {
+    const source = this.entity(target.from, state, player);
+    const enemy = focusedEnemy(state, player?.focus);
+    if (!source || !enemy) return undefined;
+    const reach = Math.hypot(source.position.x, source.position.y);
+    if (reach <= target.clearance) return undefined;
+    // The line grazes the center clearance circle.
+    const lean = Math.asin(target.clearance / reach);
+    const toCentre = { x: -source.position.x / reach, y: -source.position.y / reach };
+    const tangentLength = Math.sqrt(reach * reach - target.clearance * target.clearance);
+    const turns = target.side === 'clockwise' ? [-lean] : target.side === 'counterclockwise' ? [lean] : [lean, -lean];
+    const zones = state.enemies.filter((enemy) => enemy.alive && enemy.botAvoidRadius !== undefined);
+    const spots = turns.map((turn) => {
+      const direction = { x: toCentre.x * Math.cos(turn) - toCentre.y * Math.sin(turn), y: toCentre.x * Math.sin(turn) + toCentre.y * Math.cos(turn) };
+      const at = (t: number) => ({ x: source.position.x + direction.x * t, y: source.position.y + direction.y * t });
+      const earliest = Math.max(target.minFromSource ?? 0, tangentLength - (target.slack ?? tangentLength));
+      const latest = tangentLength + (target.beyond ?? 1.5);
+      const along = (enemy.position.x - source.position.x) * direction.x + (enemy.position.y - source.position.y) * direction.y;
+      const ideal = Math.max(earliest, Math.min(latest, along));
+      // Find the closest clear point to the ideal bait spot.
+      const clear = (t: number) => zones.every((zone) => distance(at(t), zone.position) >= zone.botAvoidRadius! + ZONE_MARGIN);
+      let best = ideal;
+      for (let offset = 0; !clear(best) && offset <= latest - earliest; offset += 0.1) {
+        const options = [ideal + offset, ideal - offset].filter((t) => t >= earliest && t <= latest && clear(t));
+        if (options.length > 0) best = options[0];
+      }
+      return at(best);
+    });
+    return spots.reduce((best, spot) => distance(spot, enemy.position) < distance(best, enemy.position) - 1e-9 ? spot : best);
+  }
+
+  private resolveGrab(target: Extract<PositionTarget, { type: 'tether_grab' }>, state: GameState, params?: Record<string, number>, player?: Player): Vector2 | undefined {
+    const tether = this.ownTether(state, player);
+    const source = tether && findEntity(state, tether.sourceId);
+    const holder = tether && findEntity(state, tether.targetId);
+    if (!player || !source || !holder || holder.id === player.id) return this.resolve(target.then, state, params, player);
+    const length = distance(source.position, holder.position);
+    if (length === 0) return { ...holder.position };
+    const zones = state.enemies.filter((enemy) => enemy.alive && enemy.botAvoidRadius !== undefined);
+    const at = (along: number) => ({ x: holder.position.x + (source.position.x - holder.position.x) * (along / length), y: holder.position.y + (source.position.y - holder.position.y) * (along / length) });
+    const clear = (along: number) => zones.every((zone) => distance(at(along), zone.position) >= zone.botAvoidRadius! + ZONE_MARGIN);
+    const wanted = Math.min(target.offset ?? 0.6, length / 2);
+    // Slide along the tether to the nearest spot that isn't inside an orb's avoid zone, so the bot can actually stand there.
+    for (let shift = 0; shift <= length; shift += 0.1) {
+      const options = [wanted + shift, wanted - shift].filter((along) => along > 0 && along < length && clear(along));
+      if (options.length > 0) return at(options[0]);
+    }
+    return at(wanted);
+  }
+
+  private resolveIntercept(target: Extract<PositionTarget, { type: 'tether_intercept' }>, state: GameState, player?: Player): Vector2 | undefined {
+    const tether = this.ownTether(state, player);
+    const source = tether && findEntity(state, tether.sourceId);
+    const holder = tether && findEntity(state, tether.targetId);
+    if (!player || !source || !holder) return undefined;
+    const length = distance(source.position, holder.position);
+    if (length === 0) return undefined;
+    const along = ((player.position.x - source.position.x) * (holder.position.x - source.position.x) + (player.position.y - source.position.y) * (holder.position.y - source.position.y)) / (length * length);
+    // Keep the point clear of both tether ends.
+    const t = Math.max((target.minFromSource ?? 0) / length, Math.min(1 - (target.margin ?? 0) / length, along));
+    return { x: source.position.x + (holder.position.x - source.position.x) * t, y: source.position.y + (holder.position.y - source.position.y) * t };
   }
 
   /** Finds the marker a `marker` target names, either by id or by running its query against the live markers. */

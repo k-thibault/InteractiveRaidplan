@@ -14,6 +14,8 @@ export interface Enemy extends Entity {
   followsControlled?: boolean;
   /** Drawn even while enemies are hidden. */
   forceVisible?: boolean;
+  /** Bots route around this enemy, keeping at least this distance. */
+  botAvoidRadius?: number;
 }
 
 /** Whether an enemy is still drawn while enemies are hidden. */
@@ -28,4 +30,6 @@ export interface EnemyTemplate {
   graphic?: EntityGraphic;
   /** Drawn even while enemies are hidden. */
   forceVisible?: boolean;
+  /** Bots route around this enemy, keeping at least this distance. */
+  botAvoidRadius?: number;
 }

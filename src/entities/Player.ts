@@ -18,6 +18,8 @@ export interface Player extends Entity {
   damagePosition?: DamagePosition;
   flexPriority?: number;
   mechanicalRoles: string[];
+  /** How a shotcall names this player when they hold a role it references; defaults to `name`. */
+  shotcallText?: string;
   positionTarget?: PositionTarget;
   desiredPosition?: { x: number; y: number };
   movementClamp?: DirectionClamp;

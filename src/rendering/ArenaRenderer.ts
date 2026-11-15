@@ -11,6 +11,7 @@ import { resolveTetherStyle } from '../mechanics/Tether';
 import { entityRadius } from '../entities/Entity';
 import { findEntity } from '../mechanics/Selector';
 import { shownWhileHidden, type Enemy } from '../entities/Enemy';
+import { displayedGraphic } from '../mechanics/Cast';
 
 interface StatusHitArea {
   x: number;
@@ -194,7 +195,7 @@ export class ArenaRenderer {
     this.drawTethers(state, hideUncontrolled, hideEnemies, scale, toCanvas);
     for (const enemy of state.enemies) {
       if (hideEnemies && !shownWhileHidden(enemy, state.casts)) continue;
-      this.drawUnit(enemy, '#ff7757', scale, toCanvas, true);
+      this.drawUnit({ ...enemy, graphic: displayedGraphic(enemy, state.casts) }, '#ff7757', scale, toCanvas, true);
     }
     for (const player of state.players) {
       if (hideUncontrolled && !player.controlled) continue;

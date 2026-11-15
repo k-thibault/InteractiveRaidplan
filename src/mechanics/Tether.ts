@@ -43,6 +43,8 @@ export interface TetherDefinition {
   passable?: boolean;
   /** Extra reach, in world units, beyond a candidate's own radius when deciding whether it is on the line. */
   passTolerance?: number;
+  /** After a pass, the previous holder can't take the tether back for this many ms, which stops two neighbours trading it every tick. */
+  passCooldown?: number;
   /** The tether breaks as soon as any of these is met. */
   breakWhen?: TetherBreakCondition[];
   /** Break conditions are ignored for this many ms after the tether appears. */
@@ -87,6 +89,8 @@ export interface ActiveTether {
   lengthStages?: TetherLengthStage[];
   passable: boolean;
   passTolerance: number;
+  passCooldown: number;
+  lastPass?: { fromId: string; until: number };
   breakWhen: TetherBreakCondition[];
   graceDuration: number;
   onBreak?: EffectDefinition[];
