@@ -276,35 +276,35 @@
       "values": [
         {
           "angle": 0,
-          "perp": "B - D"
+          "perp": "B  D"
         },
         {
           "angle": 45,
-          "perp": "2 - 4"
+          "perp": "2  4"
         },
         {
           "angle": 90,
-          "perp": "C - A"
+          "perp": "A  C"
         },
         {
           "angle": 135,
-          "perp": "3 - 1"
+          "perp": "1  3"
         },
         {
           "angle": 180,
-          "perp": "D - B"
+          "perp": "B  D"
         },
         {
           "angle": 225,
-          "perp": "4 - 2"
+          "perp": "2  4"
         },
         {
           "angle": 270,
-          "perp": "A - C"
+          "perp": "A  C"
         },
         {
           "angle": 315,
-          "perp": "1 - 3"
+          "perp": "1  3"
         }
       ]
     }
@@ -518,7 +518,7 @@
       "telegraphDuration": 0,
       "duration": 500,
       "executionColor": "#c9a15f",
-      "angle": 30,
+      "angle": 50,
       "resolution": [
         {
           "condition": {
@@ -552,7 +552,7 @@
       "telegraphDuration": 0,
       "duration": 500,
       "executionColor": "#c9a15f",
-      "angle": 30,
+      "angle": 50,
       "resolution": [
         {
           "condition": {
@@ -754,7 +754,7 @@
     },
     {
       "id": "crust",
-      "name": "Crust",
+      "name": "Primoridial Crust",
       "icon": "icon-crust",
       "damageImmunity": {
         "mode": "undying",
@@ -792,17 +792,17 @@
     },
     {
       "id": "first",
-      "name": "First",
+      "name": "First in Line",
       "icon": "icon-limitcut-1"
     },
     {
       "id": "second",
-      "name": "Second",
+      "name": "Second in Line",
       "icon": "icon-limitcut-2"
     },
     {
       "id": "third",
-      "name": "Third",
+      "name": "Third in Line",
       "icon": "icon-limitcut-3"
     },
     {
@@ -821,7 +821,7 @@
     },
     {
       "id": "orb-armed",
-      "name": "Singularity",
+      "name": "Proximity",
       "hidden": true,
       "proximity": {
         "radius": 0.8,
@@ -846,8 +846,8 @@
     },
     {
       "id": "nothingness",
-      "name": "Nothingness",
-      "character": "N",
+      "name": "Unbecoming",
+      "character": "U",
       "color": "#6a2cff",
       "maxStacks": 2,
       "showStacks": true,
@@ -870,8 +870,8 @@
     },
     {
       "id": "void-vulnerability",
-      "name": "Void Vulnerability",
-      "character": "V",
+      "name": "Meanest Existence",
+      "character": "M",
       "color": "#9b5cff",
       "tags": [
         "vulnerability"
@@ -920,7 +920,7 @@
     },
     {
       "id": "tank-immunity",
-      "name": "Invulnerability",
+      "name": "Superbolide",
       "character": "I",
       "color": "#e6e6e6",
       "damageImmunity": {
@@ -1365,7 +1365,7 @@
     },
     "strike-left": {
       "id": "strike-left",
-      "name": "Fissure",
+      "name": "Slap Happy",
       "castTime": 4000,
       "visible": true,
       "casterGraphic": {
@@ -1418,7 +1418,7 @@
     },
     "strike-right": {
       "id": "strike-right",
-      "name": "Fissure",
+      "name": "Slap Happy",
       "castTime": 4000,
       "visible": true,
       "casterGraphic": {
@@ -1473,7 +1473,7 @@
       "id": "orb-laser",
       "name": "Event Horizon",
       "castTime": 4500,
-      "visible": true,
+      "visible": false,
       "effects": [
         {
           "type": "spawn_area",
@@ -1694,7 +1694,7 @@
     },
     "strike2-left": {
       "id": "strike2-left",
-      "name": "Fissure",
+      "name": "Slap Happy",
       "castTime": 4000,
       "visible": true,
       "casterGraphic": {
@@ -1747,7 +1747,7 @@
     },
     "strike2-right": {
       "id": "strike2-right",
-      "name": "Fissure",
+      "name": "Slap Happy",
       "castTime": 4000,
       "visible": true,
       "casterGraphic": {
@@ -2230,7 +2230,7 @@
     },
     "slam": {
       "id": "slam",
-      "name": "Landslide",
+      "name": "Look upon Me and Despair",
       "castTime": 5000,
       "visible": true,
       "effects": [
