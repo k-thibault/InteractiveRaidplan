@@ -6876,7 +6876,7 @@
       "role": "damage",
       "color": "#ff5a4f",
       "team": "blue",
-      "flexPriority": 2,
+      "flexPriority": 1,
       "mechanicalRoles": [
         "spot-7"
       ],
@@ -6898,7 +6898,7 @@
       "role": "damage",
       "color": "#ff5a4f",
       "team": "yellow",
-      "flexPriority": 1,
+      "flexPriority": 2,
       "mechanicalRoles": [
         "spot-8"
       ],
