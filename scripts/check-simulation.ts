@@ -519,6 +519,18 @@ const hit = (id: string, time: number, amount: number, type = 'physical', fatal?
   check('unsatisfiable trailing constraints are dropped', Math.abs(dropped.x - 2) < 0.2, JSON.stringify(dropped));
   const far = spot([plane({ x: 1, y: 0 }, 2), plane({ x: 0, y: 1 }, 50)], { farFrom: fixed(0, -9) });
   check('with only some constraints met, the spot farthest from farFrom is used', far.x > 2 && far.y > 6, JSON.stringify(far));
+  const either = spot([{ anyOf: [plane({ x: 1, y: 0 }, 3), plane({ x: -1, y: 0 }, 3)] }]);
+  check('an anyOf constraint accepts whichever alternative is nearest the anchor', either.x < -2.8, JSON.stringify(either));
+  const fromSelf = spot([plane({ x: 1, y: 0 }, 2)], { anchor: { type: 'entity', player: { type: 'self' } } });
+  const flee = (x: number) => {
+    const rules = { default: [{ target: { type: 'flee', from: { type: 'id', id: 'b' }, distance: 3 } }] };
+    const simulation = make({ positions: rules, events: [at('go', 0, { type: 'recalculate_positions', group: 'default' })] as never, players: [player('a', x, 0), player('b', 0, 0)] as never });
+    until(simulation, 6000);
+    return find(simulation, 'a').position;
+  };
+  check('a flee target steps straight away until far enough', Math.abs(flee(1).x - 3) < 0.2 && Math.abs(flee(1).y) < 0.2);
+  check('a flee target stays put when already far enough', Math.abs(flee(5).x - 5) < 0.2);
+  check('a safe spot can be anchored on the player it is for', Math.abs(fromSelf.x - 2) < 0.2, JSON.stringify(fromSelf));
 }
 
 // Entity-bearing positions

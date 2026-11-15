@@ -3,7 +3,7 @@ import type { Player } from '../entities/Player';
 import type { Enemy } from '../entities/Enemy';
 import { BOT_DEADLY_EDGE_INSET, clampToArena, distanceToArenaEdge } from '../geometry/Arena';
 import type { AreaEffect } from '../mechanics/Effect';
-import type { PositionTarget } from './PositionTarget';
+import type { HalfPlaneConstraint, PositionTarget } from './PositionTarget';
 import { findEntity, resolveEntityReference } from '../mechanics/Selector';
 import type { EntityReference } from './PositionTarget';
 import type { ActiveTether } from '../mechanics/Tether';
@@ -141,6 +141,19 @@ export class PositionEvaluator {
       }
       return fromPolar(angle + (target.angleOffset ?? 0), radius, centre);
     }
+    if (target.type === 'flee') {
+      const threat = this.entity(target.from, state, player)?.position;
+      if (!threat || !player) return undefined;
+      const dx = player.position.x - threat.x;
+      const dy = player.position.y - threat.y;
+      const gap = Math.hypot(dx, dy);
+      if (gap >= target.distance) return { ...player.position };
+      // Standing on the threat, flee away from the arena centre.
+      const heading = gap > 0.01 ? { x: dx / gap, y: dy / gap } : normalize(player.position.x === 0 && player.position.y === 0 ? { x: 0, y: -1 } : player.position);
+      const spot = { x: threat.x + heading.x * target.distance, y: threat.y + heading.y * target.distance };
+      clampToArena(spot, state.arena, BOT_DEADLY_EDGE_INSET);
+      return spot;
+    }
     if (target.type === 'drag') {
       const follower = this.entity(target.entity, state, player);
       const goal = this.resolve(target.to, state, params, player);
@@ -223,11 +236,15 @@ export class PositionEvaluator {
     if (!anchor) return undefined;
     const farFrom = target.farFrom ? this.resolve(target.farFrom, state, params, player) : undefined;
     // A constraint whose inputs don't exist right now (e.g. a despawned entity) is skipped.
-    const planes = target.constraints.flatMap((constraint) => {
+    const toPlane = (constraint: HalfPlaneConstraint) => {
       const origin = this.resolve(constraint.origin, state, params, player);
       const from = this.resolve(constraint.from, state, params, player);
       const to = this.resolve(constraint.to, state, params, player);
       return origin && from && to ? [{ origin, direction: normalize(subtract(to, from)), margin: constraint.margin ?? 0 }] : [];
+    };
+    const requirements = target.constraints.flatMap((constraint) => {
+      const alternatives = ('anyOf' in constraint ? constraint.anyOf : [constraint]).flatMap(toPlane);
+      return alternatives.length > 0 ? [alternatives] : [];
     });
     const step = target.step ?? 0.5;
     const candidates: Vector2[] = [];
@@ -239,11 +256,12 @@ export class PositionEvaluator {
         if (inset.x === x && inset.y === y) candidates.push(point);
       }
     }
-    const satisfies = (point: Vector2, count: number) => planes.slice(0, count).every((plane) => (point.x - plane.origin.x) * plane.direction.x + (point.y - plane.origin.y) * plane.direction.y >= plane.margin);
-    for (let count = planes.length; count >= 0; count -= 1) {
+    const beyond = (point: Vector2, plane: { origin: Vector2; direction: Vector2; margin: number }) => (point.x - plane.origin.x) * plane.direction.x + (point.y - plane.origin.y) * plane.direction.y >= plane.margin;
+    const satisfies = (point: Vector2, count: number) => requirements.slice(0, count).every((alternatives) => alternatives.some((plane) => beyond(point, plane)));
+    for (let count = requirements.length; count >= 0; count -= 1) {
       const valid = candidates.filter((point) => satisfies(point, count));
       if (valid.length === 0) continue;
-      const byFarthest = count < planes.length && farFrom !== undefined;
+      const byFarthest = count < requirements.length && farFrom !== undefined;
       const score = (point: Vector2) => byFarthest ? -distance(point, farFrom!) : distance(point, anchor);
       return valid.reduce((best, point) => score(point) < score(best) ? point : best);
     }
@@ -257,6 +275,7 @@ export class PositionEvaluator {
 
   private entity(reference: EntityReference, state: GameState, player?: Player) {
     const resolved = this.resolveValue(reference);
+    if (resolved.type === 'self') return player;
     if (resolved.type !== 'own_tether_source' && resolved.type !== 'own_tether_target') return resolveEntityReference(resolved, state);
     const tether = this.ownTether(state, player);
     if (!tether) return undefined;
@@ -301,8 +320,16 @@ export class PositionEvaluator {
     if (!player || !source || !holder || holder.id === player.id) return this.resolve(target.then, state, params, player);
     const length = distance(source.position, holder.position);
     if (length === 0) return { ...holder.position };
-    const step = Math.min(target.offset ?? 0.6, length / 2) / length;
-    return { x: holder.position.x + (source.position.x - holder.position.x) * step, y: holder.position.y + (source.position.y - holder.position.y) * step };
+    const zones = state.enemies.filter((enemy) => enemy.alive && enemy.botAvoidRadius !== undefined);
+    const at = (along: number) => ({ x: holder.position.x + (source.position.x - holder.position.x) * (along / length), y: holder.position.y + (source.position.y - holder.position.y) * (along / length) });
+    const clear = (along: number) => zones.every((zone) => distance(at(along), zone.position) >= zone.botAvoidRadius! + ZONE_MARGIN);
+    const wanted = Math.min(target.offset ?? 0.6, length / 2);
+    // Slide along the tether to the nearest spot that isn't inside an orb's avoid zone, so the bot can actually stand there.
+    for (let shift = 0; shift <= length; shift += 0.1) {
+      const options = [wanted + shift, wanted - shift].filter((along) => along > 0 && along < length && clear(along));
+      if (options.length > 0) return at(options[0]);
+    }
+    return at(wanted);
   }
 
   private resolveIntercept(target: Extract<PositionTarget, { type: 'tether_intercept' }>, state: GameState, player?: Player): Vector2 | undefined {

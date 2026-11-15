@@ -9,10 +9,14 @@ export type EntityReference =
   | { type: 'tether_target'; source: string }
   /** The source or holder of the player's role-linked tether. */
   | { type: 'own_tether_source' }
-  | { type: 'own_tether_target' };
+  | { type: 'own_tether_target' }
+  /** The player the rule is being resolved for. */
+  | { type: 'self' };
 
 /** Keeps points `margin` or more past the line through `origin`, on the side that `to` lies on relative to `from`. */
 export interface HalfPlaneConstraint { origin: PositionTarget; from: PositionTarget; to: PositionTarget; margin?: number; }
+/** Satisfied by points that satisfy at least one of the alternatives, e.g. either of two safe strips. */
+export interface AnyOfConstraint { anyOf: HalfPlaneConstraint[]; }
 
 export type PositionTarget =
   | { type: 'fixed'; position: { x: number; y: number } | string }
@@ -28,6 +32,8 @@ export type PositionTarget =
   | { type: 'drag'; entity: EntityReference; to: PositionTarget; distance?: number }
   | { type: 'entity'; player: EntityReference; offset?: { x: number; y: number } }
   /** Offset from `from`; nested marker queries rank from it by default. `clamp` snaps the shift heading. */
+  /** Stay put when at least `distance` from `from`; otherwise step straight away from it until that far. */
+  | { type: 'flee'; from: EntityReference; distance: number }
   | { type: 'shift'; from: PositionTarget; toward?: PositionTarget; awayFrom?: PositionTarget; distance: number | string; clamp?: import('../geometry/DirectionClamp').DirectionClamp; /** Degrees the heading is turned clockwise (negative: counterclockwise) before moving, applied after `clamp`. */ angleOffset?: number | string }
   /** A point on a bait line, offset from the centre and source. */
   | { type: 'bait_line'; from: EntityReference; clearance: number; minFromSource?: number; /** Allowed distance before the tangent. */ slack?: number; /** Allowed distance beyond the tangent. */ beyond?: number; /** Turn direction around the centre. */ side?: 'clockwise' | 'counterclockwise' | 'nearest' }
@@ -39,7 +45,7 @@ export type PositionTarget =
    * Searches the arena for a point inside as many `constraints` as possible, taken in order of importance.
    * With all of them satisfied the point nearest `anchor` wins; with only a leading subset, the point farthest from `farFrom` (default: nearest `anchor`).
    */
-  | { type: 'safe_spot'; constraints: HalfPlaneConstraint[]; anchor: PositionTarget; farFrom?: PositionTarget; /** Grid spacing in world units, default 0.5. */ step?: number }
+  | { type: 'safe_spot'; constraints: (HalfPlaneConstraint | AnyOfConstraint)[]; anchor: PositionTarget; farFrom?: PositionTarget; /** Grid spacing in world units, default 0.5. */ step?: number }
   | {
       type: 'area';
       mechanic?: string; label?: string; tag?: string;

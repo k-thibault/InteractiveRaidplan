@@ -1,7 +1,7 @@
 {
   "version": 5,
   "name": "Earthquake",
-  "duration": 74700,
+  "duration": 102350,
   "arena": {
     "shape": "circle",
     "radius": 8,
@@ -31,28 +31,44 @@
       "mode": "choice",
       "values": [
         {
-          "angle": 0
+          "angle": 0,
+          "stack": "B",
+          "triple": "4 - D - 3"
         },
         {
-          "angle": 45
+          "angle": 45,
+          "stack": "2",
+          "triple": "A - 4 - D"
         },
         {
-          "angle": 90
+          "angle": 90,
+          "stack": "C",
+          "triple": "1 - A - 4"
         },
         {
-          "angle": 135
+          "angle": 135,
+          "stack": "3",
+          "triple": "B - 1 - A"
         },
         {
-          "angle": 180
+          "angle": 180,
+          "stack": "D",
+          "triple": "2 - B - 1"
         },
         {
-          "angle": 225
+          "angle": 225,
+          "stack": "4",
+          "triple": "C - 2 - B"
         },
         {
-          "angle": 270
+          "angle": 270,
+          "stack": "A",
+          "triple": "3 - C - 2"
         },
         {
-          "angle": 315
+          "angle": 315,
+          "stack": "1",
+          "triple": "D - 3 - C"
         }
       ]
     },
@@ -71,28 +87,44 @@
       "mode": "choice",
       "values": [
         {
-          "angle": 0
+          "angle": 0,
+          "stack": "B",
+          "triple": "4 - D - 3"
         },
         {
-          "angle": 45
+          "angle": 45,
+          "stack": "2",
+          "triple": "A - 4 - D"
         },
         {
-          "angle": 90
+          "angle": 90,
+          "stack": "C",
+          "triple": "1 - A - 4"
         },
         {
-          "angle": 135
+          "angle": 135,
+          "stack": "3",
+          "triple": "B - 1 - A"
         },
         {
-          "angle": 180
+          "angle": 180,
+          "stack": "D",
+          "triple": "2 - B - 1"
         },
         {
-          "angle": 225
+          "angle": 225,
+          "stack": "4",
+          "triple": "C - 2 - B"
         },
         {
-          "angle": 270
+          "angle": 270,
+          "stack": "A",
+          "triple": "3 - C - 2"
         },
         {
-          "angle": 315
+          "angle": 315,
+          "stack": "1",
+          "triple": "D - 3 - C"
         }
       ]
     },
@@ -193,6 +225,87 @@
         "orb-1",
         "orb-2",
         "orb-3"
+      ]
+    },
+    "orbLayout3": {
+      "mode": "choice",
+      "values": [
+        {
+          "a": 0,
+          "b": 90,
+          "c": 180
+        },
+        {
+          "a": 0,
+          "b": 90,
+          "c": 270
+        },
+        {
+          "a": 0,
+          "b": 180,
+          "c": 270
+        },
+        {
+          "a": 90,
+          "b": 180,
+          "c": 270
+        }
+      ]
+    },
+    "decoyLayout3": {
+      "mode": "choice",
+      "values": [
+        {
+          "offset": 0
+        },
+        {
+          "offset": 45
+        }
+      ]
+    },
+    "orbOrder3": {
+      "mode": "shuffle",
+      "values": [
+        "orb-1",
+        "orb-2",
+        "orb-3"
+      ]
+    },
+    "slamAngle": {
+      "mode": "choice",
+      "values": [
+        {
+          "angle": 0,
+          "perp": "B - D"
+        },
+        {
+          "angle": 45,
+          "perp": "2 - 4"
+        },
+        {
+          "angle": 90,
+          "perp": "C - A"
+        },
+        {
+          "angle": 135,
+          "perp": "3 - 1"
+        },
+        {
+          "angle": 180,
+          "perp": "D - B"
+        },
+        {
+          "angle": 225,
+          "perp": "4 - 2"
+        },
+        {
+          "angle": 270,
+          "perp": "A - C"
+        },
+        {
+          "angle": 315,
+          "perp": "1 - 3"
+        }
       ]
     }
   },
@@ -533,8 +646,37 @@
     },
     "strike-circle": {
       "shape": "circle",
-      "radius": 4.25,
+      "radius": 4.75,
       "label": "earth-strike",
+      "element": "earth",
+      "telegraphDuration": 0,
+      "duration": 500,
+      "executionColor": "#d95757",
+      "resolution": [
+        {
+          "condition": {
+            "type": "player_count",
+            "min": 0
+          },
+          "effects": [
+            {
+              "type": "damage",
+              "target": "inside",
+              "damage": {
+                "amount": 999,
+                "type": "earth",
+                "fatal": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "slam-line": {
+      "shape": "line",
+      "radius": 20,
+      "width": 8,
+      "label": "slam",
       "element": "earth",
       "telegraphDuration": 0,
       "duration": 500,
@@ -584,7 +726,8 @@
         "glow": true
       },
       "passable": true,
-      "passTolerance": 0.3
+      "passTolerance": 0.3,
+      "passCooldown": 600
     },
     "orb-link-slow": {
       "name": "Gravity",
@@ -595,7 +738,8 @@
         "glow": true
       },
       "passable": true,
-      "passTolerance": 0.3
+      "passTolerance": 0.3,
+      "passCooldown": 600
     }
   },
   "statuses": [
@@ -773,6 +917,15 @@
       "id": "link-3",
       "name": "Link 3",
       "hidden": true
+    },
+    {
+      "id": "tank-immunity",
+      "name": "Invulnerability",
+      "character": "I",
+      "color": "#e6e6e6",
+      "damageImmunity": {
+        "mode": "invulnerable"
+      }
     }
   ],
   "casts": {
@@ -1104,6 +1257,50 @@
           "expiresAfter": 15600
         },
         {
+          "type": "spawn_enemy",
+          "enemyId": "decoy-5",
+          "enemy": "orb",
+          "position": {
+            "type": "polar",
+            "angle": 342.5,
+            "radius": 5.5
+          },
+          "expiresAfter": 15600
+        },
+        {
+          "type": "spawn_enemy",
+          "enemyId": "decoy-6",
+          "enemy": "orb",
+          "position": {
+            "type": "polar",
+            "angle": 72.5,
+            "radius": 5.5
+          },
+          "expiresAfter": 15600
+        },
+        {
+          "type": "spawn_enemy",
+          "enemyId": "decoy-7",
+          "enemy": "orb",
+          "position": {
+            "type": "polar",
+            "angle": 162.5,
+            "radius": 5.5
+          },
+          "expiresAfter": 15600
+        },
+        {
+          "type": "spawn_enemy",
+          "enemyId": "decoy-8",
+          "enemy": "orb",
+          "position": {
+            "type": "polar",
+            "angle": 252.5,
+            "radius": 5.5
+          },
+          "expiresAfter": 15600
+        },
+        {
           "type": "delayed_effects",
           "delay": 3000,
           "effects": [
@@ -1140,6 +1337,26 @@
             {
               "type": "apply_status",
               "targetEntity": "decoy-4",
+              "status": "orb-armed"
+            },
+            {
+              "type": "apply_status",
+              "targetEntity": "decoy-5",
+              "status": "orb-armed"
+            },
+            {
+              "type": "apply_status",
+              "targetEntity": "decoy-6",
+              "status": "orb-armed"
+            },
+            {
+              "type": "apply_status",
+              "targetEntity": "decoy-7",
+              "status": "orb-armed"
+            },
+            {
+              "type": "apply_status",
+              "targetEntity": "decoy-8",
               "status": "orb-armed"
             }
           ]
@@ -1369,6 +1586,50 @@
           "expiresAfter": 18050
         },
         {
+          "type": "spawn_enemy",
+          "enemyId": "decoy-5",
+          "enemy": "orb",
+          "position": {
+            "type": "polar",
+            "angle": 342.5,
+            "radius": 5.5
+          },
+          "expiresAfter": 18050
+        },
+        {
+          "type": "spawn_enemy",
+          "enemyId": "decoy-6",
+          "enemy": "orb",
+          "position": {
+            "type": "polar",
+            "angle": 72.5,
+            "radius": 5.5
+          },
+          "expiresAfter": 18050
+        },
+        {
+          "type": "spawn_enemy",
+          "enemyId": "decoy-7",
+          "enemy": "orb",
+          "position": {
+            "type": "polar",
+            "angle": 162.5,
+            "radius": 5.5
+          },
+          "expiresAfter": 18050
+        },
+        {
+          "type": "spawn_enemy",
+          "enemyId": "decoy-8",
+          "enemy": "orb",
+          "position": {
+            "type": "polar",
+            "angle": 252.5,
+            "radius": 5.5
+          },
+          "expiresAfter": 18050
+        },
+        {
           "type": "delayed_effects",
           "delay": 3000,
           "effects": [
@@ -1405,6 +1666,26 @@
             {
               "type": "apply_status",
               "targetEntity": "decoy-4",
+              "status": "orb-armed"
+            },
+            {
+              "type": "apply_status",
+              "targetEntity": "decoy-5",
+              "status": "orb-armed"
+            },
+            {
+              "type": "apply_status",
+              "targetEntity": "decoy-6",
+              "status": "orb-armed"
+            },
+            {
+              "type": "apply_status",
+              "targetEntity": "decoy-7",
+              "status": "orb-armed"
+            },
+            {
+              "type": "apply_status",
+              "targetEntity": "decoy-8",
               "status": "orb-armed"
             }
           ]
@@ -1674,36 +1955,6 @@
           "delay": 500,
           "effects": [
             {
-              "type": "recalculate_roles",
-              "group": "tank-swap"
-            },
-            {
-              "type": "set_focus",
-              "target": {
-                "type": "mechanical_role",
-                "role": "large_tank"
-              },
-              "enemy": "boss-large"
-            },
-            {
-              "type": "set_focus",
-              "target": {
-                "type": "mechanical_role",
-                "role": "small_tank"
-              },
-              "enemy": "boss-small"
-            },
-            {
-              "type": "start_follow",
-              "source": "boss-large",
-              "target": {
-                "type": "mechanical_role",
-                "role": "large_tank"
-              },
-              "distance": 4.4,
-              "moveSpeed": 4
-            },
-            {
               "type": "recalculate_positions",
               "group": "thunder-bait-swap"
             }
@@ -1733,16 +1984,6 @@
                   "position": "$groupMember.position"
                 }
               ]
-            },
-            {
-              "type": "start_follow",
-              "source": "boss-small",
-              "target": {
-                "type": "mechanical_role",
-                "role": "small_tank"
-              },
-              "distance": 3.6,
-              "moveSpeed": 4
             }
           ]
         }
@@ -1774,6 +2015,289 @@
           "type": "spawn_area",
           "area": "orb-laser",
           "direction": "cast_target"
+        }
+      ]
+    },
+    "black-hole-3": {
+      "id": "black-hole-3",
+      "name": "Black Hole",
+      "castTime": 3000,
+      "visible": true,
+      "effects": [
+        {
+          "type": "spawn_enemy",
+          "enemyId": "orb-1",
+          "enemy": "orb",
+          "position": {
+            "type": "polar",
+            "angle": "$orbLayout3.a",
+            "radius": 7
+          },
+          "expiresAfter": 18050
+        },
+        {
+          "type": "spawn_enemy",
+          "enemyId": "orb-2",
+          "enemy": "orb",
+          "position": {
+            "type": "polar",
+            "angle": "$orbLayout3.b",
+            "radius": 7
+          },
+          "expiresAfter": 18050
+        },
+        {
+          "type": "spawn_enemy",
+          "enemyId": "orb-3",
+          "enemy": "orb",
+          "position": {
+            "type": "polar",
+            "angle": "$orbLayout3.c",
+            "radius": 7
+          },
+          "expiresAfter": 18050
+        },
+        {
+          "type": "spawn_enemy",
+          "enemyId": "decoy-1",
+          "enemy": "orb",
+          "position": {
+            "type": "polar",
+            "angle": {
+              "$add": [
+                "$decoyLayout3.offset",
+                0
+              ]
+            },
+            "radius": 4
+          },
+          "expiresAfter": 18050
+        },
+        {
+          "type": "spawn_enemy",
+          "enemyId": "decoy-2",
+          "enemy": "orb",
+          "position": {
+            "type": "polar",
+            "angle": {
+              "$add": [
+                "$decoyLayout3.offset",
+                90
+              ]
+            },
+            "radius": 4
+          },
+          "expiresAfter": 18050
+        },
+        {
+          "type": "spawn_enemy",
+          "enemyId": "decoy-3",
+          "enemy": "orb",
+          "position": {
+            "type": "polar",
+            "angle": {
+              "$add": [
+                "$decoyLayout3.offset",
+                180
+              ]
+            },
+            "radius": 4
+          },
+          "expiresAfter": 18050
+        },
+        {
+          "type": "spawn_enemy",
+          "enemyId": "decoy-4",
+          "enemy": "orb",
+          "position": {
+            "type": "polar",
+            "angle": {
+              "$add": [
+                "$decoyLayout3.offset",
+                270
+              ]
+            },
+            "radius": 4
+          },
+          "expiresAfter": 18050
+        },
+        {
+          "type": "spawn_enemy",
+          "enemyId": "decoy-5",
+          "enemy": "orb",
+          "position": {
+            "type": "polar",
+            "angle": 342.5,
+            "radius": 5.5
+          },
+          "expiresAfter": 18050
+        },
+        {
+          "type": "spawn_enemy",
+          "enemyId": "decoy-6",
+          "enemy": "orb",
+          "position": {
+            "type": "polar",
+            "angle": 72.5,
+            "radius": 5.5
+          },
+          "expiresAfter": 18050
+        },
+        {
+          "type": "spawn_enemy",
+          "enemyId": "decoy-7",
+          "enemy": "orb",
+          "position": {
+            "type": "polar",
+            "angle": 162.5,
+            "radius": 5.5
+          },
+          "expiresAfter": 18050
+        },
+        {
+          "type": "spawn_enemy",
+          "enemyId": "decoy-8",
+          "enemy": "orb",
+          "position": {
+            "type": "polar",
+            "angle": 252.5,
+            "radius": 5.5
+          },
+          "expiresAfter": 18050
+        },
+        {
+          "type": "delayed_effects",
+          "delay": 3000,
+          "effects": [
+            {
+              "type": "apply_status",
+              "targetEntity": "orb-1",
+              "status": "orb-armed"
+            },
+            {
+              "type": "apply_status",
+              "targetEntity": "orb-2",
+              "status": "orb-armed"
+            },
+            {
+              "type": "apply_status",
+              "targetEntity": "orb-3",
+              "status": "orb-armed"
+            },
+            {
+              "type": "apply_status",
+              "targetEntity": "decoy-1",
+              "status": "orb-armed"
+            },
+            {
+              "type": "apply_status",
+              "targetEntity": "decoy-2",
+              "status": "orb-armed"
+            },
+            {
+              "type": "apply_status",
+              "targetEntity": "decoy-3",
+              "status": "orb-armed"
+            },
+            {
+              "type": "apply_status",
+              "targetEntity": "decoy-4",
+              "status": "orb-armed"
+            },
+            {
+              "type": "apply_status",
+              "targetEntity": "decoy-5",
+              "status": "orb-armed"
+            },
+            {
+              "type": "apply_status",
+              "targetEntity": "decoy-6",
+              "status": "orb-armed"
+            },
+            {
+              "type": "apply_status",
+              "targetEntity": "decoy-7",
+              "status": "orb-armed"
+            },
+            {
+              "type": "apply_status",
+              "targetEntity": "decoy-8",
+              "status": "orb-armed"
+            }
+          ]
+        }
+      ]
+    },
+    "slam": {
+      "id": "slam",
+      "name": "Landslide",
+      "castTime": 5000,
+      "visible": true,
+      "effects": [
+        {
+          "type": "spawn_area",
+          "area": "slam-line",
+          "direction": "cast_direction"
+        }
+      ]
+    },
+    "thunder-bait-solo": {
+      "id": "thunder-bait-solo",
+      "name": "Thunder III",
+      "castTime": 5000,
+      "visible": true,
+      "revealCaster": true,
+      "suspendFollow": {
+        "movement": true
+      },
+      "effects": [
+        {
+          "type": "select_group",
+          "name": "thunder-bait-1",
+          "selector": {
+            "type": "nearest",
+            "source": "boss-small",
+            "count": 1
+          }
+        },
+        {
+          "type": "for_each_group",
+          "group": "thunder-bait-1",
+          "effects": [
+            {
+              "type": "spawn_area",
+              "area": "thunder-bait",
+              "source": "$groupMember.id",
+              "position": "$groupMember.position"
+            }
+          ]
+        },
+        {
+          "type": "delayed_effects",
+          "delay": 2000,
+          "effects": [
+            {
+              "type": "select_group",
+              "name": "thunder-bait-2",
+              "selector": {
+                "type": "nearest",
+                "source": "boss-small",
+                "count": 1
+              }
+            },
+            {
+              "type": "for_each_group",
+              "group": "thunder-bait-2",
+              "effects": [
+                {
+                  "type": "spawn_area",
+                  "area": "thunder-bait",
+                  "source": "$groupMember.id",
+                  "position": "$groupMember.position"
+                }
+              ]
+            }
+          ]
         }
       ]
     }
@@ -2257,13 +2781,12 @@
         ],
         "live": true,
         "target": {
-          "type": "polar",
-          "angleFrom": {
+          "type": "flee",
+          "from": {
             "type": "id",
             "id": "boss-small"
           },
-          "angleOffset": 110,
-          "radius": 2.6
+          "distance": 3.2
         }
       },
       {
@@ -2275,13 +2798,12 @@
         ],
         "live": true,
         "target": {
-          "type": "polar",
-          "angleFrom": {
+          "type": "flee",
+          "from": {
             "type": "id",
             "id": "boss-small"
           },
-          "angleOffset": 130,
-          "radius": 2.6
+          "distance": 3.2
         }
       },
       {
@@ -2293,13 +2815,12 @@
         ],
         "live": true,
         "target": {
-          "type": "polar",
-          "angleFrom": {
+          "type": "flee",
+          "from": {
             "type": "id",
             "id": "boss-small"
           },
-          "angleOffset": 150,
-          "radius": 2.6
+          "distance": 3.2
         }
       },
       {
@@ -2311,13 +2832,12 @@
         ],
         "live": true,
         "target": {
-          "type": "polar",
-          "angleFrom": {
+          "type": "flee",
+          "from": {
             "type": "id",
             "id": "boss-small"
           },
-          "angleOffset": 170,
-          "radius": 2.6
+          "distance": 3.2
         }
       },
       {
@@ -2329,13 +2849,12 @@
         ],
         "live": true,
         "target": {
-          "type": "polar",
-          "angleFrom": {
+          "type": "flee",
+          "from": {
             "type": "id",
             "id": "boss-small"
           },
-          "angleOffset": 190,
-          "radius": 2.6
+          "distance": 3.2
         }
       },
       {
@@ -2347,13 +2866,12 @@
         ],
         "live": true,
         "target": {
-          "type": "polar",
-          "angleFrom": {
+          "type": "flee",
+          "from": {
             "type": "id",
             "id": "boss-small"
           },
-          "angleOffset": 210,
-          "radius": 2.6
+          "distance": 3.2
         }
       },
       {
@@ -2365,13 +2883,12 @@
         ],
         "live": true,
         "target": {
-          "type": "polar",
-          "angleFrom": {
+          "type": "flee",
+          "from": {
             "type": "id",
             "id": "boss-small"
           },
-          "angleOffset": 230,
-          "radius": 2.6
+          "distance": 3.2
         }
       },
       {
@@ -2383,13 +2900,12 @@
         ],
         "live": true,
         "target": {
-          "type": "polar",
-          "angleFrom": {
+          "type": "flee",
+          "from": {
             "type": "id",
             "id": "boss-small"
           },
-          "angleOffset": 250,
-          "radius": 2.6
+          "distance": 3.2
         }
       }
     ],
@@ -2397,7 +2913,7 @@
       {
         "when": {
           "type": "mechanical_role",
-          "role": "small_tank"
+          "role": "large_tank"
         },
         "live": true,
         "target": {
@@ -2411,26 +2927,16 @@
       {
         "when": {
           "type": "mechanical_role",
-          "role": "large_tank"
+          "role": "small_tank"
         },
         "live": true,
         "target": {
-          "type": "shift",
+          "type": "flee",
           "from": {
-            "type": "entity",
-            "player": {
-              "type": "id",
-              "id": "boss-small"
-            }
+            "type": "id",
+            "id": "boss-small"
           },
-          "toward": {
-            "type": "fixed",
-            "position": {
-              "x": 0,
-              "y": 0
-            }
-          },
-          "distance": 2.6
+          "distance": 3.2
         }
       },
       {
@@ -2442,13 +2948,12 @@
         ],
         "live": true,
         "target": {
-          "type": "polar",
-          "angleFrom": {
+          "type": "flee",
+          "from": {
             "type": "id",
             "id": "boss-small"
           },
-          "angleOffset": 110,
-          "radius": 2.6
+          "distance": 3.2
         }
       },
       {
@@ -2460,13 +2965,12 @@
         ],
         "live": true,
         "target": {
-          "type": "polar",
-          "angleFrom": {
+          "type": "flee",
+          "from": {
             "type": "id",
             "id": "boss-small"
           },
-          "angleOffset": 130,
-          "radius": 2.6
+          "distance": 3.2
         }
       },
       {
@@ -2478,13 +2982,12 @@
         ],
         "live": true,
         "target": {
-          "type": "polar",
-          "angleFrom": {
+          "type": "flee",
+          "from": {
             "type": "id",
             "id": "boss-small"
           },
-          "angleOffset": 150,
-          "radius": 2.6
+          "distance": 3.2
         }
       },
       {
@@ -2496,13 +2999,12 @@
         ],
         "live": true,
         "target": {
-          "type": "polar",
-          "angleFrom": {
+          "type": "flee",
+          "from": {
             "type": "id",
             "id": "boss-small"
           },
-          "angleOffset": 170,
-          "radius": 2.6
+          "distance": 3.2
         }
       },
       {
@@ -2514,13 +3016,12 @@
         ],
         "live": true,
         "target": {
-          "type": "polar",
-          "angleFrom": {
+          "type": "flee",
+          "from": {
             "type": "id",
             "id": "boss-small"
           },
-          "angleOffset": 190,
-          "radius": 2.6
+          "distance": 3.2
         }
       },
       {
@@ -2532,13 +3033,12 @@
         ],
         "live": true,
         "target": {
-          "type": "polar",
-          "angleFrom": {
+          "type": "flee",
+          "from": {
             "type": "id",
             "id": "boss-small"
           },
-          "angleOffset": 210,
-          "radius": 2.6
+          "distance": 3.2
         }
       },
       {
@@ -2550,13 +3050,12 @@
         ],
         "live": true,
         "target": {
-          "type": "polar",
-          "angleFrom": {
+          "type": "flee",
+          "from": {
             "type": "id",
             "id": "boss-small"
           },
-          "angleOffset": 230,
-          "radius": 2.6
+          "distance": 3.2
         }
       },
       {
@@ -2568,13 +3067,12 @@
         ],
         "live": true,
         "target": {
-          "type": "polar",
-          "angleFrom": {
+          "type": "flee",
+          "from": {
             "type": "id",
             "id": "boss-small"
           },
-          "angleOffset": 250,
-          "radius": 2.6
+          "distance": 3.2
         }
       }
     ],
@@ -2798,190 +3296,10 @@
     ],
     "thunder-avoid": [
       {
-        "include": "orb-rim"
+        "include": "orb-bait"
       },
       {
-        "when": {
-          "type": "mechanical_role",
-          "role": "small_tank"
-        },
-        "live": true,
-        "target": {
-          "type": "entity",
-          "player": {
-            "type": "id",
-            "id": "boss-small"
-          }
-        }
-      },
-      {
-        "when": {
-          "type": "mechanical_role",
-          "role": "large_tank"
-        },
-        "live": true,
-        "target": {
-          "type": "shift",
-          "from": {
-            "type": "entity",
-            "player": {
-              "type": "id",
-              "id": "boss-small"
-            }
-          },
-          "toward": {
-            "type": "fixed",
-            "position": {
-              "x": 0,
-              "y": 0
-            }
-          },
-          "distance": 2.6
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-1"
-          }
-        ],
-        "live": true,
-        "target": {
-          "type": "polar",
-          "angleFrom": {
-            "type": "id",
-            "id": "boss-small"
-          },
-          "angleOffset": 110,
-          "radius": 2.6
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-2"
-          }
-        ],
-        "live": true,
-        "target": {
-          "type": "polar",
-          "angleFrom": {
-            "type": "id",
-            "id": "boss-small"
-          },
-          "angleOffset": 130,
-          "radius": 2.6
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-3"
-          }
-        ],
-        "live": true,
-        "target": {
-          "type": "polar",
-          "angleFrom": {
-            "type": "id",
-            "id": "boss-small"
-          },
-          "angleOffset": 150,
-          "radius": 2.6
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-4"
-          }
-        ],
-        "live": true,
-        "target": {
-          "type": "polar",
-          "angleFrom": {
-            "type": "id",
-            "id": "boss-small"
-          },
-          "angleOffset": 170,
-          "radius": 2.6
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-5"
-          }
-        ],
-        "live": true,
-        "target": {
-          "type": "polar",
-          "angleFrom": {
-            "type": "id",
-            "id": "boss-small"
-          },
-          "angleOffset": 190,
-          "radius": 2.6
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-6"
-          }
-        ],
-        "live": true,
-        "target": {
-          "type": "polar",
-          "angleFrom": {
-            "type": "id",
-            "id": "boss-small"
-          },
-          "angleOffset": 210,
-          "radius": 2.6
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-7"
-          }
-        ],
-        "live": true,
-        "target": {
-          "type": "polar",
-          "angleFrom": {
-            "type": "id",
-            "id": "boss-small"
-          },
-          "angleOffset": 230,
-          "radius": 2.6
-        }
-      },
-      {
-        "when": [
-          {
-            "type": "mechanical_role",
-            "role": "bait-8"
-          }
-        ],
-        "live": true,
-        "target": {
-          "type": "polar",
-          "angleFrom": {
-            "type": "id",
-            "id": "boss-small"
-          },
-          "angleOffset": 250,
-          "radius": 2.6
-        }
+        "include": "orb-middle"
       }
     ],
     "edict-dodge-halfroom": [
@@ -4655,29 +4973,24 @@
     ],
     "orb-grab": [
       {
+        "include": "orb-bait"
+      },
+      {
+        "include": "orb-middle"
+      }
+    ],
+    "orb-bait": [
+      {
         "when": [
           {
             "type": "mechanical_role",
             "role": "orb-*"
-          },
-          {
-            "type": "or",
-            "conditions": [
-              {
-                "type": "gameplay_role",
-                "role": "tank"
-              },
-              {
-                "type": "damage_position",
-                "position": "melee"
-              }
-            ]
           }
         ],
         "live": true,
         "target": {
           "type": "tether_grab",
-          "offset": 0.8,
+          "offset": 1.6,
           "then": {
             "type": "bait_line",
             "from": {
@@ -4690,47 +5003,1688 @@
             "beyond": 1.0
           }
         }
+      }
+    ],
+    "edict-dodge-slam": [
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-1"
+          }
+        ],
+        "target": {
+          "type": "safe_spot",
+          "anchor": {
+            "type": "shift",
+            "from": {
+              "type": "entity",
+              "player": {
+                "type": "id",
+                "id": "boss-large"
+              }
+            },
+            "awayFrom": {
+              "type": "entity",
+              "player": {
+                "type": "mechanical_role",
+                "role": "edict-target"
+              }
+            },
+            "distance": 3.4,
+            "angleOffset": -45
+          },
+          "constraints": [
+            {
+              "origin": {
+                "type": "entity",
+                "player": {
+                  "type": "id",
+                  "id": "boss-large"
+                }
+              },
+              "from": {
+                "type": "fixed",
+                "position": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              "to": {
+                "type": "polar",
+                "angleFacing": {
+                  "type": "id",
+                  "id": "boss-large"
+                },
+                "angleOffset": 180,
+                "radius": 1
+              },
+              "margin": 1.0
+            },
+            {
+              "anyOf": [
+                {
+                  "origin": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "from": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "to": {
+                    "type": "polar",
+                    "angleFrom": {
+                      "type": "id",
+                      "id": "striker"
+                    },
+                    "angleOffset": 90,
+                    "radius": 1
+                  },
+                  "margin": 4.75
+                },
+                {
+                  "origin": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "from": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "to": {
+                    "type": "polar",
+                    "angleFrom": {
+                      "type": "id",
+                      "id": "striker"
+                    },
+                    "angleOffset": -90,
+                    "radius": 1
+                  },
+                  "margin": 4.75
+                }
+              ]
+            }
+          ]
+        }
       },
       {
         "when": [
           {
             "type": "mechanical_role",
-            "role": "orb-*"
+            "role": "bait-2"
           }
         ],
+        "target": {
+          "type": "safe_spot",
+          "anchor": {
+            "type": "shift",
+            "from": {
+              "type": "entity",
+              "player": {
+                "type": "id",
+                "id": "boss-large"
+              }
+            },
+            "awayFrom": {
+              "type": "entity",
+              "player": {
+                "type": "mechanical_role",
+                "role": "edict-target"
+              }
+            },
+            "distance": 3.4,
+            "angleOffset": 45
+          },
+          "constraints": [
+            {
+              "origin": {
+                "type": "entity",
+                "player": {
+                  "type": "id",
+                  "id": "boss-large"
+                }
+              },
+              "from": {
+                "type": "fixed",
+                "position": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              "to": {
+                "type": "polar",
+                "angleFacing": {
+                  "type": "id",
+                  "id": "boss-large"
+                },
+                "angleOffset": 180,
+                "radius": 1
+              },
+              "margin": 1.0
+            },
+            {
+              "anyOf": [
+                {
+                  "origin": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "from": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "to": {
+                    "type": "polar",
+                    "angleFrom": {
+                      "type": "id",
+                      "id": "striker"
+                    },
+                    "angleOffset": 90,
+                    "radius": 1
+                  },
+                  "margin": 4.75
+                },
+                {
+                  "origin": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "from": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "to": {
+                    "type": "polar",
+                    "angleFrom": {
+                      "type": "id",
+                      "id": "striker"
+                    },
+                    "angleOffset": -90,
+                    "radius": 1
+                  },
+                  "margin": 4.75
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-3"
+          }
+        ],
+        "target": {
+          "type": "safe_spot",
+          "anchor": {
+            "type": "shift",
+            "from": {
+              "type": "entity",
+              "player": {
+                "type": "id",
+                "id": "boss-large"
+              }
+            },
+            "awayFrom": {
+              "type": "entity",
+              "player": {
+                "type": "mechanical_role",
+                "role": "edict-target"
+              }
+            },
+            "distance": 3.4,
+            "angleOffset": -15
+          },
+          "constraints": [
+            {
+              "origin": {
+                "type": "entity",
+                "player": {
+                  "type": "id",
+                  "id": "boss-large"
+                }
+              },
+              "from": {
+                "type": "fixed",
+                "position": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              "to": {
+                "type": "polar",
+                "angleFacing": {
+                  "type": "id",
+                  "id": "boss-large"
+                },
+                "angleOffset": 180,
+                "radius": 1
+              },
+              "margin": 1.0
+            },
+            {
+              "anyOf": [
+                {
+                  "origin": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "from": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "to": {
+                    "type": "polar",
+                    "angleFrom": {
+                      "type": "id",
+                      "id": "striker"
+                    },
+                    "angleOffset": 90,
+                    "radius": 1
+                  },
+                  "margin": 4.75
+                },
+                {
+                  "origin": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "from": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "to": {
+                    "type": "polar",
+                    "angleFrom": {
+                      "type": "id",
+                      "id": "striker"
+                    },
+                    "angleOffset": -90,
+                    "radius": 1
+                  },
+                  "margin": 4.75
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-4"
+          }
+        ],
+        "target": {
+          "type": "safe_spot",
+          "anchor": {
+            "type": "shift",
+            "from": {
+              "type": "entity",
+              "player": {
+                "type": "id",
+                "id": "boss-large"
+              }
+            },
+            "awayFrom": {
+              "type": "entity",
+              "player": {
+                "type": "mechanical_role",
+                "role": "edict-target"
+              }
+            },
+            "distance": 3.4,
+            "angleOffset": 15
+          },
+          "constraints": [
+            {
+              "origin": {
+                "type": "entity",
+                "player": {
+                  "type": "id",
+                  "id": "boss-large"
+                }
+              },
+              "from": {
+                "type": "fixed",
+                "position": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              "to": {
+                "type": "polar",
+                "angleFacing": {
+                  "type": "id",
+                  "id": "boss-large"
+                },
+                "angleOffset": 180,
+                "radius": 1
+              },
+              "margin": 1.0
+            },
+            {
+              "anyOf": [
+                {
+                  "origin": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "from": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "to": {
+                    "type": "polar",
+                    "angleFrom": {
+                      "type": "id",
+                      "id": "striker"
+                    },
+                    "angleOffset": 90,
+                    "radius": 1
+                  },
+                  "margin": 4.75
+                },
+                {
+                  "origin": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "from": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "to": {
+                    "type": "polar",
+                    "angleFrom": {
+                      "type": "id",
+                      "id": "striker"
+                    },
+                    "angleOffset": -90,
+                    "radius": 1
+                  },
+                  "margin": 4.75
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-5"
+          }
+        ],
+        "target": {
+          "type": "safe_spot",
+          "anchor": {
+            "type": "shift",
+            "from": {
+              "type": "entity",
+              "player": {
+                "type": "id",
+                "id": "boss-large"
+              }
+            },
+            "awayFrom": {
+              "type": "entity",
+              "player": {
+                "type": "mechanical_role",
+                "role": "edict-target"
+              }
+            },
+            "distance": 1.9,
+            "angleOffset": -40
+          },
+          "constraints": [
+            {
+              "origin": {
+                "type": "entity",
+                "player": {
+                  "type": "id",
+                  "id": "boss-large"
+                }
+              },
+              "from": {
+                "type": "fixed",
+                "position": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              "to": {
+                "type": "polar",
+                "angleFacing": {
+                  "type": "id",
+                  "id": "boss-large"
+                },
+                "angleOffset": 180,
+                "radius": 1
+              },
+              "margin": 1.0
+            },
+            {
+              "anyOf": [
+                {
+                  "origin": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "from": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "to": {
+                    "type": "polar",
+                    "angleFrom": {
+                      "type": "id",
+                      "id": "striker"
+                    },
+                    "angleOffset": 90,
+                    "radius": 1
+                  },
+                  "margin": 4.75
+                },
+                {
+                  "origin": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "from": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "to": {
+                    "type": "polar",
+                    "angleFrom": {
+                      "type": "id",
+                      "id": "striker"
+                    },
+                    "angleOffset": -90,
+                    "radius": 1
+                  },
+                  "margin": 4.75
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-6"
+          }
+        ],
+        "target": {
+          "type": "safe_spot",
+          "anchor": {
+            "type": "shift",
+            "from": {
+              "type": "entity",
+              "player": {
+                "type": "id",
+                "id": "boss-large"
+              }
+            },
+            "awayFrom": {
+              "type": "entity",
+              "player": {
+                "type": "mechanical_role",
+                "role": "edict-target"
+              }
+            },
+            "distance": 1.9,
+            "angleOffset": 40
+          },
+          "constraints": [
+            {
+              "origin": {
+                "type": "entity",
+                "player": {
+                  "type": "id",
+                  "id": "boss-large"
+                }
+              },
+              "from": {
+                "type": "fixed",
+                "position": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              "to": {
+                "type": "polar",
+                "angleFacing": {
+                  "type": "id",
+                  "id": "boss-large"
+                },
+                "angleOffset": 180,
+                "radius": 1
+              },
+              "margin": 1.0
+            },
+            {
+              "anyOf": [
+                {
+                  "origin": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "from": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "to": {
+                    "type": "polar",
+                    "angleFrom": {
+                      "type": "id",
+                      "id": "striker"
+                    },
+                    "angleOffset": 90,
+                    "radius": 1
+                  },
+                  "margin": 4.75
+                },
+                {
+                  "origin": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "from": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "to": {
+                    "type": "polar",
+                    "angleFrom": {
+                      "type": "id",
+                      "id": "striker"
+                    },
+                    "angleOffset": -90,
+                    "radius": 1
+                  },
+                  "margin": 4.75
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-7"
+          }
+        ],
+        "target": {
+          "type": "safe_spot",
+          "anchor": {
+            "type": "shift",
+            "from": {
+              "type": "entity",
+              "player": {
+                "type": "id",
+                "id": "boss-large"
+              }
+            },
+            "awayFrom": {
+              "type": "entity",
+              "player": {
+                "type": "mechanical_role",
+                "role": "edict-target"
+              }
+            },
+            "distance": 1.9,
+            "angleOffset": -13
+          },
+          "constraints": [
+            {
+              "origin": {
+                "type": "entity",
+                "player": {
+                  "type": "id",
+                  "id": "boss-large"
+                }
+              },
+              "from": {
+                "type": "fixed",
+                "position": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              "to": {
+                "type": "polar",
+                "angleFacing": {
+                  "type": "id",
+                  "id": "boss-large"
+                },
+                "angleOffset": 180,
+                "radius": 1
+              },
+              "margin": 1.0
+            },
+            {
+              "anyOf": [
+                {
+                  "origin": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "from": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "to": {
+                    "type": "polar",
+                    "angleFrom": {
+                      "type": "id",
+                      "id": "striker"
+                    },
+                    "angleOffset": 90,
+                    "radius": 1
+                  },
+                  "margin": 4.75
+                },
+                {
+                  "origin": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "from": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "to": {
+                    "type": "polar",
+                    "angleFrom": {
+                      "type": "id",
+                      "id": "striker"
+                    },
+                    "angleOffset": -90,
+                    "radius": 1
+                  },
+                  "margin": 4.75
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-8"
+          }
+        ],
+        "target": {
+          "type": "safe_spot",
+          "anchor": {
+            "type": "shift",
+            "from": {
+              "type": "entity",
+              "player": {
+                "type": "id",
+                "id": "boss-large"
+              }
+            },
+            "awayFrom": {
+              "type": "entity",
+              "player": {
+                "type": "mechanical_role",
+                "role": "edict-target"
+              }
+            },
+            "distance": 1.9,
+            "angleOffset": 13
+          },
+          "constraints": [
+            {
+              "origin": {
+                "type": "entity",
+                "player": {
+                  "type": "id",
+                  "id": "boss-large"
+                }
+              },
+              "from": {
+                "type": "fixed",
+                "position": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              "to": {
+                "type": "polar",
+                "angleFacing": {
+                  "type": "id",
+                  "id": "boss-large"
+                },
+                "angleOffset": 180,
+                "radius": 1
+              },
+              "margin": 1.0
+            },
+            {
+              "anyOf": [
+                {
+                  "origin": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "from": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "to": {
+                    "type": "polar",
+                    "angleFrom": {
+                      "type": "id",
+                      "id": "striker"
+                    },
+                    "angleOffset": 90,
+                    "radius": 1
+                  },
+                  "margin": 4.75
+                },
+                {
+                  "origin": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "from": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "to": {
+                    "type": "polar",
+                    "angleFrom": {
+                      "type": "id",
+                      "id": "striker"
+                    },
+                    "angleOffset": -90,
+                    "radius": 1
+                  },
+                  "margin": 4.75
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "slam-safe": [
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-1"
+          }
+        ],
+        "target": {
+          "type": "safe_spot",
+          "anchor": {
+            "type": "entity",
+            "player": {
+              "type": "self"
+            }
+          },
+          "constraints": [
+            {
+              "anyOf": [
+                {
+                  "origin": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "from": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "to": {
+                    "type": "polar",
+                    "angleFrom": {
+                      "type": "id",
+                      "id": "striker"
+                    },
+                    "angleOffset": 90,
+                    "radius": 1
+                  },
+                  "margin": 4.75
+                },
+                {
+                  "origin": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "from": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "to": {
+                    "type": "polar",
+                    "angleFrom": {
+                      "type": "id",
+                      "id": "striker"
+                    },
+                    "angleOffset": -90,
+                    "radius": 1
+                  },
+                  "margin": 4.75
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-2"
+          }
+        ],
+        "target": {
+          "type": "safe_spot",
+          "anchor": {
+            "type": "entity",
+            "player": {
+              "type": "self"
+            }
+          },
+          "constraints": [
+            {
+              "anyOf": [
+                {
+                  "origin": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "from": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "to": {
+                    "type": "polar",
+                    "angleFrom": {
+                      "type": "id",
+                      "id": "striker"
+                    },
+                    "angleOffset": 90,
+                    "radius": 1
+                  },
+                  "margin": 4.75
+                },
+                {
+                  "origin": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "from": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "to": {
+                    "type": "polar",
+                    "angleFrom": {
+                      "type": "id",
+                      "id": "striker"
+                    },
+                    "angleOffset": -90,
+                    "radius": 1
+                  },
+                  "margin": 4.75
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-3"
+          }
+        ],
+        "target": {
+          "type": "safe_spot",
+          "anchor": {
+            "type": "entity",
+            "player": {
+              "type": "self"
+            }
+          },
+          "constraints": [
+            {
+              "anyOf": [
+                {
+                  "origin": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "from": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "to": {
+                    "type": "polar",
+                    "angleFrom": {
+                      "type": "id",
+                      "id": "striker"
+                    },
+                    "angleOffset": 90,
+                    "radius": 1
+                  },
+                  "margin": 4.75
+                },
+                {
+                  "origin": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "from": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "to": {
+                    "type": "polar",
+                    "angleFrom": {
+                      "type": "id",
+                      "id": "striker"
+                    },
+                    "angleOffset": -90,
+                    "radius": 1
+                  },
+                  "margin": 4.75
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-4"
+          }
+        ],
+        "target": {
+          "type": "safe_spot",
+          "anchor": {
+            "type": "entity",
+            "player": {
+              "type": "self"
+            }
+          },
+          "constraints": [
+            {
+              "anyOf": [
+                {
+                  "origin": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "from": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "to": {
+                    "type": "polar",
+                    "angleFrom": {
+                      "type": "id",
+                      "id": "striker"
+                    },
+                    "angleOffset": 90,
+                    "radius": 1
+                  },
+                  "margin": 4.75
+                },
+                {
+                  "origin": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "from": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "to": {
+                    "type": "polar",
+                    "angleFrom": {
+                      "type": "id",
+                      "id": "striker"
+                    },
+                    "angleOffset": -90,
+                    "radius": 1
+                  },
+                  "margin": 4.75
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-5"
+          }
+        ],
+        "target": {
+          "type": "safe_spot",
+          "anchor": {
+            "type": "entity",
+            "player": {
+              "type": "self"
+            }
+          },
+          "constraints": [
+            {
+              "anyOf": [
+                {
+                  "origin": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "from": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "to": {
+                    "type": "polar",
+                    "angleFrom": {
+                      "type": "id",
+                      "id": "striker"
+                    },
+                    "angleOffset": 90,
+                    "radius": 1
+                  },
+                  "margin": 4.75
+                },
+                {
+                  "origin": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "from": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "to": {
+                    "type": "polar",
+                    "angleFrom": {
+                      "type": "id",
+                      "id": "striker"
+                    },
+                    "angleOffset": -90,
+                    "radius": 1
+                  },
+                  "margin": 4.75
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-6"
+          }
+        ],
+        "target": {
+          "type": "safe_spot",
+          "anchor": {
+            "type": "entity",
+            "player": {
+              "type": "self"
+            }
+          },
+          "constraints": [
+            {
+              "anyOf": [
+                {
+                  "origin": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "from": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "to": {
+                    "type": "polar",
+                    "angleFrom": {
+                      "type": "id",
+                      "id": "striker"
+                    },
+                    "angleOffset": 90,
+                    "radius": 1
+                  },
+                  "margin": 4.75
+                },
+                {
+                  "origin": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "from": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "to": {
+                    "type": "polar",
+                    "angleFrom": {
+                      "type": "id",
+                      "id": "striker"
+                    },
+                    "angleOffset": -90,
+                    "radius": 1
+                  },
+                  "margin": 4.75
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-7"
+          }
+        ],
+        "target": {
+          "type": "safe_spot",
+          "anchor": {
+            "type": "entity",
+            "player": {
+              "type": "self"
+            }
+          },
+          "constraints": [
+            {
+              "anyOf": [
+                {
+                  "origin": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "from": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "to": {
+                    "type": "polar",
+                    "angleFrom": {
+                      "type": "id",
+                      "id": "striker"
+                    },
+                    "angleOffset": 90,
+                    "radius": 1
+                  },
+                  "margin": 4.75
+                },
+                {
+                  "origin": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "from": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "to": {
+                    "type": "polar",
+                    "angleFrom": {
+                      "type": "id",
+                      "id": "striker"
+                    },
+                    "angleOffset": -90,
+                    "radius": 1
+                  },
+                  "margin": 4.75
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-8"
+          }
+        ],
+        "target": {
+          "type": "safe_spot",
+          "anchor": {
+            "type": "entity",
+            "player": {
+              "type": "self"
+            }
+          },
+          "constraints": [
+            {
+              "anyOf": [
+                {
+                  "origin": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "from": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "to": {
+                    "type": "polar",
+                    "angleFrom": {
+                      "type": "id",
+                      "id": "striker"
+                    },
+                    "angleOffset": 90,
+                    "radius": 1
+                  },
+                  "margin": 4.75
+                },
+                {
+                  "origin": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "from": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "to": {
+                    "type": "polar",
+                    "angleFrom": {
+                      "type": "id",
+                      "id": "striker"
+                    },
+                    "angleOffset": -90,
+                    "radius": 1
+                  },
+                  "margin": 4.75
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "thunder-bait-solo": [
+      {
+        "when": {
+          "type": "mechanical_role",
+          "role": "large_tank"
+        },
         "live": true,
         "target": {
-          "type": "tether_grab",
-          "offset": 0.8,
-          "then": {
-            "type": "polar",
-            "angleFrom": {
-              "type": "own_tether_source"
-            },
-            "angleOffset": 18.2,
-            "radius": 7.37
+          "type": "entity",
+          "player": {
+            "type": "id",
+            "id": "boss-small"
           }
         }
       },
       {
-        "include": "orb-middle"
-      }
-    ],
-    "orb-rim": [
+        "when": {
+          "type": "mechanical_role",
+          "role": "small_tank"
+        },
+        "live": true,
+        "target": {
+          "type": "flee",
+          "from": {
+            "type": "id",
+            "id": "boss-small"
+          },
+          "distance": 3.2
+        }
+      },
       {
         "when": [
           {
             "type": "mechanical_role",
-            "role": "orb-*"
+            "role": "bait-1"
           }
         ],
+        "live": true,
         "target": {
-          "type": "polar",
-          "angleFrom": {
-            "type": "own_tether_source"
+          "type": "flee",
+          "from": {
+            "type": "id",
+            "id": "boss-small"
           },
-          "angleOffset": 18.2,
-          "radius": 7.37
+          "distance": 3.2
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-2"
+          }
+        ],
+        "live": true,
+        "target": {
+          "type": "flee",
+          "from": {
+            "type": "id",
+            "id": "boss-small"
+          },
+          "distance": 3.2
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-3"
+          }
+        ],
+        "live": true,
+        "target": {
+          "type": "flee",
+          "from": {
+            "type": "id",
+            "id": "boss-small"
+          },
+          "distance": 3.2
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-4"
+          }
+        ],
+        "live": true,
+        "target": {
+          "type": "flee",
+          "from": {
+            "type": "id",
+            "id": "boss-small"
+          },
+          "distance": 3.2
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-5"
+          }
+        ],
+        "live": true,
+        "target": {
+          "type": "flee",
+          "from": {
+            "type": "id",
+            "id": "boss-small"
+          },
+          "distance": 3.2
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-6"
+          }
+        ],
+        "live": true,
+        "target": {
+          "type": "flee",
+          "from": {
+            "type": "id",
+            "id": "boss-small"
+          },
+          "distance": 3.2
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-7"
+          }
+        ],
+        "live": true,
+        "target": {
+          "type": "flee",
+          "from": {
+            "type": "id",
+            "id": "boss-small"
+          },
+          "distance": 3.2
+        }
+      },
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-8"
+          }
+        ],
+        "live": true,
+        "target": {
+          "type": "flee",
+          "from": {
+            "type": "id",
+            "id": "boss-small"
+          },
+          "distance": 3.2
         }
       }
     ]
@@ -6539,6 +8493,1032 @@
         "type": "all"
       },
       "full": true
+    },
+    {
+      "id": "striker",
+      "at": 69200,
+      "type": "remove_enemy"
+    },
+    {
+      "id": "slam-striker-move",
+      "at": 69200,
+      "type": "spawn_enemy",
+      "enemyId": "striker",
+      "enemy": "earth-striker",
+      "position": {
+        "type": "polar",
+        "angle": "$slamAngle.angle",
+        "radius": 9.2
+      },
+      "expiresAfter": 7000
+    },
+    {
+      "id": "slam-cast",
+      "at": 70200,
+      "type": "start_cast",
+      "source": "striker",
+      "cast": "slam",
+      "mechanic": "slam",
+      "facing": {
+        "type": "entity",
+        "id": "earth-crystal"
+      }
+    },
+    {
+      "id": "edict-dodge-slam",
+      "at": 70200,
+      "type": "recalculate_positions",
+      "group": "edict-dodge-slam"
+    },
+    {
+      "id": "slam-safe",
+      "at": 73300,
+      "type": "recalculate_positions",
+      "group": "slam-safe"
+    },
+    {
+      "id": "slam-heal",
+      "at": 75400,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "thunder-2-cast",
+      "at": 75300,
+      "type": "start_cast",
+      "source": "boss-small",
+      "cast": "thunder-bait-solo",
+      "mechanic": "thunder-bait"
+    },
+    {
+      "id": "thunder-2-positions",
+      "at": 75400,
+      "type": "recalculate_positions",
+      "group": "thunder-bait-solo"
+    },
+    {
+      "id": "thunder-2-pre-heal",
+      "at": 80200,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "thunder-2-mid-heal",
+      "at": 80900,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "thunder-2-heal",
+      "at": 82400,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "black-hole-3-cast",
+      "at": 80300,
+      "type": "start_cast",
+      "source": "boss-small",
+      "cast": "black-hole-3",
+      "mechanic": "black-hole"
+    },
+    {
+      "id": "l4a-soakers",
+      "at": 83350,
+      "type": "recalculate_roles",
+      "group": "soakers-l4a"
+    },
+    {
+      "id": "l4a-1-holder",
+      "at": 83350,
+      "type": "select_group",
+      "name": "l4a-holder-1",
+      "selector": {
+        "type": "random",
+        "count": 1,
+        "from": {
+          "type": "and",
+          "selectors": [
+            {
+              "type": "or",
+              "selectors": [
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-1"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-2"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-3"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-7"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-8"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "replayId": "l4a-holder-1"
+    },
+    {
+      "id": "l4a-1-link",
+      "at": 83350,
+      "type": "apply_status",
+      "target": {
+        "type": "from_group",
+        "group": "l4a-holder-1"
+      },
+      "status": "link-1",
+      "duration": 7600
+    },
+    {
+      "id": "l4a-1-tether",
+      "at": 83350,
+      "type": "spawn_tether",
+      "source": "$orbOrder3[0]",
+      "tether": "orb-link-slow",
+      "target": {
+        "type": "from_group",
+        "group": "l4a-holder-1"
+      }
+    },
+    {
+      "id": "l4a-1-cast",
+      "at": 83350,
+      "type": "start_cast",
+      "source": "$orbOrder3[0]",
+      "cast": "orb-laser-slow",
+      "facing": {
+        "type": "tether",
+        "tether": "orb-link-slow"
+      }
+    },
+    {
+      "id": "l4a-2-holder",
+      "at": 83350,
+      "type": "select_group",
+      "name": "l4a-holder-2",
+      "selector": {
+        "type": "random",
+        "count": 1,
+        "from": {
+          "type": "and",
+          "selectors": [
+            {
+              "type": "or",
+              "selectors": [
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-1"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-2"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-3"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-7"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-8"
+                }
+              ]
+            },
+            {
+              "type": "without_status",
+              "status": "link-1"
+            }
+          ]
+        }
+      },
+      "replayId": "l4a-holder-2"
+    },
+    {
+      "id": "l4a-2-link",
+      "at": 83350,
+      "type": "apply_status",
+      "target": {
+        "type": "from_group",
+        "group": "l4a-holder-2"
+      },
+      "status": "link-2",
+      "duration": 7600
+    },
+    {
+      "id": "l4a-2-tether",
+      "at": 83350,
+      "type": "spawn_tether",
+      "source": "$orbOrder3[1]",
+      "tether": "orb-link-slow",
+      "target": {
+        "type": "from_group",
+        "group": "l4a-holder-2"
+      }
+    },
+    {
+      "id": "l4a-2-cast",
+      "at": 83350,
+      "type": "start_cast",
+      "source": "$orbOrder3[1]",
+      "cast": "orb-laser-slow",
+      "facing": {
+        "type": "tether",
+        "tether": "orb-link-slow"
+      }
+    },
+    {
+      "id": "l4a-3-holder",
+      "at": 83350,
+      "type": "select_group",
+      "name": "l4a-holder-3",
+      "selector": {
+        "type": "random",
+        "count": 1,
+        "from": {
+          "type": "and",
+          "selectors": [
+            {
+              "type": "or",
+              "selectors": [
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-1"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-2"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-3"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-7"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-8"
+                }
+              ]
+            },
+            {
+              "type": "without_status",
+              "status": "link-1"
+            },
+            {
+              "type": "without_status",
+              "status": "link-2"
+            }
+          ]
+        }
+      },
+      "replayId": "l4a-holder-3"
+    },
+    {
+      "id": "l4a-3-link",
+      "at": 83350,
+      "type": "apply_status",
+      "target": {
+        "type": "from_group",
+        "group": "l4a-holder-3"
+      },
+      "status": "link-3",
+      "duration": 7600
+    },
+    {
+      "id": "l4a-3-tether",
+      "at": 83350,
+      "type": "spawn_tether",
+      "source": "$orbOrder3[2]",
+      "tether": "orb-link-slow",
+      "target": {
+        "type": "from_group",
+        "group": "l4a-holder-3"
+      }
+    },
+    {
+      "id": "l4a-3-cast",
+      "at": 83350,
+      "type": "start_cast",
+      "source": "$orbOrder3[2]",
+      "cast": "orb-laser-slow",
+      "facing": {
+        "type": "tether",
+        "tether": "orb-link-slow"
+      }
+    },
+    {
+      "id": "l4a-picks",
+      "at": 83350,
+      "type": "recalculate_roles",
+      "group": "orb-picks"
+    },
+    {
+      "id": "l4a-stage",
+      "at": 83450,
+      "type": "recalculate_positions",
+      "group": "orb-grab"
+    },
+    {
+      "id": "post-black-hole-3-heal",
+      "at": 83400,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "laser-4a-post-heal",
+      "at": 90950,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "l4b-soakers",
+      "at": 91350,
+      "type": "recalculate_roles",
+      "group": "soakers-l4b"
+    },
+    {
+      "id": "l4b-1-holder",
+      "at": 91350,
+      "type": "select_group",
+      "name": "l4b-holder-1",
+      "selector": {
+        "type": "last_tether_target",
+        "source": "$orbOrder3[0]",
+        "fallback": {
+          "type": "random",
+          "count": 1,
+          "from": {
+            "type": "and",
+            "selectors": [
+              {
+                "type": "or",
+                "selectors": [
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-1"
+                  },
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-2"
+                  },
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-3"
+                  },
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-8"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "l4b-1-link",
+      "at": 91350,
+      "type": "apply_status",
+      "target": {
+        "type": "from_group",
+        "group": "l4b-holder-1"
+      },
+      "status": "link-1",
+      "duration": 4000
+    },
+    {
+      "id": "l4b-1-tether",
+      "at": 91350,
+      "type": "spawn_tether",
+      "source": "$orbOrder3[0]",
+      "tether": "orb-link",
+      "target": {
+        "type": "from_group",
+        "group": "l4b-holder-1"
+      }
+    },
+    {
+      "id": "l4b-1-cast",
+      "at": 91350,
+      "type": "start_cast",
+      "source": "$orbOrder3[0]",
+      "cast": "orb-laser",
+      "facing": {
+        "type": "tether",
+        "tether": "orb-link"
+      }
+    },
+    {
+      "id": "l4b-2-holder",
+      "at": 91350,
+      "type": "select_group",
+      "name": "l4b-holder-2",
+      "selector": {
+        "type": "last_tether_target",
+        "source": "$orbOrder3[1]",
+        "fallback": {
+          "type": "random",
+          "count": 1,
+          "from": {
+            "type": "and",
+            "selectors": [
+              {
+                "type": "or",
+                "selectors": [
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-1"
+                  },
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-2"
+                  },
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-3"
+                  },
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-8"
+                  }
+                ]
+              },
+              {
+                "type": "without_status",
+                "status": "link-1"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "l4b-2-link",
+      "at": 91350,
+      "type": "apply_status",
+      "target": {
+        "type": "from_group",
+        "group": "l4b-holder-2"
+      },
+      "status": "link-2",
+      "duration": 4000
+    },
+    {
+      "id": "l4b-2-tether",
+      "at": 91350,
+      "type": "spawn_tether",
+      "source": "$orbOrder3[1]",
+      "tether": "orb-link",
+      "target": {
+        "type": "from_group",
+        "group": "l4b-holder-2"
+      }
+    },
+    {
+      "id": "l4b-2-cast",
+      "at": 91350,
+      "type": "start_cast",
+      "source": "$orbOrder3[1]",
+      "cast": "orb-laser",
+      "facing": {
+        "type": "tether",
+        "tether": "orb-link"
+      }
+    },
+    {
+      "id": "l4b-3-holder",
+      "at": 91350,
+      "type": "select_group",
+      "name": "l4b-holder-3",
+      "selector": {
+        "type": "last_tether_target",
+        "source": "$orbOrder3[2]",
+        "fallback": {
+          "type": "random",
+          "count": 1,
+          "from": {
+            "type": "and",
+            "selectors": [
+              {
+                "type": "or",
+                "selectors": [
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-1"
+                  },
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-2"
+                  },
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-3"
+                  },
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-8"
+                  }
+                ]
+              },
+              {
+                "type": "without_status",
+                "status": "link-1"
+              },
+              {
+                "type": "without_status",
+                "status": "link-2"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "l4b-3-link",
+      "at": 91350,
+      "type": "apply_status",
+      "target": {
+        "type": "from_group",
+        "group": "l4b-holder-3"
+      },
+      "status": "link-3",
+      "duration": 4000
+    },
+    {
+      "id": "l4b-3-tether",
+      "at": 91350,
+      "type": "spawn_tether",
+      "source": "$orbOrder3[2]",
+      "tether": "orb-link",
+      "target": {
+        "type": "from_group",
+        "group": "l4b-holder-3"
+      }
+    },
+    {
+      "id": "l4b-3-cast",
+      "at": 91350,
+      "type": "start_cast",
+      "source": "$orbOrder3[2]",
+      "cast": "orb-laser",
+      "facing": {
+        "type": "tether",
+        "tether": "orb-link"
+      }
+    },
+    {
+      "id": "l4b-picks",
+      "at": 91350,
+      "type": "recalculate_roles",
+      "group": "orb-picks"
+    },
+    {
+      "id": "l4b-stage",
+      "at": 91450,
+      "type": "recalculate_positions",
+      "group": "orb-grab"
+    },
+    {
+      "id": "laser-4b-post-heal",
+      "at": 95950,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "l4c-soakers",
+      "at": 96350,
+      "type": "recalculate_roles",
+      "group": "soakers-l4c"
+    },
+    {
+      "id": "l4c-1-holder",
+      "at": 96350,
+      "type": "select_group",
+      "name": "l4c-holder-1",
+      "selector": {
+        "type": "last_tether_target",
+        "source": "$orbOrder3[0]",
+        "fallback": {
+          "type": "random",
+          "count": 1,
+          "from": {
+            "type": "and",
+            "selectors": [
+              {
+                "type": "or",
+                "selectors": [
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-1"
+                  },
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-2"
+                  },
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-3"
+                  },
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-4"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "l4c-1-link",
+      "at": 96350,
+      "type": "apply_status",
+      "target": {
+        "type": "from_group",
+        "group": "l4c-holder-1"
+      },
+      "status": "link-1",
+      "duration": 4000
+    },
+    {
+      "id": "l4c-1-tether",
+      "at": 96350,
+      "type": "spawn_tether",
+      "source": "$orbOrder3[0]",
+      "tether": "orb-link",
+      "target": {
+        "type": "from_group",
+        "group": "l4c-holder-1"
+      }
+    },
+    {
+      "id": "l4c-1-cast",
+      "at": 96350,
+      "type": "start_cast",
+      "source": "$orbOrder3[0]",
+      "cast": "orb-laser",
+      "facing": {
+        "type": "tether",
+        "tether": "orb-link"
+      }
+    },
+    {
+      "id": "l4c-2-holder",
+      "at": 96350,
+      "type": "select_group",
+      "name": "l4c-holder-2",
+      "selector": {
+        "type": "last_tether_target",
+        "source": "$orbOrder3[1]",
+        "fallback": {
+          "type": "random",
+          "count": 1,
+          "from": {
+            "type": "and",
+            "selectors": [
+              {
+                "type": "or",
+                "selectors": [
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-1"
+                  },
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-2"
+                  },
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-3"
+                  },
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-4"
+                  }
+                ]
+              },
+              {
+                "type": "without_status",
+                "status": "link-1"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "l4c-2-link",
+      "at": 96350,
+      "type": "apply_status",
+      "target": {
+        "type": "from_group",
+        "group": "l4c-holder-2"
+      },
+      "status": "link-2",
+      "duration": 4000
+    },
+    {
+      "id": "l4c-2-tether",
+      "at": 96350,
+      "type": "spawn_tether",
+      "source": "$orbOrder3[1]",
+      "tether": "orb-link",
+      "target": {
+        "type": "from_group",
+        "group": "l4c-holder-2"
+      }
+    },
+    {
+      "id": "l4c-2-cast",
+      "at": 96350,
+      "type": "start_cast",
+      "source": "$orbOrder3[1]",
+      "cast": "orb-laser",
+      "facing": {
+        "type": "tether",
+        "tether": "orb-link"
+      }
+    },
+    {
+      "id": "l4c-3-holder",
+      "at": 96350,
+      "type": "select_group",
+      "name": "l4c-holder-3",
+      "selector": {
+        "type": "last_tether_target",
+        "source": "$orbOrder3[2]",
+        "fallback": {
+          "type": "random",
+          "count": 1,
+          "from": {
+            "type": "and",
+            "selectors": [
+              {
+                "type": "or",
+                "selectors": [
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-1"
+                  },
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-2"
+                  },
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-3"
+                  },
+                  {
+                    "type": "mechanical_role",
+                    "role": "bait-4"
+                  }
+                ]
+              },
+              {
+                "type": "without_status",
+                "status": "link-1"
+              },
+              {
+                "type": "without_status",
+                "status": "link-2"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "l4c-3-link",
+      "at": 96350,
+      "type": "apply_status",
+      "target": {
+        "type": "from_group",
+        "group": "l4c-holder-3"
+      },
+      "status": "link-3",
+      "duration": 4000
+    },
+    {
+      "id": "l4c-3-tether",
+      "at": 96350,
+      "type": "spawn_tether",
+      "source": "$orbOrder3[2]",
+      "tether": "orb-link",
+      "target": {
+        "type": "from_group",
+        "group": "l4c-holder-3"
+      }
+    },
+    {
+      "id": "l4c-3-cast",
+      "at": 96350,
+      "type": "start_cast",
+      "source": "$orbOrder3[2]",
+      "cast": "orb-laser",
+      "facing": {
+        "type": "tether",
+        "tether": "orb-link"
+      }
+    },
+    {
+      "id": "l4c-picks",
+      "at": 96350,
+      "type": "recalculate_roles",
+      "group": "orb-picks"
+    },
+    {
+      "id": "l4c-stage",
+      "at": 96450,
+      "type": "recalculate_positions",
+      "group": "orb-grab"
+    },
+    {
+      "id": "laser-4c-post-heal",
+      "at": 100950,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "thunder-2-gather",
+      "at": 82400,
+      "type": "recalculate_positions",
+      "group": "orb-middle"
+    },
+    {
+      "id": "strike-call-stack",
+      "at": 18000,
+      "type": "set_shotcall",
+      "text": "${strikeAngle.stack}",
+      "duration": 3000,
+      "ifMechanic": "strike-right"
+    },
+    {
+      "id": "strike-call-triple",
+      "at": 18000,
+      "type": "set_shotcall",
+      "text": "${strikeAngle.triple}",
+      "duration": 3000,
+      "ifMechanic": "strike-left"
+    },
+    {
+      "id": "laser-2-tankbusters-call",
+      "at": 37100,
+      "type": "set_shotcall",
+      "text": "Tankbusters",
+      "duration": 2500
+    },
+    {
+      "id": "edict-behind-chaos-call",
+      "at": 43200,
+      "type": "set_shotcall",
+      "text": "Behind Chaos",
+      "duration": 1800
+    },
+    {
+      "id": "strike2-call-stack",
+      "at": 45150,
+      "type": "set_shotcall",
+      "text": "${strike2Angle.stack}",
+      "duration": 3000,
+      "ifMechanic": "strike2-right"
+    },
+    {
+      "id": "strike2-call-triple",
+      "at": 45150,
+      "type": "set_shotcall",
+      "text": "${strike2Angle.triple}",
+      "duration": 3000,
+      "ifMechanic": "strike2-left"
+    },
+    {
+      "id": "edict-2-behind-chaos-call",
+      "at": 69300,
+      "type": "set_shotcall",
+      "text": "Behind Chaos",
+      "duration": 1800
+    },
+    {
+      "id": "slam-call",
+      "at": 70200,
+      "type": "set_shotcall",
+      "text": "${slamAngle.perp}",
+      "duration": 3000
+    },
+    {
+      "id": "thunder-2-tankbusters-call",
+      "at": 75400,
+      "type": "set_shotcall",
+      "text": "Tankbusters",
+      "duration": 2500
+    },
+    {
+      "id": "tether-1-joiner-call",
+      "at": 22050,
+      "type": "set_shotcall",
+      "text": "$role{bait-1}",
+      "duration": 2000
+    },
+    {
+      "id": "tether-2-joiner-call",
+      "at": 29600,
+      "type": "set_shotcall",
+      "text": "$role{bait-2}",
+      "duration": 2000
+    },
+    {
+      "id": "tether-3-joiner-call",
+      "at": 49200,
+      "type": "set_shotcall",
+      "text": "$role{bait-3}",
+      "duration": 2000
+    },
+    {
+      "id": "tether-4-joiner-call",
+      "at": 57200,
+      "type": "set_shotcall",
+      "text": "$role{bait-4}",
+      "duration": 2000
+    },
+    {
+      "id": "tether-5-joiner-call",
+      "at": 62200,
+      "type": "set_shotcall",
+      "text": "$role{bait-5}",
+      "duration": 2000
+    },
+    {
+      "id": "tether-6-joiner-call",
+      "at": 81350,
+      "type": "set_shotcall",
+      "text": "$role{bait-6}",
+      "duration": 2000
+    },
+    {
+      "id": "tether-7-joiner-call",
+      "at": 89350,
+      "type": "set_shotcall",
+      "text": "$role{bait-7}",
+      "duration": 2000
+    },
+    {
+      "id": "tether-8-joiner-call",
+      "at": 94350,
+      "type": "set_shotcall",
+      "text": "$role{bait-8}",
+      "duration": 2000
+    },
+    {
+      "id": "thunder-2-immunity",
+      "at": 75300,
+      "type": "apply_status",
+      "target": {
+        "type": "mechanical_role",
+        "role": "large_tank"
+      },
+      "status": "tank-immunity",
+      "duration": 10000
     }
   ],
   "mechanicalRoles": {
@@ -6629,28 +9609,6 @@
         {
           "type": "has_status",
           "status": "edict-mark"
-        }
-      ]
-    },
-    "tank-swap": {
-      "large_tank": [
-        {
-          "type": "gameplay_role",
-          "role": "tank"
-        },
-        {
-          "type": "mechanical_role",
-          "role": "small_tank"
-        }
-      ],
-      "small_tank": [
-        {
-          "type": "gameplay_role",
-          "role": "tank"
-        },
-        {
-          "type": "mechanical_role",
-          "role": "large_tank"
         }
       ]
     },
@@ -6979,6 +9937,63 @@
                 ]
               }
             ]
+          }
+        ]
+      }
+    },
+    "soakers-l4a": {
+      "soaker": {
+        "type": "or",
+        "conditions": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-4"
+          },
+          {
+            "type": "mechanical_role",
+            "role": "bait-5"
+          },
+          {
+            "type": "mechanical_role",
+            "role": "bait-6"
+          }
+        ]
+      }
+    },
+    "soakers-l4b": {
+      "soaker": {
+        "type": "or",
+        "conditions": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-7"
+          },
+          {
+            "type": "mechanical_role",
+            "role": "bait-5"
+          },
+          {
+            "type": "mechanical_role",
+            "role": "bait-6"
+          }
+        ]
+      }
+    },
+    "soakers-l4c": {
+      "soaker": {
+        "type": "or",
+        "conditions": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-7"
+          },
+          {
+            "type": "mechanical_role",
+            "role": "bait-8"
+          },
+          {
+            "type": "mechanical_role",
+            "role": "bait-6"
           }
         ]
       }

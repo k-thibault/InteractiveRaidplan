@@ -74,7 +74,7 @@ function validateTetherDefinition(definition: TetherDefinition, where: string): 
   }
   for (const stage of definition.lengthStages ?? []) if (!finiteAtLeast(stage.from, 0)) throw new Error(`${where} has a length stage without a non-negative "from"`);
   if (definition.style?.width !== undefined && !finiteAtLeast(definition.style.width, 0)) throw new Error(`${where} style width must be a non-negative number`);
-  for (const field of ['graceDuration', 'duration', 'passTolerance'] as const) if (definition[field] !== undefined && !finiteAtLeast(definition[field], 0)) throw new Error(`${where} ${field} must be a non-negative number`);
+  for (const field of ['graceDuration', 'duration', 'passTolerance', 'passCooldown'] as const) if (definition[field] !== undefined && !finiteAtLeast(definition[field], 0)) throw new Error(`${where} ${field} must be a non-negative number`);
 }
 
 /** Validates tether definitions and literal `spawn_tether` references. */

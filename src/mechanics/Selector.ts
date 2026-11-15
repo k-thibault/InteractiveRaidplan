@@ -46,7 +46,7 @@ export function resolveEntityReference(reference: EntityReference, state: GameSt
   }
   if (reference.type === 'gameplay_role') return state.players.find((player) => player.role === reference.role && player.alive);
   // These name something relative to the acting player, so only position rules can resolve them.
-  if (reference.type === 'own_tether_source' || reference.type === 'own_tether_target') return undefined;
+  if (reference.type === 'own_tether_source' || reference.type === 'own_tether_target' || reference.type === 'self') return undefined;
   return state.players.find((player) => player.mechanicalRoles.includes(reference.role) && player.alive);
 }
 

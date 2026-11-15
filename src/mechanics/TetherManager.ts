@@ -20,7 +20,9 @@ export type TetherHookRunner = (effects: EffectDefinition[], sourceId: string, s
 export type TetherLogger = (message: string, channel: 'player' | 'debug') => void;
 
 /** Fields copied from a definition or spawn options onto a live tether. */
-const DEFINITION_KEYS = ['name', 'style', 'lengthStages', 'passable', 'passTolerance', 'breakWhen', 'graceDuration', 'duration', 'onBreak', 'onExpire', 'onPass'] as const;
+// Along-tether differences smaller than this fraction of its length are ignored: a player standing on the holder isn't "in front" of them, and near-equal players tie (player order decides), so position rounding can't change who takes it.
+const TIE_ALONG = 0.003;
+const DEFINITION_KEYS = ['name', 'style', 'lengthStages', 'passable', 'passTolerance', 'passCooldown', 'breakWhen', 'graceDuration', 'duration', 'onBreak', 'onExpire', 'onPass'] as const;
 
 /** Filters for `remove`; every given filter must match. */
 export interface TetherFilter {
@@ -77,6 +79,7 @@ export class TetherManager {
         lengthStages: merged.lengthStages,
         passable: merged.passable ?? false,
         passTolerance: merged.passTolerance ?? 0,
+        passCooldown: merged.passCooldown ?? 0,
         breakWhen: merged.breakWhen ?? [],
         graceDuration: merged.graceDuration ?? 0,
         onBreak: merged.onBreak,
@@ -160,15 +163,16 @@ export class TetherManager {
       const holder = findEntity(this.state, tether.targetId);
       if (!source || !holder) continue;
       const taker = this.state.players
-        .filter((player) => player.alive && player.id !== source.id && player.id !== holder.id && !this.isLinked(source.id, player.id))
+        .filter((player) => player.alive && player.id !== source.id && player.id !== holder.id && !this.isLinked(source.id, player.id) && !(tether.lastPass?.fromId === player.id && tether.lastPass.until > this.state.time))
         .flatMap((player) => {
           const where = projectOntoSegment(player.position, source.position, holder.position);
-          const onLine = where && where.along > 0 && where.along < 1 && where.offset <= entityRadius(player) + tether.passTolerance;
+          const onLine = where && where.along > 0 && where.along < 1 - TIE_ALONG && where.offset <= entityRadius(player) + tether.passTolerance;
           return onLine ? [{ player, along: where.along }] : [];
         })
-        .sort((a, b) => a.along - b.along)[0]?.player;
+        .reduce<{ player: GameState['players'][number]; along: number } | undefined>((best, candidate) => (best === undefined || candidate.along < best.along - TIE_ALONG ? candidate : best), undefined)?.player;
       if (!taker) continue;
       tether.targetId = taker.id;
+      tether.lastPass = { fromId: holder.id, until: this.state.time + tether.passCooldown };
       this.state.lastTetherTargets[source.id] = taker.id;
       tether.baselineLength = distance(source.position, taker.position);
       this.announce(holder, `${source.name}'s tether was taken by ${taker.name}.`, `${taker.name} took ${holder.name}'s tether from ${source.name}.`);

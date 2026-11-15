@@ -124,5 +124,16 @@ const spawn = (id: string, ids: string[], extra: object = {}) => ({ id, at: 0, t
   check('tether_target follows a pass', holderOf() === 'c');
 }
 
+// pass cooldown: the player a tether was just taken from cannot take it straight back
+{
+  const sim = make({ events: [spawn('s1', ['a'], { label: 'ta', passable: true, passCooldown: 500 })] as never });
+  move(sim, 'c', 0, 0); tick(sim);
+  check('a pass still happens with a cooldown set', holder(sim, 'ta') === 'c');
+  move(sim, 'c', 0, 8); move(sim, 'a', 0, 0); tick(sim);
+  check('the previous holder cannot retake during the cooldown', holder(sim, 'ta') === 'c');
+  tick(sim, 40);
+  check('the previous holder can retake once the cooldown is over', holder(sim, 'ta') === 'a');
+}
+
 console.log(failures === 0 ? '\nAll checks passed.' : `\n${failures} check(s) failed.`);
 process.exit(failures === 0 ? 0 : 1);
