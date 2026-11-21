@@ -6,7 +6,7 @@ import type { Encounter } from '../src/encounters/Encounter';
 
 const SEEDS = 20;
 const encounter = JSON.parse(readFileSync(new URL('../public/encounters/earthquake.json', import.meta.url), 'utf8')) as Encounter;
-const priority: Record<string, number> = { h1: 4, h2: 3, mt: 2, ot: 1, m1: 4, m2: 3, r1: 2, r2: 1 };
+const priority: Record<string, number> = { h1: 4, h2: 3, mt: 2, ot: 1, m1: 4, m2: 3, r1: 1, r2: 2 };
 const lasers = [{ at: 31550, soakers: 1 }, { at: 39100, soakers: 2 }, { at: 58700, soakers: 3 }, { at: 63700, soakers: 3 }, { at: 68700, soakers: 3 }, { at: 90850, soakers: 3 }, { at: 95850, soakers: 3 }, { at: 100850, soakers: 3 }];
 const rounds = [24200, 31700, 51300, 59300, 64300, 83450, 91450, 96450];
 const slamHitAt = 75200;

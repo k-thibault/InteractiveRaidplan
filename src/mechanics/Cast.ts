@@ -50,6 +50,8 @@ export interface ActiveCast {
   revealsCaster?: boolean;
   /** Copied from the definition when the cast starts. */
   casterGraphic?: CasterGraphic;
+  /** From the start event; the cast's effects read them as `$castParams.<name>`. */
+  params?: Record<string, number>;
 }
 
 /** The entity's own graphic, replaced by the newest active cast of its that sets `casterGraphic`. */

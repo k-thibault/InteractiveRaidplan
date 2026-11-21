@@ -1,7 +1,11 @@
 import { Random } from './Random';
 
 export interface ShuffleRandomGroup { mode: 'shuffle'; values: unknown[]; }
-export interface ChoiceRandomGroup { mode: 'choice'; values: unknown[]; }
+export interface ChoiceRandomGroup {
+  mode: 'choice'; values: unknown[];
+  /** Not rolled until an event's `rollGroups` rolls it, and again on each later roll. */
+  lazy?: boolean;
+}
 /** Produces evenly spaced angles from a random start point. */
 export interface RotationRandomGroup { mode: 'rotation'; start: number[]; step: number; count: number; }
 export interface OffsetRotationRandomGroup { mode: 'offset_rotation'; from: string; offsets: number[]; step: number; count: number; }
@@ -28,20 +32,23 @@ const EXPRESSIONS: Record<string, (operands: number[]) => number> = {
   $neg: ([operand]) => -operand,
 };
 /** Names that are filled in later (per member / per batch / per cast) and must survive `resolve`. */
-const DEFERRED_REFERENCES = ['assignedValue', 'groupMember', 'batchCount', 'batchSources', 'castTarget'];
+const DEFERRED_REFERENCES = ['assignedValue', 'groupMember', 'batchCount', 'batchSources', 'castTarget', 'castParams'];
 const REFERENCE_PATH = /(?:\.([\w-]+)|\[(\d+)\])/g;
 
 interface SequenceState { definition: SequenceDefinition; currentIndex: number; step: number; }
 
 export class RandomContext {
   private readonly random: Random;
+  private readonly groups: Record<string, RandomGroup>;
   private readonly values = new Map<string, unknown>();
   private readonly sequences = new Map<string, SequenceState>();
   private readonly distributions = new Map<string, DistributionDefinition>();
 
   constructor(groups: Record<string, RandomGroup> = {}, sequences: Record<string, SequenceDefinition> = {}, distributions: Record<string, DistributionDefinition> = {}, random: Random) {
     this.random = random;
+    this.groups = groups;
     for (const [name, group] of Object.entries(groups)) {
+      if (group.mode === 'choice' && group.lazy) continue;
       if (group.mode === 'shuffle') this.values.set(name, random.shuffle(group.values));
       else if (group.mode === 'choice') this.values.set(name, group.values[random.integer(0, group.values.length - 1)]);
       else if (group.mode === 'offset_rotation') this.values.set(name, this.rollOffsetRotation(group, random));
@@ -113,14 +120,33 @@ export class RandomContext {
   rolledChoices(groups: Record<string, RandomGroup>): Record<string, string> {
     const result: Record<string, string> = {};
     for (const [name, group] of Object.entries(groups)) {
-      if (group.mode !== 'choice' || group.values.length < 2) continue;
-      const value = this.values.get(name);
-      if (value !== null && typeof value === 'object') {
-        const field = Object.entries(value as Record<string, unknown>).find(([, item]) => typeof item === 'string' || typeof item === 'number');
-        result[name] = field ? `${field[0]}=${field[1]}` : `option ${group.values.indexOf(value) + 1} of ${group.values.length}`;
-      } else result[name] = String(value);
+      if (group.mode !== 'choice' || group.values.length < 2 || group.lazy) continue;
+      result[name] = this.choiceLabel(group, this.values.get(name));
     }
     return result;
+  }
+
+  /** Rolls a `choice` group again, replaying `recordedIndex` when it is still valid. Returns the index it settled on. */
+  roll(name: string, recordedIndex?: number): number {
+    const group = this.groups[name];
+    if (group?.mode !== 'choice') throw new Error(`rollGroups: "${name}" is not a choice random group`);
+    const index = recordedIndex !== undefined && recordedIndex >= 0 && recordedIndex < group.values.length ? recordedIndex : this.random.integer(0, group.values.length - 1);
+    this.values.set(name, group.values[index]);
+    return index;
+  }
+
+  /** Short label for the current value of a `choice` group; see `rolledChoices`. */
+  rolledChoice(name: string): string | undefined {
+    const group = this.groups[name];
+    return group?.mode === 'choice' && group.values.length > 1 ? this.choiceLabel(group, this.values.get(name)) : undefined;
+  }
+
+  private choiceLabel(group: ChoiceRandomGroup, value: unknown): string {
+    if (value !== null && typeof value === 'object') {
+      const field = Object.entries(value as Record<string, unknown>).find(([, item]) => typeof item === 'string' || typeof item === 'number');
+      return field ? `${field[0]}=${field[1]}` : `option ${group.values.indexOf(value) + 1} of ${group.values.length}`;
+    }
+    return String(value);
   }
 
   rollDistribution(reference: string): unknown[] {

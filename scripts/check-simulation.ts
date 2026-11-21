@@ -267,6 +267,29 @@ const hit = (id: string, time: number, amount: number, type = 'physical', fatal?
   check('release_positions stops a bot where it is', Math.hypot(find(left, 'a').position.x - mark.x, find(left, 'a').position.y - mark.y) < 0.2);
 }
 
+// Lazy random groups re-rolled per event, and cast params
+{
+  const spawner = { id: 'spawn', name: 'Spawn', castTime: 0, effects: [{ type: 'spawn_enemy', enemyId: '$pick.id', position: { x: '$pick.x', y: 0 }, expiresAfter: '$castParams.life' }] };
+  const encounter = () => ({
+    randomGroups: { pick: { mode: 'choice', lazy: true, values: [{ id: 'l', x: -5 }, { id: 'r', x: 5 }] } }, casts: { spawn: spawner },
+    events: [1, 2, 3, 4, 5, 6].map((n) => at(`cast-${n}`, n * 1000, { type: 'start_cast', source: 'boss', cast: 'spawn', rollGroups: ['pick'], params: { life: n * 100 } })),
+  } as never);
+  const outcomes = new Map<string, Record<string, unknown>>();
+  const first = make(encounter(), 3, undefined, outcomes);
+  check('a lazy group is not rolled until an event rolls it', Object.keys(first.rolledChoices).length === 0);
+  until(first, 7000);
+  const seen = first.state.rolls;
+  check('each rollGroups event re-rolls its group and records the result', Object.keys(seen).length === 6 && new Set(Object.values(seen)).size === 2, JSON.stringify(seen));
+  const replay = make(encounter(), 99, undefined, outcomes);
+  until(replay, 7000);
+  check('re-rolled groups replay from recorded outcomes whatever the seed', JSON.stringify(replay.state.rolls) === JSON.stringify(seen));
+  const params = make(encounter(), 3);
+  const orbs = () => params.state.enemies.filter((enemy) => enemy.id === 'l' || enemy.id === 'r').length;
+  until(params, 1600); const shortLived = orbs();
+  until(params, 2100); const longerLived = orbs();
+  check('$castParams values reach the cast effects', shortLived === 0 && longerLived === 1, [shortLived, longerLived].join());
+}
+
 // Seeds
 {
   const draws = (seed: number) => { const simulation = make({ randomGroups: { pick: { mode: 'choice', values: ['a', 'b', 'c', 'd', 'e', 'f'] } } } as never, seed); return JSON.stringify(simulation.rolledChoices); };

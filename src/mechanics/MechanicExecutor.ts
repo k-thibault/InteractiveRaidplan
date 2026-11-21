@@ -42,6 +42,8 @@ interface EffectContext {
   tether?: { sourceId: string; targetId: string };
   /** Set while a proximity status's effects run: the holder and the player who came near. */
   proximity?: { sourceId: string; targetId: string };
+  /** The `params` the cast was started with, read as `$castParams.<name>`. */
+  params?: Record<string, number>;
 }
 
 /** Anything that carries statuses. */
@@ -187,6 +189,17 @@ export class MechanicExecutor {
     this.replayOutcomes.set(replayId, { ...this.replayOutcomes.get(replayId), [key]: value });
   }
 
+  /** Re-rolls `lazy` random groups just before the event that names them resolves its references. */
+  rollGroups(names: string[], eventId: string): void {
+    for (const name of names) {
+      const key = this.claimReplay(`${eventId}.${name}`);
+      const index = this.randomContext.roll(name, this.getReplay<number>(key, 'index'));
+      this.setReplay(key, 'index', index);
+      const label = this.randomContext.rolledChoice(name);
+      if (label) this.state.rolls[`${eventId}.${name}`] = label;
+    }
+  }
+
   execute(event: EncounterEvent): void {
     if (event.type === 'set_shotcall') this.setShotcall(event.text, event.duration);
     else if (event.type === 'clear_shotcall') this.state.shotcall = undefined;
@@ -210,7 +223,7 @@ export class MechanicExecutor {
       if (event.castChoices && event.castChoices.length > 1) this.state.rolls[event.id] = cast;
       // When the cast was rolled from `castChoices` and no `mechanic` was given, default the mechanic flag to
       // whichever cast got picked, so `{"type":"mechanic"}` position/role rules can react to the outcome.
-      this.startCast(cast, event.source, event.mechanic ?? (event.castChoices ? cast : undefined), event.facing, key);
+      this.startCast(cast, event.source, event.mechanic ?? (event.castChoices ? cast : undefined), event.facing, key, event.params);
     }
     else if (event.type === 'remove_status') for (const player of selectPlayers(event.target, this.state, this.random)) this.removeStatus(player, event.status, event.stacks ?? 1);
     else if (event.type === 'spawn_area') this.spawnArea(this.randomContext.resolve(event));
@@ -248,7 +261,7 @@ export class MechanicExecutor {
       const source = findEntity(this.state, cast.sourceId);
       const hasFacingCast = this.state.casts.some((active) => active.sourceId === cast.sourceId && (active.targetId !== undefined || active.direction !== undefined));
       if (source && !hasFacingCast) source.facingRuleActive = false;
-      const context: EffectContext = { direction: cast.direction, targetId: cast.targetId, targetPosition: cast.targetPosition };
+      const context: EffectContext = { direction: cast.direction, targetId: cast.targetId, targetPosition: cast.targetPosition, params: cast.params };
       for (const rawEffect of definition.effects) this.executeEffect(rawEffect, new Set(), cast.sourceId, definition.name, context);
     }
     for (const pending of [...this.pendingEffects]) {
@@ -420,7 +433,7 @@ export class MechanicExecutor {
     return chosen;
   }
 
-  private startCast(castId: string, sourceId: string, mechanic?: string, facing?: CastFacing, replayId?: string): void {
+  private startCast(castId: string, sourceId: string, mechanic?: string, facing?: CastFacing, replayId?: string, params?: Record<string, number>): void {
     const definition = this.castDefinitions[castId];
     if (!definition || !findEntity(this.state, sourceId)) return;
     if (this.state.casts.some((cast) => cast.sourceId === sourceId && cast.definitionId === castId)) return;
@@ -435,7 +448,7 @@ export class MechanicExecutor {
       source.facing = toPolarAngle(target.position, source.position);
       source.facingRuleActive = true;
     }
-    this.state.casts.push({ id: this.nextCastId(), definitionId: castId, sourceId, startedAt: this.state.time, completesAt: this.state.time + definition.castTime, targetId: resolved?.targetId, direction: resolved?.direction, targetPosition: resolved?.targetPosition, tetherId: resolved?.tetherId, revealsCaster: definition.revealCaster, casterGraphic: definition.casterGraphic });
+    this.state.casts.push({ id: this.nextCastId(), definitionId: castId, sourceId, startedAt: this.state.time, completesAt: this.state.time + definition.castTime, targetId: resolved?.targetId, direction: resolved?.direction, targetPosition: resolved?.targetPosition, tetherId: resolved?.tetherId, revealsCaster: definition.revealCaster, casterGraphic: definition.casterGraphic && this.randomContext.resolve(definition.casterGraphic), params });
   }
 
   /** Numbered from the live count, skipping any id still in use so finishing one cast never removes another. */
@@ -551,7 +564,7 @@ export class MechanicExecutor {
       this.pendingEffects.push({ executeAt: this.state.time + delay, effects: effect.effects, inside, sourceId, sourceName, cast });
       return;
     }
-    const resolvedEffect = this.randomContext.resolve(effect);
+    const resolvedEffect = this.randomContext.resolve(cast?.params ? this.randomContext.resolveAssigned(effect, cast.params, 'castParams') : effect);
     if (resolvedEffect.type === 'assign_distribution') {
       const key = this.claimReplay(resolvedEffect.replayId);
       const participants = this.state.players.filter((player) => player.alive && inside.has(player.id));
@@ -576,7 +589,7 @@ export class MechanicExecutor {
       const cast = this.resolveCastChoice(resolvedEffect.cast, resolvedEffect.castChoices, key);
       if (resolvedEffect.castChoices && resolvedEffect.castChoices.length > 1) this.state.rolls[`${sourceName ?? sourceId} cast`] = cast;
       const mechanic = resolvedEffect.mechanic ?? (resolvedEffect.castChoices ? cast : undefined);
-      this.startCast(cast, resolvedEffect.source ?? sourceId, mechanic, resolvedEffect.facing, key);
+      this.startCast(cast, resolvedEffect.source ?? sourceId, mechanic, resolvedEffect.facing, key, resolvedEffect.params);
       return;
     }
     if (resolvedEffect.type === 'set_mechanic') { this.state.currentMechanic = resolvedEffect.mechanic; return; }
