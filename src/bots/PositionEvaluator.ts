@@ -22,6 +22,14 @@ const DRAG_ARRIVED = 0.05;
 /** Gap kept between a bait spot and an avoided zone, so the bot isn't pushed off the line by the zone's edge. */
 const ZONE_MARGIN = 0.25;
 
+/** How close the ray from `from` through `through` passes to `spot`; a spot behind `from` counts as its distance to `from`. */
+function beamMiss(from: Vector2, through: Vector2, spot: Vector2): number {
+  const length = distance(from, through);
+  if (length === 0) return distance(from, spot);
+  const along = ((spot.x - from.x) * (through.x - from.x) + (spot.y - from.y) * (through.y - from.y)) / length;
+  return along <= 0 ? distance(from, spot) : Math.abs((spot.x - from.x) * (through.y - from.y) - (spot.y - from.y) * (through.x - from.x)) / length;
+}
+
 export interface PositionRule {
   when?: ConditionExpression;
   target: PositionTarget;
@@ -139,7 +147,8 @@ export class PositionEvaluator {
         const turn = signedAngleDelta(angle, toPolarAngle(other.position, centre ?? { x: 0, y: 0 }));
         angle += Math.sign(turn) * by;
       }
-      return fromPolar(angle + (target.angleOffset ?? 0), radius, centre);
+      const offset = Number(this.resolveValue(this.substituteParams(target.angleOffset ?? 0, params)));
+      return Number.isFinite(offset) ? fromPolar(angle + offset, radius, centre) : undefined;
     }
     if (target.type === 'flee') {
       const threat = this.entity(target.from, state, player)?.position;
@@ -223,6 +232,11 @@ export class PositionEvaluator {
     if (target.type === 'tether_grab') return this.resolveGrab(target, state, params, player);
     if (target.type === 'safe_spot') return this.resolveSafeSpot(target, state, params, player);
     if (target.type === 'area') return this.resolveArea(target, state);
+    if (target.type === 'rule_target') {
+      const who = this.entity(target.as, state, player) as Player | undefined;
+      const rule = who && this.definitions[target.group]?.find((candidate) => candidate.when === undefined || this.conditionEvaluator.evaluate(candidate.when, who, state));
+      return rule && who ? this.resolve(rule.target, state, params, who) : undefined;
+    }
 
     const entity = this.entity(target.player, state, player);
     return entity ? {
@@ -240,24 +254,35 @@ export class PositionEvaluator {
       const origin = this.resolve(constraint.origin, state, params, player);
       const from = this.resolve(constraint.from, state, params, player);
       const to = this.resolve(constraint.to, state, params, player);
-      return origin && from && to ? [{ origin, direction: normalize(subtract(to, from)), margin: constraint.margin ?? 0 }] : [];
+      return origin && from && to ? { origin, direction: normalize(subtract(to, from)), margin: constraint.margin ?? 0 } : undefined;
     };
-    const requirements = target.constraints.flatMap((constraint) => {
-      const alternatives = ('anyOf' in constraint ? constraint.anyOf : [constraint]).flatMap(toPlane);
-      return alternatives.length > 0 ? [alternatives] : [];
-    });
+    const beyond = (point: Vector2, plane: { origin: Vector2; direction: Vector2; margin: number }) => (point.x - plane.origin.x) * plane.direction.x + (point.y - plane.origin.y) * plane.direction.y >= plane.margin;
+    const requirements: ((point: Vector2) => boolean)[] = [];
+    for (const constraint of target.constraints) {
+      if ('beam' in constraint) {
+        const source = this.resolve(constraint.beam.from, state, params, player);
+        const avoid = constraint.beam.avoid.flatMap((spot) => this.resolve(spot, state, params, player) ?? []);
+        if (source && avoid.length > 0) requirements.push((point) => avoid.every((spot) => beamMiss(source, point, spot) >= constraint.beam.margin));
+        continue;
+      }
+      const alternatives = ('anyOf' in constraint ? constraint.anyOf : [constraint]).flatMap((alternative) => {
+        const planes = [alternative].flat().map(toPlane);
+        return planes.every((plane) => plane !== undefined) ? [planes as NonNullable<typeof planes[number]>[]] : [];
+      });
+      if (alternatives.length > 0) requirements.push((point) => alternatives.some((planes) => planes.every((plane) => beyond(point, plane))));
+    }
     const step = target.step ?? 0.5;
+    const zones = state.enemies.filter((enemy) => enemy.alive && enemy.botAvoidRadius !== undefined);
     const candidates: Vector2[] = [];
     for (let x = -state.arena.halfWidth; x <= state.arena.halfWidth; x += step) {
       for (let y = -state.arena.halfHeight; y <= state.arena.halfHeight; y += step) {
         const point = { x, y };
         const inset = { x, y };
         clampToArena(inset, state.arena, BOT_DEADLY_EDGE_INSET);
-        if (inset.x === x && inset.y === y) candidates.push(point);
+        if (inset.x === x && inset.y === y && zones.every((zone) => distance(point, zone.position) >= zone.botAvoidRadius! + ZONE_MARGIN)) candidates.push(point);
       }
     }
-    const beyond = (point: Vector2, plane: { origin: Vector2; direction: Vector2; margin: number }) => (point.x - plane.origin.x) * plane.direction.x + (point.y - plane.origin.y) * plane.direction.y >= plane.margin;
-    const satisfies = (point: Vector2, count: number) => requirements.slice(0, count).every((alternatives) => alternatives.some((plane) => beyond(point, plane)));
+    const satisfies = (point: Vector2, count: number) => requirements.slice(0, count).every((requirement) => requirement(point));
     for (let count = requirements.length; count >= 0; count -= 1) {
       const valid = candidates.filter((point) => satisfies(point, count));
       if (valid.length === 0) continue;

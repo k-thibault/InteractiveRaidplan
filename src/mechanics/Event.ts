@@ -15,6 +15,8 @@ interface BaseEvent {
    * Timing is unaffected: a skipped event still anchors the events scheduled `after` it.
    */
   ifMechanic?: string | string[];
+  /** `lazy` choice groups re-rolled right before this event resolves, so its own `$group` references see the new value. */
+  rollGroups?: string[];
 }
 export interface StartCastEvent extends BaseEvent {
   type: 'start_cast'; source: string; mechanic?: string; facing?: CastFacing; replayId?: string;
@@ -22,6 +24,8 @@ export interface StartCastEvent extends BaseEvent {
   cast?: string;
   /** Rolled fresh, independently, the moment this event fires */
   castChoices?: string[];
+  /** Values for the cast's effects, read there as `$castParams.<name>`. */
+  params?: Record<string, number>;
 }
 export interface RemoveStatusEvent extends BaseEvent { type: 'remove_status'; target: PlayerSelector; status: string; stacks?: number; }
 /** See `KnockEffect`. */

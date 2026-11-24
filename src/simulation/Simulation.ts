@@ -85,6 +85,7 @@ export class Simulation {
       const executeAt = event.at ?? (event.after ? (eventTimes.get(event.after) ?? 0) + (event.delay ?? 0) : 0);
       eventTimes.set(event.id, executeAt);
       this.scheduler.schedule(event.id, executeAt, () => {
+        if (event.rollGroups) this.executor.rollGroups(event.rollGroups, event.id);
         const resolved = randomContext.resolve(event);
         if (resolved.ifMechanic !== undefined && ![resolved.ifMechanic].flat().includes(this.state.currentMechanic ?? '')) return;
         if (resolved.type === 'recalculate_roles') recalculateRoles(resolved.group);

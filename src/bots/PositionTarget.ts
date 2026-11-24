@@ -15,15 +15,17 @@ export type EntityReference =
 
 /** Keeps points `margin` or more past the line through `origin`, on the side that `to` lies on relative to `from`. */
 export interface HalfPlaneConstraint { origin: PositionTarget; from: PositionTarget; to: PositionTarget; margin?: number; }
-/** Satisfied by points that satisfy at least one of the alternatives, e.g. either of two safe strips. */
-export interface AnyOfConstraint { anyOf: HalfPlaneConstraint[]; }
+/** Satisfied by points that satisfy at least one of the alternatives; an array alternative needs all its planes, e.g. a wedge. */
+export interface AnyOfConstraint { anyOf: (HalfPlaneConstraint | HalfPlaneConstraint[])[]; }
+/** Keeps points whose beam from `from` (the ray through the point) passes at least `margin` from every `avoid` point. */
+export interface BeamConstraint { beam: { from: PositionTarget; avoid: PositionTarget[]; margin: number }; }
 
 export type PositionTarget =
   | { type: 'fixed'; position: { x: number; y: number } | string }
   /** Select a fixed marker id or geometric query, optionally nudged by `offset`. */
   | { type: 'marker'; marker?: string; query?: string | MarkerQuery; offset?: { x: number; y: number } }
   /** `angleFrom` uses an entity bearing and `angleFacing` the direction an entity faces; `originEntity` centres the point on an entity; `angleTowards.by` offsets toward (or away when negative) another bearing. */
-  | { type: 'polar'; angle?: number | string; angleFrom?: EntityReference; angleFacing?: EntityReference; originEntity?: EntityReference; angleTowards?: { entity: EntityReference; by: number | string }; radius: number | string; origin?: { x: number; y: number }; angleOffset?: number }
+  | { type: 'polar'; angle?: number | string; angleFrom?: EntityReference; angleFacing?: EntityReference; originEntity?: EntityReference; angleTowards?: { entity: EntityReference; by: number | string }; radius: number | string; origin?: { x: number; y: number }; angleOffset?: number | string }
   /** Where the ray from `origin` (default centre) at compass `angle` meets the arena border, pulled back by `inset`. */
   | { type: 'edge'; angle?: number | string; angleFrom?: EntityReference; /** Bearing from `origin` to this point, e.g. a marker picked by a query. */ angleTo?: PositionTarget; inset?: number | string; origin?: { x: number; y: number }; /** Degrees added to the bearing, e.g. 180 for the border directly opposite `angleFrom`. */ angleOffset?: number | string }
   /** A point on the line from `a` to `b`: `t` 0 is `a`, 1 is `b`, default 0.5. */
@@ -45,7 +47,9 @@ export type PositionTarget =
    * Searches the arena for a point inside as many `constraints` as possible, taken in order of importance.
    * With all of them satisfied the point nearest `anchor` wins; with only a leading subset, the point farthest from `farFrom` (default: nearest `anchor`).
    */
-  | { type: 'safe_spot'; constraints: (HalfPlaneConstraint | AnyOfConstraint)[]; anchor: PositionTarget; farFrom?: PositionTarget; /** Grid spacing in world units, default 0.5. */ step?: number }
+  | { type: 'safe_spot'; constraints: (HalfPlaneConstraint | AnyOfConstraint | BeamConstraint)[]; anchor: PositionTarget; farFrom?: PositionTarget; /** Grid spacing in world units, default 0.5. */ step?: number }
+  /** Where the first rule of `group` matching `as` would send `as`. */
+  | { type: 'rule_target'; group: string; as: EntityReference }
   | {
       type: 'area';
       mechanic?: string; label?: string; tag?: string;

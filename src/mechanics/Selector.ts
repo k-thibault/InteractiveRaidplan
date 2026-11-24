@@ -19,6 +19,7 @@ export type PlayerSelector =
   | { type: 'nearest'; source: string; count?: number; role?: PlayerRole; roles?: PlayerRole[] }
   | { type: 'with_status'; status: string }
   | { type: 'without_status'; status: string }
+  | { type: 'below_full_health' }
   | { type: 'mechanical_role'; role: string }
   /** Specific players by id. */
   | { type: 'players'; ids: string[] }
@@ -57,6 +58,7 @@ export function selectPlayers(selector: PlayerSelector, state: GameState, random
   if (selector.type === 'role_any') return players.filter((player) => selector.roles.includes(player.role));
   if (selector.type === 'with_status') return players.filter((player) => player.statuses.some((status) => status.definitionId === selector.status));
   if (selector.type === 'without_status') return players.filter((player) => !player.statuses.some((status) => status.definitionId === selector.status));
+  if (selector.type === 'below_full_health') return players.filter((player) => player.health < (player.maxHealth ?? player.health));
   if (selector.type === 'mechanical_role') return players.filter((player) => player.mechanicalRoles.includes(selector.role));
   if (selector.type === 'players') return players.filter((player) => selector.ids.includes(player.id));
   if (selector.type === 'from_group') {

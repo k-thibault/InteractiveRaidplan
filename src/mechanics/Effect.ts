@@ -38,6 +38,8 @@ export interface StartCastEffect {
   cast?: string;
   /** Rolled fresh, independently, the moment this effect executes */
   castChoices?: string[];
+  /** Values for the cast's effects, read there as `$castParams.<name>`. */
+  params?: Record<string, number>;
 }
 /** Forced movement that suspends regular movement until it finishes. Ignores roots and stuns. */
 export interface KnockEffect extends KnockParams { type: 'knock'; target: EffectTarget; }
