@@ -26,7 +26,7 @@ The arena displays players, enemies, markers, attack areas, and active cast bars
 - Player health, status effects and stacks, damage, control effects, and forced movement.
 - Cast-specific caster graphics and capped batches with queued effects.
 - Bot movement and role-based positioning to simulate the rest of the party.
-- Randomized mechanics with repeatable runs through the seed control; events can re-roll `lazy` random groups (`rollGroups`) and pass per-use `params` to a cast, so one cast definition serves every use.
+- Randomized mechanics with repeatable runs through the seed control.
 - Tethers linking entities, with passing, break conditions, and length-based styling.
 - Ability to hide other bots and enemies while controlling a player.
 - Replays of every attempt: watch, seek, save, load and retry an attempt (see below).

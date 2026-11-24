@@ -1,7 +1,7 @@
 {
   "version": 5,
   "name": "Earthquake",
-  "duration": 102350,
+  "duration": 128450,
   "arena": {
     "shape": "circle",
     "radius": 8,
@@ -230,6 +230,59 @@
           "angle": 315,
           "perp": "1  3"
         }
+      ]
+    },
+    "strike3Angle": {
+      "mode": "choice",
+      "values": [
+        {
+          "angle": 0
+        },
+        {
+          "angle": 45
+        },
+        {
+          "angle": 90
+        },
+        {
+          "angle": 135
+        },
+        {
+          "angle": 180
+        },
+        {
+          "angle": 225
+        },
+        {
+          "angle": 270
+        },
+        {
+          "angle": 315
+        }
+      ]
+    },
+    "chaosCast": {
+      "mode": "choice",
+      "lazy": true,
+      "values": [
+        {
+          "cast": "chaos-frontback",
+          "first": "chaos-dodge-sides",
+          "second": "chaos-dodge-ends-safe"
+        },
+        {
+          "cast": "chaos-sides",
+          "first": "chaos-dodge-ends",
+          "second": "chaos-dodge-sides-safe"
+        }
+      ]
+    },
+    "orbOrder4": {
+      "mode": "shuffle",
+      "values": [
+        "orb-1",
+        "orb-2",
+        "orb-3"
       ]
     }
   },
@@ -618,6 +671,35 @@
               "damage": {
                 "amount": 999,
                 "type": "earth",
+                "fatal": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "chaos-cone": {
+      "shape": "cone",
+      "radius": 30,
+      "angle": 90,
+      "label": "chaos-cone",
+      "element": "magical",
+      "telegraphDuration": 0,
+      "duration": 500,
+      "executionColor": "#d95757",
+      "resolution": [
+        {
+          "condition": {
+            "type": "player_count",
+            "min": 0
+          },
+          "effects": [
+            {
+              "type": "damage",
+              "target": "inside",
+              "damage": {
+                "amount": 999,
+                "type": "magical",
                 "fatal": true
               }
             }
@@ -1658,6 +1740,121 @@
               ]
             }
           ]
+        }
+      ]
+    },
+    "chaos-frontback": {
+      "id": "chaos-frontback",
+      "name": "Longitudinal Implosion",
+      "castTime": 5000,
+      "visible": true,
+      "revealCaster": true,
+      "suspendFollow": {
+        "movement": true,
+        "facing": true
+      },
+      "effects": [
+        {
+          "type": "spawn_area",
+          "area": "chaos-cone",
+          "source": "boss-large",
+          "direction": "facing"
+        },
+        {
+          "type": "spawn_area",
+          "area": "chaos-cone",
+          "source": "boss-large",
+          "direction": "facing",
+          "rotationOffset": 180
+        },
+        {
+          "type": "delayed_effects",
+          "delay": 1500,
+          "effects": [
+            {
+              "type": "spawn_area",
+              "area": "chaos-cone",
+              "source": "boss-large",
+              "direction": "facing",
+              "rotationOffset": 90
+            },
+            {
+              "type": "spawn_area",
+              "area": "chaos-cone",
+              "source": "boss-large",
+              "direction": "facing",
+              "rotationOffset": 270
+            }
+          ]
+        }
+      ]
+    },
+    "chaos-sides": {
+      "id": "chaos-sides",
+      "name": "Latitudinal Implosion",
+      "castTime": 5000,
+      "visible": true,
+      "revealCaster": true,
+      "suspendFollow": {
+        "movement": true,
+        "facing": true
+      },
+      "effects": [
+        {
+          "type": "spawn_area",
+          "area": "chaos-cone",
+          "source": "boss-large",
+          "direction": "facing",
+          "rotationOffset": 90
+        },
+        {
+          "type": "spawn_area",
+          "area": "chaos-cone",
+          "source": "boss-large",
+          "direction": "facing",
+          "rotationOffset": 270
+        },
+        {
+          "type": "delayed_effects",
+          "delay": 1500,
+          "effects": [
+            {
+              "type": "spawn_area",
+              "area": "chaos-cone",
+              "source": "boss-large",
+              "direction": "facing"
+            },
+            {
+              "type": "spawn_area",
+              "area": "chaos-cone",
+              "source": "boss-large",
+              "direction": "facing",
+              "rotationOffset": 180
+            }
+          ]
+        }
+      ]
+    },
+    "white-hole": {
+      "id": "white-hole",
+      "name": "White Hole",
+      "castTime": 5000,
+      "visible": true,
+      "revealCaster": true,
+      "suspendFollow": {
+        "movement": true
+      },
+      "effects": [
+        {
+          "type": "damage",
+          "target": {
+            "type": "below_full_health"
+          },
+          "damage": {
+            "amount": 999,
+            "type": "magical",
+            "fatal": true
+          }
         }
       ]
     }
@@ -2762,6 +2959,757 @@
           },
           "distance": 3.2
         }
+      }
+    ],
+    "chaos-dodge-sides": [
+      {
+        "target": {
+          "type": "safe_spot",
+          "anchor": {
+            "type": "entity",
+            "player": {
+              "type": "self"
+            }
+          },
+          "constraints": [
+            {
+              "anyOf": [
+                [
+                  {
+                    "origin": {
+                      "type": "entity",
+                      "player": {
+                        "type": "id",
+                        "id": "boss-large"
+                      }
+                    },
+                    "from": {
+                      "type": "fixed",
+                      "position": {
+                        "x": 0,
+                        "y": 0
+                      }
+                    },
+                    "to": {
+                      "type": "polar",
+                      "angleFacing": {
+                        "type": "id",
+                        "id": "boss-large"
+                      },
+                      "angleOffset": 45,
+                      "radius": 1
+                    },
+                    "margin": 1
+                  },
+                  {
+                    "origin": {
+                      "type": "entity",
+                      "player": {
+                        "type": "id",
+                        "id": "boss-large"
+                      }
+                    },
+                    "from": {
+                      "type": "fixed",
+                      "position": {
+                        "x": 0,
+                        "y": 0
+                      }
+                    },
+                    "to": {
+                      "type": "polar",
+                      "angleFacing": {
+                        "type": "id",
+                        "id": "boss-large"
+                      },
+                      "angleOffset": 135,
+                      "radius": 1
+                    },
+                    "margin": 1
+                  }
+                ],
+                [
+                  {
+                    "origin": {
+                      "type": "entity",
+                      "player": {
+                        "type": "id",
+                        "id": "boss-large"
+                      }
+                    },
+                    "from": {
+                      "type": "fixed",
+                      "position": {
+                        "x": 0,
+                        "y": 0
+                      }
+                    },
+                    "to": {
+                      "type": "polar",
+                      "angleFacing": {
+                        "type": "id",
+                        "id": "boss-large"
+                      },
+                      "angleOffset": 225,
+                      "radius": 1
+                    },
+                    "margin": 1
+                  },
+                  {
+                    "origin": {
+                      "type": "entity",
+                      "player": {
+                        "type": "id",
+                        "id": "boss-large"
+                      }
+                    },
+                    "from": {
+                      "type": "fixed",
+                      "position": {
+                        "x": 0,
+                        "y": 0
+                      }
+                    },
+                    "to": {
+                      "type": "polar",
+                      "angleFacing": {
+                        "type": "id",
+                        "id": "boss-large"
+                      },
+                      "angleOffset": 315,
+                      "radius": 1
+                    },
+                    "margin": 1
+                  }
+                ]
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "chaos-dodge-ends": [
+      {
+        "target": {
+          "type": "safe_spot",
+          "anchor": {
+            "type": "entity",
+            "player": {
+              "type": "self"
+            }
+          },
+          "constraints": [
+            {
+              "anyOf": [
+                [
+                  {
+                    "origin": {
+                      "type": "entity",
+                      "player": {
+                        "type": "id",
+                        "id": "boss-large"
+                      }
+                    },
+                    "from": {
+                      "type": "fixed",
+                      "position": {
+                        "x": 0,
+                        "y": 0
+                      }
+                    },
+                    "to": {
+                      "type": "polar",
+                      "angleFacing": {
+                        "type": "id",
+                        "id": "boss-large"
+                      },
+                      "angleOffset": -45,
+                      "radius": 1
+                    },
+                    "margin": 1
+                  },
+                  {
+                    "origin": {
+                      "type": "entity",
+                      "player": {
+                        "type": "id",
+                        "id": "boss-large"
+                      }
+                    },
+                    "from": {
+                      "type": "fixed",
+                      "position": {
+                        "x": 0,
+                        "y": 0
+                      }
+                    },
+                    "to": {
+                      "type": "polar",
+                      "angleFacing": {
+                        "type": "id",
+                        "id": "boss-large"
+                      },
+                      "angleOffset": 45,
+                      "radius": 1
+                    },
+                    "margin": 1
+                  }
+                ],
+                [
+                  {
+                    "origin": {
+                      "type": "entity",
+                      "player": {
+                        "type": "id",
+                        "id": "boss-large"
+                      }
+                    },
+                    "from": {
+                      "type": "fixed",
+                      "position": {
+                        "x": 0,
+                        "y": 0
+                      }
+                    },
+                    "to": {
+                      "type": "polar",
+                      "angleFacing": {
+                        "type": "id",
+                        "id": "boss-large"
+                      },
+                      "angleOffset": 135,
+                      "radius": 1
+                    },
+                    "margin": 1
+                  },
+                  {
+                    "origin": {
+                      "type": "entity",
+                      "player": {
+                        "type": "id",
+                        "id": "boss-large"
+                      }
+                    },
+                    "from": {
+                      "type": "fixed",
+                      "position": {
+                        "x": 0,
+                        "y": 0
+                      }
+                    },
+                    "to": {
+                      "type": "polar",
+                      "angleFacing": {
+                        "type": "id",
+                        "id": "boss-large"
+                      },
+                      "angleOffset": 225,
+                      "radius": 1
+                    },
+                    "margin": 1
+                  }
+                ]
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "chaos-dodge-sides-safe": [
+      {
+        "target": {
+          "type": "safe_spot",
+          "anchor": {
+            "type": "entity",
+            "player": {
+              "type": "self"
+            }
+          },
+          "constraints": [
+            {
+              "anyOf": [
+                [
+                  {
+                    "origin": {
+                      "type": "entity",
+                      "player": {
+                        "type": "id",
+                        "id": "boss-large"
+                      }
+                    },
+                    "from": {
+                      "type": "fixed",
+                      "position": {
+                        "x": 0,
+                        "y": 0
+                      }
+                    },
+                    "to": {
+                      "type": "polar",
+                      "angleFacing": {
+                        "type": "id",
+                        "id": "boss-large"
+                      },
+                      "angleOffset": 45,
+                      "radius": 1
+                    },
+                    "margin": 1
+                  },
+                  {
+                    "origin": {
+                      "type": "entity",
+                      "player": {
+                        "type": "id",
+                        "id": "boss-large"
+                      }
+                    },
+                    "from": {
+                      "type": "fixed",
+                      "position": {
+                        "x": 0,
+                        "y": 0
+                      }
+                    },
+                    "to": {
+                      "type": "polar",
+                      "angleFacing": {
+                        "type": "id",
+                        "id": "boss-large"
+                      },
+                      "angleOffset": 135,
+                      "radius": 1
+                    },
+                    "margin": 1
+                  }
+                ],
+                [
+                  {
+                    "origin": {
+                      "type": "entity",
+                      "player": {
+                        "type": "id",
+                        "id": "boss-large"
+                      }
+                    },
+                    "from": {
+                      "type": "fixed",
+                      "position": {
+                        "x": 0,
+                        "y": 0
+                      }
+                    },
+                    "to": {
+                      "type": "polar",
+                      "angleFacing": {
+                        "type": "id",
+                        "id": "boss-large"
+                      },
+                      "angleOffset": 225,
+                      "radius": 1
+                    },
+                    "margin": 1
+                  },
+                  {
+                    "origin": {
+                      "type": "entity",
+                      "player": {
+                        "type": "id",
+                        "id": "boss-large"
+                      }
+                    },
+                    "from": {
+                      "type": "fixed",
+                      "position": {
+                        "x": 0,
+                        "y": 0
+                      }
+                    },
+                    "to": {
+                      "type": "polar",
+                      "angleFacing": {
+                        "type": "id",
+                        "id": "boss-large"
+                      },
+                      "angleOffset": 315,
+                      "radius": 1
+                    },
+                    "margin": 1
+                  }
+                ]
+              ]
+            },
+            {
+              "origin": {
+                "type": "fixed",
+                "position": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              "from": {
+                "type": "fixed",
+                "position": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              "to": {
+                "type": "polar",
+                "angleFrom": {
+                  "type": "id",
+                  "id": "striker"
+                },
+                "angleOffset": {
+                  "$mul": [
+                    "$strikeSide.sign",
+                    -90
+                  ]
+                },
+                "radius": 1
+              },
+              "margin": 0.5
+            }
+          ]
+        }
+      }
+    ],
+    "chaos-dodge-ends-safe": [
+      {
+        "target": {
+          "type": "safe_spot",
+          "anchor": {
+            "type": "entity",
+            "player": {
+              "type": "self"
+            }
+          },
+          "constraints": [
+            {
+              "anyOf": [
+                [
+                  {
+                    "origin": {
+                      "type": "entity",
+                      "player": {
+                        "type": "id",
+                        "id": "boss-large"
+                      }
+                    },
+                    "from": {
+                      "type": "fixed",
+                      "position": {
+                        "x": 0,
+                        "y": 0
+                      }
+                    },
+                    "to": {
+                      "type": "polar",
+                      "angleFacing": {
+                        "type": "id",
+                        "id": "boss-large"
+                      },
+                      "angleOffset": -45,
+                      "radius": 1
+                    },
+                    "margin": 1
+                  },
+                  {
+                    "origin": {
+                      "type": "entity",
+                      "player": {
+                        "type": "id",
+                        "id": "boss-large"
+                      }
+                    },
+                    "from": {
+                      "type": "fixed",
+                      "position": {
+                        "x": 0,
+                        "y": 0
+                      }
+                    },
+                    "to": {
+                      "type": "polar",
+                      "angleFacing": {
+                        "type": "id",
+                        "id": "boss-large"
+                      },
+                      "angleOffset": 45,
+                      "radius": 1
+                    },
+                    "margin": 1
+                  }
+                ],
+                [
+                  {
+                    "origin": {
+                      "type": "entity",
+                      "player": {
+                        "type": "id",
+                        "id": "boss-large"
+                      }
+                    },
+                    "from": {
+                      "type": "fixed",
+                      "position": {
+                        "x": 0,
+                        "y": 0
+                      }
+                    },
+                    "to": {
+                      "type": "polar",
+                      "angleFacing": {
+                        "type": "id",
+                        "id": "boss-large"
+                      },
+                      "angleOffset": 135,
+                      "radius": 1
+                    },
+                    "margin": 1
+                  },
+                  {
+                    "origin": {
+                      "type": "entity",
+                      "player": {
+                        "type": "id",
+                        "id": "boss-large"
+                      }
+                    },
+                    "from": {
+                      "type": "fixed",
+                      "position": {
+                        "x": 0,
+                        "y": 0
+                      }
+                    },
+                    "to": {
+                      "type": "polar",
+                      "angleFacing": {
+                        "type": "id",
+                        "id": "boss-large"
+                      },
+                      "angleOffset": 225,
+                      "radius": 1
+                    },
+                    "margin": 1
+                  }
+                ]
+              ]
+            },
+            {
+              "origin": {
+                "type": "fixed",
+                "position": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              "from": {
+                "type": "fixed",
+                "position": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              "to": {
+                "type": "polar",
+                "angleFrom": {
+                  "type": "id",
+                  "id": "striker"
+                },
+                "angleOffset": {
+                  "$mul": [
+                    "$strikeSide.sign",
+                    -90
+                  ]
+                },
+                "radius": 1
+              },
+              "margin": 0.5
+            }
+          ]
+        }
+      }
+    ],
+    "final-others": [
+      {
+        "target": {
+          "type": "safe_spot",
+          "anchor": {
+            "type": "polar",
+            "angleFrom": {
+              "type": "id",
+              "id": "$orbOrder4[2]"
+            },
+            "angleOffset": 180,
+            "radius": 7
+          },
+          "constraints": [
+            {
+              "anyOf": [
+                {
+                  "origin": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "from": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "to": {
+                    "type": "polar",
+                    "angleFrom": {
+                      "type": "id",
+                      "id": "striker"
+                    },
+                    "angleOffset": 90,
+                    "radius": 1
+                  },
+                  "margin": 4.75
+                },
+                {
+                  "origin": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "from": {
+                    "type": "fixed",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    }
+                  },
+                  "to": {
+                    "type": "polar",
+                    "angleFrom": {
+                      "type": "id",
+                      "id": "striker"
+                    },
+                    "angleOffset": -90,
+                    "radius": 1
+                  },
+                  "margin": 4.75
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "final-lasers": [
+      {
+        "when": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-8"
+          }
+        ],
+        "live": true,
+        "target": {
+          "type": "tether_grab",
+          "offset": 1.6,
+          "then": {
+            "type": "safe_spot",
+            "anchor": {
+              "type": "entity",
+              "player": {
+                "type": "self"
+              }
+            },
+            "constraints": [
+              {
+                "anyOf": [
+                  {
+                    "origin": {
+                      "type": "fixed",
+                      "position": {
+                        "x": 0,
+                        "y": 0
+                      }
+                    },
+                    "from": {
+                      "type": "fixed",
+                      "position": {
+                        "x": 0,
+                        "y": 0
+                      }
+                    },
+                    "to": {
+                      "type": "polar",
+                      "angleFrom": {
+                        "type": "id",
+                        "id": "striker"
+                      },
+                      "angleOffset": 90,
+                      "radius": 1
+                    },
+                    "margin": 4.75
+                  },
+                  {
+                    "origin": {
+                      "type": "fixed",
+                      "position": {
+                        "x": 0,
+                        "y": 0
+                      }
+                    },
+                    "from": {
+                      "type": "fixed",
+                      "position": {
+                        "x": 0,
+                        "y": 0
+                      }
+                    },
+                    "to": {
+                      "type": "polar",
+                      "angleFrom": {
+                        "type": "id",
+                        "id": "striker"
+                      },
+                      "angleOffset": -90,
+                      "radius": 1
+                    },
+                    "margin": 4.75
+                  }
+                ]
+              },
+              {
+                "beam": {
+                  "from": {
+                    "type": "entity",
+                    "player": {
+                      "type": "id",
+                      "id": "$orbOrder4[2]"
+                    }
+                  },
+                  "avoid": [
+                    {
+                      "type": "rule_target",
+                      "group": "final-others",
+                      "as": {
+                        "type": "mechanical_role",
+                        "role": "bait-7"
+                      }
+                    }
+                  ],
+                  "margin": 2.25
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "include": "final-others"
       }
     ]
   },
@@ -5464,6 +6412,460 @@
       "full": true
     },
     {
+      "id": "final-striker-spawn",
+      "at": 102350,
+      "type": "spawn_enemy",
+      "enemyId": "striker",
+      "enemy": "earth-striker",
+      "position": {
+        "type": "polar",
+        "angle": "$strike3Angle.angle",
+        "radius": 9.2
+      },
+      "expiresAfter": 25600
+    },
+    {
+      "id": "final-chaos-cast",
+      "at": 102350,
+      "type": "start_cast",
+      "source": "boss-large",
+      "cast": "$chaosCast.cast",
+      "mechanic": "chaos-cast",
+      "rollGroups": [
+        "chaosCast"
+      ]
+    },
+    {
+      "id": "final-chaos-stops",
+      "at": 102350,
+      "type": "stop_follow",
+      "source": "boss-large"
+    },
+    {
+      "id": "final-white-hole-cast",
+      "at": 102350,
+      "type": "start_cast",
+      "source": "boss-small",
+      "cast": "white-hole"
+    },
+    {
+      "id": "final-chaos-first-dodge",
+      "at": 102350,
+      "type": "recalculate_positions",
+      "group": "$chaosCast.first"
+    },
+    {
+      "id": "final-strike-cast",
+      "at": 104850,
+      "type": "start_cast",
+      "source": "striker",
+      "cast": "strike",
+      "mechanic": "$strikeSide.mechanic",
+      "facing": {
+        "type": "entity",
+        "id": "earth-crystal"
+      },
+      "rollGroups": [
+        "strikeSide"
+      ]
+    },
+    {
+      "id": "final-pre-hole-heal",
+      "at": 106350,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "final-chaos-second-dodge",
+      "at": 107350,
+      "type": "recalculate_positions",
+      "group": "$chaosCast.second"
+    },
+    {
+      "id": "final-echo-triple-positions",
+      "at": 108850,
+      "type": "recalculate_positions",
+      "group": "echo-triple",
+      "ifMechanic": "strike-left"
+    },
+    {
+      "id": "final-echo-stack-positions",
+      "at": 108850,
+      "type": "recalculate_positions",
+      "group": "echo-stack",
+      "ifMechanic": "strike-right"
+    },
+    {
+      "id": "final-echo-left-cast",
+      "at": 108850,
+      "type": "start_cast",
+      "source": "striker",
+      "cast": "echo-left",
+      "ifMechanic": "strike-left"
+    },
+    {
+      "id": "final-echo-right-cast",
+      "at": 108850,
+      "type": "start_cast",
+      "source": "striker",
+      "cast": "echo-right",
+      "ifMechanic": "strike-right"
+    },
+    {
+      "id": "final-echo-wide-cast",
+      "at": 108850,
+      "type": "start_cast",
+      "source": "earth-crystal",
+      "cast": "echo-wide",
+      "replayId": "final-echo-wide",
+      "ifMechanic": "strike-right"
+    },
+    {
+      "id": "final-black-hole-cast",
+      "at": 108850,
+      "type": "start_cast",
+      "source": "boss-small",
+      "cast": "black-hole",
+      "mechanic": "black-hole",
+      "rollGroups": [
+        "orbLayout",
+        "decoyLayout"
+      ],
+      "params": {
+        "lifetime": 15600
+      }
+    },
+    {
+      "id": "final-post-echo-heal",
+      "at": 111950,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "l5a-soakers",
+      "at": 111900,
+      "type": "recalculate_roles",
+      "group": "soakers-l5a"
+    },
+    {
+      "id": "l5a-1-holder",
+      "at": 111900,
+      "type": "select_group",
+      "name": "l5a-1-holder",
+      "selector": {
+        "type": "random",
+        "count": 1,
+        "from": {
+          "type": "and",
+          "selectors": [
+            {
+              "type": "or",
+              "selectors": [
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-1"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-2"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-3"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-4"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-5"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-6"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "replayId": "l5a-1-holder"
+    },
+    {
+      "id": "l5a-1-link",
+      "at": 111900,
+      "type": "apply_status",
+      "target": {
+        "type": "from_group",
+        "group": "l5a-1-holder"
+      },
+      "status": "link-1",
+      "duration": 7600
+    },
+    {
+      "id": "l5a-1-tether",
+      "at": 111900,
+      "type": "spawn_tether",
+      "source": "$orbOrder4[0]",
+      "tether": "orb-link-slow",
+      "target": {
+        "type": "from_group",
+        "group": "l5a-1-holder"
+      }
+    },
+    {
+      "id": "l5a-1-cast",
+      "at": 111900,
+      "type": "start_cast",
+      "source": "$orbOrder4[0]",
+      "cast": "orb-laser-slow",
+      "facing": {
+        "type": "tether",
+        "tether": "orb-link-slow"
+      }
+    },
+    {
+      "id": "l5a-2-holder",
+      "at": 111900,
+      "type": "select_group",
+      "name": "l5a-2-holder",
+      "selector": {
+        "type": "random",
+        "count": 1,
+        "from": {
+          "type": "and",
+          "selectors": [
+            {
+              "type": "or",
+              "selectors": [
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-1"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-2"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-3"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-4"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-5"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-6"
+                }
+              ]
+            },
+            {
+              "type": "without_status",
+              "status": "link-1"
+            }
+          ]
+        }
+      },
+      "replayId": "l5a-2-holder"
+    },
+    {
+      "id": "l5a-2-link",
+      "at": 111900,
+      "type": "apply_status",
+      "target": {
+        "type": "from_group",
+        "group": "l5a-2-holder"
+      },
+      "status": "link-2",
+      "duration": 7600
+    },
+    {
+      "id": "l5a-2-tether",
+      "at": 111900,
+      "type": "spawn_tether",
+      "source": "$orbOrder4[1]",
+      "tether": "orb-link-slow",
+      "target": {
+        "type": "from_group",
+        "group": "l5a-2-holder"
+      }
+    },
+    {
+      "id": "l5a-2-cast",
+      "at": 111900,
+      "type": "start_cast",
+      "source": "$orbOrder4[1]",
+      "cast": "orb-laser-slow",
+      "facing": {
+        "type": "tether",
+        "tether": "orb-link-slow"
+      }
+    },
+    {
+      "id": "l5a-picks",
+      "at": 111900,
+      "type": "recalculate_roles",
+      "group": "orb-picks"
+    },
+    {
+      "id": "l5a-stage",
+      "at": 112000,
+      "type": "recalculate_positions",
+      "group": "orb-grab"
+    },
+    {
+      "id": "$orbOrder4[0]",
+      "at": 119500,
+      "type": "remove_enemy"
+    },
+    {
+      "id": "$orbOrder4[1]",
+      "at": 119500,
+      "type": "remove_enemy"
+    },
+    {
+      "id": "laser-5a-post-heal",
+      "at": 120900,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
+      "id": "l5b-soakers",
+      "at": 119450,
+      "type": "recalculate_roles",
+      "group": "soakers-l5b"
+    },
+    {
+      "id": "l5b-1-holder",
+      "at": 119450,
+      "type": "select_group",
+      "name": "l5b-1-holder",
+      "selector": {
+        "type": "random",
+        "count": 1,
+        "from": {
+          "type": "and",
+          "selectors": [
+            {
+              "type": "or",
+              "selectors": [
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-1"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-2"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-3"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-4"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-5"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-6"
+                },
+                {
+                  "type": "mechanical_role",
+                  "role": "bait-7"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "replayId": "l5b-1-holder"
+    },
+    {
+      "id": "l5b-1-link",
+      "at": 119450,
+      "type": "apply_status",
+      "target": {
+        "type": "from_group",
+        "group": "l5b-1-holder"
+      },
+      "status": "link-1",
+      "duration": 7600
+    },
+    {
+      "id": "l5b-1-tether",
+      "at": 119450,
+      "type": "spawn_tether",
+      "source": "$orbOrder4[2]",
+      "tether": "orb-link-slow",
+      "target": {
+        "type": "from_group",
+        "group": "l5b-1-holder"
+      }
+    },
+    {
+      "id": "l5b-1-cast",
+      "at": 119450,
+      "type": "start_cast",
+      "source": "$orbOrder4[2]",
+      "cast": "orb-laser-slow",
+      "facing": {
+        "type": "tether",
+        "tether": "orb-link-slow"
+      }
+    },
+    {
+      "id": "l5b-picks",
+      "at": 119450,
+      "type": "recalculate_roles",
+      "group": "orb-picks"
+    },
+    {
+      "id": "l5b-stage",
+      "at": 119550,
+      "type": "recalculate_positions",
+      "group": "final-lasers"
+    },
+    {
+      "id": "final-slam-cast",
+      "at": 121950,
+      "type": "start_cast",
+      "source": "striker",
+      "cast": "slam",
+      "mechanic": "slam",
+      "facing": {
+        "type": "entity",
+        "id": "earth-crystal"
+      }
+    },
+    {
+      "id": "laser-5b-post-heal",
+      "at": 127050,
+      "type": "heal",
+      "target": {
+        "type": "all"
+      },
+      "full": true
+    },
+    {
       "id": "thunder-2-gather",
       "at": 82400,
       "type": "recalculate_positions",
@@ -6077,6 +7479,32 @@
           {
             "type": "mechanical_role",
             "role": "bait-6"
+          }
+        ]
+      }
+    },
+    "soakers-l5a": {
+      "soaker": {
+        "type": "or",
+        "conditions": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-7"
+          },
+          {
+            "type": "mechanical_role",
+            "role": "bait-8"
+          }
+        ]
+      }
+    },
+    "soakers-l5b": {
+      "soaker": {
+        "type": "or",
+        "conditions": [
+          {
+            "type": "mechanical_role",
+            "role": "bait-8"
           }
         ]
       }

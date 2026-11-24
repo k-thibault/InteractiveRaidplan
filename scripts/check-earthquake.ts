@@ -7,9 +7,9 @@ import type { Encounter } from '../src/encounters/Encounter';
 const SEEDS = 20;
 const encounter = JSON.parse(readFileSync(new URL('../public/encounters/earthquake.json', import.meta.url), 'utf8')) as Encounter;
 const priority: Record<string, number> = { h1: 4, h2: 3, mt: 2, ot: 1, m1: 4, m2: 3, r1: 1, r2: 2 };
-const lasers = [{ at: 31550, soakers: 1 }, { at: 39100, soakers: 2 }, { at: 58700, soakers: 3 }, { at: 63700, soakers: 3 }, { at: 68700, soakers: 3 }, { at: 90850, soakers: 3 }, { at: 95850, soakers: 3 }, { at: 100850, soakers: 3 }];
-const rounds = [24200, 31700, 51300, 59300, 64300, 83450, 91450, 96450];
-const slamHitAt = 75200;
+const lasers = [{ at: 31550, soakers: 1 }, { at: 39100, soakers: 2 }, { at: 58700, soakers: 3 }, { at: 63700, soakers: 3 }, { at: 68700, soakers: 3 }, { at: 90850, soakers: 3 }, { at: 95850, soakers: 3 }, { at: 100850, soakers: 3 }, { at: 119400, soakers: 2 }, { at: 126950, soakers: 1 }];
+const rounds = [24200, 31700, 51300, 59300, 64300, 83450, 91450, 96450, 111900, 119450];
+const slamHitAts = [75200, 126950];
 
 const problems = new Map<string, number>();
 const note = (problem: string): void => { problems.set(problem, (problems.get(problem) ?? 0) + 1); };
@@ -23,8 +23,9 @@ for (let index = 0; index < SEEDS; index += 1) {
   const hit = lasers.map(() => new Set<string>());
   const layoutSeen = new Set<number>();
   const slamHit = new Set<string>();
+  const crustSpent = new Set<string>();
   let rolesChecked = false;
-  for (let tick = 0; tick < 7500 && !sim.state.completed && sim.state.deaths.length === 0; tick += 1) {
+  for (let tick = 0; tick < 8700 && !sim.state.completed && sim.state.deaths.length === 0; tick += 1) {
     sim.tick(1000 / 60);
     const { players, enemies, tethers, time } = sim.state;
 
@@ -42,7 +43,7 @@ for (let index = 0; index < SEEDS; index += 1) {
     }
 
     if (rounds.some((at) => time >= at && time < at + 17)) {
-      const numbers = tethers.map((t) => Number(t.sourceId.slice(4)));
+      const numbers = tethers.filter((t) => sim.state.casts.some((c) => c.sourceId === t.sourceId)).map((t) => Number(t.sourceId.slice(4)));
       for (const soaker of players.filter((p) => p.mechanicalRoles.includes('soaker'))) {
         const mine = soaker.mechanicalRoles.filter((r) => /^orb-\d$/.test(r)).map((r) => Number(r.slice(4)));
         const sorted = [...numbers].sort((a, b) => a - b);
@@ -51,7 +52,7 @@ for (let index = 0; index < SEEDS; index += 1) {
       }
     }
 
-    for (const spawnedAt of [24100, 51200, 83400]) if (time > spawnedAt && time < spawnedAt + 20) {
+    for (const spawnedAt of [24100, 51200, 83400, 111900]) if (time > spawnedAt && time < spawnedAt + 20) {
       const orbs = enemies.filter((e) => /^orb-\d$/.test(e.id));
       const angles = orbs.map((e) => bearing(e.position));
       if (angles.some((angle, i) => i > 0 && angle <= angles[i - 1])) note('orbs are not numbered clockwise from north');
@@ -63,15 +64,22 @@ for (let index = 0; index < SEEDS; index += 1) {
       if (middle.length > 0) layoutSeen.add(bearing(middle[0].position) % 90);
     }
 
+    const striker = enemies.find((e) => e.id === 'striker');
+    if (striker && slamHitAts.some((at) => time >= at - 10 && time < at - 10 + 17)) {
+      const length = Math.hypot(striker.position.x, striker.position.y);
+      for (const p of players) if (Math.abs(p.position.x * striker.position.y - p.position.y * striker.position.x) / length < 4) slamHit.add(p.id);
+    }
+
     for (const p of players) {
       const before = health.get(p.id) ?? p.health;
       health.set(p.id, p.health);
-      if (p.health < before && time >= slamHitAt - 10 && time <= slamHitAt + 300) slamHit.add(p.id);
+            if (time > 9000 && !p.statuses.some((s) => s.definitionId === 'crust')) crustSpent.add(p.id);
       if (p.health < before) lasers.forEach((laser, i) => { if (time >= laser.at && time <= laser.at + 300) hit[i].add(p.id); });
     }
   }
   lasers.forEach((laser, i) => { if (hit[i].size !== laser.soakers) note(`laser ${i + 1} hit ${hit[i].size} players instead of its ${laser.soakers} soakers`); });
   if (slamHit.size > 0) note(`slam hit ${[...slamHit].join(', ')}`);
+  if (crustSpent.size !== 8 || sim.state.players.some((p) => p.statuses.some((s) => s.definitionId === 'crust'))) note('not every crust was spent');
   if (!sim.state.completed || sim.state.failed) note('all-bot run did not complete');
 }
 
